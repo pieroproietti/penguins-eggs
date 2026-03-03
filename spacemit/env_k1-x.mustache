@@ -1,0 +1,22 @@
+# env_k1-x.txt
+
+# Definizione Indirizzi di Memoria
+fdt_addr_r=0x1F000000
+fdtoverlay_addr_r=0x01000000
+kernel_addr_r=0x10000000
+kernel_comp_addr_r=0x18000000
+pxefile_addr_r=0x0c200000
+ramdisk_addr_r=0x20000000
+scriptaddr=0x0c100000
+
+# Configurazione Console
+stdout=serial,vidconsole
+stderr=serial,vidconsole
+
+# Comando di Boot Diretto
+bootcmd=load mmc 0:5 ${kernel_addr_r} {{{kernel_file}}}; \
+load mmc 0:5 ${fdt_addr_r} {{{dtbDir}}}/${fdtfile}; \
+load mmc 0:5 ${ramdisk_addr_r} {{{initrd_file}}}; \
+setenv rd_size ${filesize}; \
+setenv bootargs "earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536 console=ttyS0,115200"; \
+booti ${kernel_addr_r} ${ramdisk_addr_r}:${rd_size} ${fdt_addr_r}

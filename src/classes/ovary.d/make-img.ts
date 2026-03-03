@@ -8,6 +8,7 @@ import path from 'node:path'
 import fs from 'node:fs'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
+import Mustache from 'mustache'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -151,52 +152,20 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/bootfs/"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/bootfs/"\n'
-    script += 'cp -r /boot/spacemit "$MNT_DIR/bootfs/"\n'
+    script += `cp -r ${vars.dtbDir} "$MNT_DIR/bootfs/"\n`;
 
-    script += 'BOOT_PARAMETERS="earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 keyboard-layouts=us clk_ignore_unused swiotlb=65536 console=ttyS0,115200"\n'
+    /**
+     * Use Mustache to generate the env_k1-x.txt file
+     */
+    const view = {
+        kernel_file: path.basename(this.vmlinuz),
+        initrd_file: path.basename(this.initrd),
+        dtbDir: vars.dtbDir
+    };
 
-    /* extlinux
-    script += 'echo "Writing extlinux.conf..."\n'
-    script += 'mkdir -p "$MNT_DIR/bootfs/extlinux"\n'
-
-    script += 'cat <<EOF > "$MNT_DIR/bootfs/extlinux/extlinux.conf"\n'
-    script += 'menu title Penguins Eggs Boot Options (Default in 5sec)\n'
-    script += 'timeout 50\n'
-    script += 'prompt 1\n'
-    script += '\n'
-    script += 'default bianbu\n'
-    script += '\n'
-    script += 'label bianbu\n'
-    script += '        kernel vmlinuz-6.6.63\n'
-    script += '        initrd initrd.img-6.6.63\n'
-    script += '        fdtdir spacemit/6.6.63\n'
-    script += '        fdt spacemit/k1-x_MUSE-Book.dtb\n'
-    script += '        append ${BOOT_PARAMETERS}\n'
-    script += 'EOF\n\n'
-    */
-
-
-    /* env_k1-x.txt */
-    script += 'cat <<EOF > "$MNT_DIR/bootfs/env_k1-x.txt"\n'
-    script += '# env_k1-x.txt\n'
-    script += '# Definizione Indirizzi di Memoria\n'
-    script += 'fdt_addr_r=0x1F000000\n'
-    script += 'fdtoverlay_addr_r=0x01000000\n'
-    script += 'kernel_addr_r=0x10000000\n'
-    script += 'kernel_comp_addr_r=0x18000000\n'
-    script += 'pxefile_addr_r=0x0c200000\n'
-    script += 'ramdisk_addr_r=0x20000000\n'
-    script += 'scriptaddr=0x0c100000\n'
-    script += '\n'
-    script += '# Configurazione Console\n'
-    script += 'stdout=serial,vidconsole\n'
-    script += 'stderr=serial,vidconsole\n'
-    script += '\n'
-    script += '# Comando di Boot Diretto\n'
-    // script += 'bootcmd=load mmc 0:5 ${kernel_addr_r} vmlinuz-6.6.63; load mmc 0:5 ${fdt_addr_r} spacemit/6.6.63/k1-x_MUSE-Book.dtb; load mmc 0:5 ${ramdisk_addr_r} initrd.img-6.6.63; setenv rd_size ${filesize}; setenv bootargs "earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536 console=ttyS0,115200"; booti ${kernel_addr_r} ${ramdisk_addr_r}:${rd_size} ${fdt_addr_r}\n'
-    // script += 'bootcmd=load mmc 0:5 ${kernel_addr_r} vmlinuz-6.6.63; load mmc 0:5 ${fdt_addr_r} spacemit/6.6.63/k1-x_MUSE-Book.dtb; load mmc 0:5 ${ramdisk_addr_r} initrd.img-6.6.63; setenv rd_size ${filesize}; setenv bootargs "earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536 console=ttyS0,115200"; booti ${kernel_addr_r} ${ramdisk_addr_r}:${rd_size} ${fdt_addr_r}\n'
-    script += 'bootcmd=load mmc 0:5 ${kernel_addr_r} vmlinuz-6.6.63; load mmc 0:5 ${fdt_addr_r} spacemit/6.6.63/k1-x_MUSE-Book.dtb; load mmc 0:5 ${ramdisk_addr_r} initrd.img-6.6.63; setenv rd_size ${filesize}; setenv bootargs "earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536 console=ttyS0,115200"; booti ${kernel_addr_r} ${ramdisk_addr_r}:${rd_size} ${fdt_addr_r}\n'
-    script += 'EOF\n\n'
+    const template = fs.readFileSync(`${vars.spacemitDir}/env_k1-x.mustache`, 'utf8');
+    const envContent = Mustache.render(template, view);
+    script += `cat <<'EOF' > "$MNT_DIR/bootfs/env_k1-x.txt"\n${envContent}\nEOF\n\n`;
 
     script += '# --- 4. POPOLAMENTO ROOTFS ---\n'
     script += 'mkdir -p "$MNT_DIR/rootfs/live"\n'
