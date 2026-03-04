@@ -32,7 +32,7 @@
         "netmask": "^2.0.2",
         "react": "^19.2.4",
         "read": "^5.0.1",
-        "systeminformation": "^5.31.1",
+        "systeminformation": "^5.31.2",
         "tftp": "^0.1.2",
         "vite": "^7.3.1",
         "ws": "^8.19.0"
