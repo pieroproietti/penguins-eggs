@@ -152,7 +152,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/bootfs/"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/bootfs/"\n'
-    script += `cp -r ${vars.dtbDir} "$MNT_DIR/bootfs/"\n`;
+    script += `cp -r ${vars.fdtDir} "$MNT_DIR/bootfs/"\n`;
 
     /**
      * Use Mustache to generate the env_k1-x.txt file
@@ -160,7 +160,8 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     const view = {
         kernel_file: path.basename(this.vmlinuz),
         initrd_file: path.basename(this.initrd),
-        dtbDir: vars.dtbDir
+        fdtDir: vars.fdtDir,
+        fdtFile: vars.fdtFile
     };
 
     const template = fs.readFileSync(`${vars.spacemitDir}/env_k1-x.mustache`, 'utf8');
@@ -204,7 +205,8 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
 function getVariables(ovary: Ovary) {
     const srcDir = path.join(ovary.nest, 'mnt/iso')
     const mntDir = path.join(ovary.nest, 'mnt/img')
-    const dtbDir = ovary.dtbDir
+    const fdtDir = ovary.fdtDir
+    const fdtFile = ovary.fdtFile
 
     ovary.settings.isoFilename = ovary.settings.config.snapshot_prefix + ovary.volid + '_' + Utils.uefiArch() + Utils.getPostfix() + '.img'
     const imgLnk = ovary.settings.config.snapshot_dir + ovary.settings.isoFilename
@@ -218,7 +220,7 @@ function getVariables(ovary: Ovary) {
         spacemitDir = path.resolve('/usr/share/penguins-eggs/spacemit')
     }
 
-    return { srcDir, mntDir, dtbDir, imgLnk, imgName, mergedDir, snapshotExcludes, spacemitDir, imgVolid }
+    return { srcDir, mntDir, fdtDir, fdtFile, imgLnk, imgName, mergedDir, snapshotExcludes, spacemitDir, imgVolid }
 }
 
 function getScriptHeader(vars: any) {
@@ -227,7 +229,7 @@ function getScriptHeader(vars: any) {
     script += `IMG_LNK="${vars.imgLnk}"\n`
     script += `IMG_NAME="${vars.imgName}"\n`
     script += `IMG_VOLID="${vars.imgVolid}"\n`
-    script += `DTB_DIR="${vars.dtbDir}"\n`
+    // script += `DTB_DIR="${vars.fdtDir}"\n`
     script += `MERGED_DIR="${vars.mergedDir}"\n`
     script += `MNT_DIR="${vars.mntDir}"\n`
     script += `SPACEMIT_DIR="${vars.spacemitDir}"\n`

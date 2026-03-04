@@ -25,7 +25,7 @@ export default class Love extends Command {
   static examples = ['eggs love']
   static flags = {
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
-    dtbdir: Flags.string({ description: 'path to Device Tree Blobs (DTB) directory' }),
+    fdtDir: Flags.string({ description: 'path to Device Tree Blobs (DTB) directory' }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
     help: Flags.help({ char: 'h' }),
     hidden: Flags.boolean({ char: 'H', description: 'stealth mode' }),
@@ -62,9 +62,9 @@ export default class Love extends Command {
       homecrypt = true
     }
 
-    let flagDtbdir = ''
-    if (flags.dtbdir) {
-      flagDtbdir = `--dtbdir ${flags.dtbdir}`
+    let flagfdtDir = ''
+    if (flags.fdtDir) {
+      flagfdtDir = `--fdtDir ${flags.fdtDir}`
     }
 
     let fullcrypt = false
@@ -123,7 +123,7 @@ export default class Love extends Command {
     if (nointeractive || (await Utils.customConfirm())) {
       for (const cmd of cmds) {
         if (cmd.includes('produce')) {
-          await exec(`${cmdSudo} ${cmd} ${flagHidden} ${flagVerbose} ${flagClone} ${flagNointeractive} ${flagDtbdir}`)
+          await exec(`${cmdSudo} ${cmd} ${flagHidden} ${flagVerbose} ${flagClone} ${flagNointeractive} ${flagfdtDir}`)
         } else {
           await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
         }

@@ -595,7 +595,7 @@ the simplest way to get an egg!
 
 ```
 USAGE
-  $ eggs love [-c] [--dtbdir <value>] [-f] [-h] [-H] [-k] [-n] [-v]
+  $ eggs love [-c] [--fdtDir <value>] [-f] [-h] [-H] [-k] [-n] [-v]
 
 FLAGS
   -H, --hidden          stealth mode
@@ -605,7 +605,7 @@ FLAGS
   -k, --homecrypt       clone crypted home
   -n, --nointeractive   no user interaction
   -v, --verbose
-      --dtbdir=<value>  path to Device Tree Blobs (DTB) directory
+      --fdtDir=<value>  path to Device Tree Blobs (DTB) directory
 
 DESCRIPTION
   the simplest way to get an egg!
@@ -642,7 +642,7 @@ produce a live image from your system
 
 ```
 USAGE
-  $ eggs produce [--addons <value>...] [--basename <value>] [--dtbdir <value>] [-c] [--excludes <value>...]
+  $ eggs produce [--addons <value>...] [--basename <value>] [--fdtDir <value>] [-c] [--excludes <value>...]
     [-f] [-h] [-H] [-k] [-i] [-K <value>] [--links <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [-S]
     [--theme <value>] [-v] [-y]
 
@@ -665,7 +665,7 @@ FLAGS
   -y, --yolk                 force yolk renew
       --addons=<value>...    addons to be used: adapt, pve, rsupport
       --basename=<value>     basename
-      --dtbdir=<value>       path to Device Tree Blobs (DTB) directory
+      --fdtDir=<value>       path to Device Tree Blobs (DTB) directory
       --excludes=<value>...  use: static, homes, home
       --links=<value>...     desktop links
       --release              release: remove penguins-eggs, calamares and dependencies after installation

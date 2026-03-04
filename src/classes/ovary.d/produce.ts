@@ -376,7 +376,7 @@ export async function produce(
       mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
       mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
       this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
-      if (this.dtbDir !== '') {
+      if (this.fdtDir !== '') {
         mkImgCmd = await this.makeImg()
         if (!scriptOnly) {
           Utils.warning(mkImgCmd)
@@ -474,7 +474,7 @@ export async function produce(
       }
     }
 
-    if (this.dtbDir === '') {
+    if (this.fdtDir === '') {
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }
   }

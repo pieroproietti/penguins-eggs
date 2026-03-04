@@ -14,13 +14,14 @@ import Distro from '../distro.js'
 import Ovary from '../ovary.js'
 import Settings from '../settings.js'
 import Utils from '../utils.js'
+import fs from 'node:fs'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * @returns {boolean} success
  */
-export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_basename = '', dtbDir = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
+export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_basename = '', fdtDir = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
   // familyId, distroId from Distrb
   const distro = new Distro()
   this.familyId = distro.familyId
@@ -47,9 +48,20 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
       this.settings.config.snapshot_basename = snapshot_basename
     }
 
-    // dtbDir
-    if (dtbDir !== '') {
-      this.dtbDir = dtbDir
+    if (fdtDir !== '') {
+      this.fdtDir = fdtDir
+      // Controlla se è un file
+      if (fs.statSync(fdtDir).isFile()) {
+        this.fdtDir = path.dirname(fdtDir)
+        this.fdtFile = path.basename(fdtDir)
+      } else {
+        this.fdtFile = '${fdtfile}' // fallback
+      }
+
+      // Controlla se l'ultimo carattere è /
+      if (fdtDir.endsWith('/')) {
+        this.fdtDir = fdtDir.slice(0, -1)
+      }
     }
 
     if (theme !== '') {
