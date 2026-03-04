@@ -238,8 +238,8 @@ _eggs() {
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
 "autocomplete[Display autocomplete installation instructions.]" \
-"help[Display help for eggs.]" \
 "version[]" \
+"help[Display help for eggs.]" \
 
     ;;
     args)
@@ -330,7 +330,7 @@ _arguments -S \
 love)
 _arguments -S \
 "(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
---dbtdir"[path to Device Tree Blobs (DTB) directory]:file:_files" \
+--fdtdir"[path to Device Tree Blobs (DTB) directory]:file:_files" \
 "(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-H --hidden)"{-H,--hidden}"[stealth mode]" \
@@ -388,15 +388,15 @@ _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 version)
 _arguments -S \
 --json"[Format output as json.]" \
 --verbose"[Show additional information about the CLI.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac
