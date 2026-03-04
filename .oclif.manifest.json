@@ -492,9 +492,9 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "fdtDir": {
+        "dbtdir": {
           "description": "path to Device Tree Blobs (DTB) directory",
-          "name": "fdtDir",
+          "name": "dbtdir",
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
@@ -614,9 +614,9 @@
           "multiple": false,
           "type": "option"
         },
-        "dtbdir": {
+        "fdtDir": {
           "description": "path to Device Tree Blobs (DTB) directory",
-          "name": "dtbdir",
+          "name": "fdtDir",
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
