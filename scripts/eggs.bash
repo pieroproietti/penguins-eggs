@@ -22,9 +22,9 @@ export:pkg --all --clean --help --verbose
 export:tarballs --clean --help --verbose
 kill --help --isos --nointeractive --verbose
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
-love --clone --fdtdir --fullcrypt --help --hidden --homecrypt --nointeractive --verbose
+love --clone --fdt --fullcrypt --help --hidden --homecrypt --nointeractive --verbose
 mom --help
-produce --addons --basename --fdtDir --clone --excludes --fullcrypt --help --hidden --homecrypt --includeRootHome --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --verbose --yolk
+produce --addons --basename --fdt --clone --excludes --fullcrypt --help --hidden --homecrypt --includeRootHome --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --verbose --yolk
 setup:install 
 setup:purge 
 status --help --verbose
@@ -38,9 +38,9 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
+help --nested-commands
 autocomplete --refresh-cache
 version --json --verbose
-help --nested-commands
 "
 
   function __trim_colon_commands()

@@ -20,6 +20,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.3.3
+This is the first version of penguins-eggs able to remaster bianbuos, Debian trixie and Ubuntu 26.04 on RISC-V [spacemit](https://www.spacemit.com/) muse-book-x1.
+
+* **FDT Support**: Added support for Flattened Device Tree (FDT) files. Users can now specify a path to DTB files for RISC-V devices, which will be correctly included in the generated image.
+
 # v26.2.20
 - SBC Support: Actively working on producing IMG images (via eggs) alongside standard ISOs for Single Board Computers (SBCs).
 

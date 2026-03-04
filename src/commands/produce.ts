@@ -34,7 +34,8 @@ export default class Produce extends Command {
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
-    fdtdir: Flags.string({ description: 'path to Device Tree Blobs (DTB) directory' }),
+
+    fdt: Flags.string({ description: 'path to Flattened Device Tree (DTB) file or directory' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
@@ -142,10 +143,10 @@ export default class Produce extends Command {
       }
 
       let fdtDir = ''
-      if (flags.fdtdir !== undefined) {
-        fdtDir = flags.fdtdir
+      if (flags.fdt !== undefined) {
+        fdtDir = flags.fdt
         if (fdtDir !== 'none' && !fs.existsSync(fdtDir)) {
-          Utils.warning('fdtdir: ' + chalk.white(fdtDir) + ' not found!')
+          Utils.warning('fdt: ' + chalk.white(fdtDir) + ' not found!')
           process.exit()
         }
       }

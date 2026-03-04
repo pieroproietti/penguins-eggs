@@ -595,17 +595,17 @@ the simplest way to get an egg!
 
 ```
 USAGE
-  $ eggs love [-c] [--fdtDir <value>] [-f] [-h] [-H] [-k] [-n] [-v]
+  $ eggs love [-c] [--fdt <value>] [-f] [-h] [-H] [-k] [-n] [-v]
 
 FLAGS
-  -H, --hidden          stealth mode
-  -c, --clone           clone (uncrypted)
-  -f, --fullcrypt       clone crypted full
-  -h, --help            Show CLI help.
-  -k, --homecrypt       clone crypted home
-  -n, --nointeractive   no user interaction
+  -H, --hidden         stealth mode
+  -c, --clone          clone (uncrypted)
+  -f, --fullcrypt      clone crypted full
+  -h, --help           Show CLI help.
+  -k, --homecrypt      clone crypted home
+  -n, --nointeractive  no user interaction
   -v, --verbose
-      --fdtDir=<value>  path to Device Tree Blobs (DTB) directory
+      --fdt=<value>    path to Device Tree Blobs (DTB) directory
 
 DESCRIPTION
   the simplest way to get an egg!
@@ -642,8 +642,8 @@ produce a live image from your system
 
 ```
 USAGE
-  $ eggs produce [--addons <value>...] [--basename <value>] [--fdtDir <value>] [-c] [--excludes <value>...]
-    [-f] [-h] [-H] [-k] [-i] [-K <value>] [--links <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [-S]
+  $ eggs produce [--addons <value>...] [--basename <value>] [--fdt <value>] [-c] [--excludes <value>...] [-f]
+    [-h] [-H] [-k] [-i] [-K <value>] [--links <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [-S]
     [--theme <value>] [-v] [-y]
 
 FLAGS
@@ -665,8 +665,8 @@ FLAGS
   -y, --yolk                 force yolk renew
       --addons=<value>...    addons to be used: adapt, pve, rsupport
       --basename=<value>     basename
-      --fdtDir=<value>       path to Device Tree Blobs (DTB) directory
       --excludes=<value>...  use: static, homes, home
+      --fdt=<value>          path to Device Tree Blobs (DTB) directory
       --links=<value>...     desktop links
       --release              release: remove penguins-eggs, calamares and dependencies after installation
       --theme=<value>        theme for livecd, calamares branding and partitions
