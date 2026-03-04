@@ -134,6 +134,7 @@ export default class Ovary {
   verbose = false
   vmlinuz = ''
   volid = ''
-  dtbDir = ''
+  fdtDir = ''
+  fdtFile = ''
   xorrisoCommand = xorrisoCommand
 }
