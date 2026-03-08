@@ -12,6 +12,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 import cliCursor from 'cli-cursor'
 import fs from 'fs'
+import os from 'os'
 import { Box, render, RenderOptions, Text } from 'ink'
 import yaml from 'js-yaml'
 import React from 'react'
@@ -59,6 +60,8 @@ import removeHomecryptHack from './sequence.d/remove-homecrypt-hack.js'
 import removeInstallerLink from './sequence.d/remove_installer_link.js'
 import umount from './sequence.d/umount.js'
 import unpackfs from './sequence.d/unpackfs.js'
+import { Spacemit } from './sequence.d/spacemit.d/index.js'
+
 
 /**
  * Main Sequence class - Simple Refactoring
@@ -211,6 +214,8 @@ export default class Sequence {
    * Main start method - Much cleaner sequence
    */
   async start(domain = '', unattended = false, nointeractive = false, chroot = false, halt = false, verbose = false) {
+    const isRiscV = os.arch() === 'riscv64'
+
     // Setup (unchanged)
     await this.setupInstallation(domain, unattended, nointeractive, chroot, halt, verbose)
 
@@ -268,8 +273,16 @@ export default class Sequence {
     // 1. Partitioning and formatting
     let isPartitioned = false
     await this.executeStep("Creating partitions", 0, async () => {
+      isPartitioned = os.arch() === 'riscv64'
+        ? await Spacemit.partition.call(this)
+        : await this.partition()
+    })
+
+    /*
+    await this.executeStep("Creating partitions", 0, async () => {
       isPartitioned = await this.partition()
     })
+    */
 
     if (!isPartitioned) return
 
@@ -353,9 +366,18 @@ export default class Sequence {
     await this.executeStep("initramfs", 82, () => this.initramfs())
 
     // 11. Bootloader configuration
+    if (os.arch() === 'riscv64') {
+      await this.executeStep("Spacemit bootloader", 85, () => Spacemit.bootloader.call(this))
+    } else {
+      await this.executeStep("bootloader-config", 83, () => this.bootloaderConfig())
+      await this.executeStep("grubcfg", 84, () => this.grubcfg())
+      await this.executeStep("bootloader", 85, () => this.bootloader())
+    }
+    /*
     await this.executeStep("bootloader-config", 83, () => this.bootloaderConfig())
     await this.executeStep("grubcfg", 84, () => this.grubcfg())
     await this.executeStep("bootloader", 85, () => this.bootloader())
+    */
 
     // 12. Final system setup
     if (this.distro.familyId === 'debian') {
