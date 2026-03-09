@@ -47,9 +47,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
         // Mapping per il resto della sequenza Krill
         this.devices.boot.name = `${device}${p}5`
         this.devices.boot.fsType = 'ext4'
+        this.devices.boot.mountPoint = '/boot'
 
         this.devices.root.name = `${device}${p}6`
         this.devices.root.fsType = 'ext4'
+        this.devices.root.mountPoint = '/'
 
         this.devices.data.name = 'none'
         this.devices.efi.name = 'none'
