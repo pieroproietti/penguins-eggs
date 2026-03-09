@@ -286,7 +286,11 @@ export default class Sequence {
 
     if (!isPartitioned) return
 
-    await this.executeStep("Formatting file system", 6, () => this.mkfs())
+    await this.executeStep("Formatting file system", 6, async () => {
+      os.arch() === 'riscv64'
+        ? await Spacemit.mkfs.call(this)
+        : await this.mkfs()
+    })
 
     // 2. Mounting
     await this.executeStep("Mounting target file system", 9, async () => {

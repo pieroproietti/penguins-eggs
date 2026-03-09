@@ -24,6 +24,9 @@ export async function mountFs(this: Sequence): Promise<boolean> {
 
   // root
   await exec(`mount -t ${this.devices.root.fsType} ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
+  if ((await exec(`mountpoint -q ${this.installTarget}${this.devices.root.mountPoint}`)).code !== 0) {
+    throw new Error(`[Krill ENOSPC Prevention] Failed to mount ${this.devices.root.name} on ${this.installTarget}${this.devices.root.mountPoint}`)
+  }
   await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
   await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)
 
@@ -31,6 +34,9 @@ export async function mountFs(this: Sequence): Promise<boolean> {
   if (this.devices.boot.name !== 'none') {
     await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, this.echo)
     await exec(`mount -t ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, this.echo)
+    if ((await exec(`mountpoint -q ${this.installTarget}${this.devices.boot.mountPoint}`)).code !== 0) {
+      throw new Error(`Failed to mount boot partition ${this.devices.boot.name}`)
+    }
     await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, this.echo)
   }
 
@@ -38,6 +44,9 @@ export async function mountFs(this: Sequence): Promise<boolean> {
   if (this.devices.data.name !== 'none') {
     await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, this.echo)
     await exec(`mount -t ${this.devices.data.fsType} ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, this.echo)
+    if ((await exec(`mountpoint -q ${this.installTarget}${this.devices.data.mountPoint}`)).code !== 0) {
+      throw new Error(`Failed to mount data partition ${this.devices.data.name}`)
+    }
     await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, this.echo)
   }
 
@@ -47,6 +56,9 @@ export async function mountFs(this: Sequence): Promise<boolean> {
 
     // utilizzare vfat per evitare errori
     await exec(`mount -t vfat ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
+    if ((await exec(`mountpoint -q ${this.installTarget}${this.devices.efi.mountPoint}`)).code !== 0) {
+      throw new Error(`Failed to mount efi partition ${this.devices.efi.name}`)
+    }
   }
 
   // swap file if we need

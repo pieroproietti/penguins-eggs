@@ -9,7 +9,7 @@
 
 import { execFileSync } from 'node:child_process'
 
-import Utils from '../../../classes/utils.js'
+import os from 'node:os'
 import { exec, shx } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
 import { InstallationMode, SwapChoice } from '../krill_enums.js'
