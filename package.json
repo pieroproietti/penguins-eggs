@@ -10,7 +10,7 @@
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
         "@inquirer/prompts": "^8.3.0",
-        "@oclif/core": "^4.8.3",
+        "@oclif/core": "^4.8.4",
         "@oclif/plugin-autocomplete": "^3.2.40",
         "@oclif/plugin-help": "^6.2.37",
         "@oclif/plugin-version": "^2.2.37",
@@ -32,7 +32,7 @@
         "netmask": "^2.0.2",
         "react": "^19.2.4",
         "read": "^5.0.1",
-        "systeminformation": "^5.31.3",
+        "systeminformation": "^5.31.4",
         "tftp": "^0.1.2",
         "vite": "^7.3.1",
         "ws": "^8.19.0"
@@ -49,7 +49,7 @@
         "@types/mocha": "^10.0.10",
         "@types/mustache": "^4.2.6",
         "@types/netmask": "^2.0.6",
-        "@types/node": "^25.3.5",
+        "@types/node": "^25.4.0",
         "@types/react": "^19.2.14",
         "@types/ws": "^8.18.1",
         "chai": "^6.2.2",
@@ -66,7 +66,7 @@
         "ts-node": "10.9.2",
         "ts-prune": "^0.10.3",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.56.1"
+        "typescript-eslint": "^8.57.0"
     },
     "engines": {
         "node": ">=22"

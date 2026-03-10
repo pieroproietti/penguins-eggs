@@ -1,5 +1,6 @@
 // ./src/krill/sequence.d/spacemit.d/partition.ts
 import path from 'path'
+import Utils from '../../../../classes/utils.js'
 
 import { exec } from '../../../../lib/utils.js'
 import Sequence from '../../sequence.js'
@@ -76,6 +77,9 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.data.name = 'none'
     this.devices.efi.name = 'none'
 
+    console.log(`\nVerifica firma bootloader su ${device}${p}1...`)
+    await exec(`hexdump -C -n 512 ${device}${p}1`)
+    await Utils.pressKeyToExit('Controlla la firma del bootloader e premi un tasto per continuare', true)
     return true
   } catch (error) {
     // In fase di sviluppo, un console.log qui aiuta a non impazzire
