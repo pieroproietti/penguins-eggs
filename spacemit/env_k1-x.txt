@@ -14,4 +14,9 @@ stdout=serial,vidconsole
 stderr=serial,vidconsole
 
 # Comando di Boot Diretto
-bootcmd=load mmc 0:5 ${kernel_addr_r} vmlinuz-6.6.63; load mmc 0:5 ${fdt_addr_r} spacemit/6.6.63/k1-x_MUSE-Book.dtb; load mmc 0:5 ${ramdisk_addr_r} initrd.img-6.6.63; setenv rd_size ${filesize}; setenv bootargs "earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536 console=ttyS0,115200"; booti ${kernel_addr_r} ${ramdisk_addr_r}:${rd_size} ${fdt_addr_r}
+bootcmd=load mmc 0:5 ${kernel_addr_r} vmlinuz-6.6.63; \
+load mmc 0:5 ${fdt_addr_r} spacemit/6.6.63/k1-x_MUSE-Book.dtb; \
+load mmc 0:5 ${ramdisk_addr_r} initrd.img-6.6.63; \
+setenv rd_size ${filesize}; \
+setenv bootargs "earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536 console=ttyS0,115200"; \
+booti ${kernel_addr_r} ${ramdisk_addr_r}:${rd_size} ${fdt_addr_r}

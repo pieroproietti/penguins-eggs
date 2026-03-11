@@ -55,7 +55,7 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
         this.fdtDir = path.dirname(fdtDir)
         this.fdtFile = path.basename(fdtDir)
       } else {
-        this.fdtFile = '${fdtfile}' // fallback
+        this.fdtFile = 'k1-x_MUSE-Book.dtb' // fallback
       }
 
       // Controlla se l'ultimo carattere è /
