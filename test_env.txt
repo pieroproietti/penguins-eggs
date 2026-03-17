@@ -1,0 +1,5 @@
+fdt_addr_r=0x1F000000
+
+bootcmd= \
+    echo "test"; \
+    echo "test2"

@@ -1,22 +1,29 @@
 # env_k1-x.txt
-
-# Definizione Indirizzi di Memoria
 fdt_addr_r=0x1F000000
 fdtoverlay_addr_r=0x01000000
 kernel_addr_r=0x10000000
 kernel_comp_addr_r=0x18000000
-pxefile_addr_r=0x0c200000
 ramdisk_addr_r=0x20000000
-scriptaddr=0x0c100000
 
-# Configurazione Console
 stdout=serial,vidconsole
 stderr=serial,vidconsole
 
-# Comando di Boot Diretto
-bootcmd=load mmc 0:5 ${kernel_addr_r} vmlinuz-6.6.63; \
-load mmc 0:5 ${fdt_addr_r} spacemit/6.6.63/k1-x_MUSE-Book.dtb; \
-load mmc 0:5 ${ramdisk_addr_r} initrd.img-6.6.63; \
-setenv rd_size ${filesize}; \
-setenv bootargs "earlycon=sbi quiet splash boot=live components locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536 console=ttyS0,115200"; \
-booti ${kernel_addr_r} ${ramdisk_addr_r}:${rd_size} ${fdt_addr_r}
+# Sottoprogrammi di configurazione
+set_usb=setenv devtype usb; setenv devnum 0; setenv root_dev /dev/sda6; setenv boot_opts "rootwait rw"
+set_nvme=setenv devtype nvme; setenv devnum 0; setenv root_dev /dev/nvme0n1p6; setenv boot_opts "rootwait rw"
+set_mmc=setenv devtype mmc; setenv devnum 0; setenv root_dev /dev/mmcblk0p6; setenv boot_opts "boot=live components"
+
+# Il motore di caricamento
+boot_now=echo "Caricamento da ${devtype}..."; \
+         load ${devtype} ${devnum}:5 ${kernel_addr_r} vmlinuz-6.6.63; \
+         load ${devtype} ${devnum}:5 ${fdt_addr_r} spacemit/6.6.63/k1-x_MUSE-Book.dtb; \
+         load ${devtype} ${devnum}:5 ${ramdisk_addr_r} initrd.img-6.6.63; \
+         setenv bootargs "earlycon=sbi root=${root_dev} ${boot_opts} clk_ignore_unused swiotlb=65536 console=ttyS0,115200 console=tty1"; \
+         booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}
+
+# La logica a cascata: USB > NVMe > MMC
+bootcmd=nvme scan; usb start; \
+        if load usb 0:5 ${kernel_addr_r} vmlinuz-6.6.63; then run set_usb; \
+        elif load nvme 0:5 ${kernel_addr_r} vmlinuz-6.6.63; then run set_nvme; \
+        else run set_mmc; fi; \
+        run boot_now

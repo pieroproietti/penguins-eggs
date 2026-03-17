@@ -1,4 +1,6 @@
 # env_k1-x.txt
+
+# Definizione Indirizzi di Memoria
 fdt_addr_r=0x1F000000
 fdtoverlay_addr_r=0x01000000
 kernel_addr_r=0x10000000
@@ -7,22 +9,22 @@ pxefile_addr_r=0x0c200000
 ramdisk_addr_r=0x20000000
 scriptaddr=0x0c100000
 
+# Configurazione Console
 stdout=serial,vidconsole
 stderr=serial,vidconsole
 
+# Script di Boot Minimale e generico
 bootcmd= \
     if test -z "${fdtfile}"; then setenv fdtfile {{{fdt_file}}}; fi; \
     usb start; \
     if load usb 0:5 ${kernel_addr_r} {{{kernel_name}}}; then \
         setenv devtype usb; \
         setenv devnum 0; \
-        setenv bootpart 1; \
-        setenv boot_type ''; \
+        setenv bootpart 5; \
     else \
         if test -z "${devtype}"; then setenv devtype mmc; fi; \
         if test -z "${devnum}"; then setenv devnum 0; fi; \
         setenv bootpart 5; \
-        setenv boot_type 'boot=live components'; \
         load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} {{{kernel_name}}}; \
     fi; \
     \
@@ -33,8 +35,8 @@ bootcmd= \
     \
     setenv bootargs "earlycon=sbi \
     quiet splash \
-    ${boot_type} \
-
+    boot=live \
+    components \
     locales=en_US.UTF-8 \
     clk_ignore_unused \
     swiotlb=65536 \
