@@ -153,19 +153,20 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/bootfs/"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/bootfs/"\n'
 
-    // Remove /boot/ to fdtDir
+    // Remove path /boot/ to fdtDir
     const fdtDir = vars.fdtDir.replace(/^\/boot\//, '');
     script += `mkdir -p "$MNT_DIR/bootfs/${fdtDir}"\n`;
-    script += `cp ${vars.fdtDir}/* "$MNT_DIR/bootfs/${fdtDir}"\n`;
+    script += `cp -rv "${vars.fdtDir}/"* "$MNT_DIR/bootfs/${fdtDir}/"\n`;
+
 
     /**
      * Use Mustache to generate the env_k1-x.txt file
      */
     const view = {
-        kernel_file: path.basename(this.vmlinuz),
-        initrd_file: path.basename(this.initrd),
-        fdtDir: fdtDir,
-        fdtFile: vars.fdtFile
+        kernel_name: path.basename(this.vmlinuz),
+        initrd_name: path.basename(this.initrd),
+        fdt_dir: fdtDir,
+        fdt_file: vars.fdtFile,
     };
 
     const template = fs.readFileSync(`${vars.spacemitDir}/env_k1-x.mustache`, 'utf8');
