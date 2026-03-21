@@ -20,6 +20,16 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.3.21 🌸 Nowruz edition!
+
+## Added & Changed
+* **Krill Installer (LVM Safety)**: Improved safety checks when encountering existing LVM2 volumes. The installer now explicitly warns the user, aborts, and generates a convenient removal script (`/tmp/removeLvmPartitions`);
+* **Debian/Ubuntu**: Automatically add `language-selector-common` to the Calamares dependencies on Ubuntu to improve compatibility;
+* **Ovary**: Project root path is now passed to `Ovary` instances during `produce`.
+
+## Fixed
+* Fixed a bug on Ubuntu Noble during the `make-iso` (ovary/make-img) process.
+
 # v26.3.18
 
 ## Added
@@ -33,6 +43,9 @@ The version is based on the year, month, day, and release number. They are liste
 * Ovary Enhancements: Updated image creation logic (make-img) to accommodate new hardware requirements;
 
 Sequence Refactoring: Improved the installation sequence flow to support board-specific configurations.
+
+# v26.3.21
+
 
 # v26.3.3
 This is the first version of penguins-eggs able to remaster bianbuos, Debian trixie and Ubuntu 26.04 on RISC-V [spacemit](https://www.spacemit.com/) muse-book-x1.
