@@ -10,6 +10,8 @@ import fs from 'node:fs'
 
 import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
+import Distro from './../distro.js'
+
 
 /**
  * Debian
@@ -17,6 +19,17 @@ import Utils from '../utils.js'
  */
 export default class Debian {
   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
+
+  /**
+   * Così è poesia! 
+   * Aggiunge 'language-selector-common' se la distro è Ubuntu
+  */
+  static {
+    const currentDistro = new Distro()
+    if (currentDistro.distroLike === 'Ubuntu') {
+      Debian.debs4calamares.push('language-selector-common')
+    }
+  }
 
   /**
    * Debian: calamaresInstall
@@ -31,9 +44,10 @@ export default class Debian {
 
     try {
       // await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
-      await exec(`apt-get install --yes ${this.debs4calamares.join(' ')}`, echo)
+      await exec(`apt-get install --yes ${this.debs4calamares.join(' ')
+        }`, echo)
     } catch {
-      Utils.error(`Debian.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
+      Utils.error(`Debian.calamaresInstall() apt- get install--yes ${array2spaced(this.debs4calamares)} `) // + e.error)
     }
 
     // remove others calamares links
@@ -46,7 +60,7 @@ export default class Debian {
   static async calamaresPolicies(verbose = false) {
     const echo = Utils.setEcho(verbose)
     const policyFile = '/usr/share/polkit-1/actions/io.calamares.calamares.policy'
-    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
+    await exec(`sed - i 's/auth_admin/yes/' ${policyFile} `, echo)
   }
 
   /**
@@ -87,7 +101,7 @@ export default class Debian {
    */
   static async liveInstallerPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
-    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+    await exec(`sed - i 's/auth_admin/yes/' ${policyFile} `)
   }
 
   /**
@@ -97,8 +111,8 @@ export default class Debian {
    */
   static async packageAptAvailable(packageName: string): Promise<boolean> {
     let available = false
-    const cmd = `apt-cache show ${packageName} | grep Package:`
-    const test = `Package: ${packageName}`
+    const cmd = `apt - cache show ${packageName} | grep Package: `
+    const test = `Package: ${packageName} `
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout === test) {
       available = true
@@ -114,7 +128,7 @@ export default class Debian {
    */
   static async packageAptLast(debPackage: string): Promise<string> {
     let version = ''
-    const cmd = `apt-cache show ${debPackage} | grep Version:`
+    const cmd = `apt - cache show ${debPackage} | grep Version: `
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     version = stdout.slice(9)
     // console.log('===================================')
@@ -144,12 +158,11 @@ export default class Debian {
    */
   static packageIsInstalled(debPackage: string): boolean {
     let installed = false
-    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
+    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status: `
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout === 'Status: install ok installed') {
       installed = true
     }
-
     return installed
   }
 }

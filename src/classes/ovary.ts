@@ -137,4 +137,10 @@ export default class Ovary {
   fdtDir = ''
   fdtFile = ''
   xorrisoCommand = xorrisoCommand
+  projectRoot = ''
+
+  constructor(projectRoot: string) {
+    this.projectRoot = projectRoot
+
+  }
 }

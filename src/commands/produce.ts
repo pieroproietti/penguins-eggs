@@ -59,6 +59,8 @@ export default class Produce extends Command {
   }
 
   async run(): Promise<void> {
+    const projectRoot = this.config.root;
+
     Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Produce)
@@ -250,7 +252,7 @@ export default class Produce extends Command {
       }
 
       Utils.titles(this.id + ' ' + this.argv)
-      const ovary = new Ovary()
+      const ovary = new Ovary(projectRoot)
       Utils.warning('Produce an egg...')
       if (i.calamares) {
         const message = 'this is a GUI system, calamares is available, but NOT installed\n'

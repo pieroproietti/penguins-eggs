@@ -213,10 +213,25 @@ export default class Krill {
       throw new Error('No disk to install the system in this machine.')
     }
 
+
     // Check LVM presence
     if (await this.pvExist()) {
       await this.createLvmRemovalScript()
-      throw new Error('There is a lvm2 volume in the system, remove it manually before installation.')
+
+      console.log('\n=========================================================================')
+      console.log(' WARNING: LVM2 volume detected!')
+      console.log('=========================================================================')
+      console.log('To prevent accidental data loss, the installer will now exit.')
+      console.log('You must manually remove the LVM partitions before proceeding.\n')
+
+      console.log('A helper script has been generated for your convenience.')
+      console.log('If you are ABSOLUTELY SURE you want to erase the disk, run:\n')
+
+      console.log('    sudo bash /tmp/removeLvmPartitions\n')
+
+      console.log('  DANGER: This action is IRREVERSIBLE and will DESTROY ALL DATA on the LVM!\n')
+
+      process.exit(1) // Esce con codice di errore 1
     }
   }
 
@@ -224,7 +239,7 @@ export default class Krill {
    * Create script to remove LVM partitions
    */
   private async createLvmRemovalScript(): Promise<void> {
-    const scriptName = 'removeLvmPartitions'
+    const scriptName = '/tmp/removeLvmPartitions'
     let cmds = '#!/bin/bash\n'
     cmds += `# remove LV (Logical Volumes)\n`
     cmds += `vg=$(vgs --noheadings -o vg_name| awk '{$1=$1};1')\n`
