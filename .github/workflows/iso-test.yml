@@ -24,7 +24,7 @@ jobs:
       - name: Setup container
         run: |-
           sudo apt-get update
-          sudo apt-get install -y debootstrap squashfs-tools xorriso
+          sudo apt-get install -y debootstrap squashfs-tools xorriso isolinux
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
