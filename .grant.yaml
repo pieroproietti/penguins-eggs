@@ -2,49 +2,27 @@
 # Checked in CI via: grant check --config .grant.yaml dir:.
 # See: https://github.com/anchore/grant
 
-rules:
-  # Copyleft licenses that require source disclosure — denied for ISO distribution
-  - pattern: "GPL-3.0"
-    mode: deny
-  - pattern: "GPL-3.0-only"
-    mode: deny
-  - pattern: "GPL-3.0-or-later"
-    mode: deny
-  - pattern: "AGPL-3.0"
-    mode: deny
-  - pattern: "AGPL-3.0-only"
-    mode: deny
-  - pattern: "AGPL-3.0-or-later"
-    mode: deny
+allow:
+  # Permissive
+  - MIT
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - ISC
+  - 0BSD
+  - Unlicense
+  - CC0-1.0
+  - BlueOak-1.0.0
+  - Python-2.0
 
-  # Permissive licenses — allowed
-  - pattern: "MIT"
-    mode: allow
-  - pattern: "Apache-2.0"
-    mode: allow
-  - pattern: "BSD-2-Clause"
-    mode: allow
-  - pattern: "BSD-3-Clause"
-    mode: allow
-  - pattern: "ISC"
-    mode: allow
-  - pattern: "0BSD"
-    mode: allow
-  - pattern: "Unlicense"
-    mode: allow
-  - pattern: "CC0-1.0"
-    mode: allow
-  - pattern: "BlueOak-1.0.0"
-    mode: allow
-  - pattern: "Python-2.0"
-    mode: allow
+  # Weak copyleft (source modifications must be shared, but linking is fine)
+  - LGPL-2.1
+  - LGPL-2.1-only
+  - LGPL-2.1-or-later
+  - MPL-2.0
 
-  # Weak copyleft — allowed (source modifications must be shared, but linking is fine)
-  - pattern: "LGPL-2.1"
-    mode: allow
-  - pattern: "LGPL-2.1-only"
-    mode: allow
-  - pattern: "LGPL-2.1-or-later"
-    mode: allow
-  - pattern: "MPL-2.0"
-    mode: allow
+# Deny packages with no detected license (default: true)
+require-license: false
+
+# Allow non-SPDX license strings (default: false)
+require-known-license: false
