@@ -33,9 +33,10 @@ describe('OsHardening', () => {
   })
 
   describe('fetchScripts()', () => {
-    // The plugin writes symlinks into its own scripts/ directory.
-    // Clean them up after each fetch test so runs are independent.
-    afterEach(() => {
+    // The plugin writes into its own scripts/ directory relative to the compiled
+    // output. Clean before AND after each test so the clone guard
+    // (fs.existsSync(upstreamDir)) never sees a leftover directory.
+    function cleanScriptsCache() {
       for (const os of ['linux', 'macos', 'windows']) {
         const link = path.join(
           path.resolve('plugins/security-audit/os-hardening/scripts'),
@@ -48,7 +49,10 @@ describe('OsHardening', () => {
         'upstream'
       )
       try { fs.rmSync(upstream, { recursive: true, force: true }) } catch { /* ok */ }
-    })
+    }
+
+    beforeEach(() => { cleanScriptsCache() })
+    afterEach(() => { cleanScriptsCache() })
 
     it('should clone upstream repo when cache does not exist', async () => {
       const mock = createMockExec()

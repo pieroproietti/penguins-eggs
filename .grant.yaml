@@ -36,6 +36,8 @@ rules:
     mode: allow
   - pattern: "BlueOak-1.0.0"
     mode: allow
+  - pattern: "Python-2.0"
+    mode: allow
 
   # Weak copyleft — allowed (source modifications must be shared, but linking is fine)
   - pattern: "LGPL-2.1"
