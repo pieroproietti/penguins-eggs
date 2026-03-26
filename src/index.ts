@@ -1,19 +1,21 @@
 /**
- * penguins-eggs-integrations
+ * penguins-eggs-audit
  *
- * Integration plugins extending Penguins-Eggs with 31 git-based projects
- * across 6 feature domains.
+ * Integration plugins extending Penguins-Eggs with 39 git-based projects
+ * across 8 feature domains.
  *
  * Usage:
- *   import { LfsTracker } from 'penguins-eggs-integrations/distribution'
- *   import { BrigPublisher } from 'penguins-eggs-integrations/decentralized'
- *   import { WardrobeMount } from 'penguins-eggs-integrations/config-management'
- *   import { StOutput } from 'penguins-eggs-integrations/build-infra'
- *   import { generateWorkflows } from 'penguins-eggs-integrations/dev-workflow'
- *   import { DirDownloader } from 'penguins-eggs-integrations/packaging'
+ *   import { LfsTracker } from 'penguins-eggs-audit/distribution'
+ *   import { BrigPublisher } from 'penguins-eggs-audit/decentralized'
+ *   import { WardrobeMount } from 'penguins-eggs-audit/config-management'
+ *   import { StOutput } from 'penguins-eggs-audit/build-infra'
+ *   import { generateWorkflows } from 'penguins-eggs-audit/dev-workflow'
+ *   import { DirDownloader } from 'penguins-eggs-audit/packaging'
+ *   import { VouchAttest, OsHardening, LinuxSuite } from 'penguins-eggs-audit/security-audit'
+ *   import { SyftGenerate, GrantLicense, SbomReference } from 'penguins-eggs-audit/sbom'
  *
  * Or import everything:
- *   import * as integrations from 'penguins-eggs-integrations'
+ *   import * as audit from 'penguins-eggs-audit'
  */
 
 // Distribution
@@ -71,3 +73,27 @@ export {
 // Packaging
 export { DirDownloader } from './packaging/index.js'
 export type { DirDownloadOptions } from './packaging/index.js'
+
+// Security & Audit
+export { VouchAttest, OsHardening, LinuxSuite } from './security-audit/index.js'
+export type {
+  VouchConfig,
+  AttestResult,
+  TargetOS,
+  HardeningOptions,
+  HardeningResult,
+  InstallResult,
+} from './security-audit/index.js'
+
+// SBOM & Supply Chain
+export { SyftGenerate, GrantLicense, SbomReference } from './sbom/index.js'
+export type {
+  SbomFormat,
+  SyftConfig,
+  SbomResult,
+  GrantConfig,
+  LicenseCheckResult,
+  SbomMetadata,
+  AugmentResult,
+  EnrichResult,
+} from './sbom/index.js'

@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run all tests
+        run: npm test
+
+  security-scan:
+    name: Dependency Security Scan (frogbot)
+    runs-on: ubuntu-latest
+    # Only run on PRs — frogbot comments on the PR with findings
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Frogbot scan
+        uses: jfrog/frogbot@v2
+        env:
+          JF_URL: ${{ secrets.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Continue even if JFrog credentials are not configured —
+        # the scan is best-effort in forks and contributor PRs.
+        continue-on-error: true
+
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install grant
+        run: |
+          curl -sSfL https://get.anchore.io/grant | sudo sh -s -- -b /usr/local/bin
+
+      - name: Check license policy
+        run: |
+          # Initialise a default policy if none exists
+          if [ ! -f .grant.yaml ]; then
+            cat > .grant.yaml << 'EOF'
+          rules:
+            - pattern: "GPL-3.0"
+              mode: deny
+            - pattern: "AGPL-3.0"
+              mode: deny
+            - pattern: "MIT"
+              mode: allow
+            - pattern: "Apache-2.0"
+              mode: allow
+            - pattern: "BSD-2-Clause"
+              mode: allow
+            - pattern: "BSD-3-Clause"
+              mode: allow
+            - pattern: "ISC"
+              mode: allow
+          EOF
+          fi
+          grant check --config .grant.yaml dir:.
+
+  validate:
+    name: Validate Plugin Structure
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run structure validation
+        run: bash test/validate.sh

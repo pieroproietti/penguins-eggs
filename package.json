@@ -60,6 +60,7 @@
     "plugins/decentralized/ipfs-mirror/",
     "plugins/security-audit/vouch-attest/",
     "plugins/security-audit/os-hardening/",
+    "plugins/security-audit/os-hardening/setup.sh",
     "plugins/security-audit/linux-suite/",
     "plugins/sbom/syft-generate/",
     "plugins/sbom/grant-license/",
@@ -80,7 +81,10 @@
     "test:phase8": "mocha 'test/phase8/**/*.test.ts'",
     "validate": "bash test/validate.sh",
     "prepare": "tsc",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "setup:hardening": "bash plugins/security-audit/os-hardening/setup.sh linux",
+    "setup:hardening:all": "bash plugins/security-audit/os-hardening/setup.sh all",
+    "postinstall": "bash plugins/security-audit/os-hardening/setup.sh linux || true"
   },
   "keywords": [
     "penguins-eggs",
