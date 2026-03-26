@@ -24,7 +24,7 @@ jobs:
       - name: Setup container
         run: |-
           sudo apt-get update
-          sudo apt-get install -y debootstrap squashfs-tools xorriso isolinux
+          sudo apt-get install -y debootstrap squashfs-tools xorriso isolinux syslinux-common
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,7 +32,7 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
       - name: Build
         run: pnpm run build
       - name: Configure eggs
