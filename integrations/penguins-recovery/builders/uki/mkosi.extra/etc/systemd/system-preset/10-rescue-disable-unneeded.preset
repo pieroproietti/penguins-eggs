@@ -1,0 +1,17 @@
+# Copyright Sebastian Wiesner <sebastian@swsnr.de>
+#
+# Licensed under the EUPL
+#
+# See https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+# We only have a single root user in the rescue image so let's disable user management facilities
+disable systemd-homed.service
+disable systemd-homed-activate.service
+disable systemd-userdbd.socket
+# Leave the boot loader alone; the rescue image shouldn't touch anything by default
+disable systemd-boot-update.service
+# We don't do factory resets with the rescue image so disable some related services
+disable systemd-tpm2-clear.service
+# We don't have sysexts or confexts in the rescue image
+disable systemd-sysext.service
+disable systemd-confext.service

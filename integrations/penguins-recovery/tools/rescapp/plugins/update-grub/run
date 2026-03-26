@@ -1,0 +1,57 @@
+#!/bin/bash
+# Rescapp Update-grub run script
+# Copyright (C) 2012,2013,2014,2015,2016,2017,2018,2019,2020 Adrian Gibanel Lopez
+#
+# Rescapp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Rescapp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rescapp.  If not, see <http://www.gnu.org/licenses/>.
+
+source ${RESCAPP_LIB_FILE}
+set -x
+set -v
+
+
+
+# TODO: Program check runtime (Maybe to be stolen from bootinfoscript)
+
+
+
+
+# MAIN PROGRAM
+
+
+UPDATE_GRUB_OK_STR="The grub configuration was updated OK! :)"
+UPDATE_GRUB_KO_STR="The grub configuration update failed! :("
+UPDATE_GRUB_RUNNING_STR="Updating Grub configuration."
+UPDATE_GRUB_PARTITIONS_NOT_FOUND="No Linux partitions were found or chosen."
+UPDATE_GRUB_HARDDISKS_NOT_FOUND="Hard disk order was not set."
+
+SELECTED_LINUX_PARTITION="$(rtux_Choose_Linux_partition)"
+if [ "x${SELECTED_LINUX_PARTITION}" != "x" ] ; then
+  HARDDISK_DESIRED_ORDER=$(rtux_Order_Hard_Disks)
+  if [ ! "x${HARDDISK_DESIRED_ORDER}" == "x" ] ; then
+    if rtux_Run_Show_Progress "${UPDATE_GRUB_RUNNING_STR}" rtux_Grub_Update_Config "${SELECTED_LINUX_PARTITION}" "${HARDDISK_DESIRED_ORDER}" ; then
+      rtux_Message_Success ${UPDATE_GRUB_OK_STR}
+    else
+      rtux_Message_Failure ${UPDATE_GRUB_KO_STR}
+    fi
+  else
+    rtux_Message_Warning ${UPDATE_GRUB_HARDDISKS_NOT_FOUND}
+    rtux_Message_Failure ${UPDATE_GRUB_KO_STR}
+  fi
+else
+  rtux_Message_Warning ${UPDATE_GRUB_PARTITIONS_NOT_FOUND}
+  rtux_Message_Failure ${UPDATE_GRUB_KO_STR}
+fi
+
+
+#

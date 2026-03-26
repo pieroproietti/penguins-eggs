@@ -1,0 +1,60 @@
+
+Choose your language.
+<center><TABLE width="176" BORDER="0">
+
+<TR>
+   <TD><a href="#english">English</a></TD>
+</TR>
+
+</TABLE></center>
+<ul>
+  <li><a href="#english">English</a></li>
+</ul>
+
+<a name="english">Recompute CHS on a hybrid MBR on a GPT partition - Rescapp - Documentation</a>
+<br/>
+<br/>
+TIP: You probably do not need to use this option in 2020.
+<br/>
+<br/>
+This option can sometimes help if a disk utility, OS, or BIOS doesn't like the CHS values used by the partitions on the protective or hybrid MBR. In particular, the GPT specification requires a CHS value of 0xFFFFFF for over-8GiB partitions, but this value is technically illegal by the usual standards. Some BIOSes hang if they encounter this value. This option will recompute a more normal CHS value -- 0xFEFFFF for over-8GiB partitions, enabling these BIOSes to boot.
+<br/>
+
+<ul>
+  <li>
+  <b>Step 1</b><p></p>Rescapp searches for hard drives on your computer.
+  </li>
+  <li>
+  <b>Step 2</b><p></p>If such hard drives have been found, Rescapp displays a list of the hard drives. At the same time you are prompted:<p></p>
+  <i>Which hard drive do you wish to recompute its hybrid MBR CHS on?</i>
+  <p></p>
+  You are supposed to choose, the hard disk which, has a GPT partition for which, you want its hybrid MBR CHS to be recomputed.
+    <IMG SRC="images/gpt-create-hybrid-mbr_002_hard_disks.png"><p></p>
+  </li>
+  <li>
+  <b>Step 3</b><p></p>Rescapp with all the gathered information, is going to recompute the CHS, for the hybrid MBR on your GPT hard drive.
+  </li>
+  <li>
+  <b>Step 4</b><p></p>You are informed about the hybrid mbr CHS recompute process.<p></p>You either get:<p></p>
+    <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-ok-apply.png">
+  [SUCCESS] The hybrid MBR CHS was recomputed OK! :)
+  </b>
+  </p>
+  </div>
+  or
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-error.png">
+  [ERROR] The hybrid MBR was not recomputed. Something went wrong! :(
+  </b>
+  </p>
+  </div>
+  </li>
+</ul>
+
+
+

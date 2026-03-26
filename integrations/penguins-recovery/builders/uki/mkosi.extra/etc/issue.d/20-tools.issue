@@ -1,0 +1,7 @@
+This image runs with bash as default shell and offers nano as text editor.
+It also provides fish, the Friendly Interactive Shell, as alternative. Start it
+by typing fish.
+
+The image also includes helpful tools for recovery, including man pages,
+ripgrep, iproute, iputils, etc.
+

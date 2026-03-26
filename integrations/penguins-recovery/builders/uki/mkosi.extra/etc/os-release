@@ -1,0 +1,9 @@
+NAME="Arch Linux"
+ID=arch
+VARIANT="Rescue Image"
+VARIANT_ID=rescue
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://codeberg.org/swsnr/rescue-image"
+DOCUMENTATION_URL="https://codeberg.org/swsnr/rescue-image"
+BUG_REPORT_URL="https://codeberg.org/swsnr/rescue-image/issues"

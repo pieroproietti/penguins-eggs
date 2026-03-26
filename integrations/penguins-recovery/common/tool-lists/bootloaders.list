@@ -1,0 +1,8 @@
+# Bootloader packages available through distro package managers.
+# Source-only bootloaders are handled by bootloaders/build-from-source.sh.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+u-boot          | uboot-tools       | u-boot-tools      | uboot-tools       | u-boot-tools      | u-boot-tools      | dev-embedded/u-boot-tools
+coreboot-utils  | coreboot-utils    | --                 | --                | --                | --                | sys-apps/coreboot-utils
+refind          | refind            | refind             | refind            | --                | --                | sys-boot/refind
+kexec-tools     | kexec-tools       | kexec-tools        | kexec-tools       | kexec-tools       | kexec-tools       | sys-apps/kexec-tools
+systemd-boot    | systemd           | systemd-boot       | systemd-boot      | systemd-boot      | --                | sys-apps/systemd

@@ -1,0 +1,35 @@
+# Lifeboat Linux (penguins-recovery)
+
+Alpine-based single-file UEFI rescue system. Drop LifeboatLinux.efi into
+your EFI System Partition and boot — no USB required.
+
+## Rescue scripts
+
+penguins-recovery shared scripts are in /root/rescue-scripts/:
+
+  chroot-rescue.sh   Mount and chroot into an installed system (LUKS support)
+  detect-disks.sh    Show disk layout, LUKS, LVM, and EFI info
+  grub-restore.sh    Restore GRUB to MBR or EFI
+  password-reset.sh  Reset a Linux user password from rescue
+  uefi-repair.sh     Check and repair UEFI boot entries
+
+## User customization
+
+Place scripts in your ESP at:
+  EFI/Boot/Lifeboat/UserScripts/
+
+A file named `init` in that directory is sourced on login (keyboard layout,
+aliases, custom mounts, etc.).
+
+## Available tools
+
+parted, efibootmgr, gptfdisk, fdisk, lvm2, cryptsetup, dmraid, mdadm,
+e2fsprogs, dosfstools, xfsprogs, btrfs-progs, testdisk, nano, vim
+
+## Installing
+
+Copy dist/LifeboatLinux.efi to your ESP:
+
+  cp dist/LifeboatLinux.efi /boot/efi/EFI/Boot/LifeboatLinux.efi
+
+Then add a boot entry or let your firmware discover it.

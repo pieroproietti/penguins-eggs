@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Easy language config
+Exec=/usr/local/bin/easy-language-config
+StartupNotify=false
+Terminal=false

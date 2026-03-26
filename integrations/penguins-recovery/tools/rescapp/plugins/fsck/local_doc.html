@@ -1,0 +1,69 @@
+
+Choose your language.
+<center><TABLE width="176" BORDER="0">
+
+<TR>
+   <TD><a href="#english">English</a></TD>
+</TR>
+
+</TABLE></center>
+<ul>
+  <li><a href="#english">English</a></li>
+</ul>
+
+<a name="english">File System Check (Forced Fix) - Rescapp - Documentation</a>
+<p>
+Sometimes there might be a power outage and your computer is halted suddenly.
+This might have a filesystem inconsistency as a result which, in turn, might make Grub unable to find your kernel and initrd files (which are files needed to boot) or even its own files.
+One of the multiple messages you can see when there is a filesystem inconsistency is:
+<i>grub rescue></i> .
+</p>
+<br/>
+<p>
+This option lets you fix the filesystem inconsistency so that you can boot again in your system. It's also recommended that you update your grub configuration (<b>Update Grub menus</b> option) and reinstall grub (<b>Restore grub</b> option) if this fileystem inconsistency fix is not enough.
+</p>
+
+<ul>
+  <li>
+  <b>Step 1</b><p></p>Rescapp searches for all the partitions on your sytem.
+  </li>
+  <li>
+  <b>Step 2</b><p></p>Rescapp displays a list of the partitions found previously.<p></p>You are prompted:<p></p>
+  <i>Which partition?</i><p></p> You are supposed to choose whatever partition you want to force the filesystem check on and press the OK button.<p></p>Explanation of Description column is:
+    <ul>
+      <li>
+	<b>Distribution name</b>: Your distribution root partition has been detected and you are seeing its name.
+      </li>
+      <li>
+	<b>Not detected</b>: The partition can be mounted but there is not an <i>/etc/issue</i> file on it. It is probably a non root partition.
+      </li>
+      <li>
+	<b>Cannot_mount:</b>: The partition cannot be mounted. Maybe it is the partition you want to fix, another one that Rescatux cannot mount, or maybe a SWAP partition.
+      </li>
+    </ul>
+  </li>
+<p></p><IMG SRC="images/fsck_001_partition.png"><p></p>
+  <li>
+  <b>Step 3</b><p></p>You are informed about the fsck process.<p></p>You either get:<p></p>
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-ok-apply.png">
+  [SUCCESS] Filesystem check with automatic fix was OK! :)
+  </b>
+  </p>
+  </div>
+  or
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-error.png">
+  [ERROR] Filesystem check with automatic fix failed! :(
+  </b>
+  </p>
+  </div>
+  </li>
+</ul>
+
+
+

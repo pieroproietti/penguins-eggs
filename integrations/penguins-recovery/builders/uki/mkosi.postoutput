@@ -1,0 +1,16 @@
+#!/usr/bin/python
+
+import os
+import json
+
+with open(os.environ['MKOSI_CONFIG']) as source:
+    config = json.load(source)
+
+rootpw = config.get('RootPassword')
+if rootpw:
+    rootpw, hashed = rootpw
+    if hashed:
+        print('Login with user root and secret password')
+    else:
+        print(f'Login with user root and password {rootpw}')
+

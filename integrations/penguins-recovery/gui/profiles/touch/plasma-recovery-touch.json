@@ -1,0 +1,38 @@
+{
+    "name": "penguins-recovery-touch",
+    "description": "Touch-friendly recovery shell (plasma-nano + mobile quick settings)",
+    "base": "plasma-nano",
+    "shell_package": "org.kde.plasma.nano",
+    "components": [
+        "quicksettings/wifi",
+        "quicksettings/bluetooth",
+        "quicksettings/battery",
+        "quicksettings/audio",
+        "quicksettings/screenshot",
+        "quicksettings/flashlight",
+        "quicksettings/nightcolor",
+        "quicksettings/caffeine",
+        "quicksettings/powermenu",
+        "homescreen/halcyon"
+    ],
+    "autostart": [
+        "/opt/penguins-recovery/gui/recovery-launcher/recovery-launcher.sh"
+    ],
+    "packages": {
+        "arch": ["plasma-nano", "plasma-mobile", "qt5-declarative", "qt5-quickcontrols2", "qt5-svg", "kirigami", "konsole", "onboard"],
+        "debian": ["plasma-nano", "plasma-mobile", "qml-module-qtquick-controls2", "qml-module-qtquick-layouts", "qml-module-org-kde-kirigami2", "qterminal", "onboard"],
+        "fedora": ["plasma-nano", "plasma-mobile", "qt5-qtdeclarative", "qt5-qtquickcontrols2", "kf6-kirigami", "konsole"],
+        "suse": ["plasma-nano", "plasma-mobile", "libqt5-qtdeclarative", "libqt5-qtquickcontrols2", "kirigami2", "konsole"],
+        "alpine": ["plasma-nano", "qt5-qtdeclarative", "qt5-qtquickcontrols2", "kirigami2", "qterminal"],
+        "gentoo": ["kde-plasma/plasma-nano", "kde-plasma/plasma-mobile", "dev-qt/qtdeclarative", "kde-frameworks/kirigami", "x11-terms/konsole"]
+    },
+    "kwin_rules": {
+        "fullscreen": true,
+        "touch_gestures": true
+    },
+    "session": {
+        "type": "wayland",
+        "compositor": "kwin_wayland",
+        "args": ["--xwayland", "plasmashell -p org.kde.plasma.mobileshell"]
+    }
+}

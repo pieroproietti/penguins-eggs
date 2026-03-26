@@ -1,0 +1,14 @@
+# Core tools present in every recovery image.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+nano            | nano              | nano              | nano              | nano              | nano              | app-editors/nano
+less            | less              | less              | less              | less              | less              | sys-apps/less
+rsync           | rsync             | rsync             | rsync             | rsync             | rsync             | net-misc/rsync
+vim             | vim               | vim               | vim-enhanced      | vim               | vim               | app-editors/vim
+man-pages       | man-pages man-db  | man-db            | man-db man-pages  | man               | man-db-doc        | sys-apps/man-db
+curl            | curl              | curl              | curl              | curl              | curl              | net-misc/curl
+wget            | wget              | wget              | wget              | wget              | wget              | net-misc/wget
+file            | file              | file              | file              | file              | file              | sys-apps/file
+tar             | tar               | tar               | tar               | tar               | tar               | app-arch/tar
+gzip            | gzip              | gzip              | gzip              | gzip              | gzip              | app-arch/gzip
+xz              | xz                | xz-utils          | xz                | xz               | xz                | app-arch/xz-utils
+zstd            | zstd              | zstd              | zstd              | zstd              | zstd              | app-arch/zstd

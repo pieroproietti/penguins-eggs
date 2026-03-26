@@ -1,0 +1,8 @@
+# Secure Boot and TPM2 tools for recovery environments.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+tpm2-tools      | tpm2-tools        | tpm2-tools        | tpm2-tools        | tpm2-0-tools      | tpm2-tools        | app-crypt/tpm2-tools
+tpm2-tss        | tpm2-tss          | libtss2-dev       | tpm2-tss          | tpm2-0-tss        | tpm2-tss          | app-crypt/tpm2-tss
+sbctl           | sbctl             | sbctl             | sbctl             | --                | --                | --
+sbsigntool      | sbsigntools       | sbsigntool        | sbsigntools       | sbsigntools       | --                | app-crypt/sbsigntools
+efitools        | efitools          | efitools          | efitools          | efitools          | efitools          | app-crypt/efitools
+mokutil         | mokutil           | mokutil           | mokutil           | mokutil           | mokutil           | sys-boot/mokutil

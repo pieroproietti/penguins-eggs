@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Epiphany
+Exec=/usr/bin/epiphany
+Icon=org.gnome.Epiphany
+Terminal=false
+Categories=Network;WebBrowser;

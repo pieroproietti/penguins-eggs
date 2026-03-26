@@ -1,0 +1,10 @@
+plasma_add_applet(org.kde.panel
+    QML_SOURCES
+        AppletContainer.qml
+        ConfigOverlay.qml
+        main.qml
+        LayoutManager.js
+    RESOURCES
+        main.xml
+    GENERATE_CONTAINMENT_CLASS
+)

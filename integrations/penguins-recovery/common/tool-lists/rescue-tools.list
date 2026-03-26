@@ -1,0 +1,7 @@
+# Rescue and data recovery tools.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+chntpw          | chntpw            | chntpw            | chntpw            | chntpw            | --                | app-crypt/chntpw
+ddrescue        | ddrescue          | gddrescue         | ddrescue          | ddrescue          | ddrescue          | sys-fs/ddrescue
+gparted         | gparted           | gparted           | gparted           | gparted           | --                | sys-block/gparted
+testdisk        | testdisk          | testdisk          | testdisk          | testdisk          | testdisk          | app-admin/testdisk
+ukibak          | ukibak-git        | --                | --                | --                | --                | --

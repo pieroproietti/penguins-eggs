@@ -1,0 +1,6 @@
+# GUI/desktop tools for graphical rescue environments.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+kdialog         | kdialog           | kdialog           | kdialog           | kdialog           | kdialog           | kde-apps/kdialog
+qterminal       | qterminal         | qterminal         | qterminal         | qterminal         | qterminal         | x11-terms/qterminal
+featherpad      | featherpad        | featherpad        | featherpad        | featherpad        | --                | app-editors/featherpad
+firefox         | firefox           | firefox-esr       | firefox           | MozillaFirefox    | firefox           | www-client/firefox

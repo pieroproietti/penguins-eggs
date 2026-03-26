@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Copyright Sebastian Wiesner <sebastian@swsnr.de>
+#
+# Licensed under the EUPL
+#
+# See https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+set -euo pipefail
+
+echo "Updating manpage database"
+makewhatis /usr/share/man
+
+echo "Populating pacman keyring"
+pacman-key --init
+pacman-key --populate

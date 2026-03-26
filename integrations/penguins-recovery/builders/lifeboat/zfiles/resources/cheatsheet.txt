@@ -1,0 +1,45 @@
+Lifeboat Linux — Quick Reference
+=================================
+
+RESCUE SCRIPTS (penguins-recovery)
+  /root/rescue-scripts/detect-disks.sh     Show disks, LUKS, LVM, EFI
+  /root/rescue-scripts/chroot-rescue.sh    Chroot into installed system
+  /root/rescue-scripts/grub-restore.sh     Restore GRUB bootloader
+  /root/rescue-scripts/password-reset.sh   Reset Linux user password
+  /root/rescue-scripts/uefi-repair.sh      Repair UEFI boot entries
+
+DISK TOOLS
+  lsblk -f                  List block devices with filesystems
+  fdisk -l                  List partition tables
+  parted /dev/sdX print     Show partition layout
+  gdisk /dev/sdX            GPT partition editor
+  testdisk                  Recover lost partitions / MBR
+
+FILESYSTEM
+  fsck.ext4 /dev/sdXN       Check ext4 filesystem
+  e2fsck -f /dev/sdXN       Force ext4 check
+  btrfs check /dev/sdXN     Check btrfs filesystem
+  xfs_repair /dev/sdXN      Repair XFS filesystem
+  dosfsck /dev/sdXN         Check FAT/VFAT filesystem
+
+LUKS / ENCRYPTION
+  cryptsetup luksOpen /dev/sdXN name    Unlock LUKS volume
+  cryptsetup luksClose name             Close LUKS volume
+
+LVM
+  vgscan && vgchange -ay    Activate all volume groups
+  lvs / vgs / pvs           List LVs / VGs / PVs
+
+NETWORK
+  ip addr                   Show network interfaces
+  ip link set eth0 up       Bring up interface
+  udhcpc -i eth0            Request DHCP lease
+
+MOUNTING
+  mount /dev/sdXN /mnt      Mount a partition
+  mount -t ext4 /dev/sdXN /mnt
+  umount /mnt               Unmount
+
+USER SCRIPTS (ESP)
+  /mnt/efi/EFI/Boot/Lifeboat/UserScripts/
+  Place an `init` file there to customize on login.

@@ -1,0 +1,18 @@
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Source user customization from ESP if present
+USERSCRIPTS_DIR="/mnt/efi/EFI/Boot/Lifeboat/UserScripts"
+if [ -f "${USERSCRIPTS_DIR}/init" ]; then
+    . "${USERSCRIPTS_DIR}/init"
+fi
+
+# Convenience aliases
+alias ll='ls -lah'
+alias df='df -h'
+alias free='free -m'
+
+# Show rescue scripts location on login
+if [ -d /root/rescue-scripts ]; then
+    echo "Rescue scripts: /root/rescue-scripts/"
+    ls /root/rescue-scripts/*.sh 2>/dev/null | xargs -I{} basename {} | sed 's/^/  /'
+fi

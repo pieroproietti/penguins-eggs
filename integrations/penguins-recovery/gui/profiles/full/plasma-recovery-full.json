@@ -1,0 +1,31 @@
+{
+    "name": "penguins-recovery-full",
+    "description": "Full desktop recovery shell (plasma-nano + desktop panel + launcher)",
+    "base": "plasma-nano",
+    "shell_package": "org.kde.plasma.desktop",
+    "components": [
+        "panel",
+        "launcher/kicker",
+        "automounter"
+    ],
+    "autostart": [
+        "/opt/penguins-recovery/gui/recovery-launcher/recovery-launcher.sh"
+    ],
+    "packages": {
+        "arch": ["plasma-desktop", "plasma-workspace", "qt5-declarative", "qt5-quickcontrols2", "qt5-svg", "konsole", "dolphin", "firefox"],
+        "debian": ["plasma-desktop", "plasma-workspace", "qml-module-qtquick-controls2", "qml-module-qtquick-layouts", "konsole", "dolphin", "firefox-esr"],
+        "fedora": ["plasma-desktop", "plasma-workspace", "qt5-qtdeclarative", "qt5-qtquickcontrols2", "konsole", "dolphin", "firefox"],
+        "suse": ["plasma5-desktop", "plasma5-workspace", "libqt5-qtdeclarative", "libqt5-qtquickcontrols2", "konsole", "dolphin", "MozillaFirefox"],
+        "alpine": ["plasma-desktop", "plasma-workspace", "qt5-qtdeclarative", "qt5-qtquickcontrols2", "konsole", "dolphin", "firefox"],
+        "gentoo": ["kde-plasma/plasma-desktop", "kde-plasma/plasma-workspace", "dev-qt/qtdeclarative", "x11-terms/konsole", "kde-apps/dolphin", "www-client/firefox"]
+    },
+    "kwin_rules": {
+        "fullscreen": false,
+        "desktop_effects": false
+    },
+    "session": {
+        "type": "wayland",
+        "compositor": "kwin_wayland",
+        "args": ["--xwayland", "plasmashell -p org.kde.plasma.desktop"]
+    }
+}

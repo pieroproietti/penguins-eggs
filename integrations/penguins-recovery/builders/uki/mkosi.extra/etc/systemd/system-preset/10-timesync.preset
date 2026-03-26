@@ -1,0 +1,9 @@
+# Copyright Sebastian Wiesner <sebastian@swsnr.de>
+#
+# Licensed under the EUPL
+#
+# See https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+# Synchronize time with timesyncd for simplicity.  We need no advanced NTP
+# daemon with driftfile, etc. in a rescue image.
+enable systemd-timesyncd.service

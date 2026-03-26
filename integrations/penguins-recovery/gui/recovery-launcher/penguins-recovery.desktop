@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Penguins-Recovery
+Comment=System rescue and recovery toolkit
+Exec=/opt/penguins-recovery/gui/recovery-launcher/recovery-launcher.sh
+Icon=/opt/penguins-recovery/gui/recovery-launcher/resources/logo.svg
+Terminal=false
+Type=Application
+Categories=System;
+X-KDE-autostart-phase=2

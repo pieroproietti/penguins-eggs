@@ -1,0 +1,6 @@
+work/
+out/
+.idea
+*.iml
+.vscode
+.code

@@ -1,0 +1,28 @@
+{
+    "name": "penguins-recovery-minimal",
+    "description": "Minimal recovery shell (plasma-nano kiosk mode)",
+    "base": "plasma-nano",
+    "shell_package": "org.kde.plasma.nano",
+    "components": [],
+    "autostart": [
+        "/opt/penguins-recovery/gui/recovery-launcher/recovery-launcher.sh"
+    ],
+    "packages": {
+        "arch": ["plasma-nano", "qt5-declarative", "qt5-quickcontrols2", "qt5-svg", "konsole"],
+        "debian": ["plasma-nano", "qml-module-qtquick-controls2", "qml-module-qtquick-layouts", "qterminal"],
+        "fedora": ["plasma-nano", "qt5-qtdeclarative", "qt5-qtquickcontrols2", "qt5-qtsvg", "konsole"],
+        "suse": ["plasma-nano", "libqt5-qtdeclarative", "libqt5-qtquickcontrols2", "konsole"],
+        "alpine": ["plasma-nano", "qt5-qtdeclarative", "qt5-qtquickcontrols2", "qterminal"],
+        "gentoo": ["kde-plasma/plasma-nano", "dev-qt/qtdeclarative", "dev-qt/qtquickcontrols2", "x11-terms/konsole"]
+    },
+    "kwin_rules": {
+        "fullscreen": true,
+        "no_titlebar": true,
+        "no_border": true
+    },
+    "session": {
+        "type": "wayland",
+        "compositor": "kwin_wayland",
+        "args": ["--xwayland", "plasmashell -p org.kde.plasma.nano"]
+    }
+}

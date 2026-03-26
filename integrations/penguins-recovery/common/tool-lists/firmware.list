@@ -1,0 +1,5 @@
+# CPU microcode and firmware packages.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+amd-ucode       | amd-ucode         | amd64-microcode   | microcode_ctl     | ucode-amd         | amd-ucode         | sys-firmware/amd-microcode
+intel-ucode     | intel-ucode       | intel-microcode   | microcode_ctl     | ucode-intel        | intel-ucode       | sys-firmware/intel-microcode
+linux-firmware  | linux-firmware    | firmware-linux    | linux-firmware    | kernel-firmware    | linux-firmware    | sys-kernel/linux-firmware

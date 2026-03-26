@@ -1,0 +1,80 @@
+
+Choose your language.
+<center><TABLE width="176" BORDER="0">
+
+<TR>
+   <TD><a href="#english">English</a></TD>
+</TR>
+
+</TABLE></center>
+<ul>
+  <li><a href="#english">English</a></li>
+</ul>
+
+<a name="english">Reinstall Microsoft Windows UEFI boot entries - Rescapp - Documentation</a>
+<p>
+Newest computers start up thanks to the newest (from 2015 onwards) UEFI boot system.
+</p>
+<p>
+If you are playing with the UEFI boot entries you might end losing your Microsoft Windows UEFI boot entries. It might be because you have used the Rescapp Fake Microsoft Windows UEFI boot entry option or the Rescapp Hide Microsoft Windows UEFI boot entry option. <b>Or it might be because of your own fault.</b>
+</p>
+<p>
+Windows has a copy of its own EFI files in its Windows partition. This option let's you reinstall them into your EFI partition so that you can boot into Windows again.
+</p>
+<p>
+Please note that in some UEFI systems you might need to press an special hotkey (such as F8 or F10) in order to show up the UEFI boot menu in order to be able to choose your added UEFI boot entry.
+</p>
+<ul>
+  <li>
+  <b>Step 1</b><p></p>Rescapp searches for EFI partitions on your system.
+  </li>
+  <li>
+  <b>Step 2</b><p></p>If such partitions have been found, Rescapp displays them. At the same time you are prompted:<p></p>
+  <i>Which EFI System partition?</i><p></p> You are supposed to choose, your EFI System partition and press the OK button.
+  </li>
+<p></p><IMG SRC="../ueficreate/images/ueficreate_001_efi_partition.png"><p></p>
+  <li>
+  <b>Step 3</b><p></p>Rescapp searches for Windows system partitions present, on your sytem.
+  </li>
+  <li>
+  <b>Step 4</b><p></p>You are prompted:<p></p><i>Which Windows partition?</i><p></p> You are supposed to, choose the Windows partition which its UEFI boot entries you want to reinstall.
+  </li>
+<p></p><IMG SRC="../winpass/images/winpass_001_partition.png"><p></p>
+  <li>
+  <b>Step 5</b><p></p>You are optionally informed about the EFI directory backup process.<p></p>You will get (if an error happens):<p></p>
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-error.png">
+  [ERROR] Backup of EFI directory went wrong.
+  </b>
+  </p>
+  </div>
+  </li>
+  <li>
+  <b>Step 6</b><p></p>Rescapp tries to reinstall Microsoft Windows UEFI boot entries.
+  </li>
+  <li>
+  <b>Step 7</b><p></p>You are informed about the Reinstall Microsoft Windows UEFI boot entries process.<p></p>You either get:<p></p>
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-ok-apply.png">
+  [SUCCESS] The reinstallation, of the Microsoft Windows UEFI boot entries was OK ! :)
+  </b>
+  </p>
+  </div>
+  or
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-error.png">
+  [ERROR] The reinstallation, of the Microsoft Windows UEFI boot entries was not ok :(
+  </b>
+  </p>
+  </div>
+  </li>
+</ul>
+
+
+

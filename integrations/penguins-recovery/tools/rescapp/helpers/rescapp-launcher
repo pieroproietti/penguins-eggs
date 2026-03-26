@@ -1,0 +1,79 @@
+#!/bin/bash
+# Rescapp launcher script
+# Copyright (C) 2012,2013,2014,2015,2016,2017,2018,2019,2020 Adrian Gibanel Lopez
+#
+# Rescapp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Rescapp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rescapp.  If not, see <http://www.gnu.org/licenses/>.
+
+# Main program
+pushd . > /dev/null
+SCRIPT_PATH="${BASH_SOURCE[0]}";
+if ([ -h "${SCRIPT_PATH}" ]) then
+  while([ -h "${SCRIPT_PATH}" ]) do cd $(dirname "$SCRIPT_PATH"); SCRIPT_PATH=$(readlink "${SCRIPT_PATH}"); done
+fi
+cd $(dirname ${SCRIPT_PATH}) > /dev/null
+SCRIPT_PATH=$(pwd);
+popd  > /dev/null
+
+RESCAPP_BINARY_PATH="${SCRIPT_PATH}"
+export RESCAPP_BINARY_PATH # Make it available to run scripts
+
+RESCAPP_LIB_PATH="${SCRIPT_PATH}/../lib/rescapp"
+export RESCAPP_LIB_PATH # Make it available to run scripts
+
+RESCAPP_PLUGINS_PATH="${SCRIPT_PATH}/../share/rescapp/plugins"
+RESCAPP_SHARE_PATH="${SCRIPT_PATH}/../share/rescapp"
+RESCAPP_VERSION_PATH="${RESCAPP_SHARE_PATH}"
+
+RESCAPP_LIB_FILE="${RESCAPP_LIB_PATH}/rescapp_lib.sh"
+export RESCAPP_LIB_FILE # Make it available to run scripts
+export RESCAPP_VERSION="$(head -n 1 ${RESCAPP_VERSION_PATH}/VERSION)"
+
+
+source ${RESCAPP_LIB_FILE}
+RESCAPP_LOG_DIRECTORY="${HOME}/.rescapp/log"
+export RESCAPP_LOG_DIRECTORY # Make it available to run scripts
+[ -d "${RESCAPP_LOG_DIRECTORY}" ] || mkdir -p "${RESCAPP_LOG_DIRECTORY}"
+
+
+LIST_FILE_SUFFIX="lis"
+GRUB_INSTALL_TO_MBR_STR="Restore GRUB / Fix Linux Boot"
+CHAT_STR="Get online human help (chat)"
+DOC_STR="Access online Rescatux website"
+
+RUN_CODE="run"
+LOCAL_DOC_CODE="localdoc"
+ONLINE_DOC_CODE="onlinedoc"
+
+LOCAL_DOC_STR="Local Documentation"
+ONLINE_DOC_STR="Online Documentation"
+
+RUN_FILE_STR="run"
+LOCAL_FILE_STR="local_doc.html"
+ONLINE_FILE_STR="online_doc.html"
+DIRECTORY_FILE_STR="directory"
+NAME_FILE_STR="name"
+DESCRIPTION_FILE_STR="description"
+ONLINE_DOC_URL="http://git.berlios.de/cgi-bin/cgit.cgi/rescatux/plain"
+
+RESCAPP_TITLE_STR="RESCATUX's RESCAPP"
+
+
+cd "${SCRIPT_PATH}"
+
+OPTION_CODE="${1}"
+DIRECTORY="${RESCAPP_PLUGINS_PATH}/${OPTION_CODE}"
+SUDO="sudo -E"
+[ -e ${DIRECTORY}/sudo ] || SUDO=""
+${SUDO} ${DIRECTORY}/${RUN_FILE_STR} > ${RESCAPP_LOG_DIRECTORY}/${OPTION_CODE}_log.txt 2>&1
+rtux_Dbus_End

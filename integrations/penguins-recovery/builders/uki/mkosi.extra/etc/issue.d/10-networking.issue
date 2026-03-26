@@ -1,0 +1,8 @@
+systemd-networkd automatically configures ethernet and wlan station interfaces
+with DHCP.  For wlan0 interfaces, you first need to connect via iwctl:
+
+    [iwd]# device list
+    [iwd]# station \e{green}device\e{reset} scan
+    [iwd]# station \e{green}device\e{reset} get-networks
+    [iwd]# station \e{green}device\e{reset} connect \e{green}SSID\e{reset}
+

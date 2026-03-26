@@ -1,0 +1,41 @@
+# Build outputs
+*.iso
+*.img
+*.efi
+*.tar.gz
+bootloaders.tar.gz
+
+# Bootloader source clones and build artifacts
+bootloaders/src/
+bootloaders/out/
+
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# Debian builder
+builders/debian/rootdir/
+builders/debian/*.iso
+
+# Arch builder
+builders/arch/work/
+builders/arch/out/
+
+# UKI builder
+builders/uki/mkosi.output/*.efi
+builders/uki/mkosi.builddir/
+builders/uki/mkosi.cache/
+builders/uki/mkosi.rootpw
+
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Temporary
+*.tmp
+*.bak

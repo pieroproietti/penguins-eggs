@@ -1,0 +1,64 @@
+
+Choose your language.
+<center><TABLE width="176" BORDER="0">
+
+<TR>
+   <TD><a href="#english">English</a></TD>
+</TR>
+
+</TABLE></center>
+
+<a name="english">Define a sudoers file - Rescapp - Documentation</a>
+<p>
+<ul>
+<li>
+Scenario 1: You have messed up editing your sudoers file and now your usual account cannot run sudo commands as it used to.
+</li>
+<li>
+Scenario 2: You need to regain admin/sudo privileges with an account whose password you know (or going to change soon with Rescapp).
+</li>
+</ul>
+This option lets you rebuild your distribution sudoers file so that you can regain sudo/admin privileges with a given user.
+</p>
+<ul>
+  <li>
+  <b>Step 1</b><p></p>Rescapp searches for GNU/Linux partitions.
+  </li>
+  <li>
+  <b>Step 2</b><p></p>Rescapp displays a list of found partitions. At the same time you are prompted:<p></p>
+  <i>Which GNU/Linux partition?</i><p></p> You are supposed to choose, your main GNU/Linux distribution, (you will probably only see one) and press the OK button.
+  </li>
+<p></p><IMG SRC="images/sudoers_001_partition.png"><p></p>
+  <li>
+  <b>Step 3</b><p></p>You are prompted:<p></p><i>Which user?</i><p></p> Select the desired user from the list.
+  </li>
+<p></p><IMG SRC="images/sudoers_002_user.png"><p></p>
+  <li>
+  <b>Step 4</b><p></p>Rescapp backups the old /etc/sudoers file, into a file named /etc/sudoers_YYYY_... and tries to setup a new, /etc/sudoers file that includes, the selected user as the sudo admin.
+  </li>
+  <li>
+  <b>Step 5</b><p></p>You are informed about the regenerate sudoers file process.<p></p>You either get:<p></p>
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-ok-apply.png">
+  [SUCCESS] Success! The sudoers file was changed OK! :)
+  </b>
+  </p>
+  </div>
+  or
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-error.png">
+  [ERROR] The sudoers file was not changed. Something went wrong! :(
+  </b>
+  </p>
+  </div>
+  </li>
+  <li>
+  <b>Step 6</b><p></p>Once you are able to gain, admin privileges on your system, you are advised to check, if your sudoers file is correct, depending on your distribution, via the visudo or sudoedit command.
+  </li>
+</ul>
+
+

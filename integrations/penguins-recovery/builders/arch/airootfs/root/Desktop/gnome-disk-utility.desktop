@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=GNOME Disks
+Comment=Disk management utility for GNOME
+Exec=gnome-disks
+Icon=org.gnome.DiskUtility
+Terminal=false
+Categories=System;FileTools;

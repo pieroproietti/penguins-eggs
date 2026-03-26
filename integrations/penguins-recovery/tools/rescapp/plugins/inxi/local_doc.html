@@ -1,0 +1,77 @@
+
+Choose your language.
+<center><TABLE width="176" BORDER="0">
+
+<TR>
+   <TD><a href="#english">English</a></TD>
+  <!--<TD><a href="castellano.html">Castellano</a></TD>-->
+</TR>
+
+</TABLE></center>
+<ul>
+  <li><a href="#english">English</a></li>
+</ul>
+
+<a name="english">System Info Script (Inxi) - Rescapp - Documentation</a>
+<p>
+You might be having a boot problem right now. Many questions arise. <i>What Rescapp option should I use? Maybe I should use another tool? I don't even know how I installed my GNU/Linux distribution six months ago. I need help.</i> So you ask help in a forum and you are asked to reply back with your hardware information. This is the option for you.
+</p>
+<h2> About information that Inxi collects </h2>
+
+Inxi can be setup to show more, or less information about your system. Here we will describe the Rescapp tuning of inxi, so that you know what, you are going to share with, other people who may want to help you.
+
+The information that Inxi collects is:
+<ul>
+ <li>Audio</li>
+ <li>Battery</li>
+ <li>CPU and CPU flags</li>
+ <li>Drives and partitions (even unmounted ones)</li>
+ <li>Memory RAM data. Physical memory array data shows array capacity, number of devices supported, and Error Correction information. Devices shows locator data (highly variable in syntax), size, speed and type.</li>
+ <li>Show machine data. Device, Motherboard, BIOS, and if present, System Builder (Like Lenovo)</li>
+ <li>Repos</li>
+ <li>USB devices</li>
+ <li>UUIDs</li>
+</ul>
+
+The information that Inxi does not collect is:
+
+<ul>
+ <li>Network and IPs</li>
+ <li>Sensors</li>
+ <li>Slots</li>
+</ul>
+
+<h2>Steps</h2>
+
+<ul>
+  <li>
+  <b>Step 1</b><p></p>Inxi tries to save the information it collects into its log file.
+  </li>
+  <li>
+  <b>Step 2</b><p></p>You are informed about the Inxi collecting process.<p></p>You either get:<p></p>
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-ok-apply.png">
+  [SUCCESS] Inxi was run OK! :)
+  </b>
+  <p></p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-ok-apply.png">
+  [SUCCESS] Check the Support category in the main menu, in order to see how you can, display or share on the forums the Inxi log.
+  </b>
+  </p>
+  </div>
+  or
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-error.png">
+  [ERROR] Inxi had a problem, is it installed? :(
+  </b>
+  </p>
+  </div>
+  </li>
+</ul>
+
+

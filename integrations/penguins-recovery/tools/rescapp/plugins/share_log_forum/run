@@ -1,0 +1,147 @@
+#!/bin/bash
+# Rescapp Share Log Forum run script
+# Copyright (C) 2012,2013,2014,2015,2016,2017,2018,2019,2020 Adrian Gibanel Lopez
+#
+# Rescapp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Rescapp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rescapp.  If not, see <http://www.gnu.org/licenses/>.
+
+source ${RESCAPP_LIB_FILE}
+
+LOG_CHOOSE_STR="Please choose a log file"
+LOG_STR="log"
+PASTEBIN_HINT="Right-click and select copy. You will be able to paste it later in the chat option"
+
+SHARE_FORUM_SYSTEM_HINT="Describe your system a bit. (Not your problem)"
+SHARE_FORUM_DEFAULT_SYSTEM_DESCRIPTION="My system has YOUROPERATINGSYSTEMHERE operating system with NUMBEROFHARDDISKSHERE hard drives"
+
+SHARE_FORUM_PROBLEM_HINT="Describe in as much detail, as you can, what your problem is."
+SHARE_FORUM_DEFAULT_PROBLEM_DESCRIPTION="I am unable to do something as easy as..."
+
+SHARE_FORUM_THANKS_HINT="It is usually polite to say thank you to the people who are helping you on the forum."
+SHARE_FORUM_DEFAULT_THANKS_DESCRIPTION="Thank you very much for your help!"
+
+SHARE_FORUM_SIGNATURE_HINT="Just an optional signature to let your helpers who you are."
+SHARE_FORUM_DEFAULT_SIGNATURE_DESCRIPTION="The ultimate noob! (You are supposed to change this)"
+
+SHARE_FORUM_FILES_NOT_FOUND="No files to share were found or chosen."
+SHARE_FORUM_OK_STR="The log file was shared (forum) OK! :)"
+SHARE_FORUM_KO_STR="The log file sharing (forum) went wrong! :("
+
+
+RANDOM_SHARE_FORUM_FILE="${TMP_FOLDER}/$$.text"
+
+m=1
+for ffile in ${RESCAPP_LOG_DIRECTORY}/* ; do
+
+  BFILE=$(basename $ffile)
+  if [[ m -eq 1 ]] ; then
+    LOG_LIST_VALUES="TRUE ${BFILE}"
+  else
+    LOG_LIST_VALUES="${LOG_LIST_VALUES} FALSE ${BFILE}"
+  fi
+  let m=m+1
+done
+
+SELECTED_FILE=$(kdialog ${KDIALOG_COMMON_OPTIONS} \
+	  
+	  "${LOG_CHOOSE_STR}" \
+	  
+	  
+	  
+	  ${LOG_LIST_VALUES});
+
+if [ "x${SELECTED_FILE}" != "x" ] ; then
+  echo "" > ${RANDOM_SHARE_FORUM_FILE} # Initiate the file
+
+  # Header
+  cat << __EOF >> ${RANDOM_SHARE_FORUM_FILE}
+This is a semi-automated message generated from [url="https://www.rescatux.org"]Rescatux live cd[/url].
+__EOF
+
+
+  # Description of your system as far as you know (Operating system, hard disks,...)
+  SHARE_FORUM_SYSTEM_DESCRIPTION="$(kdialog ${KDIALOG_COMMON_OPTIONS} \
+    --inputbox \
+    "${SHARE_FORUM_SYSTEM_HINT}" \
+    --entry-text="${SHARE_FORUM_DEFAULT_SYSTEM_DESCRIPTION}")"
+
+  cat << __EOF >> ${RANDOM_SHARE_FORUM_FILE}
+My description of my system is:
+  ${SHARE_FORUM_SYSTEM_DESCRIPTION}
+__EOF
+
+
+  # My problem is:
+  SHARE_FORUM_PROBLEM_DESCRIPTION="$(kdialog ${KDIALOG_COMMON_OPTIONS} \
+    --inputbox \
+    "${SHARE_FORUM_PROBLEM_HINT}" \
+    --entry-text="${SHARE_FORUM_DEFAULT_PROBLEM_DESCRIPTION}")"
+
+  cat << __EOF >> ${RANDOM_SHARE_FORUM_FILE}
+My problem is:
+  ${SHARE_FORUM_PROBLEM_DESCRIPTION}
+__EOF
+
+
+  # Here is the log file from this Rescatux option
+  cat << __EOF >> ${RANDOM_SHARE_FORUM_FILE}
+I join the Rescatux output for ${SELECTED_FILE} :
+
+[CODE]
+__EOF
+
+
+  cat ${RESCAPP_LOG_DIRECTORY}\
+/${SELECTED_FILE} >> ${RANDOM_SHARE_FORUM_FILE}
+
+  cat << __EOF >> ${RANDOM_SHARE_FORUM_FILE}
+[/CODE]
+__EOF
+  # Thank you
+  SHARE_FORUM_THANKS_DESCRIPTION="$(kdialog ${KDIALOG_COMMON_OPTIONS} \
+    --inputbox \
+    "${SHARE_FORUM_THANKS_HINT}" \
+    --entry-text="${SHARE_FORUM_DEFAULT_THANKS_DESCRIPTION}")"
+
+  cat << __EOF >> ${RANDOM_SHARE_FORUM_FILE}
+${SHARE_FORUM_THANKS_DESCRIPTION}
+__EOF
+
+  # Signature
+  SHARE_FORUM_SIGNATURE_DESCRIPTION="$(kdialog ${KDIALOG_COMMON_OPTIONS} \
+    --inputbox \
+    "${SHARE_FORUM_SIGNATURE_HINT}" \
+    --entry-text="${SHARE_FORUM_DEFAULT_SIGNATURE_DESCRIPTION}")"
+
+  cat << __EOF >> ${RANDOM_SHARE_FORUM_FILE}
+${SHARE_FORUM_SIGNATURE_DESCRIPTION}
+__EOF
+
+
+  nohup ${GEDIT_COMMAND} ${RANDOM_SHARE_FORUM_FILE} &disown
+
+  nohup ${FIREFOX_COMMAND} $(kdialog ${KDIALOG_COMMON_OPTIONS} 
+    "Choose URL to open?" \
+    
+    
+    
+    
+  TRUE "http://www.ubuntuforums.org" "Ubuntu forums" \
+  FALSE "http://www.google.com" "Google" \
+  ) &disown
+
+  rtux_Message_Success ${SHARE_FORUM_OK_STR}
+else
+  rtux_Message_Warning ${SHARE_FORUM_FILES_NOT_FOUND}
+  rtux_Message_Failure ${SHARE_FORUM_KO_STR}
+fi

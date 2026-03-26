@@ -1,0 +1,59 @@
+#!/usr/bin/python
+
+import sys
+import json
+from pathlib import Path
+from secrets import token_hex
+from typing import Any, cast
+
+def read_hashed_password_on_obs() -> tuple[str, bool] | None:
+    """Read a hashed password from sources on OBS.
+
+    OBS puts the sources of mkosi packages at `/usr/src/packages/SOURCES`
+    (see `recipe_setup_mkosi` at <https://github.com/openSUSE/obs-build/blob/master/build-recipe-mkosi#L24>).
+
+    This function attempts to read a root password from `mkosi.obs.rootpw`
+    at `/usr/src/packages/SOURCES`.  The contents of the file are always
+    interpreted as hashed password (no `hashed:` prefix required!); plain text
+    is not supported to prevent accidentally committing plain text passwords to
+    OBS repos.
+
+    We use `mkosi.obs.rootpw` to avoid conflicting with the `mkosi.rootpw` file
+    used by mkosi itself.
+    """
+    obs_password_file = Path('/usr/src/packages/SOURCES/mkosi.obs.rootpw')
+    if obs_password_file.exists():
+        return (obs_password_file.read_text().strip(), True)
+    return None
+
+
+def generate_random_password() -> tuple[str, bool]:
+    token = token_hex(16).upper()
+    chunk_size = 4
+    password = '-'.join(token[i:i+chunk_size] for i in range(0, len(token), chunk_size))
+    return (password, False)
+
+
+def main() -> None:
+    """Update the root password if not already set.
+
+    We deliberately do not use `mkosi.rootpw` because it is sensitive to the
+    file mode which we cannot control in git, see <https://github.com/systemd/mkosi/issues/4083>.
+    """
+    config = json.load(sys.stdin)  # pyright: ignore[reportAny]
+    if not isinstance(config, dict):
+        raise ValueError(f'Expected a map, got {config!r}')
+    config = cast(dict[str, Any], config)  # pyright: ignore[reportExplicitAny]
+    if not config.get('RootPassword'):
+        obs_root_password = read_hashed_password_on_obs()
+        print('Configuring build for OBS', file=sys.stderr)
+        if obs_root_password:
+            # If we're on OBS do not include host kmods, as they're from the OBS build VM and not really
+            # relevant to a bare metal rescue image.
+            config['KernelModulesIncludeHost'] = False
+        config['RootPassword'] = list(obs_root_password or generate_random_password())
+    json.dump(config, sys.stdout)
+
+
+if __name__ == '__main__':
+    main()

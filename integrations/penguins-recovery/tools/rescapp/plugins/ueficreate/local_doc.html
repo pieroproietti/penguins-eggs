@@ -1,0 +1,72 @@
+
+Choose your language.
+<center><TABLE width="176" BORDER="0">
+
+<TR>
+   <TD><a href="#english">English</a></TD>
+</TR>
+
+</TABLE></center>
+<ul>
+  <li><a href="#english">English</a></li>
+</ul>
+
+<a name="english">Create UEFI Boot Entry - Rescapp - Documentation</a>
+<p>
+Newest computers start up thanks to the newest (from 2015 onwards) UEFI boot system.
+</p>
+<p>
+<ul>
+<li>
+Scenario 1: You messed up your UEFI boot menu and lost access to one your operating systems.
+</li>
+<li>
+Scenario 2: You want to add one of your operating systems to your current UEFI boot menu.
+</li>
+</ul>
+This option lets you add one of the present EFI files (which usually serve to boot into an Operating System) to your UEFI boot menu. The entry will be the last one on your UEFI boot menu.
+</p>
+<p>
+Please note that in some UEFI systems you might need to press an special hotkey (such as F8 or F10) in order to show up the UEFI boot menu in order to be able to choose your added UEFI boot entry.
+</p>
+
+<ul>
+  <li>
+  <b>Step 1</b><p></p>Rescapp searches for EFI partitions on your system.
+  </li>
+  <li>
+  <b>Step 2</b><p></p>If such partitions have been found, Rescapp displays them. At the same time you are prompted:<p></p>
+  <i>Which EFI System partition?</i><p></p> You are supposed to choose, your EFI System partition and press the OK button.
+  </li>
+<p></p><IMG SRC="images/ueficreate_001_efi_partition.png"><p></p>
+  <li>
+  <b>Step 3</b><p></p>Rescapp searches for EFI files present, on your EFI System partition.
+  </li>
+  <li>
+  <b>Step 4</b><p></p>You are prompted:<p></p><i>Select EFI file</i><p></p> You are supposed to, choose the EFI file which you want an EFI entry to be created.
+  </li>
+<p></p><IMG SRC="images/ueficreate_002_efi_file.png"><p></p>
+  <li>
+  <b>Step 5</b><p></p>You are informed about the Create UEFI Boot Entry process.<p></p>You either get:<p></p>
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-ok-apply.png">
+  [SUCCESS] A new UEFI Boot entry was added OK! :)
+  </b>
+  </p>
+  </div>
+  or
+  <div style="padding: 5px; border: 6px solid green; margin: 7px;">
+  <p>
+  <b>
+  <IMG SRC="../not-documented/images/dialog-error.png">
+  [ERROR] A new UEFI Boot entry addition went wrong! :(
+  </b>
+  </p>
+  </div>
+  </li>
+</ul>
+
+
+

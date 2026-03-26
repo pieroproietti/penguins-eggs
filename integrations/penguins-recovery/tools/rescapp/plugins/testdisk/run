@@ -1,0 +1,34 @@
+#!/bin/bash
+# Rescapp testdisk run script
+# Copyright (C) 2012,2013,2014,2015,2016,2017,2018,2019,2020 Adrian Gibanel Lopez
+#
+# Rescapp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Rescapp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Rescapp.  If not, see <http://www.gnu.org/licenses/>.
+
+source ${RESCAPP_LIB_FILE}
+set -x
+set -v
+
+TESTDISK_OK_STR="Testdisk was successfully run in the background."
+TESTDISK_KO_STR="Rescapp was unable to start Testdisk via xterm, is it installed?"
+
+TESTDISK_FULL_PATH="$(which testdisk)"
+XTERM_FULL_PATH="$(which xterm)"
+
+if [ -x "${TESTDISK_FULL_PATH}" -a -x "${XTERM_FULL_PATH}" ] ; then
+    "${XTERM_FULL_PATH}" -geometry 80x26 -e "${TESTDISK_FULL_PATH}" &
+    rtux_Message_Success ${TESTDISK_OK_STR}
+else
+    rtux_Message_Failure ${TESTDISK_KO_STR}
+fi
+

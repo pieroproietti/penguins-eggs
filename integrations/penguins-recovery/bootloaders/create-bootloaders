@@ -1,0 +1,71 @@
+#!/bin/bash
+# create-bootloaders -- Package bootloaders into bootloaders.tar.gz.
+#
+# Collects system-installed bootloaders (Debian packages) and any
+# source-built bootloader artifacts from out/.
+#
+# Upstream reference: https://github.com/pieroproietti/penguins-bootloaders
+# This script extends the upstream version — tracked by sync-bootloaders-upstream.yaml.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OUT_DIR="$SCRIPT_DIR/out"
+DEST=~/bootloaders
+
+info()  { echo -e "\033[1;32m[bootloaders]\033[0m $*"; }
+warn()  { echo -e "\033[1;33m[bootloaders]\033[0m $*"; }
+
+rm -rf "$DEST"
+mkdir -p "$DEST"
+
+# System-installed bootloaders (Debian packages)
+for dir in grub ipxe ISOLINUX PXELINUX shim syslinux; do
+    if [ -d "/usr/lib/$dir" ]; then
+        info "Copying /usr/lib/$dir"
+        cp -r "/usr/lib/$dir" "$DEST/"
+    else
+        warn "Not found: /usr/lib/$dir (install the corresponding package)"
+    fi
+done
+
+# System-installed u-boot files
+if [ -d "/usr/lib/u-boot" ]; then
+    info "Copying /usr/lib/u-boot"
+    cp -r /usr/lib/u-boot "$DEST/"
+fi
+
+# System-installed systemd-boot EFI stubs
+if [ -d "/usr/lib/systemd/boot/efi" ]; then
+    info "Copying /usr/lib/systemd/boot/efi (systemd-boot)"
+    mkdir -p "$DEST/systemd-boot"
+    cp -r /usr/lib/systemd/boot/efi/* "$DEST/systemd-boot/"
+fi
+
+# System-installed refind
+if [ -d "/usr/share/refind" ]; then
+    info "Copying /usr/share/refind"
+    cp -r /usr/share/refind "$DEST/"
+elif [ -d "/usr/lib/refind" ]; then
+    info "Copying /usr/lib/refind"
+    cp -r /usr/lib/refind "$DEST/"
+fi
+
+# Source-built bootloader artifacts
+if [ -d "$OUT_DIR" ]; then
+    for entry in "$OUT_DIR"/*/; do
+        [ -d "$entry" ] || continue
+        name="$(basename "$entry")"
+        # Skip empty output dirs
+        if [ -z "$(ls -A "$entry" 2>/dev/null)" ]; then
+            continue
+        fi
+        info "Copying source-built: $name"
+        cp -r "$entry" "$DEST/$name"
+    done
+fi
+
+info "Creating bootloaders.tar.gz"
+tar -cvzf ~/bootloaders.tar.gz -C ~ bootloaders
+
+info "Done: ~/bootloaders.tar.gz"

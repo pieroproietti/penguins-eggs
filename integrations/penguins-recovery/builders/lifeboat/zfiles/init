@@ -1,0 +1,7 @@
+#!/bin/sh
+# Early userspace init: mount essential filesystems then hand off to OpenRC.
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev 2>/dev/null || mount -t tmpfs none /dev
+
+exec /sbin/init "$@"

@@ -1,0 +1,40 @@
+#!/sbin/openrc-run
+# Mount the EFI System Partition and source user customizations if present.
+
+description="Load user scripts from ESP"
+
+USERSCRIPTS_DIR="/mnt/efi/EFI/Boot/Lifeboat/UserScripts"
+
+depend() {
+    need devfs
+    after networking
+}
+
+start() {
+    ebegin "Mounting EFI System Partition"
+    mkdir -p /mnt/efi
+
+    # Try to find and mount the ESP (first VFAT partition with EFI marker)
+    ESP_DEV=""
+    for dev in /dev/sd?1 /dev/nvme?n?p1 /dev/mmcblk?p1; do
+        [ -b "$dev" ] || continue
+        if blkid "$dev" | grep -qi 'TYPE="vfat"'; then
+            ESP_DEV="$dev"
+            break
+        fi
+    done
+
+    if [ -n "$ESP_DEV" ]; then
+        mount -t vfat -o ro "$ESP_DEV" /mnt/efi 2>/dev/null && \
+            eend 0 || eend 1
+    else
+        ewarn "No ESP found; user scripts will not be loaded"
+        eend 0
+    fi
+}
+
+stop() {
+    ebegin "Unmounting EFI System Partition"
+    umount /mnt/efi 2>/dev/null
+    eend 0
+}

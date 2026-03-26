@@ -1,0 +1,19 @@
+# Disk management, partitioning, and filesystem tools.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+btrfs           | btrfs-progs       | btrfs-progs       | btrfs-progs       | btrfsprogs        | btrfs-progs       | sys-fs/btrfs-progs
+cryptsetup      | cryptsetup        | cryptsetup        | cryptsetup        | cryptsetup        | cryptsetup        | sys-fs/cryptsetup
+dosfstools      | dosfstools        | dosfstools        | dosfstools        | dosfstools        | dosfstools        | sys-fs/dosfstools
+e2fsprogs       | e2fsprogs         | e2fsprogs         | e2fsprogs         | e2fsprogs         | e2fsprogs         | sys-fs/e2fsprogs
+efibootmgr      | efibootmgr        | efibootmgr        | efibootmgr        | efibootmgr        | efibootmgr        | sys-boot/efibootmgr
+exfat           | exfatprogs        | exfatprogs        | exfatprogs        | exfatprogs        | exfat-utils       | sys-fs/exfatprogs
+f2fs            | f2fs-tools        | f2fs-tools        | f2fs-tools        | f2fs-tools        | f2fs-tools        | sys-fs/f2fs-tools
+gptfdisk        | gptfdisk          | gdisk             | gdisk             | gptfdisk          | gptfdisk          | sys-apps/gptfdisk
+hdparm          | hdparm            | hdparm            | hdparm            | hdparm            | hdparm            | sys-apps/hdparm
+lvm2            | lvm2              | lvm2              | lvm2              | lvm2              | lvm2              | sys-fs/lvm2
+mdadm           | mdadm             | mdadm             | mdadm             | mdadm             | mdadm             | sys-fs/mdadm
+ntfs            | ntfs-3g           | ntfs-3g           | ntfs-3g           | ntfs-3g           | ntfs-3g           | sys-fs/ntfs3g
+nvme-cli        | nvme-cli          | nvme-cli          | nvme-cli          | nvme-cli          | nvme-cli          | sys-apps/nvme-cli
+parted          | parted            | parted            | parted            | parted            | parted            | sys-block/parted
+smartmontools   | smartmontools     | smartmontools     | smartmontools     | smartmontools     | smartmontools     | sys-apps/smartmontools
+squashfs        | squashfs-tools    | squashfs-tools    | squashfs-tools    | squashfs          | squashfs-tools    | sys-fs/squashfs-tools
+xfsprogs        | xfsprogs          | xfsprogs          | xfsprogs          | xfsprogs          | xfsprogs          | sys-fs/xfsprogs

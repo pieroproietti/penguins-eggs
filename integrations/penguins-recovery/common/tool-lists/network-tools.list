@@ -1,0 +1,8 @@
+# Network diagnostics and connectivity tools.
+# logical-name | arch-pkg | debian-pkg | fedora-pkg | suse-pkg | alpine-pkg | gentoo-pkg
+iwd             | iwd               | iwd               | iwd               | iwd               | iwd               | net-wireless/iwd
+networkmanager  | networkmanager    | network-manager   | NetworkManager    | NetworkManager    | networkmanager    | net-misc/networkmanager
+tcpdump         | tcpdump           | tcpdump           | tcpdump           | tcpdump           | tcpdump           | net-analyzer/tcpdump
+wireless-tools  | wireless_tools    | wireless-tools    | wireless-tools    | wireless-tools    | wireless-tools    | net-wireless/wireless-tools
+wpa-supplicant  | wpa_supplicant    | wpasupplicant     | wpa_supplicant    | wpa_supplicant    | wpa_supplicant    | net-wireless/wpa_supplicant
+openssh         | openssh           | openssh-client    | openssh-clients   | openssh           | openssh-client    | net-misc/openssh

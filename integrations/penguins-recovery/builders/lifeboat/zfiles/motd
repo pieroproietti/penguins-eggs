@@ -1,0 +1,19 @@
+ _______________
+/|-------------|
+/_|  .---.     |
+|  / \   /     |
+|  \.6-6./     |
+|  /`\_/`\     |
+| // _ \\ \    |
+| | \   / |    |
+| /`\_>`<_/`\  |
+| \__/'---'\__/|
+|_______________|
+
+  Lifeboat Linux  (penguins-recovery)
+  Alpine-based single-file UEFI rescue system
+
+  Rescue scripts : /root/rescue-scripts/
+  User scripts   : /mnt/efi/EFI/Boot/Lifeboat/UserScripts/
+  Docs           : /root/README
+

@@ -1,0 +1,4 @@
+build/alpine-minirootfs*/
+build/linux*/
+build/config.initramfs_root
+dist/
