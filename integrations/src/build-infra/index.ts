@@ -83,3 +83,70 @@ export {
   btrfsCompatCheck,
   btrfsCompatReport,
 } from '../../plugins/build-infra/btrfs-compat/produce-hook.js'
+
+// mkosi — bespoke OS disk image builder (systemd/mkosi)
+export { Mkosi } from '../../plugins/build-infra/mkosi/mkosi.js'
+export type {
+  MkosiConfig,
+  MkosiResult,
+  MkosiFormat,
+  MkosiDistribution,
+} from '../../plugins/build-infra/mkosi/mkosi.js'
+export {
+  mkosiPrepareRootfs,
+  mkosiWrapUki,
+} from '../../plugins/build-infra/mkosi/produce-hook.js'
+
+// buildroot — embedded Linux build system (buildroot/buildroot)
+export { Buildroot } from '../../plugins/build-infra/buildroot/buildroot.js'
+export type {
+  BuildrootConfig,
+  BuildrootResult,
+  BuildrootOutputFormat,
+} from '../../plugins/build-infra/buildroot/buildroot.js'
+export {
+  buildrootPrepareRootfs,
+} from '../../plugins/build-infra/buildroot/produce-hook.js'
+
+// embiggen-disk — live partition resize (bradfitz/embiggen-disk)
+export { EmbiggenDisk } from '../../plugins/build-infra/embiggen-disk/embiggen-disk.js'
+export type {
+  EmbiggenOptions,
+  ResizeResult,
+} from '../../plugins/build-infra/embiggen-disk/embiggen-disk.js'
+export {
+  embiggenAfterInstall,
+} from '../../plugins/build-infra/embiggen-disk/produce-hook.js'
+
+// gpt-image — GPT disk image creator (queso-fuego/UEFI-GPT-image-creator)
+export { GptImage } from '../../plugins/build-infra/gpt-image/gpt-image.js'
+export type {
+  GptImageOptions,
+  GptImageResult,
+} from '../../plugins/build-infra/gpt-image/gpt-image.js'
+export {
+  gptImageAfterProduce,
+} from '../../plugins/build-infra/gpt-image/produce-hook.js'
+
+// partitionfs — rootless partition access (madscientist42/partitionfs)
+export { Partitionfs } from '../../plugins/build-infra/partitionfs/partitionfs.js'
+export type {
+  PartitionMount,
+  PartitionfsOptions,
+} from '../../plugins/build-infra/partitionfs/partitionfs.js'
+export {
+  withPartitions,
+  checkPartitionSupport,
+} from '../../plugins/build-infra/partitionfs/produce-hook.js'
+
+// partymix — MBR disk image assembly (pyx-cvm/partymix)
+export { Partymix } from '../../plugins/build-infra/partymix/partymix.js'
+export type {
+  PartymixOptions,
+  PartymixResult,
+  PartymixPartition,
+  PartymixPartitionType,
+} from '../../plugins/build-infra/partymix/partymix.js'
+export {
+  partymixAfterProduce,
+} from '../../plugins/build-infra/partymix/produce-hook.js'
