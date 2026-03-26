@@ -1,0 +1,45 @@
+name: Mirror to OpenOS-Project-Ecosystem-OOC
+
+# Sync chain:
+#   Interested-Deving-1896  ->(mirror.yaml)->  OpenOS-Project-OSP
+#   OpenOS-Project-OSP  ->(this file)->  OpenOS-Project-Ecosystem-OOC
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["**"]
+  schedule:
+    # Runs 15 minutes after the upstream->OSP sync to allow OSP to settle
+    - cron: "15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    # Only run when executing in the OSP repo — no-op in upstream
+    if: github.repository == 'OpenOS-Project-OSP/penguins-eggs'
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch all branches and tags
+        run: git fetch --all --tags --prune
+
+      - name: Push mirror to OpenOS-Project-Ecosystem-OOC
+        env:
+          MIRROR_TOKEN: ${{{{ secrets.MIRROR_TOKEN }}}}
+        run: |
+          git config --global credential.helper store
+          printf 'https://x-access-token:%s@github.com\n' "$MIRROR_TOKEN" \
+            > ~/.git-credentials
+
+          git remote add mirror \
+            "https://github.com/OpenOS-Project-Ecosystem-OOC/penguins-eggs.git"
+
+          git push mirror --all --force
+          git push mirror --tags --force
+
+          rm -f ~/.git-credentials
