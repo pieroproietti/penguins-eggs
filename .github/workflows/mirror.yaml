@@ -1,0 +1,39 @@
+name: Mirror to OpenOS-Project-OSP
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["**"]
+  schedule:
+    # Hourly sync to catch any missed push events
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch all branches and tags
+        run: git fetch --all --tags --prune
+
+      - name: Push mirror to OpenOS-Project-OSP
+        env:
+          MIRROR_TOKEN: ${{{{ secrets.MIRROR_TOKEN }}}}
+        run: |
+          git config --global credential.helper store
+          printf 'https://x-access-token:%s@github.com\n' "$MIRROR_TOKEN" \
+            > ~/.git-credentials
+
+          git remote add mirror \
+            "https://github.com/OpenOS-Project-OSP/penguins-eggs.git"
+
+          git push mirror --all --force
+          git push mirror --tags --force
+
+          rm -f ~/.git-credentials
