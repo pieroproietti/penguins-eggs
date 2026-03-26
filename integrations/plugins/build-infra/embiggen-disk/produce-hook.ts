@@ -33,7 +33,12 @@ export async function embiggenAfterInstall(
   const embiggen = new EmbiggenDisk(exec, verbose, opts)
 
   // Check for unallocated space first
-  const diskDevice = rootDevice.replace(/\d+$/, '')
+  // Strip trailing partition number using a character-by-character walk rather
+  // than a regex, avoiding polynomial backtracking on adversarial input.
+  let diskDevice = rootDevice
+  while (diskDevice.length > 0 && diskDevice[diskDevice.length - 1] >= '0' && diskDevice[diskDevice.length - 1] <= '9') {
+    diskDevice = diskDevice.slice(0, -1)
+  }
   const free = await embiggen.unallocatedSpace(diskDevice)
 
   if (free < 1024 * 1024) {

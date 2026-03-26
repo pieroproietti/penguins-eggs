@@ -16,6 +16,8 @@ on:
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     # Only run when executing in the OSP repo — no-op in upstream
     if: github.repository == 'OpenOS-Project-OSP/penguins-eggs'
     steps:
