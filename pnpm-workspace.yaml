@@ -1,2 +1,3 @@
 onlyBuiltDependencies:
   - "penguins-eggs-integrations"
+  - "penguins-eggs-audit"
