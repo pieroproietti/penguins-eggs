@@ -1,0 +1,61 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Eggs Maker -Multilenguaje 1.0.0\n"
+"POT-Creation-Date: 2025-04-26 00:33:15-03:00\n"
+"PO-Revision-Date: 2025-04-26 00:33:15-03:00\n"
+"Last-Translator: Cascade AI\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Versión"
+msgstr "Versión"
+
+msgid "Acciones Previas"
+msgstr "Acciones Previas"
+
+msgid "Preparación (Limpiar y crear entorno)"
+msgstr "Preparación (Limpiar y crear entorno)"
+
+msgid "Instalar/Actualizar Calamares"
+msgstr "Instalar/Actualizar Calamares"
+
+msgid "Aplicar"
+msgstr "Aplicar"
+
+msgid "Opciones Adicionales"
+msgstr "Opciones Adicionales"
+
+msgid "Generar réplica del escritorio actual"
+msgstr "Generar réplica del escritorio actual"
+
+msgid "Editar configuración de ISO"
+msgstr "Editar configuración de ISO"
+
+msgid "Generar ISO"
+msgstr "Generar ISO"
+
+msgid "Incluir datos"
+msgstr "Incluir datos"
+
+msgid "Máxima compresión"
+msgstr "Máxima compresión"
+
+msgid "Copiar ISO"
+msgstr "Copiar ISO"
+
+msgid "Copia Rápida"
+msgstr "Copia Rápida"
+
+msgid "Copiar ISO Generada"
+msgstr "Copiar ISO Generada"
+
+msgid "Info"
+msgstr "Info"
+
+msgid "Salir"
+msgstr "Salir"
+
+msgid "Copias realizadas: 0"
+msgstr "Copias realizadas: 0"

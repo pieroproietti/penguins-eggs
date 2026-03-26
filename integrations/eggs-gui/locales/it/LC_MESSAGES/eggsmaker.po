@@ -1,0 +1,230 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Eggs Maker -Multilenguaje 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-26 02:09-0300\n"
+"PO-Revision-Date: 2025-04-26 00:37:31-03:00\n"
+"Last-Translator: Cascade AI\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: eggsmaker.py:87
+msgid "Versión"
+msgstr "Versione"
+
+#: eggsmaker.py:159
+msgid "Acciones Previas"
+msgstr "Azioni Precedenti"
+
+#: eggsmaker.py:161
+msgid "Preparación (Limpiar y crear entorno)"
+msgstr "Preparazione (Pulire e creare ambiente)"
+
+#: eggsmaker.py:163
+msgid "Instalar/Actualizar Calamares"
+msgstr "Installare/Aggiornare Calamares"
+
+#: eggsmaker.py:165 eggsmaker.py:177
+msgid "Aplicar"
+msgstr "Applica"
+
+#: eggsmaker.py:171
+msgid "Opciones Adicionales"
+msgstr "Opzioni Aggiuntive"
+
+#: eggsmaker.py:173
+msgid "Generar réplica del escritorio actual"
+msgstr "Genera replica del desktop attuale"
+
+#: eggsmaker.py:175
+msgid "Editar configuración de ISO"
+msgstr "Modifica configurazione ISO"
+
+#: eggsmaker.py:183 eggsmaker.py:189
+msgid "Generar ISO"
+msgstr "Genera ISO"
+
+#: eggsmaker.py:185
+msgid "Incluir datos"
+msgstr "Includi dati"
+
+#: eggsmaker.py:187
+msgid "Máxima compresión"
+msgstr "Compressione massima"
+
+#: eggsmaker.py:195
+msgid "Copiar ISO"
+msgstr "Copia ISO"
+
+#: eggsmaker.py:197
+msgid "Copia Rápida"
+msgstr "Copia Veloce"
+
+#: eggsmaker.py:199
+msgid "Copiar ISO Generada"
+msgstr "Copia ISO Generata"
+
+#: eggsmaker.py:211 eggsmaker.py:341
+msgid "Ejecutando"
+msgstr "In esecuzione"
+
+#: eggsmaker.py:217
+msgid "Copias realizadas: 0"
+msgstr "Copie effettuate: 0"
+
+#: eggsmaker.py:255
+msgid "Info"
+msgstr "Info"
+
+#: eggsmaker.py:259
+msgid "Tamaño ISO: N/A"
+msgstr "Dimensione ISO: N/A"
+
+#: eggsmaker.py:264
+msgid "Salir"
+msgstr "Esci"
+
+#: eggsmaker.py:298
+msgid "Autenticación requerida"
+msgstr "Autenticazione richiesta"
+
+#: eggsmaker.py:298
+msgid "Introduce tu contraseña de sudo:"
+msgstr "Inserisci la tua password sudo:"
+
+#: eggsmaker.py:310
+msgid "Copia: "
+msgstr "Copia: "
+
+#: eggsmaker.py:318
+msgid "Generación: "
+msgstr "Generazione: "
+
+#: eggsmaker.py:326
+msgid "Total: "
+msgstr "Totale: "
+
+#: eggsmaker.py:342
+msgid "Ejecutando: "
+msgstr "In esecuzione: "
+
+#: eggsmaker.py:361
+msgid "Éxito"
+msgstr "Successo"
+
+#: eggsmaker.py:361
+msgid "Operación completada"
+msgstr "Operazione completata"
+
+#: eggsmaker.py:365 eggsmaker.py:621
+msgid "Error"
+msgstr "Errore"
+
+#: eggsmaker.py:365
+#, fuzzy
+msgid "Error:"
+msgstr "Errore"
+
+#: eggsmaker.py:545
+msgid "Contraseña de root:"
+msgstr "Password di root:"
+
+#: eggsmaker.py:546
+msgid "Nombre base del snapshot (ej: mi-distro):"
+msgstr "Nome base dello snapshot (es: mia-distro):"
+
+#: eggsmaker.py:547
+msgid "Prefijo del snapshot (ej: personalizada-):"
+msgstr "Prefisso dello snapshot (es: personalizzata-):"
+
+#: eggsmaker.py:548
+msgid "Contraseña de usuario:"
+msgstr "Password utente:"
+
+#: eggsmaker.py:586
+msgid "Guardar cambios"
+msgstr "Salva modifiche"
+
+#: eggsmaker.py:588
+msgid "Cancelar"
+msgstr "Annulla"
+
+#: eggsmaker.py:619
+msgid "Limpieza"
+msgstr "Pulizia"
+
+#: eggsmaker.py:619
+msgid "Se eliminaran los archivos temporales"
+msgstr "I file temporanei saranno eliminati"
+
+#: eggsmaker.py:621
+msgid "Error al eliminar archivos temporales: {str(e)}"
+msgstr "Errore durante l'eliminazione dei file temporanei: {str(e)}"
+
+#~ msgid "Preparando entorno"
+#~ msgstr "Preparazione ambiente"
+
+#~ msgid "Instalando Calamares"
+#~ msgstr "Installazione Calamares"
+
+#~ msgid "Generando ISO"
+#~ msgstr "Generazione ISO"
+
+#~ msgid "Copiando ISO"
+#~ msgstr "Copia ISO in corso"
+
+#~ msgid "Proceso completado"
+#~ msgstr "Processo completato"
+
+#~ msgid "Advertencia"
+#~ msgstr "Avviso"
+
+#~ msgid "Seleccionar destino"
+#~ msgstr "Seleziona destinazione"
+
+#~ msgid "Se requiere contraseña para continuar"
+#~ msgstr "Password necessaria per continuare"
+
+#~ msgid "Tipo de copia"
+#~ msgstr "Tipo di copia"
+
+#~ msgid "¿Desea realizar una copia rápida?"
+#~ msgstr "Vuoi eseguire una copia veloce?"
+
+#~ msgid "No se encontraron archivos ISO"
+#~ msgstr "Nessun file ISO trovato"
+
+#~ msgid "Copia adicional"
+#~ msgstr "Copia aggiuntiva"
+
+#~ msgid "¿Desea realizar otra copia?"
+#~ msgstr "Vuoi fare un'altra copia?"
+
+#~ msgid "ISO copiada exitosamente!"
+#~ msgstr "ISO copiata con successo!"
+
+#~ msgid "Nombre: "
+#~ msgstr "Nome: "
+
+#~ msgid "Tamaño: "
+#~ msgstr "Dimensione: "
+
+#~ msgid "Ubicación: "
+#~ msgstr "Posizione: "
+
+#~ msgid "Cargando configuración..."
+#~ msgstr "Caricamento configurazione..."
+
+#~ msgid "Archivo no encontrado: "
+#~ msgstr "File non trovato: "
+
+#~ msgid "Editar Configuración ISO"
+#~ msgstr "Modifica Configurazione ISO"
+
+#~ msgid "Grabación exitosa"
+#~ msgstr "Salvataggio completato"
+
+#~ msgid "Tamaño ISO: "
+#~ msgstr "Dimensione ISO: "

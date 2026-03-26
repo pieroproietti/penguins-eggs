@@ -1,0 +1,243 @@
+{
+  "jsonrpc": "2.0",
+  "info": {
+    "title": "eggs-gui daemon API",
+    "version": "1.0.0",
+    "description": "JSON-RPC API for the eggs-gui backend daemon"
+  },
+  "methods": {
+    "config.read": {
+      "description": "Read eggs.yaml configuration",
+      "params": {},
+      "result": {
+        "type": "object",
+        "properties": {
+          "snapshot_dir": { "type": "string" },
+          "snapshot_prefix": { "type": "string" },
+          "snapshot_basename": { "type": "string" },
+          "user_opt": { "type": "string" },
+          "user_opt_passwd": { "type": "string" },
+          "root_passwd": { "type": "string" },
+          "make_isohybrid": { "type": "boolean" },
+          "make_md5sum": { "type": "boolean" },
+          "compression": { "type": "string" },
+          "theme": { "type": "string" }
+        }
+      }
+    },
+    "config.write": {
+      "description": "Update eggs.yaml configuration fields",
+      "params": {
+        "type": "object",
+        "description": "Key-value pairs to update in eggs.yaml"
+      },
+      "result": { "type": "boolean" }
+    },
+    "config.readTools": {
+      "description": "Read tools.yaml configuration",
+      "params": {},
+      "result": { "type": "object" }
+    },
+    "config.writeTools": {
+      "description": "Update tools.yaml configuration fields",
+      "params": { "type": "object" },
+      "result": { "type": "boolean" }
+    },
+    "eggs.produce": {
+      "description": "Run eggs produce with options. Streams output via notifications.",
+      "params": {
+        "type": "object",
+        "properties": {
+          "prefix": { "type": "string" },
+          "basename": { "type": "string" },
+          "addons": { "type": "string" },
+          "links": { "type": "string" },
+          "compression": { "type": "string", "enum": ["", "pendrive", "max"] },
+          "theme": { "type": "string" },
+          "clone": { "type": "boolean" },
+          "cryptedclone": { "type": "boolean" },
+          "script": { "type": "boolean" },
+          "unsecure": { "type": "boolean" },
+          "yolk": { "type": "boolean" },
+          "excludes": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["static", "mine", "home", "usr", "var"] }
+          }
+        }
+      },
+      "result": { "type": "object", "properties": { "taskId": { "type": "string" }, "exitCode": { "type": "integer" } } }
+    },
+    "eggs.kill": {
+      "description": "Kill generated ISOs",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "eggs.dad": {
+      "description": "Run eggs dad configuration",
+      "params": { "type": "object", "properties": { "default": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "eggs.status": {
+      "description": "Get eggs status",
+      "params": {},
+      "result": { "type": "object", "properties": { "taskId": { "type": "string" } } }
+    },
+    "calamares.install": {
+      "description": "Install calamares",
+      "params": {},
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "calamares.remove": {
+      "description": "Remove calamares",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "tools.clean": {
+      "description": "Run eggs tools clean",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "tools.ppa.add": {
+      "description": "Add penguins-eggs PPA",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "tools.ppa.remove": {
+      "description": "Remove penguins-eggs PPA",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "tools.skel": {
+      "description": "Copy home config to /etc/skel",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "tools.yolk": {
+      "description": "Create local repository at /var/local/yolk",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "wardrobe.get": {
+      "description": "Download wardrobe to ~/.wardrobe",
+      "params": { "type": "object", "properties": { "nointeractive": { "type": "boolean" } } },
+      "result": { "type": "object", "properties": { "exitCode": { "type": "integer" } } }
+    },
+    "wardrobe.list": {
+      "description": "List wardrobe contents (costumes, accessories, servers)",
+      "params": {},
+      "result": {
+        "type": "object",
+        "properties": {
+          "costumes": { "type": "array", "items": { "type": "string" } },
+          "accessories": { "type": "array", "items": { "type": "string" } },
+          "servers": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "wardrobe.show": {
+      "description": "Show costume/accessory/server YAML content",
+      "params": {
+        "type": "object",
+        "properties": {
+          "category": { "type": "string", "enum": ["costumes", "accessories", "servers"] },
+          "name": { "type": "string" },
+          "distro": { "type": "string", "enum": ["arch", "debian", "ubuntu"] }
+        }
+      },
+      "result": { "type": "object", "properties": { "content": { "type": "string" } } }
+    },
+    "wardrobe.wear": {
+      "description": "Apply a wardrobe costume",
+      "params": { "type": "object", "properties": { "costume": { "type": "string" } } },
+      "result": { "type": "object", "properties": { "taskId": { "type": "string" }, "exitCode": { "type": "integer" } } }
+    },
+    "system.versions": {
+      "description": "Get installed versions of eggs, calamares, and distro info",
+      "params": {},
+      "result": {
+        "type": "object",
+        "properties": {
+          "eggs": { "type": "string" },
+          "calamares": { "type": "string" },
+          "distro": { "type": "string" },
+          "kernel": { "type": "string" }
+        }
+      }
+    },
+    "system.checkDeps": {
+      "description": "Check if penguins-eggs is installed",
+      "params": {},
+      "result": {
+        "type": "object",
+        "properties": {
+          "eggsInstalled": { "type": "boolean" },
+          "calamaresInstalled": { "type": "boolean" },
+          "configExists": { "type": "boolean" }
+        }
+      }
+    },
+    "system.sudoAuth": {
+      "description": "Authenticate sudo password for subsequent commands",
+      "params": { "type": "object", "properties": { "password": { "type": "string" } } },
+      "result": { "type": "object", "properties": { "authenticated": { "type": "boolean" } } }
+    },
+    "iso.list": {
+      "description": "List generated ISO files",
+      "params": {},
+      "result": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": { "type": "string" },
+            "name": { "type": "string" },
+            "size": { "type": "integer" },
+            "modified": { "type": "string" }
+          }
+        }
+      }
+    },
+    "iso.copy": {
+      "description": "Copy ISO to destination. Streams progress via notifications.",
+      "params": {
+        "type": "object",
+        "properties": {
+          "source": { "type": "string" },
+          "destination": { "type": "string" },
+          "fast": { "type": "boolean" }
+        }
+      },
+      "result": { "type": "object", "properties": { "taskId": { "type": "string" }, "exitCode": { "type": "integer" } } }
+    },
+    "iso.size": {
+      "description": "Get ISO file size",
+      "params": { "type": "object", "properties": { "path": { "type": "string" } } },
+      "result": { "type": "object", "properties": { "bytes": { "type": "integer" }, "formatted": { "type": "string" } } }
+    }
+  },
+  "notifications": {
+    "stream.output": {
+      "description": "Real-time output from a running command",
+      "params": {
+        "type": "object",
+        "properties": {
+          "taskId": { "type": "string" },
+          "line": { "type": "string" },
+          "progress": { "type": "number", "minimum": 0, "maximum": 100 },
+          "phase": { "type": "string" }
+        }
+      }
+    },
+    "stream.complete": {
+      "description": "Command execution completed",
+      "params": {
+        "type": "object",
+        "properties": {
+          "taskId": { "type": "string" },
+          "exitCode": { "type": "integer" },
+          "duration": { "type": "number" }
+        }
+      }
+    }
+  }
+}
