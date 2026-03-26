@@ -68,9 +68,17 @@ export class OsHardening {
       { echo: true }
     )
 
-    // Symlink the OS directory into the cache root for easy access
+    // Symlink the OS directory into the cache root for easy access.
+    // Use lstatSync (not existsSync) so we detect and replace broken symlinks.
     const osLink = path.join(SCRIPTS_CACHE, os)
-    if (!fs.existsSync(osLink)) {
+    let linkExists = false
+    try {
+      fs.lstatSync(osLink)
+      linkExists = true
+    } catch {
+      linkExists = false
+    }
+    if (!linkExists) {
       fs.symlinkSync(path.join(upstreamDir, os), osLink)
     }
   }

@@ -68,28 +68,7 @@ jobs:
           curl -sSfL https://get.anchore.io/grant | sudo sh -s -- -b /usr/local/bin
 
       - name: Check license policy
-        run: |
-          # Initialise a default policy if none exists
-          if [ ! -f .grant.yaml ]; then
-            cat > .grant.yaml << 'EOF'
-          rules:
-            - pattern: "GPL-3.0"
-              mode: deny
-            - pattern: "AGPL-3.0"
-              mode: deny
-            - pattern: "MIT"
-              mode: allow
-            - pattern: "Apache-2.0"
-              mode: allow
-            - pattern: "BSD-2-Clause"
-              mode: allow
-            - pattern: "BSD-3-Clause"
-              mode: allow
-            - pattern: "ISC"
-              mode: allow
-          EOF
-          fi
-          grant check --config .grant.yaml dir:.
+        run: grant check --config .grant.yaml dir:.
 
   validate:
     name: Validate Plugin Structure
