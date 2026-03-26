@@ -1,0 +1,45 @@
+# Run eggs-ai alongside eggs-gui daemon
+#
+# Usage:
+#   docker compose up -d
+#   curl http://localhost:3737/api/health
+#
+# With eggs-gui daemon (if containerized):
+#   docker compose --profile full up -d
+
+services:
+  eggs-ai:
+    build: .
+    ports:
+      - "3737:3737"
+    environment:
+      # Set your LLM provider key (pick one):
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+    volumes:
+      # Mount host eggs config for system inspection
+      - /etc/penguins-eggs.d:/etc/penguins-eggs.d:ro
+      # Mount custom provider config
+      - ${HOME}/.eggs-ai.yaml:/root/.eggs-ai.yaml:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3737/api/health').then(r => process.exit(r.ok ? 0 : 1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Optional: Ollama for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["local-llm"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama-data:

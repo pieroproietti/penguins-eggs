@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.git/
+test/
+examples/
+integrations/
+packaging/
+*.md
+.env*
+.npmignore
+vitest.config.ts
+.github/
