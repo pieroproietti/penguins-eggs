@@ -503,3 +503,198 @@ eggs wardrobe import https://gist.example.com/abc123
 | BtrFsGit requires BTRFS | Detect filesystem; graceful no-op on ext4/xfs |
 | system-transparency is niche | Make ST output optional; standard ISO remains default |
 | Too many optional dependencies | Each integration is a plugin; none required for core eggs |
+
+---
+
+## Phase 7: Security & Audit
+
+### 7.1 Vouch Attestation
+
+**What:** Cryptographically sign and attest eggs ISO artifacts.
+
+**Dependencies:** mitchellh/vouch
+
+**Interface:**
+```yaml
+# /etc/penguins-eggs.d/audit.yaml
+audit:
+  attest: true
+  key: /etc/penguins-eggs.d/keys/signing.key
+  output_dir: /var/eggs/attestations
+```
+
+**CLI:**
+```bash
+eggs produce --attest                        # produce + sign artifact
+eggs audit verify <iso-path>                 # verify attestation
+eggs audit show <iso-path>                   # display attestation metadata
+```
+
+**Implementation:**
+1. After ISO production, invoke vouch to sign the ISO hash
+2. Store attestation bundle alongside ISO
+3. `eggs audit verify` checks signature against public key
+4. Integrate with system-transparency for boot-time verification
+
+**Acceptance:**
+- [ ] ISO signed after `eggs produce --attest`
+- [ ] `eggs audit verify` passes for a correctly signed ISO
+- [ ] Tampered ISO fails verification
+
+---
+
+### 7.2 OS Hardening
+
+**What:** Apply OS hardening scripts to eggs-produced system chroots.
+
+**Dependencies:** Opsek/OSs-security
+
+**CLI:**
+```bash
+eggs produce --harden                        # apply hardening to chroot before ISO
+eggs harden --target /mnt/chroot             # standalone hardening of a mounted chroot
+eggs harden --dry-run                        # show what would change
+```
+
+**Implementation:**
+1. Clone OSs-security scripts into eggs plugin directory
+2. After chroot setup, run `linux/hardening.sh` against the chroot
+3. Support `--dry-run` via OSs-security's built-in simulation mode
+4. Log all changes for audit trail
+
+**Acceptance:**
+- [ ] Hardening script runs without errors against a standard Debian/Ubuntu chroot
+- [ ] `--dry-run` produces a diff without modifying the chroot
+- [ ] Hardened ISO boots and passes basic functionality checks
+
+---
+
+### 7.3 Ultimate Linux Suite Integration
+
+**What:** Bundle the ultimate-linux-suite tooling in admin/developer eggs costumes.
+
+**Dependencies:** Nerds489/ultimate-linux-suite
+
+**Implementation:**
+1. Add `costumes/admin` wardrobe entry
+2. Include unified.sh and its dependencies
+3. Pre-configure for the target distro
+
+**CLI:**
+```bash
+eggs costume --include linux-suite           # add to current costume
+```
+
+**Acceptance:**
+- [ ] `unified.sh` available on PATH in produced ISO
+- [ ] Suite installs cleanly on Debian/Ubuntu base
+
+---
+
+## Phase 8: SBOM & Supply Chain
+
+### 8.1 Syft SBOM Generation
+
+**What:** Generate a Software Bill of Materials for eggs ISO contents.
+
+**Dependencies:** anchore/syft
+
+**Interface:**
+```yaml
+# /etc/penguins-eggs.d/sbom.yaml
+sbom:
+  enabled: true
+  format: spdx-json          # spdx-json | cyclonedx-json | syft-json
+  output_dir: /var/eggs/sbom
+  attach_to_release: true
+```
+
+**CLI:**
+```bash
+eggs produce --sbom                          # produce + generate SBOM
+eggs sbom generate <iso-path>                # generate SBOM for existing ISO
+eggs sbom generate --format cyclonedx-json <iso-path>
+```
+
+**Implementation:**
+1. After ISO production, mount the ISO filesystem
+2. Run `syft <mountpoint> -o <format>` to generate SBOM
+3. Write SBOM to configured output directory
+4. Attach SBOM to GitHub release if `attach_to_release: true`
+
+**Acceptance:**
+- [ ] SBOM generated after `eggs produce --sbom`
+- [ ] SBOM contains all packages installed in the ISO
+- [ ] Output valid SPDX-JSON and CycloneDX-JSON
+
+---
+
+### 8.2 Grant License Compliance
+
+**What:** Enforce license policy on all packages in the ISO SBOM.
+
+**Dependencies:** anchore/grant, anchore/syft (for SBOM input)
+
+**Interface:**
+```yaml
+# .grant.yaml (in repo root)
+rules:
+  - pattern: "GPL-3.0"
+    mode: deny
+  - pattern: "MIT"
+    mode: allow
+  - pattern: "Apache-2.0"
+    mode: allow
+```
+
+**CLI:**
+```bash
+eggs produce --sbom --license-check          # produce + SBOM + license gate
+eggs sbom check <iso-path>                   # standalone license check
+eggs sbom check --policy .grant.yaml <iso-path>
+```
+
+**Implementation:**
+1. Generate SBOM via syft (see 8.1)
+2. Run `grant check --config .grant.yaml <sbom-file>`
+3. Fail build if denied licenses are present
+4. Output license report to CI annotations
+
+**Acceptance:**
+- [ ] Build fails when a denied license is detected
+- [ ] License report lists all packages with their licenses
+- [ ] Policy file supports allow/deny patterns
+
+---
+
+### 8.3 SBOM Augmentation & Enrichment
+
+**What:** Augment and enrich eggs SBOMs following CISA reference implementations.
+
+**Dependencies:** SBOM-Community/SBOM-Generation reference workflows
+
+**Implementation:**
+1. Adapt CISA reference GitHub Actions workflows for eggs ISO artifacts
+2. Augmentation step: populate top-level metadata (supplier, license, description)
+3. Enrichment step: add NTIA-required fields to each component from open datasets
+4. Publish enriched SBOM alongside ISO release
+
+**Acceptance:**
+- [ ] Enriched SBOM includes all NTIA minimum elements
+- [ ] Top-level metadata populated with eggs project details
+- [ ] Workflow runs in CI on each release
+
+---
+
+## Dependency Matrix (updated)
+
+| Phase | Hard Dependencies | Optional Dependencies |
+|---|---|---|
+| 1 | git-lfs, git | giftless, lfs-test-server, gitpack |
+| 2 | IPFS daemon | brig, git-lfs-ipfs, ipgit |
+| 3 | FUSE (libfuse2/3) | presslabs/gitfs, dsxack/gitfs |
+| 4 | — | system-transparency, BtrFsGit (BTRFS only) |
+| 5 | GitHub account | gitstream, frogbot, workflow-ts |
+| 6 | Docker (for hosting) | gogs, opengist, giftless |
+| 7 | — | vouch, OSs-security, ultimate-linux-suite |
+| 8 | anchore/syft | anchore/grant, SBOM-Generation workflows |

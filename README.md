@@ -1,7 +1,8 @@
-# penguins-eggs-integrations
+# penguins-eggs-audit
 
 Integration framework extending [Penguins-Eggs](https://github.com/pieroproietti/penguins-eggs)
-with 31 git-based projects across 6 feature domains.
+with 39 git-based projects across 8 feature domains, with a focus on security auditing,
+supply chain transparency, and OS hardening.
 
 ## Feature Domains
 
@@ -13,12 +14,14 @@ with 31 git-based projects across 6 feature domains.
 | Build Infrastructure | Reproducible, verified builds | system-transparency, BtrFsGit |
 | Dev Workflow | CI/CD, security, automation | gitstream, frogbot, workflow-ts |
 | Packaging | Installation & app distribution | gitpack, github-paser |
+| Security & Audit | OS hardening, attestation, vulnerability scanning | vouch, OSs-security, ultimate-linux-suite |
+| SBOM & Supply Chain | Software bill of materials generation and license compliance | syft, grant, SBOM-Generation |
 
 ## Documents
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — System design and project mapping
 - [INTEGRATION-SPEC.md](INTEGRATION-SPEC.md) — Per-integration specifications with CLI, config, and acceptance criteria
-- [PROJECT-CATALOG.md](PROJECT-CATALOG.md) — All 31 projects with descriptions and links
+- [PROJECT-CATALOG.md](PROJECT-CATALOG.md) — All 39 projects with descriptions and links
 
 ## Implementation Phases
 
@@ -28,15 +31,17 @@ with 31 git-based projects across 6 feature domains.
 4. **Build Infrastructure** — system-transparency, BtrFsGit snapshots
 5. **Dev Workflow** — gitstream, frogbot, TypeScript CI, developer tools
 6. **Self-Hosted** — gogs registry, opengist sharing, giftless server
+7. **Security & Audit** — vouch attestation, OS hardening, vulnerability scanning
+8. **SBOM & Supply Chain** — syft SBOM generation, grant license compliance, SBOM-Generation reference implementations
 
 ## File Inventory
 
-46 files total: 26 TypeScript modules, 6 shell scripts, 5 YAML configs, 4 docs, 5 other.
+54 files total: 30 TypeScript modules, 8 shell scripts, 6 YAML configs, 4 docs, 6 other.
 
 ## Structure
 
 ```
-penguins-eggs-integrations/
+penguins-eggs-audit/
 ├── README.md
 ├── ARCHITECTURE.md
 ├── INTEGRATION-SPEC.md
@@ -64,8 +69,16 @@ penguins-eggs-integrations/
     │   ├── security-scan/        # Frogbot GitHub Action
     │   ├── ts-ci/                # TypeScript-defined CI workflows
     │   └── dev-tools/            # developer costume (lazygit, etc.)
-    └── packaging/
-        ├── gitpack-install/      # .install/ for gitpack support
-        ├── release-downloader/   # shell + oclif release downloader
-        └── dir-downloader/       # selective wardrobe directory download
+    ├── packaging/
+    │   ├── gitpack-install/      # .install/ for gitpack support
+    │   ├── release-downloader/   # shell + oclif release downloader
+    │   └── dir-downloader/       # selective wardrobe directory download
+    ├── security-audit/
+    │   ├── vouch-attest/         # cryptographic attestation via vouch
+    │   ├── os-hardening/         # OS hardening scripts (OSs-security)
+    │   └── linux-suite/          # unified Linux tooling (ultimate-linux-suite)
+    └── sbom/
+        ├── syft-generate/        # SBOM generation for ISO artifacts
+        ├── grant-license/        # license compliance scanning
+        └── sbom-reference/       # CISA SBOM generation reference workflows
 ```

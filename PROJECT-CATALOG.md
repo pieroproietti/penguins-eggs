@@ -1,6 +1,6 @@
 # Project Catalog
 
-All 31 projects integrated with Penguins-Eggs, organized by domain.
+All 39 projects integrated with Penguins-Eggs, organized by domain.
 
 ## Distribution & Hosting
 
@@ -62,3 +62,21 @@ All 31 projects integrated with Penguins-Eggs, organized by domain.
 | dominiksalvet/gitpack | Git-based package manager (POSIX shell) | Shell | 112 | https://github.com/dominiksalvet/gitpack |
 | RaduAnPlay/Github-paser | Bash script to download GitHub releases | Shell | 1 | https://github.com/RaduAnPlay/Github-paser |
 | Alex313031/github-directory-downloader | Download subdirectories from GitHub repos | TypeScript | 3 | https://github.com/Alex313031/github-directory-downloader |
+
+## Security & Audit
+
+| Project | Description | Language | Stars | URL |
+|---|---|---|---|---|
+| mitchellh/vouch | Cryptographic attestation and artifact signing | Go | 4k | https://github.com/mitchellh/vouch |
+| Opsek/OSs-security | OS hardening scripts and factory reset guides (Linux/macOS/Windows), audited by Sigma Prime | Shell/PowerShell | 22 | https://github.com/Opsek/OSs-security |
+| Nerds489/ultimate-linux-suite | Unified Linux tooling suite for install, configuration, and hardening | Shell | — | https://github.com/Nerds489/ultimate-linux-suite |
+| jfrog/frogbot | Git repo security vulnerability scanner (also listed under Dev Workflow) | Go | 356 | https://github.com/jfrog/frogbot |
+
+## SBOM & Supply Chain
+
+| Project | Description | Language | Stars | URL |
+|---|---|---|---|---|
+| anchore/syft | SBOM generator for container images, filesystems, and archives | Go | 6k | https://github.com/anchore/syft |
+| anchore/grant | License scanner for container images, SBOMs, and filesystems; works with Syft | Go | 153 | https://github.com/anchore/grant |
+| SBOM-Community/SBOM-Generation | CISA-facilitated SBOM generation reference implementations with augmentation and enrichment | Python | 34 | https://github.com/SBOM-Community/SBOM-Generation |
+| system-transparency/system-transparency | Verified, reproducible server boot images (also listed under Build Infrastructure) | Shell | 91 | https://github.com/system-transparency/system-transparency |

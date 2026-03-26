@@ -1,9 +1,9 @@
-# Penguins-Eggs Integration Architecture
+# Penguins-Eggs Audit Architecture
 
 ## Overview
 
-This document defines how 31 external git-based projects integrate with
-Penguins-Eggs to extend its capabilities across six feature domains.
+This document defines how 39 external git-based projects integrate with
+Penguins-Eggs to extend its capabilities across eight feature domains.
 
 Penguins-Eggs core function: snapshot a running Linux system into a
 redistributable live ISO/image.
@@ -11,17 +11,17 @@ redistributable live ISO/image.
 The integrations extend eggs in these directions:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    PENGUINS-EGGS CORE                        │
-│         (produce ISOs, install systems, wardrobes)           │
-└──────┬──────┬──────┬──────┬──────┬──────┬───────────────────┘
-       │      │      │      │      │      │
-       ▼      ▼      ▼      ▼      ▼      ▼
-   ┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
-   │DISTRO││DECEN-││CONFIG││BUILD ││DEV   ││PACK- │
-   │BUTION││TRAL- ││MGMT  ││INFRA ││WORK- ││AGING │
-   │      ││IZED  ││      ││      ││FLOW  ││      │
-   └──────┘└──────┘└──────┘└──────┘└──────┘└──────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         PENGUINS-EGGS CORE                               │
+│              (produce ISOs, install systems, wardrobes)                  │
+└──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬─────────────────┘
+       │      │      │      │      │      │      │      │
+       ▼      ▼      ▼      ▼      ▼      ▼      ▼      ▼
+   ┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
+   │DISTRO││DECEN-││CONFIG││BUILD ││DEV   ││PACK- ││SECUR-││SBOM  │
+   │BUTION││TRAL- ││MGMT  ││INFRA ││WORK- ││AGING ││ITY & ││&     │
+   │      ││IZED  ││      ││      ││FLOW  ││      ││AUDIT ││SUPPLY│
+   └──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘
 ```
 
 ---
@@ -226,3 +226,80 @@ eggs wardrobe get <repo-url>/path/to/costume
 - gogs as private ISO registry
 - opengist for config snippet sharing
 - giftless as production LFS server
+
+---
+
+## Domain 7: Security & Audit
+
+Purpose: Harden eggs-produced systems, attest artifacts, and scan for vulnerabilities.
+
+| Project | Role | Integration Point |
+|---|---|---|
+| mitchellh/vouch | Cryptographic attestation and signing of artifacts | Sign ISOs and boot artifacts; verify provenance |
+| Opsek/OSs-security | OS hardening scripts and factory reset guides | Apply hardening to eggs-produced systems post-install |
+| Nerds489/ultimate-linux-suite | Unified Linux tooling for install, config, and hardening | Include in developer/admin eggs costumes |
+| jfrog/frogbot | Security vulnerability scanning | Scan eggs npm dependencies for CVEs (shared with Dev Workflow) |
+
+### Implementation
+
+```
+eggs produce --harden
+  1. Produce ISO as normal
+  2. Apply OSs-security hardening scripts to the chroot
+  3. Sign the resulting ISO with vouch
+  4. Embed attestation metadata in ISO descriptor
+
+eggs audit --scan
+  1. Run frogbot against current dependency tree
+  2. Report CVEs to stdout / CI annotations
+
+eggs costume --include linux-suite
+  - Bundles ultimate-linux-suite into the produced ISO
+```
+
+---
+
+## Domain 8: SBOM & Supply Chain
+
+Purpose: Generate, enrich, and enforce software bill of materials for eggs artifacts.
+
+| Project | Role | Integration Point |
+|---|---|---|
+| anchore/syft | SBOM generation for container images, filesystems, archives | Generate SBOM for eggs ISO contents after produce |
+| anchore/grant | License compliance scanning against SBOM | Enforce license policy on all packages in the ISO |
+| SBOM-Community/SBOM-Generation | CISA reference implementations for SBOM augmentation and enrichment | Reference workflows for augmenting and enriching eggs SBOMs |
+| system-transparency/system-transparency | Verified, reproducible boot images | Supply chain root of trust for eggs-produced images (shared with Build Infrastructure) |
+
+### Implementation
+
+```
+eggs produce --sbom
+  1. Produce ISO as normal
+  2. Run syft against the ISO filesystem
+  3. Output SBOM in SPDX or CycloneDX format
+  4. Run grant against the SBOM to check license policy
+  5. Fail build if denied licenses are present
+  6. Attach SBOM to release artifacts
+
+eggs sbom check --policy .grant.yaml <iso-path>
+  - Standalone license compliance check against an existing ISO
+
+eggs sbom generate --format spdx-json <iso-path>
+  - Generate SBOM without full produce cycle
+```
+
+---
+
+## Implementation Phases (updated)
+
+### Phase 7: Security & Audit
+- vouch attestation for signed ISO artifacts
+- OSs-security hardening applied to produced chroots
+- ultimate-linux-suite bundled in admin costumes
+- frogbot integrated into CI for dependency CVE scanning
+
+### Phase 8: SBOM & Supply Chain
+- syft SBOM generation post-produce
+- grant license policy enforcement
+- SBOM augmentation/enrichment following CISA reference implementations
+- SBOM attached to all release artifacts
