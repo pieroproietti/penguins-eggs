@@ -16,6 +16,7 @@ import inquirer from 'inquirer'
 import { createRequire } from 'module';
 import os from 'os'
 import path from 'path'
+import { releaseInfo } from 'linux-release-info'
 
 // interfaces
 import IOsRelease from '../interfaces/i-os-release.js'
@@ -439,71 +440,44 @@ export default class Utils {
       return rootSpaceNeeded / 1_073_741_824; // Converte in GB
    }
 
-   // Se il metodo fa parte di una classe, usa `static`. Altrimenti, rimuovilo.
-   static getOsRelease(): IOsRelease {
-      const osReleasePath = path.join('/etc', 'os-release');
-
-      // Inizializza l'oggetto con valori predefiniti
-      const osInfo: IOsRelease = {
+   /**
+    * Read OS release info using linux-release-info.
+    *
+    * @param customFile - Optional path to an os-release file. Pass the target
+    *   system's file (e.g. `snapshot_mnt + '/etc/os-release'`) when producing
+    *   an ISO so the target identity is read rather than the host's.
+    */
+   static getOsRelease(customFile?: string): IOsRelease {
+      const defaults: IOsRelease = {
          ID: '',
          VERSION_CODENAME: 'n/a',
-         VERSION_ID: ''
-      };
-
-      // Verifica se il file esiste
-      if (!fs.existsSync(osReleasePath)) {
-         console.error('/etc/os-release file does not exist.');
-         return osInfo;
+         VERSION_ID: '',
       }
 
-      // Leggi il contenuto del file
-      let fileContent: string;
+      let raw: Record<string, unknown>
       try {
-         fileContent = fs.readFileSync(osReleasePath, 'utf8');
-      } catch (error) {
-         console.error('Error reading /etc/os-release:', error);
-         return osInfo;
+         raw = releaseInfo({ mode: 'sync', custom_file: customFile ?? null }) as Record<string, unknown>
+      } catch {
+         return defaults
       }
 
-      // Analizza ogni linea
-      const lines = fileContent.split('\n');
-      for (const line of lines) {
-         if (line.startsWith('#') || line.trim() === '') continue;
+      const str = (v: unknown): string => (typeof v === 'string' ? v : '')
 
-         const [key, value] = line.split('=')
-         if (key && value) {
-            const trimmedKey = key.trim();
-            const trimmedValue = value.trim().replaceAll('"', '');
+      const id = str(raw['id'] ?? raw['ID'])
+      const codename = str(raw['version_codename'] ?? raw['VERSION_CODENAME']) || 'n/a'
+      const versionId = str(raw['version_id'] ?? raw['VERSION_ID'])
 
-            // Popola solo le chiavi desiderate
-            switch (trimmedKey) {
-               case 'ID': {
-                  osInfo.ID = trimmedValue
-
-                  break;
-               }
-
-               case 'VERSION_CODENAME': {
-                  osInfo.VERSION_CODENAME = trimmedValue
-
-                  break;
-               }
-
-               case 'VERSION_ID': {
-                  osInfo.VERSION_ID = trimmedValue
-
-                  break;
-               }
-               // No default
-            }
-         }
+      return {
+         ID: id ? id[0].toUpperCase() + id.slice(1).toLowerCase() : '',
+         VERSION_CODENAME: codename.toLowerCase(),
+         VERSION_ID: versionId,
+         ID_LIKE: str(raw['id_like'] ?? raw['ID_LIKE']) || undefined,
+         NAME: str(raw['name'] ?? raw['NAME']) || undefined,
+         PRETTY_NAME: str(raw['pretty_name'] ?? raw['PRETTY_NAME']) || undefined,
+         HOME_URL: str(raw['home_url'] ?? raw['HOME_URL']) || undefined,
+         SUPPORT_URL: str(raw['support_url'] ?? raw['SUPPORT_URL']) || undefined,
+         BUG_REPORT_URL: str(raw['bug_report_url'] ?? raw['BUG_REPORT_URL']) || undefined,
       }
-
-      // capitalize distroId
-      osInfo.ID = osInfo.ID[0].toUpperCase() + osInfo.ID.slice(1).toLowerCase()
-      osInfo.VERSION_CODENAME = osInfo.VERSION_CODENAME.toLowerCase()
-
-      return osInfo
    }
 
    /**

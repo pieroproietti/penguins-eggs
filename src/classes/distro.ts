@@ -563,28 +563,10 @@ class Distro implements IDistro {
       this.squashfs = 'system.sfs'
     }
 
-    /**
-     * lettura os_release per i pulsanti
-     */
-    const os_release = '/etc/os-release'
-    if (fs.existsSync(os_release)) {
-      let lines: string[] = []
-      if (fs.existsSync(os_release)) {
-        const data = fs.readFileSync(os_release, 'utf8')
-        lines = data.split('\n')
-      }
-
-      // read every line
-      for (const line of lines) {
-        if (line.startsWith('HOME_URL=')) {
-          this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '')
-        } else if (line.startsWith('SUPPORT_URL=')) {
-          this.supportUrl = line.slice('SUPPORT_URL='.length).replaceAll('"', '')
-        } else if (line.startsWith('BUG_REPORT_URL=')) {
-          this.bugReportUrl = line.slice('BUG_REPORT_URL='.length).replaceAll('"', '')
-        }
-      }
-    }
+    // HOME_URL, SUPPORT_URL, BUG_REPORT_URL are now provided directly by getOsRelease()
+    if (osInfo.HOME_URL) this.homeUrl = osInfo.HOME_URL
+    if (osInfo.SUPPORT_URL) this.supportUrl = osInfo.SUPPORT_URL
+    if (osInfo.BUG_REPORT_URL) this.bugReportUrl = osInfo.BUG_REPORT_URL
   }
 
   /**

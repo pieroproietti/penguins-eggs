@@ -28,6 +28,7 @@
         "ink-spinner": "^5.0.0",
         "inquirer": "^13.2.5",
         "js-yaml": "^4.1.1",
+        "linux-release-info": "^3.0.0",
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "penguins-eggs-integrations": "github:Interested-Deving-1896/penguins-eggs-integrations",
