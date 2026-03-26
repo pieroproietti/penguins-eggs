@@ -1,7 +1,7 @@
 /**
  * penguins-eggs-integrations
  *
- * Integration plugins extending Penguins-Eggs with 39 git-based projects
+ * Integration plugins extending Penguins-Eggs with 46 git-based projects
  * across 6 feature domains.
  *
  * Usage:
@@ -23,8 +23,21 @@ export {
   saveLfsConfig,
   lfsAfterProduce,
   OpengistSharing,
+  // gentoo-installer (jeremypass96/gentoo-installer)
+  GentooInstaller,
+  gentooStage3Rootfs,
 } from './distribution/index.js'
-export type { ILfsConfig } from './distribution/index.js'
+export type {
+  ILfsConfig,
+  GentooInstallerConfig,
+  GentooArch,
+  GentooProfile,
+  GentooFilesystem,
+  GentooDesktop,
+  GentooKernel,
+  Stage3Info,
+  MakeConf,
+} from './distribution/index.js'
 
 // Decentralized
 export {
@@ -82,6 +95,26 @@ export {
   BtrfsCompat,
   btrfsCompatCheck,
   btrfsCompatReport,
+  // mkosi (systemd/mkosi)
+  Mkosi,
+  mkosiPrepareRootfs,
+  mkosiWrapUki,
+  // buildroot (buildroot/buildroot)
+  Buildroot,
+  buildrootPrepareRootfs,
+  // embiggen-disk (bradfitz/embiggen-disk)
+  EmbiggenDisk,
+  embiggenAfterInstall,
+  // gpt-image (queso-fuego/UEFI-GPT-image-creator)
+  GptImage,
+  gptImageAfterProduce,
+  // partitionfs (madscientist42/partitionfs)
+  Partitionfs,
+  withPartitions,
+  checkPartitionSupport,
+  // partymix (pyx-cvm/partymix)
+  Partymix,
+  partymixAfterProduce,
 } from './build-infra/index.js'
 export type {
   StDescriptor,
@@ -105,6 +138,23 @@ export type {
   KernelVersion,
   BtrfsFeatureSet,
   BtrfsMountOptions,
+  MkosiConfig,
+  MkosiResult,
+  MkosiFormat,
+  MkosiDistribution,
+  BuildrootConfig,
+  BuildrootResult,
+  BuildrootOutputFormat,
+  EmbiggenOptions,
+  ResizeResult,
+  GptImageOptions,
+  GptImageResult,
+  PartitionMount,
+  PartitionfsOptions,
+  PartymixOptions,
+  PartymixResult,
+  PartymixPartition,
+  PartymixPartitionType,
 } from './build-infra/index.js'
 
 // Dev Workflow
