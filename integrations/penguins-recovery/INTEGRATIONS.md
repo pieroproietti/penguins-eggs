@@ -38,6 +38,57 @@ External projects integrated into penguins-recovery builders, adapters, and scri
 | `common/scripts/password-reset.sh` | — | Reset user passwords via chroot |
 | `common/scripts/uefi-repair.sh` | — | Repair UEFI boot entries |
 
+## Audit & Security (`integration/audit/`)
+
+Opt-in post-build steps adapted from [penguins-eggs-audit](https://github.com/Interested-Deving-1896/penguins-eggs-audit).
+All four fail gracefully when the required binary is absent.
+
+| Module | Upstream | When to run | Purpose |
+|---|---|---|---|
+| `integration/audit/os-hardening.ts` | [Opsek/OSs-security](https://github.com/Opsek/OSs-security) | Before ISO packaging | Harden the recovery chroot |
+| `integration/audit/syft-generate.ts` | [anchore/syft](https://github.com/anchore/syft) | After ISO build | Generate SBOM for the recovery ISO |
+| `integration/audit/grant-license.ts` | [anchore/grant](https://github.com/anchore/grant) | After SBOM generation | Check license compliance |
+| `integration/audit/vouch-attest.ts` | [mitchellh/vouch](https://github.com/mitchellh/vouch) | After ISO build | Sign the recovery ISO with an attestation bundle |
+
+```typescript
+import { RecoveryHardening, RecoverySyft, RecoveryGrant, RecoveryVouch } from './integration/audit/index.js'
+
+// 1. Harden the chroot before packaging
+const hardening = new RecoveryHardening(exec)
+await hardening.fetchScripts()
+await hardening.applyHardening({ chrootPath: '/var/tmp/recovery-chroot' })
+
+// 2. Generate SBOM after ISO build
+const syft = new RecoverySyft(exec)
+const sbom = await syft.generate('recovery.iso', { outputDir: 'recovery.iso.d' })
+
+// 3. Check license compliance
+const grant = new RecoveryGrant(exec)
+await grant.check(sbom.sbomPath)
+
+// 4. Sign the ISO
+const vouch = new RecoveryVouch(exec)
+await vouch.attest('recovery.iso', { keyPath: '/etc/keys/recovery.key', outputDir: 'recovery.iso.d' })
+```
+
+## AI Advisor (`integration/eggs-ai/`)
+
+Connects the recovery environment to the [eggs-ai](https://github.com/Interested-Deving-1896/eggs-ai)
+HTTP API for AI-assisted diagnostics and Q&A during a recovery session.
+
+| File | Use case |
+|---|---|
+| `integration/eggs-ai/recovery-advisor.sh` | Shell script for recovery terminals (requires only `curl` or `wget`) |
+| `integration/eggs-ai/recovery_advisor.py` | Python module: CLI fallback + optional NiceGUI panel |
+
+```bash
+# From a recovery terminal
+recovery-advisor doctor "system won't boot after kernel update"
+recovery-advisor ask "how do I repair a broken GRUB installation?"
+```
+
+Requires eggs-ai to be running: `eggs-ai serve`
+
 ---
 
 ## Disk image output formats
