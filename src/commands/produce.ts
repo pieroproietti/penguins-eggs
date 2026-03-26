@@ -36,7 +36,8 @@ export default class Produce extends Command {
     'sudo eggs produce --recovery --recovery-rescapp      # with rescapp',
     'sudo eggs produce --cros-flavour=thorium   # ChromiumOS with Thorium browser',
     'sudo eggs produce --cros-flavour=brave     # ChromiumOS with Brave browser',
-    'sudo eggs produce --cros-flavour=custom --cros-browser-repo=https://github.com/user/fork  # custom browser'
+    'sudo eggs produce --cros-flavour=custom --cros-browser-repo=https://github.com/user/fork  # custom browser',
+    'sudo eggs produce --sbom                # generate SBOM for the produced ISO (requires syft)'
   ]
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
@@ -64,6 +65,7 @@ export default class Produce extends Command {
     lfs: Flags.boolean({ description: 'track produced ISO in git-lfs after build' }),
     ipfs: Flags.boolean({ description: 'publish produced ISO to IPFS via brig after build' }),
     snapshot: Flags.boolean({ description: 'create BTRFS snapshots before/after build (requires BTRFS)' }),
+    sbom: Flags.boolean({ description: 'generate a Software Bill of Materials (SBOM) for the produced ISO via syft' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
@@ -438,6 +440,23 @@ export default class Produce extends Command {
             }
           } catch (err: any) {
             Utils.warning(`IPFS publish failed: ${err.message}`)
+          }
+        }
+
+        if (flags.sbom) {
+          try {
+            const { SyftGenerate } = await import('penguins-eggs-audit/sbom')
+            const syft = new SyftGenerate(exec)
+            if (await syft.isAvailable()) {
+              const sbomDir = path.join(ovary.settings.config.snapshot_dir, 'sbom')
+              const result = await syft.generate(isoPath, { outputDir: sbomDir })
+              console.log(`SBOM: generated ${path.basename(result.sbomPath)}`)
+              if (verbose) console.log(`SBOM: written to ${result.sbomPath}`)
+            } else {
+              Utils.warning('syft not installed, skipping SBOM generation (install from https://github.com/anchore/syft)')
+            }
+          } catch (err: any) {
+            Utils.warning(`SBOM generation failed: ${err.message}`)
           }
         }
       }

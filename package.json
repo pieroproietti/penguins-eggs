@@ -32,6 +32,7 @@
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "penguins-eggs-integrations": "github:Interested-Deving-1896/penguins-eggs-integrations",
+    "penguins-eggs-audit": "github:Interested-Deving-1896/penguins-eggs-audit",
         "react": "^19.2.4",
         "read": "^5.0.1",
         "systeminformation": "^5.31.1",
