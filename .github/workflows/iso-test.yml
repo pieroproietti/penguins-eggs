@@ -8,6 +8,7 @@ name: ISO Test
     - cron: 0 2 * * 0
 permissions:
   contents: read
+  packages: write  # Added permission to write packages
 jobs:
   produce-iso:
     name: Produce ISO on ${{ matrix.distro }}
@@ -39,8 +40,6 @@ jobs:
         run: sudo ./bin/run.js config --nointeractive
       - name: Produce ISO
         run: sudo ./bin/run.js produce --nointeractive --basename test-${{ matrix.distro }}
-        env:
-          HOME: /home/eggs
       - name: Verify ISO
         run: |-
           ls -la /home/eggs/*.iso
