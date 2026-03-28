@@ -1,46 +1,77 @@
-# Auto-generated from plugins/dev-workflow/ts-ci/workflows.ts
-# Do not edit directly — modify the TypeScript source and regenerate.
+# Managed by lkf ci tooling. Edit this file directly.
 
 name: ISO Test
-"on":
+on:
   workflow_dispatch: {}
   schedule:
-    - cron: 0 2 * * 0
+    # Weekly on Sunday at 02:00 UTC
+    - cron: "0 2 * * 0"
+
 permissions:
   contents: read
   packages: write
+
 jobs:
   produce-iso:
-    name: Produce ISO on ${{ matrix.distro }}
+    name: Produce ISO (${{ matrix.distro }})
     runs-on: ubuntu-latest
+    # Each matrix entry runs inside the matching distro container so eggs
+    # detects the correct host distro from /etc/os-release.
+    container:
+      image: ${{ matrix.image }}
+      options: --privileged
+
     strategy:
-      matrix:
-        distro:
-          - debian-bookworm
-          - ubuntu-noble
       fail-fast: false
+      matrix:
+        include:
+          - distro: debian-bookworm
+            image: debian:bookworm
+          - distro: ubuntu-noble
+            image: ubuntu:noble
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup container
-        run: |-
-          sudo apt-get update
-          sudo apt-get install -y debootstrap squashfs-tools xorriso isolinux syslinux-common mtools dosfstools grub-efi-amd64-bin
-      - name: Setup Node.js
+
+      - name: Install system dependencies
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends \
+            curl ca-certificates gnupg \
+            debootstrap squashfs-tools xorriso \
+            isolinux syslinux-common mtools dosfstools \
+            grub-efi-amd64-bin file sudo
+
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
       - name: Install pnpm
         run: npm install -g pnpm
+
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
+
       - name: Build
         run: pnpm run build
+
       - name: Configure eggs
-        run: sudo ./bin/run.js config --nointeractive
+        run: ./bin/run.js config --nointeractive
+
       - name: Produce ISO
-        run: sudo ./bin/run.js produce --nointeractive --basename test-${{ matrix.distro }}
+        run: ./bin/run.js produce --nointeractive --basename test-${{ matrix.distro }}
+
       - name: Verify ISO
-        run: |-
-          ls -la /home/eggs/*.iso
+        run: |
+          ls -lah /home/eggs/*.iso
           file /home/eggs/*.iso
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: iso-${{ matrix.distro }}
+          path: /home/eggs/*.iso
+          retention-days: 3
