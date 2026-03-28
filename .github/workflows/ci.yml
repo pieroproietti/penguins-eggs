@@ -61,6 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read  # Added permissions for license-check job
+      security-events: read  # Added permissions for license-check job
 
     steps:
       - uses: actions/checkout@v4
