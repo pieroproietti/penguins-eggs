@@ -9,6 +9,7 @@ name: ISO Test
 permissions:
   contents: read
   packages: write  # Added permission to write packages
+  filesystem: write  # Added permission to write to the filesystem
 jobs:
   produce-iso:
     name: Produce ISO on ${{ matrix.distro }}
