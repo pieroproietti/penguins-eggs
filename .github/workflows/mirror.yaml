@@ -24,6 +24,9 @@ jobs:
       - name: Fetch all branches and tags
         run: git fetch --all --tags --prune
 
+      - name: Reset branch to avoid ref locking
+        run: git reset --hard origin/all-features
+
       - name: Push mirror to OpenOS-Project-OSP
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
