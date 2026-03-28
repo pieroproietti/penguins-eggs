@@ -1,0 +1,18 @@
+[Unit]
+Description=Linux Powerwash — rebind devices after resume from sleep
+Documentation=https://github.com/linux-powerwash/linux-powerwash
+# Run after the system has fully resumed and udev has settled
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+After=systemd-udev-settle.service
+
+[Service]
+Type=oneshot
+# Read device BUS IDs from config, one per line (comments with # are ignored)
+EnvironmentFile=-/etc/powerwash/rebind-devices.conf
+ExecStart=/usr/lib/powerwash/rebind-helper
+RemainAfterExit=no
+# Give udev time to settle before rebinding
+ExecStartPre=/bin/sleep 2
+
+[Install]
+WantedBy=sleep.target

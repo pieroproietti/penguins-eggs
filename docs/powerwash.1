@@ -1,0 +1,215 @@
+.TH POWERWASH 1 "2024" "Linux Powerwash 0.1.0" "User Commands"
+.SH NAME
+powerwash \- distro-agnostic, filesystem-agnostic factory reset for Linux
+.SH SYNOPSIS
+.B powerwash
+[\fIglobal-flags\fR] \fIcommand\fR [\fIoptions\fR]
+.SH DESCRIPTION
+.B powerwash
+resets a Linux system to a clean state without reinstalling the OS.
+It detects the running distribution and filesystem automatically, routes
+all package operations through the appropriate package manager (apt, dnf,
+pacman, zypper, emerge, xbps), and takes a backup before any destructive
+operation.
+.PP
+All destructive commands respect
+.B \-\-dry\-run
+mode, which prints every action without executing it.
+.SH COMMANDS
+.SS Reset modes
+.TP
+.B soft
+Clear user configuration files (dotfiles) for all or specified users.
+Installed packages and home directory data are not affected.
+.TP
+.B medium
+Remove user-installed packages, reset APT/DNF/pacman sources to
+distribution defaults, and clear user dotfiles.
+Home directory data is preserved.
+.TP
+.B hard
+Full factory reset. Removes all user-installed packages, wipes home
+directories, resets system configuration, and clears logs.
+Requires double confirmation. A backup is taken unless
+.B \-\-no\-backup
+is specified.
+.TP
+.B sysprep
+Generalize the system for disk imaging. Clears machine-id, SSH host
+keys, network leases, cloud-init state, and logs. Installs a one-shot
+systemd service to regenerate identifiers on first boot of the clone.
+Use
+.B \-\-shutdown
+to power off automatically after sysprep.
+.TP
+.B hardware \fIsubcommand\fR
+Manage hardware device resets.
+.RS
+.TP
+.B hardware list
+List PCI and USB devices with their sysfs BUS IDs.
+.TP
+.B hardware rebind \fIbus-id\fR [...]
+Unbind and rebind one or more devices via sysfs.
+.TP
+.B hardware vendor-reset \fIpci-id\fR
+Trigger a vendor-specific GPU reset via the vendor-reset kernel module.
+.RE
+.SS Backup management
+.TP
+.B backup create [\-\-encrypt] [\-\-dest \fIdir\fR] [\-\-users \fIu1,u2\fR]
+Create a timestamped backup of packages, repos, home directories, /etc,
+fstab, crontabs, Docker metadata, and GRUB config.
+.B \-\-encrypt
+protects the archive with GPG symmetric encryption.
+.TP
+.B backup list
+List available backups with timestamps and sizes.
+.TP
+.B backup restore-packages \fIdir\fR
+Reinstall packages from a backup's package list.
+.TP
+.B backup restore-home \fIdir\fR
+Restore home directories from a backup archive.
+.TP
+.B backup decrypt \fIfile\fR [\fIdest\fR]
+Decrypt a GPG-encrypted backup archive.
+.SS Snapshot management
+.TP
+.B snapshot create [\fIlabel\fR]
+Create a read-only filesystem snapshot (btrfs or ZFS only).
+.TP
+.B snapshot list
+List powerwash snapshots.
+.TP
+.B snapshot rollback \fIname\fR
+Roll back to a snapshot. Requires reboot to complete.
+.TP
+.B snapshot delete \fIname\fR
+Delete a snapshot.
+.SS Other commands
+.TP
+.B info
+Show detected distribution, filesystem type, and loaded plugins.
+.TP
+.B plugins
+List available and loaded plugins.
+.TP
+.B menu
+Launch the interactive TUI menu.
+.SH GLOBAL FLAGS
+.TP
+.B \-\-dry\-run, \-n
+Print all actions without executing them. Safe to run as a preview.
+.TP
+.B \-\-debug
+Enable verbose debug output.
+.TP
+.B \-\-log \fIfile\fR
+Write log output to \fIfile\fR (default: /var/log/powerwash.log).
+.TP
+.B \-\-backup\-dir \fIdir\fR
+Override the backup destination directory
+(default: /var/lib/powerwash/backups).
+.TP
+.B \-\-version, \-V
+Print version and exit.
+.TP
+.B \-\-help, \-h
+Print usage summary and exit.
+.SH RESET MODE COMPARISON
+.TS
+l l l l l l.
+Mode	Dotfiles	Packages	Home data	System cfg	Machine ID
+_
+soft	reset	unchanged	unchanged	unchanged	unchanged
+medium	reset	purged	unchanged	sources reset	unchanged
+hard	reset	purged	wiped	reset	unchanged
+sysprep	unchanged	unchanged	unchanged	reset	cleared
+.TE
+.SH PLUGIN SYSTEM
+Plugins are shell scripts placed in
+.IR /usr/local/lib/powerwash/plugins/{distro,filesystem,hardware}/ .
+They are sourced automatically when their
+.B PW_PLUGIN_MATCH
+regex matches the detected distro ID or filesystem type.
+.PP
+A plugin must declare:
+.RS
+.nf
+PW_PLUGIN_NAME="my-plugin"
+PW_PLUGIN_TYPE="distro"
+PW_PLUGIN_MATCH="ubuntu|debian"
+.fi
+.RE
+.PP
+Optional hook functions:
+.B pw_plugin_pre_reset\fR,
+.B pw_plugin_post_reset\fR,
+.B pw_plugin_pre_backup\fR,
+.B pw_plugin_post_backup\fR.
+.SH DEVICE REBIND ON RESUME
+To rebind devices automatically after resume from sleep, edit
+.I /etc/powerwash/rebind-devices.conf
+and add sysfs BUS IDs (one per line), then enable the service:
+.PP
+.RS
+.nf
+sudo systemctl enable --now powerwash-rebind.service
+.fi
+.RE
+.PP
+Find BUS IDs with
+.BR "powerwash hardware list" .
+.SH FILES
+.TP
+.I /etc/powerwash/rebind-devices.conf
+Device BUS IDs to rebind on resume.
+.TP
+.I /var/lib/powerwash/backups/
+Default backup storage directory.
+.TP
+.I /var/log/powerwash.log
+Default log file.
+.TP
+.I /etc/systemd/system/powerwash-rebind.service
+systemd service for device rebind on resume.
+.TP
+.I /etc/systemd/system/powerwash-firstboot.service
+One-shot service installed by sysprep to regenerate machine identifiers.
+.SH EXAMPLES
+.TP
+Preview a full factory reset without making changes:
+.B sudo powerwash --dry-run hard
+.TP
+Reset dotfiles for a single user:
+.B sudo powerwash soft --users alice
+.TP
+Medium reset, keeping specific packages:
+.B sudo powerwash medium --keep vim,git
+.TP
+Create an encrypted backup:
+.B sudo powerwash backup create --encrypt
+.TP
+Prepare a disk image:
+.B sudo powerwash sysprep --shutdown
+.TP
+Rebind a USB controller after resume:
+.B sudo powerwash hardware rebind 0000:00:14.0
+.SH SEE ALSO
+.BR apt (8),
+.BR dnf (8),
+.BR pacman (8),
+.BR btrfs (8),
+.BR zfs (8),
+.BR systemctl (1),
+.BR gpg (1)
+.SH AUTHORS
+Linux Powerwash contributors.
+.PP
+Synthesized from:
+gaining/Resetter, cazique/resetter-for-linux, teejee2008/aptik,
+thekaleabsamuel/oem-sysprep, bulletmark/rebind-devices,
+gnif/vendor-reset, and others.
+.SH LICENSE
+GPL-3.0. See https://github.com/linux-powerwash/linux-powerwash
