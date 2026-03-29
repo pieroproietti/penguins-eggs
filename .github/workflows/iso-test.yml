@@ -58,7 +58,7 @@ jobs:
         run: pnpm run build
 
       - name: Configure eggs
-        run: ./bin/run.js config --nointeractive
+        run: sudo ./bin/run.js config --nointeractive
 
       - name: Produce ISO
         run: ./bin/run.js produce --nointeractive --basename test-${{ matrix.distro }}
