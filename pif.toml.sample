@@ -133,3 +133,32 @@ pkg_manager = ""
 
 # Extra repos to enable before upgrade
 extra_repos = []
+
+# ---------------------------------------------------------------------------
+# penguins-eggs & penguins-recovery integration hooks
+# ---------------------------------------------------------------------------
+
+[hooks]
+# Path to the penguins-eggs binary. Set to "" to disable eggs integration.
+eggs_bin = "/usr/bin/eggs"
+
+# Path to the penguins-recovery binary. Set to "" to disable recovery integration.
+recovery_bin = "/usr/bin/penguins-recovery"
+
+# Create a penguins-recovery snapshot before every upgrade.
+pre_upgrade_snapshot = true
+
+# Notify penguins-eggs after a successful upgrade so the next ISO reflects
+# the new immutable root.
+post_upgrade_notify = true
+
+# Warn penguins-eggs when entering mutable mode (ISO builds should be deferred
+# while the system is writable).
+mutable_warn_eggs = true
+
+# Automatically run `eggs produce --update-root` after exiting mutable mode.
+# Disabled by default because it can be slow.
+post_mutable_produce = false
+
+# Create a penguins-recovery snapshot before every rollback.
+pre_rollback_snapshot = true

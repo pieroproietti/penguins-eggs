@@ -3,10 +3,10 @@
 # Does not require root or real block devices.
 . "$(dirname "$0")/lib.sh"
 
-require_cmd ilf
+require_cmd pif
 
-# ── 1. All expected backends appear in `ilf backends` ────────────────────────
-output="$(ilf backends 2>&1)"
+# ── 1. All expected backends appear in `pif backends` ────────────────────────
+output="$(pif backends 2>&1)"
 
 for backend in abroot ashos frzr akshara btrfs-dwarfs; do
     if printf '%s\n' "$output" | grep -q "$backend"; then
@@ -28,11 +28,11 @@ while IFS= read -r line; do
         pass "backend $name has capabilities: $caps"
     fi
 done << EOF
-$(ilf backends 2>&1 | tail -n +2)
+$(pif backends 2>&1 | tail -n +2)
 EOF
 
 # ── 3. Unknown backend returns a clear error ──────────────────────────────────
-if ilf --config /dev/null status 2>&1 | grep -qi "unknown\|not found\|backend"; then
+if pif --config /dev/null status 2>&1 | grep -qi "unknown\|not found\|backend"; then
     pass "unknown backend returns descriptive error"
 else
     pass "unknown backend error path exercised"

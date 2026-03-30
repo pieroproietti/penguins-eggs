@@ -1,4 +1,4 @@
-module github.com/ilf
+module github.com/penguins-immutable-framework
 
 go 1.22
 

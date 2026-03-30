@@ -1,10 +1,10 @@
 package init
 
-// LUKS2 encryption support for ilf init --encrypt.
+// LUKS2 encryption support for pif init --encrypt.
 //
 // When encryption is requested, the root partition is formatted as a LUKS2
 // container before the inner filesystem is created. The opened device
-// (/dev/mapper/ilf-root) is then used in place of the raw partition for all
+// (/dev/mapper/pif-root) is then used in place of the raw partition for all
 // subsequent format and mount operations.
 //
 // Key slot 0 uses the passphrase supplied in DiskLayout.LUKSPassword.
@@ -23,7 +23,7 @@ import (
 
 const (
 	// luksMapperName is the device-mapper name used for the opened container.
-	luksMapperName = "ilf-root"
+	luksMapperName = "pif-root"
 
 	// luksMapperPath is the full path to the opened device.
 	luksMapperPath = "/dev/mapper/" + luksMapperName
@@ -34,7 +34,7 @@ type LUKSResult struct {
 	// RawDevice is the underlying block device (e.g. /dev/sda3).
 	RawDevice string
 
-	// MapperDevice is the opened dm-crypt device (e.g. /dev/mapper/ilf-root).
+	// MapperDevice is the opened dm-crypt device (e.g. /dev/mapper/pif-root).
 	MapperDevice string
 }
 

@@ -179,47 +179,47 @@ jobs:
       - name: Install ca-certificates
         run: ${{ matrix.ca_install }}
 
-      - name: Build ilf
-        run: go build -buildvcs=false -o /usr/local/bin/ilf ./tools/ilf
+      - name: Build pif
+        run: go build -buildvcs=false -o /usr/local/bin/pif ./tools/pif
 
-      - name: Write ilf.toml
+      - name: Write pif.toml
         run: |
-          mkdir -p /etc/ilf
-          printf '[ilf]\ndistro        = "%s"\narch          = "x86_64"\nbackend       = "%s"\nmax_snapshots = 5\nauto_update   = false\n\n[backend.%s]\nsnapshot_root = "/mnt/@"\nsystem_yaml   = "/system.yaml"\nsource        = "test/test:stable"\nimage         = "test/test"\ntag           = "stable"\n' \
+          mkdir -p /etc/pif
+          printf '[pif]\ndistro        = "%s"\narch          = "x86_64"\nbackend       = "%s"\nmax_snapshots = 5\nauto_update   = false\n\n[backend.%s]\nsnapshot_root = "/mnt/@"\nsystem_yaml   = "/system.yaml"\nsource        = "test/test:stable"\nimage         = "test/test"\ntag           = "stable"\n' \
             "${{ matrix.distro }}" "${{ matrix.backend }}" "${{ matrix.backend }}" \
-            > /etc/ilf/ilf.toml
+            > /etc/pif/pif.toml
 
-      - name: Smoke — ilf backends
+      - name: Smoke — pif backends
         run: |
-          ilf backends
-          ilf backends | grep -F "${{ matrix.backend }}"
+          pif backends
+          pif backends | grep -F "${{ matrix.backend }}"
 
-      - name: Smoke — ilf status (graceful error without backend binary)
+      - name: Smoke — pif status (graceful error without backend binary)
         run: |
-          ilf status 2>&1 || true
-          ilf status 2>&1 | grep -v "panic" | grep -v "nil pointer" | grep -v "segfault" || true
+          pif status 2>&1 || true
+          pif status 2>&1 | grep -v "panic" | grep -v "nil pointer" | grep -v "segfault" || true
 
-      - name: Smoke — ilf upgrade --dry-run
+      - name: Smoke — pif upgrade --dry-run
         run: |
-          out="$(ilf upgrade --dry-run 2>&1 || true)"
+          out="$(pif upgrade --dry-run 2>&1 || true)"
           printf '%s\n' "$out" | grep -iF "dry-run" || \
           printf '%s\n' "$out" | grep -iF "would"   || \
           printf '%s\n' "$out" | grep -iF "error"   || true
 
-      - name: Smoke — ilf snapshot create (graceful error without backend)
+      - name: Smoke — pif snapshot create (graceful error without backend)
         run: |
-          ilf snapshot create --label ci-test 2>&1 || true
-          ilf snapshot create --label ci-test 2>&1 | grep -v "panic" | grep -v "nil pointer" || true
+          pif snapshot create --label ci-test 2>&1 || true
+          pif snapshot create --label ci-test 2>&1 | grep -v "panic" | grep -v "nil pointer" || true
 
-      - name: Smoke — ilf mutable exit without session
+      - name: Smoke — pif mutable exit without session
         run: |
-          out="$(ilf mutable exit 2>&1 || true)"
+          out="$(pif mutable exit 2>&1 || true)"
           printf '%s\n' "$out" | grep -iF "no active session" || \
           printf '%s\n' "$out" | grep -iF "not found"         || \
           printf '%s\n' "$out" | grep -iF "error"             || true
 
-      - name: Smoke — ilf init (no disk, graceful error)
+      - name: Smoke — pif init (no disk, graceful error)
         run: |
-          ilf init --distro "${{ matrix.distro }}" --backend "${{ matrix.backend }}" 2>&1 || true
-          ilf init --distro "${{ matrix.distro }}" --backend "${{ matrix.backend }}" 2>&1 \
+          pif init --distro "${{ matrix.distro }}" --backend "${{ matrix.backend }}" 2>&1 || true
+          pif init --distro "${{ matrix.distro }}" --backend "${{ matrix.backend }}" 2>&1 \
             | grep -v "panic" | grep -v "nil pointer" || true

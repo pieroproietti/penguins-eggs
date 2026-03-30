@@ -1,5 +1,5 @@
 #!/bin/sh
-# Run all ILF integration tests.
+# Run all PIF integration tests.
 # Requires root, a BTRFS-capable kernel, and loopback device support.
 # Individual suites skip gracefully when their prerequisites are absent.
 set -e

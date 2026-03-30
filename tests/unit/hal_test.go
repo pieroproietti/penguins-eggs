@@ -3,7 +3,7 @@ package hal_test
 import (
 	"testing"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
 )
 
 // stubBackend is a minimal Backend for testing HAL registration and dispatch.

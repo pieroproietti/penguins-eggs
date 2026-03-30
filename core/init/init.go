@@ -1,5 +1,5 @@
 // Package init provides real disk partitioning, filesystem formatting,
-// and BTRFS subvolume layout setup for `ilf init`.
+// and BTRFS subvolume layout setup for `pif init`.
 //
 // Each backend has a different partition layout requirement; this package
 // implements the layout for each and delegates to the HAL Backend.Init()
@@ -52,7 +52,7 @@ func LayoutForBackend(backend string, efi bool) ([]Partition, error) {
 	if efi {
 		parts = append(parts, Partition{
 			Number:  1,
-			Label:   "ilf-efi",
+			Label:   "pif-efi",
 			FSType:  "vfat",
 			SizeMiB: 512,
 			Mount:   "/boot/efi",
@@ -60,7 +60,7 @@ func LayoutForBackend(backend string, efi bool) ([]Partition, error) {
 	} else {
 		parts = append(parts, Partition{
 			Number:  1,
-			Label:   "ilf-bios-boot",
+			Label:   "pif-bios-boot",
 			FSType:  "biosboot",
 			SizeMiB: 1,
 		})
@@ -80,8 +80,8 @@ func LayoutForBackend(backend string, efi bool) ([]Partition, error) {
 		// All BTRFS-based backends share the same single-partition layout;
 		// subvolumes provide the logical separation.
 		parts = append(parts,
-			Partition{Number: 2, Label: "ilf-boot", FSType: "vfat", SizeMiB: 512, Mount: "/boot"},
-			Partition{Number: 3, Label: "ilf-root", FSType: "btrfs", SizeMiB: 0, Mount: "/"},
+			Partition{Number: 2, Label: "pif-boot", FSType: "vfat", SizeMiB: 512, Mount: "/boot"},
+			Partition{Number: 3, Label: "pif-root", FSType: "btrfs", SizeMiB: 0, Mount: "/"},
 		)
 
 	case "nixos":
@@ -103,7 +103,7 @@ func LayoutForBackend(backend string, efi bool) ([]Partition, error) {
 //
 // When layout.Encrypt is true, the root partition is wrapped in a LUKS2
 // container before the inner filesystem is created. The dm-crypt device
-// (/dev/mapper/ilf-root) is used for all subsequent operations.
+// (/dev/mapper/pif-root) is used for all subsequent operations.
 func Run(layout DiskLayout, mountRoot string) error {
 	if err := checkPrereqs(layout.Backend, layout.Encrypt); err != nil {
 		return err

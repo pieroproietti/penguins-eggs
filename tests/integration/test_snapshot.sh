@@ -21,9 +21,9 @@ create_subvol "$BTRFS_MNT" "@"
 create_subvol "$BTRFS_MNT" "@home"
 create_subvol "$BTRFS_MNT" "@var"
 
-# Write a minimal ilf.toml pointing at this loopback device
-cat > "$TMPDIR/ilf.toml" << EOF
-[ilf]
+# Write a minimal pif.toml pointing at this loopback device
+cat > "$TMPDIR/pif.toml" << EOF
+[pif]
 distro        = "arch"
 arch          = "x86_64"
 backend       = "ashos"
@@ -35,7 +35,7 @@ snapshot_root = "$BTRFS_MNT/@"
 EOF
 
 # ── 1. Snapshot create ────────────────────────────────────────────────────────
-snap_id="$(ilf --config "$TMPDIR/ilf.toml" snapshot create --label test 2>&1 | grep -oE '[0-9]+'| head -1)"
+snap_id="$(pif --config "$TMPDIR/pif.toml" snapshot create --label test 2>&1 | grep -oE '[0-9]+'| head -1)"
 if [ -n "$snap_id" ]; then
     pass "snapshot create returned ID: $snap_id"
 else
@@ -44,28 +44,28 @@ else
 fi
 
 # ── 2. Snapshot list contains the new snapshot ───────────────────────────────
-if ilf --config "$TMPDIR/ilf.toml" snapshot list 2>&1 | grep -q "$snap_id"; then
+if pif --config "$TMPDIR/pif.toml" snapshot list 2>&1 | grep -q "$snap_id"; then
     pass "snapshot list contains $snap_id"
 else
     fail "snapshot list missing $snap_id"
 fi
 
 # ── 3. Snapshot deploy ────────────────────────────────────────────────────────
-if ilf --config "$TMPDIR/ilf.toml" snapshot deploy --id "$snap_id" 2>&1; then
+if pif --config "$TMPDIR/pif.toml" snapshot deploy --id "$snap_id" 2>&1; then
     pass "snapshot deploy $snap_id"
 else
     fail "snapshot deploy failed"
 fi
 
 # ── 4. Rollback ───────────────────────────────────────────────────────────────
-if ilf --config "$TMPDIR/ilf.toml" rollback 2>&1; then
+if pif --config "$TMPDIR/pif.toml" rollback 2>&1; then
     pass "rollback succeeded"
 else
     fail "rollback failed"
 fi
 
 # ── 5. Snapshot delete ────────────────────────────────────────────────────────
-if ilf --config "$TMPDIR/ilf.toml" snapshot delete --id "$snap_id" 2>&1; then
+if pif --config "$TMPDIR/pif.toml" snapshot delete --id "$snap_id" 2>&1; then
     pass "snapshot delete $snap_id"
 else
     fail "snapshot delete failed"
@@ -73,9 +73,9 @@ fi
 
 # ── 6. Pruning: create max_snapshots+2 snapshots, verify count stays bounded ─
 for i in $(seq 1 7); do
-    ilf --config "$TMPDIR/ilf.toml" snapshot create --label "prune-test-$i" >/dev/null 2>&1 || true
+    pif --config "$TMPDIR/pif.toml" snapshot create --label "prune-test-$i" >/dev/null 2>&1 || true
 done
-count="$(ilf --config "$TMPDIR/ilf.toml" snapshot list 2>&1 | grep -c 'prune-test' || true)"
+count="$(pif --config "$TMPDIR/pif.toml" snapshot list 2>&1 | grep -c 'prune-test' || true)"
 if [ "$count" -le 5 ]; then
     pass "snapshot pruning kept count within max_snapshots (got $count)"
 else

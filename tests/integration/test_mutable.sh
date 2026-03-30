@@ -7,7 +7,7 @@ require_root
 require_cmd chattr mount umount
 
 TMPDIR="$(mktemp -d)"
-trap 'rm -rf "$TMPDIR"; ilf mutable exit 2>/dev/null || true' EXIT
+trap 'rm -rf "$TMPDIR"; pif mutable exit 2>/dev/null || true' EXIT
 
 # ── Method 1: bind-remount ────────────────────────────────────────────────────
 # Create a small ext4 image, mount it read-only, toggle to rw and back.
@@ -102,8 +102,8 @@ losetup -d "$dev2"
 rm -f "$img2"
 
 # ── Method 4: lock file lifecycle (no real mount needed) ─────────────────────
-# Verify ilf mutable exit returns an error when no session is active.
-if ilf mutable exit 2>&1 | grep -qi "no active session\|not found\|error"; then
+# Verify pif mutable exit returns an error when no session is active.
+if pif mutable exit 2>&1 | grep -qi "no active session\|not found\|error"; then
     pass "mutable exit: correct error when no session active"
 else
     fail "mutable exit: did not report error for missing session"

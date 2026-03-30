@@ -7,19 +7,27 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
+	"github.com/penguins-immutable-framework/core/hooks"
 )
 
 // Manager orchestrates snapshot operations on top of a HAL backend.
 type Manager struct {
 	backend hal.Backend
 	maxKeep int
+	hooks   *hooks.Runner // nil = no ecosystem notifications
 }
 
 // New creates a Manager for the given backend.
 // maxKeep is the maximum number of snapshots to retain; 0 means unlimited.
 func New(b hal.Backend, maxKeep int) *Manager {
 	return &Manager{backend: b, maxKeep: maxKeep}
+}
+
+// SetHooks attaches a hooks.Runner so Rollback notifies penguins-recovery
+// before reverting. Call before any Rollback().
+func (m *Manager) SetHooks(r *hooks.Runner) {
+	m.hooks = r
 }
 
 // Create takes a snapshot named after the current timestamp, optionally
@@ -69,6 +77,8 @@ func (m *Manager) Rollback(snapshotID string) error {
 	if !hal.Has(m.backend, hal.CapRollback) {
 		return hal.ErrNotSupported
 	}
+	// penguins-recovery: snapshot current state before reverting
+	m.hooks.PreRollback(snapshotID)
 	return m.backend.Rollback(snapshotID)
 }
 

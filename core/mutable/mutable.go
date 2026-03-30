@@ -1,4 +1,5 @@
 // Package mutable provides the immutability toggle primitive.
+// Call Toggle.SetHooks to enable penguins-eggs / penguins-recovery notifications.
 //
 // This absorbs the logic from blend-os/nearly (chattr +i / overlayfs toggle)
 // and generalises it so any backend can delegate to it, or backends can
@@ -10,6 +11,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/penguins-immutable-framework/core/hooks"
 )
 
 // Method describes how immutability is enforced on this system.
@@ -32,6 +35,13 @@ const (
 type Toggle struct {
 	root   string
 	method Method
+	hooks  *hooks.Runner // nil = no ecosystem notifications
+}
+
+// SetHooks attaches a hooks.Runner so Enter/Exit notify penguins-eggs and
+// penguins-recovery. Call before Enter().
+func (t *Toggle) SetHooks(r *hooks.Runner) {
+	t.hooks = r
 }
 
 // New creates a Toggle for the given root path.
@@ -47,8 +57,11 @@ func New(root string, method Method) *Toggle {
 // should use the package-level Exit() instead.
 func (t *Toggle) Enter() (restore func() error, err error) {
 	if LockExists() {
-		return nil, fmt.Errorf("mutable: session already active (run 'ilf mutable exit' first)")
+		return nil, fmt.Errorf("mutable: session already active (run 'pif mutable exit' first)")
 	}
+
+	// Warn penguins-eggs that the system is temporarily writable
+	t.hooks.MutableEnter()
 
 	var fn func() error
 	switch t.method {
@@ -76,6 +89,8 @@ func (t *Toggle) Enter() (restore func() error, err error) {
 			if err := clearLock(); err != nil {
 				fmt.Fprintf(os.Stderr, "mutable: clear lock: %v\n", err)
 			}
+			// Notify penguins-eggs that immutability is restored
+			t.hooks.MutableExit()
 		}()
 		return fn()
 	}, nil
@@ -100,13 +115,13 @@ func Exit() error {
 		return chattr(t.root, true)
 	case MethodOverlayFS:
 		// Unmount the overlay merged directory.
-		merged := t.root + "/.ilf-overlay-merged"
+		merged := t.root + "/.pif-overlay-merged"
 		if err := remount(merged, ""); err != nil {
 			return fmt.Errorf("mutable exit (overlay umount): %w", err)
 		}
 		for _, d := range []string{merged,
-			t.root + "/.ilf-overlay-work",
-			t.root + "/.ilf-overlay-upper"} {
+			t.root + "/.pif-overlay-work",
+			t.root + "/.pif-overlay-upper"} {
 			// Non-fatal: log but continue cleanup on removal errors.
 			if rerr := os.RemoveAll(d); rerr != nil {
 				fmt.Fprintf(os.Stderr, "mutable exit: cleanup %s: %v\n", d, rerr)
@@ -123,7 +138,7 @@ func Exit() error {
 // IsMutable reports whether root is currently writable.
 func (t *Toggle) IsMutable() bool {
 	// Try writing a temp file; if it succeeds the fs is writable.
-	f, err := os.CreateTemp(t.root, ".ilf-mutable-check-*")
+	f, err := os.CreateTemp(t.root, ".pif-mutable-check-*")
 	if err != nil {
 		return false
 	}
@@ -145,9 +160,9 @@ func (t *Toggle) enterChattr() (func() error, error) {
 
 // enterOverlay mounts a tmpfs-backed overlayfs over root.
 func (t *Toggle) enterOverlay() (func() error, error) {
-	upper := t.root + "/.ilf-overlay-upper"
-	work := t.root + "/.ilf-overlay-work"
-	merged := t.root + "/.ilf-overlay-merged"
+	upper := t.root + "/.pif-overlay-upper"
+	work := t.root + "/.pif-overlay-work"
+	merged := t.root + "/.pif-overlay-merged"
 
 	for _, d := range []string{upper, work, merged} {
 		if err := os.MkdirAll(d, 0o755); err != nil {

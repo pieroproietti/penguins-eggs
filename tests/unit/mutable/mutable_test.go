@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ilf/core/mutable"
+	"github.com/penguins-immutable-framework/core/mutable"
 )
 
 // TestLockWriteRead verifies that writeLock persists and readLock retrieves

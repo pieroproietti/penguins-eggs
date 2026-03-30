@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	ilfinit "github.com/ilf/core/init"
+	ilfinit "github.com/penguins-immutable-framework/core/init"
 )
 
 func TestLayoutForBackend_ABRoot(t *testing.T) {
@@ -13,7 +13,7 @@ func TestLayoutForBackend_ABRoot(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	labels := partLabels(parts)
-	for _, want := range []string{"ilf-efi", "vos-boot", "vos-a", "vos-b", "vos-var"} {
+	for _, want := range []string{"pif-efi", "vos-boot", "vos-a", "vos-b", "vos-var"} {
 		if !contains(labels, want) {
 			t.Errorf("abroot layout missing partition %q; got %v", want, labels)
 		}
@@ -26,15 +26,15 @@ func TestLayoutForBackend_Ashos(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	labels := partLabels(parts)
-	for _, want := range []string{"ilf-efi", "ilf-boot", "ilf-root"} {
+	for _, want := range []string{"pif-efi", "pif-boot", "pif-root"} {
 		if !contains(labels, want) {
 			t.Errorf("ashos layout missing partition %q; got %v", want, labels)
 		}
 	}
-	// ilf-root must be BTRFS
+	// pif-root must be BTRFS
 	for _, p := range parts {
-		if p.Label == "ilf-root" && p.FSType != "btrfs" {
-			t.Errorf("ashos ilf-root fstype: got %q, want btrfs", p.FSType)
+		if p.Label == "pif-root" && p.FSType != "btrfs" {
+			t.Errorf("ashos pif-root fstype: got %q, want btrfs", p.FSType)
 		}
 	}
 }
@@ -45,7 +45,7 @@ func TestLayoutForBackend_NixOS(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	labels := partLabels(parts)
-	for _, want := range []string{"ilf-efi", "nixos-boot", "nixos-root"} {
+	for _, want := range []string{"pif-efi", "nixos-boot", "nixos-root"} {
 		if !contains(labels, want) {
 			t.Errorf("nixos layout missing partition %q; got %v", want, labels)
 		}
@@ -227,7 +227,7 @@ func TestRootPartition_ABRoot(t *testing.T) {
 }
 
 func TestLUKSStatus_NotOpen(t *testing.T) {
-	// /dev/mapper/ilf-root should not exist in a test environment.
+	// /dev/mapper/pif-root should not exist in a test environment.
 	if ilfinit.LUKSStatus() {
 		t.Skip("LUKS mapper device unexpectedly present; skipping")
 	}

@@ -1,6 +1,6 @@
-# Immutable Linux Framework — top-level Makefile
+# Penguins Immutable Framework — top-level Makefile
 
-BINARY      := ilf
+BINARY      := pif
 PREFIX      ?= /usr/local
 BINDIR      := $(PREFIX)/bin
 MANDIR      := $(PREFIX)/share/man
@@ -17,29 +17,29 @@ all: build
 # ── Build ─────────────────────────────────────────────────────────────────────
 
 build:
-	$(GO) build $(GOFLAGS) -o bin/$(BINARY) ./tools/ilf
+	$(GO) build $(GOFLAGS) -o bin/$(BINARY) ./tools/pif
 
 # ── Install ───────────────────────────────────────────────────────────────────
 
 install: build
 	install -Dm755 bin/$(BINARY) $(DESTDIR)$(BINDIR)/$(BINARY)
-	install -Dm644 ilf.toml.sample $(DESTDIR)$(SYSCONFDIR)/ilf/ilf.toml.sample
-	install -Dm644 systemd/ilf-update.service $(DESTDIR)$(SYSTEMDDIR)/ilf-update.service
-	install -Dm644 systemd/ilf-update.timer   $(DESTDIR)$(SYSTEMDDIR)/ilf-update.timer
-	install -d $(DESTDIR)$(SYSCONFDIR)/ilf/distros
-	install -m644 distros/*.toml $(DESTDIR)$(SYSCONFDIR)/ilf/distros/
-	install -Dm644 man/man1/ilf.1 $(DESTDIR)$(MANDIR)/man1/ilf.1
+	install -Dm644 pif.toml.sample $(DESTDIR)$(SYSCONFDIR)/pif/pif.toml.sample
+	install -Dm644 systemd/pif-update.service $(DESTDIR)$(SYSTEMDDIR)/pif-update.service
+	install -Dm644 systemd/pif-update.timer   $(DESTDIR)$(SYSTEMDDIR)/pif-update.timer
+	install -d $(DESTDIR)$(SYSCONFDIR)/pif/distros
+	install -m644 distros/*.toml $(DESTDIR)$(SYSCONFDIR)/pif/distros/
+	install -Dm644 man/man1/pif.1 $(DESTDIR)$(MANDIR)/man1/pif.1
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/$(BINARY)
-	rm -f $(DESTDIR)$(SYSTEMDDIR)/ilf-update.service
-	rm -f $(DESTDIR)$(SYSTEMDDIR)/ilf-update.timer
+	rm -f $(DESTDIR)$(SYSTEMDDIR)/pif-update.service
+	rm -f $(DESTDIR)$(SYSTEMDDIR)/pif-update.timer
 
 # ── Systemd ───────────────────────────────────────────────────────────────────
 
 systemd:
 	systemctl daemon-reload
-	systemctl enable --now ilf-update.timer
+	systemctl enable --now pif-update.timer
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
 

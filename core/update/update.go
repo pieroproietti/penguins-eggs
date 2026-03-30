@@ -9,8 +9,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/ilf/core/hal"
-	"github.com/ilf/core/snapshot"
+	"github.com/penguins-immutable-framework/core/hal"
+	"github.com/penguins-immutable-framework/core/hooks"
+	"github.com/penguins-immutable-framework/core/snapshot"
 )
 
 // Options controls upgrade behaviour.
@@ -23,11 +24,15 @@ type Options struct {
 	AutoRollback  bool // roll back if upgrade fails
 	SnapshotLabel string
 	MaxSnapshots  int
+	Hooks         *hooks.Runner // penguins-eggs / penguins-recovery integration; nil = disabled
 }
 
 // Run performs an atomic upgrade via the given backend.
 func Run(b hal.Backend, opts Options) error {
 	mgr := snapshot.New(b, opts.MaxSnapshots)
+
+	// penguins-recovery: snapshot before upgrade
+	opts.Hooks.PreUpgrade(b.Name())
 
 	// Pre-upgrade snapshot so we can roll back on failure.
 	var preSnapID string
@@ -69,6 +74,9 @@ func Run(b hal.Backend, opts Options) error {
 	if err := runHook(opts.PostHook); err != nil {
 		return fmt.Errorf("update: post-hook: %w", err)
 	}
+
+	// penguins-eggs: notify that the immutable root has changed
+	opts.Hooks.PostUpgrade(b.Name())
 
 	return nil
 }

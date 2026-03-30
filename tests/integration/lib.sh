@@ -1,5 +1,5 @@
 #!/bin/sh
-# Shared helpers for ILF integration tests.
+# Shared helpers for PIF integration tests.
 # Source this file at the top of every test script:
 #   . "$(dirname "$0")/lib.sh"
 #
@@ -45,12 +45,12 @@ setup_btrfs_loop() {
     _dev_var="$2"
     _mnt_var="$3"
 
-    _img="$(mktemp /tmp/ilf-test-XXXXXX.img)"
+    _img="$(mktemp /tmp/pif-test-XXXXXX.img)"
     dd if=/dev/zero of="$_img" bs=1M count="$_size" 2>/dev/null
     _dev="$(losetup --find --show "$_img")"
     mkfs.btrfs -q "$_dev"
 
-    _mnt="$(mktemp -d /tmp/ilf-mnt-XXXXXX)"
+    _mnt="$(mktemp -d /tmp/pif-mnt-XXXXXX)"
     mount "$_dev" "$_mnt"
 
     # Export via eval so callers can use named variables.
@@ -115,8 +115,8 @@ assert_dir_exists() {
 }
 
 assert_writable() {
-    if touch "$2/.ilf-write-test" 2>/dev/null; then
-        rm -f "$2/.ilf-write-test"
+    if touch "$2/.pif-write-test" 2>/dev/null; then
+        rm -f "$2/.pif-write-test"
         pass "$1"
     else
         fail "$1: path not writable: $2"
@@ -124,8 +124,8 @@ assert_writable() {
 }
 
 assert_readonly() {
-    if touch "$2/.ilf-write-test" 2>/dev/null; then
-        rm -f "$2/.ilf-write-test"
+    if touch "$2/.pif-write-test" 2>/dev/null; then
+        rm -f "$2/.pif-write-test"
         fail "$1: path is writable (expected read-only): $2"
     else
         pass "$1"

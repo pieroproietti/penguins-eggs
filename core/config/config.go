@@ -1,4 +1,4 @@
-// Package config loads and validates ilf.toml, and provides per-backend
+// Package config loads and validates pif.toml, and provides per-backend
 // config maps that backends receive during Init().
 package config
 
@@ -8,25 +8,42 @@ import (
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
+	"github.com/penguins-immutable-framework/core/hooks"
 )
 
-// searchPaths lists locations checked in order for ilf.toml.
+// searchPaths lists locations checked in order for pif.toml.
 var searchPaths = []string{
-	"$HOME/.config/ilf/ilf.toml",
-	"/etc/ilf/ilf.toml",
-	"/usr/share/ilf/ilf.toml",
-	"ilf.toml", // cwd, for development
+	"$HOME/.config/pif/pif.toml",
+	"/etc/pif/pif.toml",
+	"/usr/share/pif/pif.toml",
+	"pif.toml", // cwd, for development
 }
 
-// ILF is the top-level configuration structure.
-type ILF struct {
-	ILF        Core                      `toml:"ilf"`
+// PIF is the top-level configuration structure.
+type PIF struct {
+	PIF        Core                      `toml:"pif"`
 	Backend    map[string]map[string]any `toml:"backend"`
 	Bootloader Bootloader                `toml:"bootloader"`
 	Distro     DistroOverride            `toml:"distro"`
+	Hooks      hooks.Config              `toml:"hooks"`
 }
 
-// Core holds the [ilf] section.
+// HooksRunner constructs a hooks.Runner from the [hooks] config section.
+// Returns a Runner with default config when the [hooks] section is absent.
+func (c *PIF) HooksRunner() *hooks.Runner {
+	cfg := c.Hooks
+	// Apply defaults for any zero values (e.g. when [hooks] is absent from pif.toml)
+	def := hooks.DefaultConfig()
+	if cfg.EggsBin == "" {
+		cfg.EggsBin = def.EggsBin
+	}
+	if cfg.RecoveryBin == "" {
+		cfg.RecoveryBin = def.RecoveryBin
+	}
+	return hooks.New(cfg)
+}
+
+// Core holds the [pif] section.
 type Core struct {
 	Distro          string `toml:"distro"`
 	Arch            string `toml:"arch"`
@@ -50,28 +67,28 @@ type DistroOverride struct {
 	ExtraRepos []string `toml:"extra_repos"`
 }
 
-// Load finds and parses the first ilf.toml found in searchPaths.
-func Load() (*ILF, error) {
+// Load finds and parses the first pif.toml found in searchPaths.
+func Load() (*PIF, error) {
 	for _, p := range searchPaths {
 		expanded := os.ExpandEnv(p)
 		if _, err := os.Stat(expanded); err == nil {
 			return loadFile(expanded)
 		}
 	}
-	return nil, fmt.Errorf("config: no ilf.toml found (searched: %v)", searchPaths)
+	return nil, fmt.Errorf("config: no pif.toml found (searched: %v)", searchPaths)
 }
 
 // LoadFile parses a specific config file.
-func LoadFile(path string) (*ILF, error) {
+func LoadFile(path string) (*PIF, error) {
 	return loadFile(path)
 }
 
-func loadFile(path string) (*ILF, error) {
+func loadFile(path string) (*PIF, error) {
 	abs, err := filepath.Abs(path)
 	if err != nil {
 		return nil, err
 	}
-	var cfg ILF
+	var cfg PIF
 	if _, err := toml.DecodeFile(abs, &cfg); err != nil {
 		return nil, fmt.Errorf("config: parse %s: %w", abs, err)
 	}
@@ -81,25 +98,25 @@ func loadFile(path string) (*ILF, error) {
 	return &cfg, nil
 }
 
-func validate(cfg *ILF) error {
-	if cfg.ILF.Backend == "" {
-		return fmt.Errorf("config: [ilf].backend must be set")
+func validate(cfg *PIF) error {
+	if cfg.PIF.Backend == "" {
+		return fmt.Errorf("config: [pif].backend must be set")
 	}
-	if cfg.ILF.Distro == "" {
-		return fmt.Errorf("config: [ilf].distro must be set")
+	if cfg.PIF.Distro == "" {
+		return fmt.Errorf("config: [pif].distro must be set")
 	}
-	if cfg.ILF.Arch == "" {
-		cfg.ILF.Arch = detectArch()
+	if cfg.PIF.Arch == "" {
+		cfg.PIF.Arch = detectArch()
 	}
-	if cfg.ILF.MaxSnapshots == 0 {
-		cfg.ILF.MaxSnapshots = 10
+	if cfg.PIF.MaxSnapshots == 0 {
+		cfg.PIF.MaxSnapshots = 10
 	}
 	return nil
 }
 
 // BackendConfig returns the [backend.<name>] section as a flat string map,
 // suitable for passing to Backend.Init().
-func (c *ILF) BackendConfig(name string) map[string]string {
+func (c *PIF) BackendConfig(name string) map[string]string {
 	raw, ok := c.Backend[name]
 	if !ok {
 		return map[string]string{}

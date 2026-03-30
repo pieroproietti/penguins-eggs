@@ -18,7 +18,7 @@ backends = ["ashos"]
 
 [backends.ashos]
 requires_fs  = "btrfs"
-notes        = "Bootstrap from a Gentoo stage3 tarball. Portage must be configured before running ilf init."
+notes        = "Bootstrap from a Gentoo stage3 tarball. Portage must be configured before running pif init."
 
 [bootloader]
 supported = ["grub"]

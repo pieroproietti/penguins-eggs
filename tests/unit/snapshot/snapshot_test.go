@@ -3,8 +3,8 @@ package snapshot_test
 import (
 	"testing"
 
-	"github.com/ilf/core/hal"
-	"github.com/ilf/core/snapshot"
+	"github.com/penguins-immutable-framework/core/hal"
+	"github.com/penguins-immutable-framework/core/snapshot"
 )
 
 // snapshotStub is a Backend whose Status returns a fixed snapshot list.

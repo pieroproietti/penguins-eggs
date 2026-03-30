@@ -1,4 +1,4 @@
-// Package btrfsdwarfs adapts the btrfs-dwarfs-framework to the ILF HAL.
+// Package btrfsdwarfs adapts the btrfs-dwarfs-framework to the PIF HAL.
 // Directory: backends/btrfsdwarfs  (hyphen invalid in Go package paths)
 //
 // The BTRFS+DwarFS framework provides a hybrid filesystem: a writable BTRFS
@@ -14,7 +14,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
 )
 
 func init() {
@@ -53,8 +53,8 @@ func (b *Backend) Init(cfg map[string]string) error {
 	if err := run("bdfs", "partition", "add",
 		"--type", "btrfs-backed",
 		"--device", btrfsDev,
-		"--label", "ilf-upper",
-		"--mount", get(cfg, "btrfs_mount", "/mnt/ilf-btrfs"),
+		"--label", "pif-upper",
+		"--mount", get(cfg, "btrfs_mount", "/mnt/pif-btrfs"),
 	); err != nil {
 		return fmt.Errorf("btrfs-dwarfs init (btrfs partition): %w", err)
 	}
@@ -67,8 +67,8 @@ func (b *Backend) Init(cfg map[string]string) error {
 	if err := run("bdfs", "partition", "add",
 		"--type", "dwarfs-backed",
 		"--device", dwarfsDev,
-		"--label", "ilf-lower",
-		"--mount", get(cfg, "dwarfs_mount", "/mnt/ilf-dwarfs"),
+		"--label", "pif-lower",
+		"--mount", get(cfg, "dwarfs_mount", "/mnt/pif-dwarfs"),
 	); err != nil {
 		return fmt.Errorf("btrfs-dwarfs init (dwarfs partition): %w", err)
 	}
@@ -98,7 +98,7 @@ func (b *Backend) Rollback(snapshotID string) error {
 	}
 	return run("bdfs", "promote",
 		"--blend-path", get(b.cfg, "blend_mount", "/")+"/"+snapshotID,
-		"--subvol-name", "ilf-rollback",
+		"--subvol-name", "pif-rollback",
 	)
 }
 
@@ -106,8 +106,8 @@ func (b *Backend) Rollback(snapshotID string) error {
 func (b *Backend) Snapshot(name string) (string, error) {
 	compression := get(b.cfg, "compression", "zstd")
 	err := run("bdfs", "export",
-		"--partition", "ilf-lower",
-		"--btrfs-mount", get(b.cfg, "btrfs_mount", "/mnt/ilf-btrfs"),
+		"--partition", "pif-lower",
+		"--btrfs-mount", get(b.cfg, "btrfs_mount", "/mnt/pif-btrfs"),
 		"--name", name,
 		"--compression", compression,
 		"--verify",
@@ -121,7 +121,7 @@ func (b *Backend) Snapshot(name string) (string, error) {
 func (b *Backend) DeleteSnapshot(id string) error {
 	// bdfs does not yet expose a delete-image command; use btrfs subvolume delete.
 	return run("btrfs", "subvolume", "delete",
-		get(b.cfg, "btrfs_mount", "/mnt/ilf-btrfs")+"/"+id)
+		get(b.cfg, "btrfs_mount", "/mnt/pif-btrfs")+"/"+id)
 }
 
 func (b *Backend) Deploy(snapshotID string) error {

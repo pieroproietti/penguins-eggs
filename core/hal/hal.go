@@ -1,7 +1,7 @@
 // Package hal defines the Backend interface that every immutability backend
 // must implement, and the registry that maps backend names to implementations.
 //
-// All ILF operations (upgrade, rollback, snapshot, etc.) are dispatched
+// All PIF operations (upgrade, rollback, snapshot, etc.) are dispatched
 // through this interface so the rest of the framework stays backend-agnostic.
 package hal
 
@@ -63,7 +63,7 @@ type Backend interface {
 	Capabilities() Capability
 
 	// Init sets up the backend for first use on this system.
-	// Called once during `ilf init`.
+	// Called once during `pif init`.
 	Init(cfg map[string]string) error
 
 	// Upgrade performs an atomic system upgrade.

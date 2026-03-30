@@ -1,7 +1,7 @@
-// ilf — Immutable Linux Framework CLI
+// pif — Penguins Immutable Framework CLI
 //
 // Dispatches all operations through the HAL to the configured backend.
-// Backend is selected from ilf.toml at startup; all commands are
+// Backend is selected from pif.toml at startup; all commands are
 // backend-agnostic from the caller's perspective.
 package main
 
@@ -11,21 +11,22 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/ilf/core/config"
-	"github.com/ilf/core/hal"
-	ilfinit "github.com/ilf/core/init"
-	"github.com/ilf/core/snapshot"
-	"github.com/ilf/core/update"
+	"github.com/penguins-immutable-framework/core/config"
+	"github.com/penguins-immutable-framework/core/hal"
+	ilfinit "github.com/penguins-immutable-framework/core/init"
+	"github.com/penguins-immutable-framework/core/snapshot"
+	"github.com/penguins-immutable-framework/core/update"
+	"github.com/penguins-immutable-framework/core/hooks"
 
 	// Import all backend adapters so their init() functions register them.
-	_ "github.com/ilf/backends/abroot"
-	_ "github.com/ilf/backends/akshara"
-	_ "github.com/ilf/backends/ashos"
-	_ "github.com/ilf/backends/btrfsdwarfs"
-	_ "github.com/ilf/backends/frzr"
-	_ "github.com/ilf/backends/nixos"
+	_ "github.com/penguins-immutable-framework/backends/abroot"
+	_ "github.com/penguins-immutable-framework/backends/akshara"
+	_ "github.com/penguins-immutable-framework/backends/ashos"
+	_ "github.com/penguins-immutable-framework/backends/btrfsdwarfs"
+	_ "github.com/penguins-immutable-framework/backends/frzr"
+	_ "github.com/penguins-immutable-framework/backends/nixos"
 
-	"github.com/ilf/core/mutable"
+	"github.com/penguins-immutable-framework/core/mutable"
 )
 
 var (
@@ -35,14 +36,14 @@ var (
 
 func main() {
 	root := &cobra.Command{
-		Use:   "ilf",
-		Short: "Immutable Linux Framework",
-		Long: `ilf manages immutable Linux systems through a unified interface.
-The active backend is selected in ilf.toml ([ilf].backend).`,
+		Use:   "pif",
+		Short: "Penguins Immutable Framework",
+		Long: `pif manages immutable Linux systems through a unified interface.
+The active backend is selected in pif.toml ([pif].backend).`,
 		SilenceUsage: true,
 	}
 
-	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default: /etc/ilf/ilf.toml)")
+	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default: /etc/pif/pif.toml)")
 	root.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
 	root.AddCommand(
@@ -62,8 +63,8 @@ The active backend is selected in ilf.toml ([ilf].backend).`,
 }
 
 // loadBackend reads config and returns the active backend.
-func loadBackend() (hal.Backend, *config.ILF, error) {
-	var cfg *config.ILF
+func loadBackend() (hal.Backend, *config.PIF, error) {
+	var cfg *config.PIF
 	var err error
 	if cfgFile != "" {
 		cfg, err = config.LoadFile(cfgFile)
@@ -73,7 +74,7 @@ func loadBackend() (hal.Backend, *config.ILF, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	b, err := hal.Get(cfg.ILF.Backend)
+	b, err := hal.Get(cfg.PIF.Backend)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -89,7 +90,7 @@ func cmdInit() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "init",
-		Short: "Initialise ILF on this system",
+		Short: "Initialise PIF on this system",
 		Long: `Partition the target disk, format filesystems, create the BTRFS subvolume
 layout for the chosen backend, and run the backend's own Init() routine.
 
@@ -103,7 +104,7 @@ When --encrypt is set, the LUKS2 passphrase is resolved in this order:
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, cfg, err := loadBackend()
 			if err != nil && (distro == "" || backend == "") {
-				return fmt.Errorf("init: provide --distro and --backend, or create ilf.toml first: %w", err)
+				return fmt.Errorf("init: provide --distro and --backend, or create pif.toml first: %w", err)
 			}
 			if backend != "" {
 				b, err = hal.Get(backend)
@@ -143,7 +144,7 @@ When --encrypt is set, the LUKS2 passphrase is resolved in this order:
 				return fmt.Errorf("init: backend: %w", err)
 			}
 
-			fmt.Printf("ilf: initialised backend %q on distro %q (%s)\n",
+			fmt.Printf("pif: initialised backend %q on distro %q (%s)\n",
 				b.Name(), distro, arch)
 			return nil
 		},
@@ -176,11 +177,12 @@ func cmdUpgrade() *cobra.Command {
 				DryRun:        dryRun,
 				Force:         force,
 				Packages:      packages,
-				PreHook:       cfg.ILF.PreUpgradeHook,
-				PostHook:      cfg.ILF.PostUpgradeHook,
+				PreHook:       cfg.PIF.PreUpgradeHook,
+				PostHook:      cfg.PIF.PostUpgradeHook,
 				AutoRollback:  true,
 				SnapshotLabel: "pre-upgrade",
-				MaxSnapshots:  cfg.ILF.MaxSnapshots,
+				MaxSnapshots:  cfg.PIF.MaxSnapshots,
+				Hooks:         cfg.HooksRunner(),
 			})
 		},
 	}
@@ -204,7 +206,8 @@ Use --list to see available snapshots and their IDs before committing.`,
 			if err != nil {
 				return err
 			}
-			mgr := snapshot.New(b, cfg.ILF.MaxSnapshots)
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
+			mgr.SetHooks(cfg.HooksRunner())
 
 			if list {
 				snaps, err := mgr.List()
@@ -249,7 +252,7 @@ func cmdSnapshot() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			mgr := snapshot.New(b, cfg.ILF.MaxSnapshots)
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
 			id, err := mgr.Create(label)
 			if err != nil {
 				return err
@@ -268,7 +271,7 @@ func cmdSnapshot() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			mgr := snapshot.New(b, cfg.ILF.MaxSnapshots)
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
 			snaps, err := mgr.List()
 			if err != nil {
 				return err
@@ -294,7 +297,7 @@ func cmdSnapshot() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			mgr := snapshot.New(b, cfg.ILF.MaxSnapshots)
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
 			return mgr.Delete(deleteID)
 		},
 	}
@@ -310,7 +313,7 @@ func cmdSnapshot() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			mgr := snapshot.New(b, cfg.ILF.MaxSnapshots)
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
 			return mgr.Deploy(deployID)
 		},
 	}
@@ -356,10 +359,11 @@ func cmdMutable() *cobra.Command {
 		Use:   "enter",
 		Short: "Make the root filesystem temporarily writable",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			b, _, err := loadBackend()
+			b, cfg, err := loadBackend()
 			if err != nil {
 				return err
 			}
+			hr := cfg.HooksRunner()
 
 			// Try the backend's own implementation first.
 			restore, err := b.MutableEnter()
@@ -370,14 +374,18 @@ func cmdMutable() *cobra.Command {
 			// Backend doesn't support it — fall back to core/mutable.
 			if err == hal.ErrNotSupported {
 				t := mutable.New("/", mutable.MethodBind)
+				t.SetHooks(hr)
 				restore, err = t.Enter()
 				if err != nil {
 					return fmt.Errorf("mutable enter (fallback): %w", err)
 				}
+			} else {
+				// Backend handled it natively — fire the eggs warning directly.
+				hr.MutableEnter()
 			}
 
-			fmt.Println("Root is now writable. Run `ilf mutable exit` to restore immutability.")
-			_ = restore // cross-process restore is handled via /run/ilf-mutable.lock
+			fmt.Println("Root is now writable. Run `pif mutable exit` to restore immutability.")
+			_ = restore // cross-process restore is handled via /run/pif-mutable.lock
 			return nil
 		},
 	}
@@ -391,6 +399,13 @@ func cmdMutable() *cobra.Command {
 			}
 			if err := mutable.Exit(); err != nil {
 				return fmt.Errorf("mutable exit: %w", err)
+			}
+			// Notify eggs that immutability is restored (best-effort; load config
+			// separately so a missing pif.toml doesn't block the exit).
+			if cfg, err := config.Load(); err == nil {
+				cfg.HooksRunner().MutableExit()
+			} else {
+				hooks.New(hooks.DefaultConfig()).MutableExit()
 			}
 			fmt.Println("Immutability restored.")
 			return nil

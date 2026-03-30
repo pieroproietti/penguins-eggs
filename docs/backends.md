@@ -1,7 +1,7 @@
 # Backend Reference
 
 Each backend is an adapter that wraps an upstream immutability project and
-exposes it through the ILF HAL. Backends live in `backends/<name>/adapter.go`.
+exposes it through the PIF HAL. Backends live in `backends/<name>/adapter.go`.
 
 ---
 

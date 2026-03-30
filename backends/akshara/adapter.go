@@ -1,4 +1,4 @@
-// Package akshara adapts blend-os/akshara to the ILF HAL.
+// Package akshara adapts blend-os/akshara to the PIF HAL.
 //
 // akshara is a declarative system builder: a system.yaml file describes
 // the desired OS state (base image + packages + overlays), and akshara
@@ -17,7 +17,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
 )
 
 func init() {

@@ -1,4 +1,4 @@
-// Package nixos adapts NixOS to the ILF HAL.
+// Package nixos adapts NixOS to the PIF HAL.
 //
 // NixOS has native immutability through its generation model: every
 // nixos-rebuild creates a new generation (a complete, self-contained system
@@ -24,7 +24,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
 )
 
 func init() {
@@ -41,7 +41,7 @@ func (b *Backend) Name() string { return "nixos" }
 func (b *Backend) Capabilities() hal.Capability {
 	// NixOS generations map to snapshots; rollback is native.
 	// Mutable is not advertised: /nix/store is managed exclusively by the
-	// Nix daemon and must not be remounted rw. Use 'ilf pkg add' instead.
+	// Nix daemon and must not be remounted rw. Use 'pif pkg add' instead.
 	// No OCI images, no compression, no thin provisioning.
 	return hal.CapSnapshot |
 		hal.CapRollback |
@@ -176,13 +176,13 @@ func (b *Backend) Status() (*hal.Status, error) {
 // immediately conflict with any rw remount, potentially corrupting the store.
 //
 // For store repairs use `nix-store --repair --verify`.
-// For persistent package changes use `ilf pkg add` which edits
+// For persistent package changes use `pif pkg add` which edits
 // configuration.nix and runs nixos-rebuild.
 //
-// This implementation returns ErrNotSupported so the ILF core falls back to
+// This implementation returns ErrNotSupported so the PIF core falls back to
 // its overlayfs/bind-remount strategy on a non-store path (e.g. /etc).
 func (b *Backend) MutableEnter() (func() error, error) {
-	return nil, fmt.Errorf("nixos: %w — use 'ilf pkg add' for persistent changes "+
+	return nil, fmt.Errorf("nixos: %w — use 'pif pkg add' for persistent changes "+
 		"or 'nix-store --repair --verify' for store repairs", hal.ErrNotSupported)
 }
 

@@ -4,7 +4,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                        ilf  (CLI)                                   │
+│                        pif  (CLI)                                   │
 │  init │ upgrade │ rollback │ snapshot │ status │ mutable │ pkg      │
 └───────────────────────────┬─────────────────────────────────────────┘
                             │  calls
@@ -45,8 +45,8 @@ framework checks these before calling optional methods, and returns
 ## Config Flow
 
 ```
-ilf.toml
-  └─ [ilf].backend = "ashos"
+pif.toml
+  └─ [pif].backend = "ashos"
        └─ config.BackendConfig("ashos")  →  map[string]string
             └─ Backend.Init(cfg)
 ```
@@ -54,7 +54,7 @@ ilf.toml
 ## Update Flow
 
 ```
-ilf upgrade
+pif upgrade
   1. config.Load()
   2. hal.Get(backend)
   3. update.Run(backend, opts)
@@ -81,6 +81,6 @@ The method is selected based on what the filesystem supports.
 
 ## Snapshot Pruning
 
-`snapshot.Manager` enforces `max_snapshots` from `ilf.toml`. After every
+`snapshot.Manager` enforces `max_snapshots` from `pif.toml`. After every
 `Create()`, it lists all non-deployed snapshots and deletes the oldest ones
 until the count is within the limit. Deployed snapshots are never pruned.

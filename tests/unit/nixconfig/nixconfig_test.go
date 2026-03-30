@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ilf/backends/nixos"
+	"github.com/penguins-immutable-framework/backends/nixos"
 )
 
 // writeConfig writes content to a temp file and returns its path.

@@ -1,4 +1,4 @@
-// Package ashos adapts ashos/ashos to the ILF HAL.
+// Package ashos adapts ashos/ashos to the PIF HAL.
 //
 // AshOS manages an immutable BTRFS snapshot tree via the `ash` CLI.
 // It is distro-agnostic (Arch, Debian, Ubuntu, Alpine, Fedora, Gentoo, etc.)
@@ -13,7 +13,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
 )
 
 func init() {

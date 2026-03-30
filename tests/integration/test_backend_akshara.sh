@@ -23,8 +23,8 @@ packages:
   - linux-firmware
 EOF
 
-cat > "$TMPDIR/ilf.toml" << EOF
-[ilf]
+cat > "$TMPDIR/pif.toml" << EOF
+[pif]
 distro        = "blendos"
 arch          = "x86_64"
 backend       = "akshara"
@@ -37,16 +37,16 @@ container_runtime = "podman"
 rebuild_on_upgrade = true
 EOF
 
-ILF="ilf --config $TMPDIR/ilf.toml"
+PIF="pif --config $TMPDIR/pif.toml"
 
 # ── 1. Status responds ────────────────────────────────────────────────────────
-$ILF status 2>&1 | grep -qi "akshara\|error\|current" && pass "status: akshara backend responds" || pass "status: responded"
+$PIF status 2>&1 | grep -qi "akshara\|error\|current" && pass "status: akshara backend responds" || pass "status: responded"
 
 # ── 2. pkg add edits system.yaml ─────────────────────────────────────────────
 # We test the YAML editing logic directly without triggering a real rebuild.
 # The adapter edits system.yaml then calls `akshara update`; akshara will
 # fail (not installed in CI) but the YAML edit happens first.
-$ILF pkg add neovim 2>&1 || true
+$PIF pkg add neovim 2>&1 || true
 if grep -q "neovim" "$MNT/system.yaml"; then
     pass "pkg add: neovim added to system.yaml"
 else
@@ -57,7 +57,7 @@ fi
 # ── 3. pkg remove edits system.yaml ──────────────────────────────────────────
 # First ensure neovim is in the file
 grep -q "neovim" "$MNT/system.yaml" || echo "  - neovim" >> "$MNT/system.yaml"
-$ILF pkg remove neovim 2>&1 || true
+$PIF pkg remove neovim 2>&1 || true
 if ! grep -q "neovim" "$MNT/system.yaml"; then
     pass "pkg remove: neovim removed from system.yaml"
 else
@@ -65,20 +65,20 @@ else
 fi
 
 # ── 4. Upgrade dry-run ───────────────────────────────────────────────────────
-if $ILF upgrade --dry-run 2>&1 | grep -qi "dry-run\|would"; then
+if $PIF upgrade --dry-run 2>&1 | grep -qi "dry-run\|would"; then
     pass "upgrade --dry-run: reported intent"
 else
     fail "upgrade --dry-run: unexpected output"
 fi
 
 # ── 5. Snapshot create ────────────────────────────────────────────────────────
-snap="$($ILF snapshot create --label akshara-test 2>&1 | grep -oE '\S+' | tail -1)"
+snap="$($PIF snapshot create --label akshara-test 2>&1 | grep -oE '\S+' | tail -1)"
 info "snapshot ID: ${snap:-none}"
 pass "snapshot create: dispatched to akshara"
 
 # ── 6. Unsupported: OCI images ────────────────────────────────────────────────
 # akshara does not have CapOCIImages; verify the capability is not advertised
-if $ILF backends 2>&1 | grep "akshara" | grep -q "oci-images"; then
+if $PIF backends 2>&1 | grep "akshara" | grep -q "oci-images"; then
     fail "akshara incorrectly advertises oci-images capability"
 else
     pass "akshara: oci-images capability correctly absent"

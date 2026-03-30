@@ -1,6 +1,6 @@
 [Unit]
-Description=ILF periodic upgrade check
-Documentation=man:ilf(1)
+Description=PIF periodic upgrade check
+Documentation=man:pif(1)
 
 [Timer]
 # Check for updates daily, with a random delay up to 30 minutes to

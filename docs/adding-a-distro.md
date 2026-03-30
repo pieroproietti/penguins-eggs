@@ -38,7 +38,7 @@ efi_pkg   = "efibootmgr"
 
 | Field | Required | Description |
 |---|:---:|---|
-| `distro.id` | ✅ | Unique identifier; matches `[ilf].distro` in `ilf.toml` |
+| `distro.id` | ✅ | Unique identifier; matches `[pif].distro` in `pif.toml` |
 | `distro.family` | ✅ | Parent distro family for package manager detection |
 | `distro.pkg_manager` | ✅ | Package manager binary name |
 | `distro.pkg_add` | ✅ | Command to install packages |

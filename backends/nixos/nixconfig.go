@@ -236,7 +236,7 @@ func (ed *nixEditor) removePackage(pkg string) bool {
 // write serialises the edited content back to configPath atomically.
 func (ed *nixEditor) write(configPath string) error {
 	content := strings.Join(ed.raw, "\n")
-	tmp := configPath + ".ilf.tmp"
+	tmp := configPath + ".pif.tmp"
 	if err := os.WriteFile(tmp, []byte(content), 0o644); err != nil {
 		return fmt.Errorf("nixconfig: write tmp: %w", err)
 	}

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const lockPath = "/run/ilf-mutable.lock"
+const lockPath = "/run/pif-mutable.lock"
 
 // lockFile is the on-disk representation of an active mutable session.
 type lockFile struct {
@@ -17,7 +17,7 @@ type lockFile struct {
 }
 
 // writeLock persists the active mutable session so that a subsequent
-// `ilf mutable exit` process can read it and call the correct restore path.
+// `pif mutable exit` process can read it and call the correct restore path.
 func writeLock(root string, method Method) error {
 	if err := os.MkdirAll(filepath.Dir(lockPath), 0o755); err != nil {
 		return fmt.Errorf("mutable lock: mkdir: %w", err)
@@ -39,7 +39,7 @@ func readLock() (*lockFile, error) {
 	data, err := os.ReadFile(lockPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("mutable: no active session (run 'ilf mutable enter' first)")
+			return nil, fmt.Errorf("mutable: no active session (run 'pif mutable enter' first)")
 		}
 		return nil, fmt.Errorf("mutable lock read: %w", err)
 	}

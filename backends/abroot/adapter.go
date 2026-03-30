@@ -1,4 +1,4 @@
-// Package abroot adapts Vanilla-OS/ABRoot v2 to the ILF HAL.
+// Package abroot adapts Vanilla-OS/ABRoot v2 to the PIF HAL.
 //
 // ABRoot performs atomic transactions between two root partitions (A and B),
 // pulling OCI images from a registry. This adapter shells out to the `abroot`
@@ -16,7 +16,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
 )
 
 func init() {
@@ -38,7 +38,7 @@ func (b *Backend) Capabilities() hal.Capability {
 		hal.CapThinProvision
 }
 
-// Init writes the abroot.json config derived from the ILF config map.
+// Init writes the abroot.json config derived from the PIF config map.
 func (b *Backend) Init(cfg map[string]string) error {
 	b.cfg = cfg
 
@@ -157,7 +157,7 @@ func writeFile(path string, data []byte) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}
-	tmp := path + ".ilf.tmp"
+	tmp := path + ".pif.tmp"
 	if err := os.WriteFile(tmp, data, 0o644); err != nil {
 		return err
 	}

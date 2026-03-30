@@ -49,7 +49,7 @@ or not applicable (—). "Native" means the backend originated from that distro.
 
 | Init System | Notes |
 |---|---|
-| systemd | All backends; ILF ships systemd units |
+| systemd | All backends; PIF ships systemd units |
 | runit | Void Linux; replace `.service` units with runit `sv` |
 | OpenRC | Alpine, Gentoo; replace `.service` units with OpenRC init scripts |
 | s6 | Untested; manual service setup required |

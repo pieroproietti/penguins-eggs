@@ -8,7 +8,7 @@ and registers itself via `init()`.
 ```go
 package mybackend
 
-import "github.com/ilf/core/hal"
+import "github.com/pif/core/hal"
 
 func init() { hal.Register(&Backend{}) }
 
@@ -34,13 +34,13 @@ func (b *Backend) PkgRemove(pkgs []string) error         { return hal.ErrNotSupp
 ## Steps
 
 1. Create `backends/<name>/adapter.go` implementing `hal.Backend`.
-2. Add a blank import in `tools/ilf/main.go`:
+2. Add a blank import in `tools/pif/main.go`:
    ```go
-   _ "github.com/ilf/backends/mybackend"
+   _ "github.com/pif/backends/mybackend"
    ```
 3. Add a distro profile in `distros/<distro>.toml` listing `"mybackend"` in
    the `backends` array.
-4. Add a `[backend.mybackend]` section to `ilf.toml.sample` documenting the
+4. Add a `[backend.mybackend]` section to `pif.toml.sample` documenting the
    config keys your backend reads from `cfg`.
 5. Document the backend in `docs/backends.md`.
 6. Add integration tests in `tests/integration/`.
@@ -64,5 +64,5 @@ checks `hal.Has(b, cap)` before calling optional methods.
 ## Config keys
 
 Your backend receives a `map[string]string` from the `[backend.<name>]` section
-of `ilf.toml`. Use the `get(cfg, key, default)` helper pattern to read values
+of `pif.toml`. Use the `get(cfg, key, default)` helper pattern to read values
 with safe defaults.

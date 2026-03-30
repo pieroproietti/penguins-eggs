@@ -1,4 +1,4 @@
-// Package frzr adapts ChimeraOS/frzr to the ILF HAL.
+// Package frzr adapts ChimeraOS/frzr to the PIF HAL.
 //
 // frzr deploys pre-built OS images as read-only BTRFS subvolumes.
 // Updates are downloaded at boot and applied to a separate subvolume;
@@ -13,7 +13,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/ilf/core/hal"
+	"github.com/penguins-immutable-framework/core/hal"
 )
 
 func init() {
@@ -45,7 +45,7 @@ func (b *Backend) Init(cfg map[string]string) error {
 func (b *Backend) Upgrade(opts hal.UpgradeOptions) error {
 	source := get(b.cfg, "source", "")
 	if source == "" {
-		return fmt.Errorf("frzr: backend.frzr.source must be set in ilf.toml")
+		return fmt.Errorf("frzr: backend.frzr.source must be set in pif.toml")
 	}
 	if opts.DryRun {
 		fmt.Printf("frzr: dry-run — would run: frzr-deploy %s\n", source)
