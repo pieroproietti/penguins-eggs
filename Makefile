@@ -16,7 +16,12 @@ MANDIR     := $(PREFIX)/share/man/man1
 STATEDIR   := /var/lib/powerwash
 LOGDIR     := /var/log
 
-.PHONY: install uninstall check clean
+# Integration plugin directories (other tools must be installed first)
+EGGS_PLUGIN_DIR      ?= $(PREFIX)/share/penguins-eggs/plugins
+RECOVERY_PLUGIN_DIR  ?= $(PREFIX)/share/penguins-powerwash/plugins/distro
+SHAREDIR             := $(PREFIX)/share/penguins-powerwash
+
+.PHONY: install uninstall install-integration uninstall-integration check clean
 
 install:
 	@echo "Installing Penguins Powerwash to $(PREFIX)..."
@@ -84,6 +89,46 @@ uninstall:
 	@echo "Config and state directories preserved:"
 	@echo "  $(CONFDIR)  $(STATEDIR)"
 	@echo "Remove manually if desired."
+
+# ── Integration scripts ───────────────────────────────────────────────────────
+# Installs plugin scripts so penguins-eggs and penguins-recovery can discover
+# penguins-powerwash automatically. Run after both tools are installed.
+
+install-integration:
+	@echo "Installing penguins-powerwash integration scripts..."
+
+	# Ship integration sources to a stable share path
+	install -Dm755 integration/eggs-plugin/powerwash-hook.sh \
+	               $(SHAREDIR)/integration/eggs-plugin/powerwash-hook.sh
+	install -Dm644 integration/eggs-plugin/README.md \
+	               $(SHAREDIR)/integration/eggs-plugin/README.md
+	install -Dm755 integration/recovery-plugin/powerwash-plugin.sh \
+	               $(SHAREDIR)/integration/recovery-plugin/powerwash-plugin.sh
+	install -Dm644 integration/recovery-plugin/README.md \
+	               $(SHAREDIR)/integration/recovery-plugin/README.md
+
+	# Symlink into penguins-eggs plugin directory (if it exists)
+	@if [ -d "$(EGGS_PLUGIN_DIR)" ]; then \
+	    ln -sf $(SHAREDIR)/integration/eggs-plugin/powerwash-hook.sh \
+	           $(EGGS_PLUGIN_DIR)/powerwash-hook.sh; \
+	    echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/powerwash-hook.sh"; \
+	else \
+	    echo "  penguins-eggs plugin dir not found ($(EGGS_PLUGIN_DIR)) — skipping symlink"; \
+	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/eggs-plugin/powerwash-hook.sh $(EGGS_PLUGIN_DIR)/powerwash-hook.sh"; \
+	fi
+
+	# Symlink self-plugin into powerwash distro plugin directory
+	install -d $(RECOVERY_PLUGIN_DIR)
+	ln -sf $(SHAREDIR)/integration/recovery-plugin/powerwash-plugin.sh \
+	       $(RECOVERY_PLUGIN_DIR)/powerwash-self-plugin.sh
+	@echo "  Linked recovery plugin → $(RECOVERY_PLUGIN_DIR)/powerwash-self-plugin.sh"
+
+	@echo "Integration install complete."
+
+uninstall-integration:
+	rm -f  $(EGGS_PLUGIN_DIR)/powerwash-hook.sh
+	rm -f  $(RECOVERY_PLUGIN_DIR)/powerwash-self-plugin.sh
+	rm -rf $(SHAREDIR)/integration
 
 check:
 	@echo "Running shellcheck..."
