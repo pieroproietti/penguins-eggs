@@ -4,15 +4,15 @@ on:
   push:
     tags:
       - 'v*'
+  pull_request:
+    paths:
+      - 'pkg/flatpak/**'
   workflow_dispatch:
 
 jobs:
   build:
     name: Build & validate Flatpak
     runs-on: ubuntu-latest
-    # Flatpak build requires large SDK download and has placeholder PySide6
-    # hashes until flatpak-pip-generator is run. Non-blocking on PRs.
-    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            flatpak flatpak-builder
+            flatpak flatpak-builder elfutils librsvg2-common
 
       - name: Add Flathub remote
         run: |
