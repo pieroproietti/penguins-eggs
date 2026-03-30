@@ -31,10 +31,10 @@ jobs:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
         run: |
           git config --global credential.helper store
-          printf 'https://x-access-token:%s@github.com\n' "$MIRROR_TOKEN" \
-            > ~/.git-credentials
+          echo "https://x-access-token:${MIRROR_TOKEN}@github.com" > ~/.git-credentials
+          git config --global credential.helper 'store --file ~/.git-credentials'
           git remote add mirror \
-            "https://github.com/OpenOS-Project-OSP/penguins-eggs.git"
+            "https://x-access-token:${MIRROR_TOKEN}@github.com/OpenOS-Project-OSP/penguins-eggs.git"
           git push mirror 'refs/remotes/origin/*:refs/heads/*' --force
           git push mirror --tags --force
           rm -f ~/.git-credentials
