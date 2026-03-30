@@ -146,7 +146,7 @@ _pw_sysprep_firstboot_service() {
 
     pw_run tee "${service_file}" > /dev/null <<'EOF'
 [Unit]
-Description=Linux Powerwash — first-boot identity regeneration
+Description=Penguins Powerwash — first-boot identity regeneration
 DefaultDependencies=no
 After=local-fs.target
 Before=network.target sysinit.target

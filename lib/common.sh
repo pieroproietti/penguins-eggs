@@ -5,7 +5,7 @@ set -euo pipefail
 
 # ── Version ────────────────────────────────────────────────────────────────────
 readonly PW_VERSION="0.1.0"
-readonly PW_NAME="Linux Powerwash"
+readonly PW_NAME="Penguins Powerwash"
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 readonly PW_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

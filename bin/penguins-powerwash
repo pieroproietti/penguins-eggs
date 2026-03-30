@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# bin/powerwash — Linux Powerwash main entrypoint
+# bin/penguins-powerwash — Penguins Powerwash main entrypoint
 #
-# Usage: powerwash <command> [options]
+# Usage: penguins-powerwash <command> [options]
 #
 # A distro-agnostic, filesystem-agnostic factory reset tool for Linux.
 
@@ -23,6 +23,9 @@ source "${_PW_ROOT}/lib/backup.sh"
 # shellcheck source=../lib/plugin.sh
 source "${_PW_ROOT}/lib/plugin.sh"
 
+# shellcheck source=../lib/eggs-hooks.sh
+source "${_PW_ROOT}/lib/eggs-hooks.sh"
+
 # ── Source reset modes ─────────────────────────────────────────────────────────
 source "${_PW_ROOT}/modes/soft.sh"
 source "${_PW_ROOT}/modes/medium.sh"
@@ -41,7 +44,7 @@ _pw_parse_global_flags() {
             --version|-V)   _pw_version; exit 0 ;;
             --help|-h)      _pw_usage; exit 0 ;;
             --)             shift; break ;;
-            -*)             pw_die "Unknown global flag: $1. Run 'powerwash --help'." ;;
+            -*)             pw_die "Unknown global flag: $1. Run 'penguins-powerwash --help'." ;;
             *)              break ;;  # first non-flag arg is the subcommand
         esac
         shift
@@ -60,7 +63,7 @@ ${C_BLD}${PW_NAME} ${PW_VERSION}${C_RST}
 A distro-agnostic, filesystem-agnostic factory reset tool for Linux.
 
 ${C_BLD}USAGE${C_RST}
-  powerwash [global-flags] <command> [options]
+  penguins-powerwash [global-flags] <command> [options]
 
 ${C_BLD}COMMANDS${C_RST}
   ${C_GRN}soft${C_RST}       Clear user dotfiles only. Packages untouched.
@@ -78,19 +81,19 @@ ${C_BLD}COMMANDS${C_RST}
 ${C_BLD}GLOBAL FLAGS${C_RST}
   --dry-run, -n      Print actions without executing them.
   --debug            Enable verbose debug output.
-  --log <file>       Write log to <file> (default: /var/log/powerwash.log).
+  --log <file>       Write log to <file> (default: /var/log/penguins-powerwash.log).
   --backup-dir <dir> Override backup destination directory.
   --version, -V      Print version and exit.
   --help, -h         Print this help and exit.
 
 ${C_BLD}EXAMPLES${C_RST}
-  sudo powerwash soft
-  sudo powerwash --dry-run medium
-  sudo powerwash hard --no-backup
-  sudo powerwash sysprep --shutdown
-  sudo powerwash hardware rebind 0000:00:14.0
-  sudo powerwash backup create --encrypt
-  sudo powerwash info
+  sudo penguins-powerwash soft
+  sudo penguins-powerwash --dry-run medium
+  sudo penguins-powerwash hard --no-backup
+  sudo penguins-powerwash sysprep --shutdown
+  sudo penguins-powerwash hardware rebind 0000:00:14.0
+  sudo penguins-powerwash backup create --encrypt
+  sudo penguins-powerwash info
 
 ${C_BLD}RESET MODE COMPARISON${C_RST}
   Mode      Dotfiles  Packages  Home data  System cfg  Machine ID
@@ -153,7 +156,7 @@ _pw_cmd_backup() {
             ;;
         help|--help|-h)
             cat <<EOF
-Usage: powerwash backup <subcommand> [options]
+Usage: penguins-powerwash backup <subcommand> [options]
 
 Subcommands:
   create [--encrypt] [--dest <dir>] [--users <u1,u2>]
@@ -164,7 +167,7 @@ Subcommands:
   decrypt <file> [dest]  Decrypt a GPG-encrypted backup archive.
 EOF
             ;;
-        *) pw_die "Unknown backup subcommand: ${subcmd}. Run 'powerwash backup help'." ;;
+        *) pw_die "Unknown backup subcommand: ${subcmd}. Run 'penguins-powerwash backup help'." ;;
     esac
 }
 
@@ -180,11 +183,11 @@ _pw_cmd_snapshot() {
         delete)  pw_fs_snapshot_delete "${1:-}" ;;
         help|--help|-h)
             cat <<EOF
-Usage: powerwash snapshot <subcommand> [name]
+Usage: penguins-powerwash snapshot <subcommand> [name]
 
 Subcommands:
   create [label]   Create a snapshot (btrfs/zfs only).
-  list             List powerwash snapshots.
+  list             List penguins-powerwash snapshots.
   rollback <name>  Roll back to a snapshot.
   delete <name>    Delete a snapshot.
 EOF
@@ -203,7 +206,7 @@ _pw_cmd_menu() {
         clear
         cat <<EOF
 ${C_BLD}${C_BLU}╔══════════════════════════════════════════╗
-║         Linux Powerwash ${PW_VERSION}           ║
+║       Penguins Powerwash ${PW_VERSION}         ║
 ║  Distro-agnostic factory reset for Linux ║
 ╚══════════════════════════════════════════╝${C_RST}
 
@@ -260,7 +263,7 @@ EOF
 _pw_menu_run_mode() {
     local mode="$1"
     clear
-    printf "${C_BLD}Running: powerwash %s${C_RST}\n\n" "${mode}"
+    printf "${C_BLD}Running: penguins-powerwash %s${C_RST}\n\n" "${mode}"
     case "${mode}" in
         soft)    pw_mode_soft ;;
         medium)  pw_mode_medium ;;
@@ -337,10 +340,10 @@ main() {
     fi
 
     case "${cmd}" in
-        soft)     pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_plugin_pre_reset; pw_mode_soft     "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset ;;
-        medium)   pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_plugin_pre_reset; pw_mode_medium   "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset ;;
-        hard)     pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_plugin_pre_reset; pw_mode_hard     "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset ;;
-        sysprep)  pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_plugin_pre_reset; pw_mode_sysprep  "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset ;;
+        soft)     pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset soft;    pw_plugin_pre_reset; pw_mode_soft     "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset soft ;;
+        medium)   pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset medium;  pw_plugin_pre_reset; pw_mode_medium   "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset medium ;;
+        hard)     pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset hard;    pw_plugin_pre_reset; pw_mode_hard     "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset hard ;;
+        sysprep)  pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset sysprep; pw_plugin_pre_reset; pw_mode_sysprep  "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset sysprep ;;
         hardware) pw_mode_hardware "${rest[@]+"${rest[@]}"}" ;;
         backup)   _pw_cmd_backup   "${rest[@]+"${rest[@]}"}" ;;
         snapshot) _pw_cmd_snapshot "${rest[@]+"${rest[@]}"}" ;;
@@ -354,7 +357,7 @@ main() {
         menu)     _pw_cmd_menu ;;
         version)  _pw_version ;;
         help)     _pw_usage ;;
-        *)        pw_die "Unknown command: '${cmd}'. Run 'powerwash --help'." ;;
+        *)        pw_die "Unknown command: '${cmd}'. Run 'penguins-powerwash --help'." ;;
     esac
 }
 

@@ -1,6 +1,6 @@
 [Unit]
-Description=Linux Powerwash — rebind devices after resume from sleep
-Documentation=https://github.com/linux-powerwash/linux-powerwash
+Description=Penguins Powerwash — rebind devices after resume from sleep
+Documentation=https://github.com/penguins-powerwash/penguins-powerwash
 # Run after the system has fully resumed and udev has settled
 After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 After=systemd-udev-settle.service

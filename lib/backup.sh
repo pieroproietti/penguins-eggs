@@ -61,6 +61,12 @@ pw_backup_create() {
     fi
 
     pw_info "Backup complete: ${backup_dir}"
+
+    # Notify penguins-eggs so the backup path is recorded for the next ISO manifest
+    if declare -f pw_eggs_post_backup &>/dev/null; then
+        pw_eggs_post_backup "${backup_dir}"
+    fi
+
     echo "${backup_dir}"   # return path for callers
 }
 

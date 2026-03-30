@@ -1,4 +1,4 @@
-# Makefile — Linux Powerwash
+# Makefile — Penguins Powerwash
 #
 # Targets:
 #   install    Install to /usr/local (default prefix)
@@ -19,10 +19,10 @@ LOGDIR     := /var/log
 .PHONY: install uninstall check clean
 
 install:
-	@echo "Installing Linux Powerwash to $(PREFIX)..."
+	@echo "Installing Penguins Powerwash to $(PREFIX)..."
 
 	# Binary
-	install -Dm755 bin/powerwash          $(BINDIR)/powerwash
+	install -Dm755 bin/penguins-powerwash          $(BINDIR)/powerwash
 
 	# Libraries
 	install -Dm644 lib/common.sh          $(LIBDIR)/lib/common.sh
@@ -76,7 +76,7 @@ install:
 	@echo "  sudo systemctl enable --now powerwash-rebind.service"
 
 uninstall:
-	@echo "Removing Linux Powerwash..."
+	@echo "Removing Penguins Powerwash..."
 	rm -f  $(BINDIR)/powerwash
 	rm -rf $(LIBDIR)
 	rm -f  $(SYSTEMDDIR)/powerwash-rebind.service
@@ -89,7 +89,7 @@ check:
 	@echo "Running shellcheck..."
 	@if command -v shellcheck >/dev/null 2>&1; then \
 	    shellcheck -x \
-	        bin/powerwash \
+	        bin/penguins-powerwash \
 	        lib/*.sh \
 	        modes/*.sh \
 	        plugins/**/*.sh \
