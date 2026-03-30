@@ -7,13 +7,13 @@ import pytest
 from pathlib import Path
 from unittest.mock import patch, MagicMock, mock_open
 
-from lkm.core.providers.lkf_build import (
+from penguins_kernel_manager.core.providers.lkf_build import (
     LkfBuildProvider,
     _find_output_package,
     _parse_profile_name,
     _parse_profile_version,
 )
-from lkm.core.kernel import KernelFamily, KernelStatus
+from penguins_kernel_manager.core.kernel import KernelFamily, KernelStatus
 
 
 # ---------------------------------------------------------------------------
@@ -121,7 +121,7 @@ class TestLkfBuildProviderList:
             )
 
         with patch("shutil.which", return_value="/usr/local/bin/lkf"):
-            with patch("lkm.core.providers.lkf_build._find_profiles",
+            with patch("penguins_kernel_manager.core.providers.lkf_build._find_profiles",
                        return_value=list(profiles_dir.glob("*.toml"))):
                 p = LkfBuildProvider(_make_backend())
                 entries = p.list("amd64")
@@ -135,7 +135,7 @@ class TestLkfBuildProviderList:
 
     def test_returns_empty_when_no_profiles(self):
         with patch("shutil.which", return_value="/usr/local/bin/lkf"):
-            with patch("lkm.core.providers.lkf_build._find_profiles", return_value=[]):
+            with patch("penguins_kernel_manager.core.providers.lkf_build._find_profiles", return_value=[]):
                 p = LkfBuildProvider(_make_backend())
                 assert p.list("amd64") == []
 
@@ -235,7 +235,7 @@ class TestLkfBuildInstall:
         fake_proc.__enter__ = lambda s: s
         fake_proc.__exit__ = MagicMock(return_value=False)
 
-        from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
+        from penguins_kernel_manager.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
         entry = KernelEntry(
             version=KernelVersion.parse("6.12.0"),
             family=KernelFamily.LKF_BUILD,
@@ -265,7 +265,7 @@ class TestLkfBuildInstall:
         fake_proc.__enter__ = lambda s: s
         fake_proc.__exit__ = MagicMock(return_value=False)
 
-        from lkm.core.kernel import KernelEntry, KernelFamily, KernelVersion
+        from penguins_kernel_manager.core.kernel import KernelEntry, KernelFamily, KernelVersion
         entry = KernelEntry(
             version=KernelVersion.parse("6.12.0"),
             family=KernelFamily.LKF_BUILD,

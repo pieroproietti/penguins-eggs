@@ -2,7 +2,7 @@
 import pytest
 from unittest.mock import patch, mock_open
 
-from lkm.core.system import (
+from penguins_kernel_manager.core.system import (
     _read_os_release,
     _detect_distro,
     _normalise_arch,
@@ -21,9 +21,9 @@ class TestReadOsRelease:
         f = tmp_path / "os-release"
         f.write_text('ID="ubuntu"\nVERSION_ID="22.04"\nNAME="Ubuntu"\n')
         with patch("builtins.open", mock_open(read_data=f.read_text())):
-            with patch("lkm.core.system._read_os_release",
+            with patch("penguins_kernel_manager.core.system._read_os_release",
                        return_value={"ID": "ubuntu", "VERSION_ID": "22.04", "NAME": "Ubuntu"}):
-                from lkm.core.system import _read_os_release as r
+                from penguins_kernel_manager.core.system import _read_os_release as r
                 # Direct call with patched open
                 result = {"ID": "ubuntu", "VERSION_ID": "22.04", "NAME": "Ubuntu"}
         assert result["ID"] == "ubuntu"
@@ -80,7 +80,7 @@ def test_detect_distro_family(distro, os_release):
         k, _, v = line.partition("=")
         parsed[k.strip()] = v.strip().strip('"')
 
-    with patch("lkm.core.system._read_os_release", return_value=parsed):
+    with patch("penguins_kernel_manager.core.system._read_os_release", return_value=parsed):
         info = _detect_distro()
 
     assert info.family == _EXPECTED_FAMILIES[distro], (

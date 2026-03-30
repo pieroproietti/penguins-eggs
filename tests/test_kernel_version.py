@@ -1,6 +1,6 @@
 """Tests for KernelVersion parsing and comparison."""
 import pytest
-from lkm.core.kernel import KernelVersion
+from penguins_kernel_manager.core.kernel import KernelVersion
 
 
 class TestKernelVersionParse:

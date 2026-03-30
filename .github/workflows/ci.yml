@@ -28,10 +28,10 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Lint (ruff)
-        run: ruff check lkm/
+        run: ruff check penguins-kernel-manager/
 
       - name: Test
-        run: pytest --tb=short --cov=lkm --cov-report=term-missing
+        run: pytest --tb=short --cov=penguins-kernel-manager --cov-report=term-missing
 
       - name: Upload coverage
         if: matrix.python == '3.12' && matrix.os == 'ubuntu-latest'
@@ -74,7 +74,7 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Type check
-        run: mypy lkm/ --ignore-missing-imports
+        run: mypy penguins-kernel-manager/ --ignore-missing-imports
 
   integration-apt:
     name: Integration / apt (Ubuntu)
@@ -112,7 +112,7 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install lkm
+      - name: Install penguins-kernel-manager
         run: pip install -e ".[dev-no-gui]"
 
       - name: Integration tests (xbps)
@@ -132,7 +132,7 @@ jobs:
       - name: Install Python
         run: pacman -Sy --noconfirm python python-pip
 
-      - name: Install lkm
+      - name: Install penguins-kernel-manager
         run: pip install -e ".[dev-no-gui]" --break-system-packages
 
       - name: Integration tests (pacman)

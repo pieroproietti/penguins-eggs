@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Build a self-contained AppImage for lkm-gui.
+# Build a self-contained AppImage for penguins-kernel-manager-gui.
 #
 # Strategy:
 #   1. Download a python-appimage base (Python 3.12 bundled in an AppImage).
 #   2. Extract it to AppDir/.
-#   3. pip-install lkm[pyside6] into the bundled Python.
+#   3. pip-install penguins-kernel-manager[pyside6] into the bundled Python.
 #   4. Write a custom AppRun launcher.
 #   5. Run appimagetool to produce the final .AppImage.
 #
@@ -36,7 +36,7 @@ ARCH="${ARCH:-$(uname -m)}"
 OUT_DIR="${OUT_DIR:-${REPO_ROOT}/dist}"
 
 # Resolve version from installed package or pyproject.toml
-VERSION="$(python3 -c "import importlib.metadata; print(importlib.metadata.version('lkm'))" 2>/dev/null \
+VERSION="$(python3 -c "import importlib.metadata; print(importlib.metadata.version('penguins-kernel-manager'))" 2>/dev/null \
     || grep '^version' "${REPO_ROOT}/pyproject.toml" | head -1 | sed 's/.*= *"\(.*\)"/\1/')"
 
 APPDIR="${REPO_ROOT}/AppDir"
@@ -66,9 +66,9 @@ pushd "${REPO_ROOT}" > /dev/null
 mv squashfs-root "${APPDIR}"
 popd > /dev/null
 
-# ── 3. Install lkm into the AppDir's Python ───────────────────────────────────
+# ── 3. Install penguins-kernel-manager into the AppDir's Python ───────────────────────────────────
 PYTHON="${APPDIR}/usr/bin/python3.12"
-echo "==> Installing lkm[pyside6] into AppDir..."
+echo "==> Installing penguins-kernel-manager[pyside6] into AppDir..."
 "${PYTHON}" -m pip install --quiet \
     --no-warn-script-location \
     "${REPO_ROOT}[pyside6]"
@@ -82,23 +82,23 @@ export PYTHONPATH="${HERE}/usr/lib/python3.12/site-packages:${PYTHONPATH:-}"
 export LD_LIBRARY_PATH="${HERE}/usr/lib:${LD_LIBRARY_PATH:-}"
 # Qt platform plugins
 export QT_PLUGIN_PATH="${HERE}/usr/lib/python3.12/site-packages/PySide6/Qt/plugins:${QT_PLUGIN_PATH:-}"
-exec "${HERE}/usr/bin/lkm-gui" "$@"
+exec "${HERE}/usr/bin/penguins-kernel-manager-gui" "$@"
 APPRUN
 chmod +x "${APPDIR}/AppRun"
 
 # ── 5. Desktop file & icon ────────────────────────────────────────────────────
-cp "${SCRIPT_DIR}/../flatpak/io.github.lkm.lkm.desktop" \
-   "${APPDIR}/io.github.lkm.lkm.desktop"
+cp "${SCRIPT_DIR}/../flatpak/io.github.penguins-kernel-manager.penguins-kernel-manager.desktop" \
+   "${APPDIR}/io.github.penguins-kernel-manager.penguins-kernel-manager.desktop"
 
-ICON_SRC="${SCRIPT_DIR}/../flatpak/io.github.lkm.lkm.png"
+ICON_SRC="${SCRIPT_DIR}/../flatpak/io.github.penguins-kernel-manager.penguins-kernel-manager.png"
 if [[ -f "${ICON_SRC}" ]]; then
-    cp "${ICON_SRC}" "${APPDIR}/io.github.lkm.lkm.png"
+    cp "${ICON_SRC}" "${APPDIR}/io.github.penguins-kernel-manager.penguins-kernel-manager.png"
 elif command -v convert &>/dev/null; then
     # Generate a placeholder icon with ImageMagick
     convert -size 256x256 xc:'#1e1e2e' \
         -fill '#cdd6f4' -font DejaVu-Sans-Bold -pointsize 48 \
         -gravity Center -annotate 0 'LKM' \
-        "${APPDIR}/io.github.lkm.lkm.png"
+        "${APPDIR}/io.github.penguins-kernel-manager.penguins-kernel-manager.png"
 else
     echo "WARNING: No icon found and ImageMagick not available; AppImage will lack an icon." >&2
 fi

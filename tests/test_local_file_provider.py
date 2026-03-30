@@ -3,8 +3,8 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from lkm.core.providers.local_file import LocalFileProvider
-from lkm.core.kernel import KernelFamily, KernelStatus
+from penguins_kernel_manager.core.providers.local_file import LocalFileProvider
+from penguins_kernel_manager.core.kernel import KernelFamily, KernelStatus
 
 
 def _make_backend():
@@ -52,7 +52,7 @@ class TestLocalFileProviderInstall:
         pkg     = tmp_path / "linux-image-6.12.0_amd64.deb"
         pkg.write_text("")
 
-        from lkm.core.kernel import KernelEntry, KernelVersion
+        from penguins_kernel_manager.core.kernel import KernelEntry, KernelVersion
         entry = KernelEntry(
             version=KernelVersion.parse("6.12.0"),
             family=KernelFamily.LOCAL_FILE,
@@ -68,7 +68,7 @@ class TestLocalFileProviderInstall:
         backend = _make_backend()
         prov    = LocalFileProvider(backend)
 
-        from lkm.core.kernel import KernelEntry, KernelVersion
+        from penguins_kernel_manager.core.kernel import KernelEntry, KernelVersion
         entry = KernelEntry(
             version=KernelVersion.parse("6.12.0"),
             family=KernelFamily.LOCAL_FILE,

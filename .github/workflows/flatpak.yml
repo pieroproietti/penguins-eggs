@@ -37,18 +37,18 @@ jobs:
       - name: Build Flatpak
         run: |
           flatpak-builder --force-clean --disable-rofiles-fuse \
-            build-dir pkg/flatpak/io.github.lkm.lkm.yml
+            build-dir pkg/flatpak/io.github.penguins-kernel-manager.penguins-kernel-manager.yml
 
       - name: Validate metainfo
         run: |
           flatpak run --command=appstreamcli org.kde.Sdk//6.7 \
-            validate pkg/flatpak/io.github.lkm.lkm.metainfo.xml || true
+            validate pkg/flatpak/io.github.penguins-kernel-manager.penguins-kernel-manager.metainfo.xml || true
 
       - name: Export bundle
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           flatpak build-export repo build-dir
-          flatpak build-bundle repo LKM.flatpak io.github.lkm.lkm
+          flatpak build-bundle repo LKM.flatpak io.github.penguins-kernel-manager.penguins-kernel-manager
 
       - name: Upload bundle artifact
         if: startsWith(github.ref, 'refs/tags/')

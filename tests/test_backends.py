@@ -6,8 +6,8 @@ All subprocess calls are mocked — no real package manager is required.
 import pytest
 from unittest.mock import patch, MagicMock, call
 
-from lkm.core.backends.xbps import XbpsBackend
-from lkm.core.backends.nix  import NixBackend, _patch_kernel_attr, _nixpkgs_attr_for
+from penguins_kernel_manager.core.backends.xbps import XbpsBackend
+from penguins_kernel_manager.core.backends.nix  import NixBackend, _patch_kernel_attr, _nixpkgs_attr_for
 
 
 # ---------------------------------------------------------------------------
@@ -44,7 +44,7 @@ class TestXbpsBackend:
             assert XbpsBackend.available() is False
 
     def test_install_packages_calls_xbps_install(self, backend):
-        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("penguins_kernel_manager.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter(["ok\n"])) as mock_stream:
                 list(backend.install_packages(["linux6.6"]))
                 mock_stream.assert_called_once_with(
@@ -52,7 +52,7 @@ class TestXbpsBackend:
                 )
 
     def test_remove_packages_no_purge(self, backend):
-        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("penguins_kernel_manager.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter([])) as mock_stream:
                 list(backend.remove_packages(["linux6.6"]))
                 mock_stream.assert_called_once_with(
@@ -60,7 +60,7 @@ class TestXbpsBackend:
                 )
 
     def test_remove_packages_purge(self, backend):
-        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("penguins_kernel_manager.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter([])) as mock_stream:
                 list(backend.remove_packages(["linux6.6"], purge=True))
                 mock_stream.assert_called_once_with(
@@ -68,7 +68,7 @@ class TestXbpsBackend:
                 )
 
     def test_hold_calls_xbps_pkgdb(self, backend):
-        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("penguins_kernel_manager.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run", return_value=(0, "", "")) as mock_run:
                 rc, _, _ = backend.hold(["linux6.6"])
                 assert rc == 0
@@ -77,7 +77,7 @@ class TestXbpsBackend:
                 )
 
     def test_unhold_calls_xbps_pkgdb(self, backend):
-        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("penguins_kernel_manager.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run", return_value=(0, "", "")) as mock_run:
                 rc, _, _ = backend.unhold(["linux6.6"])
                 assert rc == 0
@@ -139,7 +139,7 @@ class TestXbpsBackend:
     def test_install_local_uses_repo_dir(self, backend, tmp_path):
         pkg = tmp_path / "linux-6.6.30-1.x86_64.xbps"
         pkg.write_text("")
-        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("penguins_kernel_manager.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter([])) as mock_stream:
                 list(backend.install_local(str(pkg)))
                 args = mock_stream.call_args[0][0]
@@ -182,11 +182,11 @@ class TestNixBackend:
 
     def test_install_packages_runs_rebuild_when_available(self, backend):
         cfg_text = "{\n  boot.kernelPackages = pkgs.linuxPackages;\n}\n"
-        with patch("lkm.core.backends.nix._read_config", return_value=cfg_text):
-            with patch("lkm.core.backends.nix._write_config", return_value=(0, "", "")):
-                with patch("lkm.core.backends.nix._is_flake_system", return_value=False):
+        with patch("penguins_kernel_manager.core.backends.nix._read_config", return_value=cfg_text):
+            with patch("penguins_kernel_manager.core.backends.nix._write_config", return_value=(0, "", "")):
+                with patch("penguins_kernel_manager.core.backends.nix._is_flake_system", return_value=False):
                     with patch("shutil.which", return_value="/run/current-system/sw/bin/nixos-rebuild"):
-                        with patch("lkm.core.backends.nix.privilege_escalation_cmd", return_value=["sudo"]):
+                        with patch("penguins_kernel_manager.core.backends.nix.privilege_escalation_cmd", return_value=["sudo"]):
                             with patch.object(backend, "_run_streaming", return_value=iter(["switching...\n"])) as mock_stream:
                                 list(backend.install_packages(["linuxPackages_latest"]))
                                 mock_stream.assert_called_once_with(
@@ -195,9 +195,9 @@ class TestNixBackend:
 
     def test_remove_packages_emits_instructions(self, backend):
         cfg_text = "{\n  boot.kernelPackages = pkgs.linuxPackages_6_6;\n}\n"
-        with patch("lkm.core.backends.nix._read_config", return_value=cfg_text):
-            with patch("lkm.core.backends.nix._write_config", return_value=(0, "", "")):
-                with patch("lkm.core.backends.nix._is_flake_system", return_value=False):
+        with patch("penguins_kernel_manager.core.backends.nix._read_config", return_value=cfg_text):
+            with patch("penguins_kernel_manager.core.backends.nix._write_config", return_value=(0, "", "")):
+                with patch("penguins_kernel_manager.core.backends.nix._is_flake_system", return_value=False):
                     with patch("shutil.which", return_value=None):  # no nixos-rebuild
                         lines = list(backend.remove_packages(["linuxPackages_6_6"]))
         combined = "".join(lines)
@@ -210,7 +210,7 @@ class TestNixBackend:
         assert err == ""
 
     def test_unhold_returns_zero(self, backend):
-        with patch("lkm.core.backends.nix._is_flake_system", return_value=False):
+        with patch("penguins_kernel_manager.core.backends.nix._is_flake_system", return_value=False):
             rc, out, err = backend.unhold(["linuxPackages_6_6"])
         assert rc == 0
         assert err == ""
@@ -222,7 +222,7 @@ class TestNixBackend:
             "  boot.kernelPackages = pkgs.linuxPackages_6_6;\n"
             "}\n"
         )
-        with patch("lkm.core.backends.nix._read_config", return_value=cfg.read_text()):
+        with patch("penguins_kernel_manager.core.backends.nix._read_config", return_value=cfg.read_text()):
             attr = backend.current_kernel_attr()
         assert "linuxPackages_6_6" in attr
 
@@ -293,8 +293,8 @@ class TestNixBackendInstallPatches:
         cfg.write_text("{\n  boot.kernelPackages = pkgs.linuxPackages;\n}\n")
 
         backend = NixBackend()
-        with patch("lkm.core.backends.nix._config_path", return_value=cfg):
-            with patch("lkm.core.backends.nix._write_config",
+        with patch("penguins_kernel_manager.core.backends.nix._config_path", return_value=cfg):
+            with patch("penguins_kernel_manager.core.backends.nix._write_config",
                        side_effect=lambda p, t: (0, "", "") or cfg.write_text(t)) as mock_write:
                 with patch.object(backend, "_rebuild", return_value=iter(["rebuilding\n"])):
                     lines = list(backend.install_packages(["6.6"]))
@@ -305,7 +305,7 @@ class TestNixBackendInstallPatches:
 
     def test_hold_flake_message(self):
         backend = NixBackend()
-        with patch("lkm.core.backends.nix._is_flake_system", return_value=True):
+        with patch("penguins_kernel_manager.core.backends.nix._is_flake_system", return_value=True):
             rc, out, _ = backend.hold(["linuxPackages_6_6"])
         assert rc == 0
         assert "flake" in out.lower()
@@ -313,7 +313,7 @@ class TestNixBackendInstallPatches:
 
     def test_hold_channel_message(self):
         backend = NixBackend()
-        with patch("lkm.core.backends.nix._is_flake_system", return_value=False):
+        with patch("penguins_kernel_manager.core.backends.nix._is_flake_system", return_value=False):
             rc, out, _ = backend.hold(["linuxPackages_6_6"])
         assert rc == 0
         assert "channel" in out.lower()
@@ -321,12 +321,12 @@ class TestNixBackendInstallPatches:
 
     def test_unhold_flake_message(self):
         backend = NixBackend()
-        with patch("lkm.core.backends.nix._is_flake_system", return_value=True):
+        with patch("penguins_kernel_manager.core.backends.nix._is_flake_system", return_value=True):
             rc, out, _ = backend.unhold(["linuxPackages_6_6"])
         assert "nix flake update" in out
 
     def test_unhold_channel_message(self):
         backend = NixBackend()
-        with patch("lkm.core.backends.nix._is_flake_system", return_value=False):
+        with patch("penguins_kernel_manager.core.backends.nix._is_flake_system", return_value=False):
             rc, out, _ = backend.unhold(["linuxPackages_6_6"])
         assert "nix-channel" in out

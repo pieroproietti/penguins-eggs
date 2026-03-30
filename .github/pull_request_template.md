@@ -12,7 +12,7 @@ Merges [lkf](https://github.com/Interested-Deving-1896/lkf) (Linux Kernel Framew
 
 The full CLI pipeline:
 ```sh
-lkm build --version 6.12 --flavor tkg --llvm --lto thin --install
+penguins-kernel-manager build --version 6.12 --flavor tkg --llvm --lto thin --install
 lkm remix --file ~/.local/share/lkf/profiles/gaming.toml --install
 ```
 
@@ -25,7 +25,7 @@ lkm remix --file ~/.local/share/lkf/profiles/gaming.toml --install
 `system.py` extended: `VOID`/`NIXOS` added to `DistroFamily` and `PackageManagerKind`; `in_nix_shell` field added to `SystemInfo`.
 
 ### C — Unified project
-- Single `pyproject.toml` with `lkm` (CLI) and `lkm-gui` (Qt GUI) entry points.
+- Single `pyproject.toml` with `penguins-kernel-manager` (CLI) and `penguins-kernel-manager-gui` (Qt GUI) entry points.
 - `KernelFamily` gains `LKF_BUILD` for locally compiled kernels.
 - `KernelManager` gains `lkf_provider`, `install_local()`, and `nixos_build_warning()`.
 - `providers/__init__.py` selects family-specific providers (Gentoo, Void, NixOS) at runtime.

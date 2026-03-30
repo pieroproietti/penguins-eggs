@@ -1,70 +1,79 @@
 [build-system]
-requires      = ["hatchling"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name        = "lkm"
-version     = "0.1.0"
-description = "Linux Kernel Manager — build, install, and manage kernels across all major distros and architectures"
-readme      = "README.md"
-license     = { text = "GPL-3.0-or-later" }
+name = "penguins-kernel-manager"
+version = "0.1.0"
+description = "Penguins Kernel Manager — build, install, and manage kernels across all major distros and architectures"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.11"
-
 keywords = [
-    "linux", "kernel", "package-manager", "kernel-manager",
-    "lkf", "ukm", "xanmod", "liquorix", "nixos", "void",
+  "linux",
+  "kernel",
+  "package-manager",
+  "kernel-manager",
+  "penguins-eggs",
+  "penguins-recovery",
+  "lkf",
+  "xanmod",
+  "liquorix",
+  "nixos",
+  "void",
 ]
-
 classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Environment :: Console",
-    "Environment :: X11 Applications :: Qt",
-    "Intended Audience :: Developers",
-    "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-    "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: System :: Operating System Kernels :: Linux",
-    "Topic :: System :: Systems Administration",
-    "Topic :: Utilities",
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Environment :: X11 Applications :: Qt",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Operating System Kernels :: Linux",
+  "Topic :: System :: Systems Administration",
+  "Topic :: Utilities",
 ]
-
 dependencies = [
-    "docopt-ng>=0.9",
-    "requests>=2.31",
+  "docopt-ng>=0.9",
+  "requests>=2.31",
 ]
 
 [project.optional-dependencies]
 pyside6 = ["PySide6>=6.6"]
 pyqt6   = ["PyQt6>=6.6"]
-dev     = [
-    "pytest>=8",
-    "pytest-cov",
-    "ruff",
-    "mypy",
-    "PySide6>=6.6",
+dev = [
+  "pytest>=8",
+  "pytest-cov",
+  "ruff",
+  "mypy",
+  "PySide6>=6.6",
 ]
 dev-no-gui = [
-    "pytest>=8",
-    "pytest-cov",
-    "ruff",
-    "mypy",
+  "pytest>=8",
+  "pytest-cov",
+  "ruff",
+  "mypy",
 ]
 
 [project.scripts]
-lkm     = "lkm.cli.main:main"
-lkm-gui = "lkm.gui.app:main"
+penguins-kernel-manager     = "penguins_kernel_manager.cli.main:main"
+penguins-kernel-manager-gui = "penguins_kernel_manager.gui.app:main"
+# Legacy aliases kept for compatibility
+pkm     = "penguins_kernel_manager.cli.main:main"
+pkm-gui = "penguins_kernel_manager.gui.app:main"
 
 [project.urls]
-Repository = "https://github.com/Interested-Deving-1896/lkm"
+Repository = "https://github.com/Interested-Deving-1896/penguins-kernel-manager"
 
 [tool.hatch.build.targets.wheel]
-packages = ["lkm"]
+packages = ["penguins_kernel_manager"]
 
 [tool.ruff]
-line-length = 100
+line-length    = 100
 target-version = "py311"
 
 [tool.ruff.lint]
@@ -72,10 +81,10 @@ select = ["E", "F", "W", "I", "UP"]
 ignore = ["E501"]
 
 [tool.mypy]
-python_version      = "3.11"
-strict              = false
+python_version         = "3.11"
+strict                 = false
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-testpaths    = ["tests"]
-addopts      = "-v --tb=short"
+testpaths = ["tests"]
+addopts   = "-v --tb=short"
