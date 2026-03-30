@@ -21,11 +21,11 @@ pw_plugin_pre_reset() {
 
     # If the system is in mutable mode, exit it cleanly before the reset
     # so the filesystem is in a consistent immutable state.
-    STATUS=$("${PIF_BIN}" status --json 2>/dev/null || echo '{}')
+    STATUS=$("${PIF_BIN}" status --json 2>/dev/null)
     MUTABLE=$(echo "${STATUS}" | python3 -c \
-      "import sys,json; d=json.load(sys.stdin); print(d.get('mutable','false'))" 2>/dev/null || echo "false")
+      "import sys,json; d=json.load(sys.stdin); print(d.get('mutable', False))" 2>/dev/null || echo "False")
 
-    if [[ "${MUTABLE}" == "True" || "${MUTABLE}" == "true" ]]; then
+    if [[ "${MUTABLE}" == "True" ]]; then
         pw_info "penguins-immutable-framework: exiting mutable mode before reset..."
         pw_run "${PIF_BIN}" mutable exit || \
             pw_warn "pif: mutable exit failed — reset continuing anyway"

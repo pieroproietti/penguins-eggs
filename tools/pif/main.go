@@ -332,29 +332,46 @@ func cmdStatus() *cobra.Command {
 		Use:   "status",
 		Short: "Display current system state",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			// Lock-file check is always authoritative and works even when
+			// pif.toml is absent or the backend is uninitialised.
+			isMutable := mutable.LockExists()
+
+			printSt := func(st *hal.Status) error {
+				st.Mutable = isMutable
+				if jsonOut {
+					return printStatusJSON(st)
+				}
+				fmt.Printf("Backend:      %s\n", st.Backend)
+				fmt.Printf("Current root: %s\n", st.CurrentRoot)
+				fmt.Printf("Mutable:      %v\n", st.Mutable)
+				fmt.Printf("Snapshots:    %d\n", len(st.Snapshots))
+				for k, v := range st.Extra {
+					fmt.Printf("  %-20s %s\n", k+":", v)
+				}
+				return nil
+			}
+
 			b, _, err := loadBackend()
 			if err != nil {
-				return err
+				// Degraded: no config or backend — still report mutable state.
+				return printSt(&hal.Status{
+					Backend:     "unknown",
+					CurrentRoot: "unknown",
+					Extra:       map[string]string{"config_error": err.Error()},
+				})
 			}
+
 			st, err := b.Status()
 			if err != nil {
-				return err
+				// Backend present but Status() failed — still report mutable state.
+				return printSt(&hal.Status{
+					Backend:     b.Name(),
+					CurrentRoot: "unknown",
+					Extra:       map[string]string{"status_error": err.Error()},
+				})
 			}
-			// The lock file is the authoritative source for mutable state.
-			// Backends that don't track this themselves will return false by
-			// default, so we always override with the lock-file check.
-			st.Mutable = mutable.LockExists()
-			if jsonOut {
-				return printStatusJSON(st)
-			}
-			fmt.Printf("Backend:      %s\n", st.Backend)
-			fmt.Printf("Current root: %s\n", st.CurrentRoot)
-			fmt.Printf("Mutable:      %v\n", st.Mutable)
-			fmt.Printf("Snapshots:    %d\n", len(st.Snapshots))
-			for k, v := range st.Extra {
-				fmt.Printf("  %-20s %s\n", k+":", v)
-			}
-			return nil
+
+			return printSt(st)
 		},
 	}
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "output status as JSON")

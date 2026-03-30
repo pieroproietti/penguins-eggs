@@ -49,10 +49,10 @@ case "${EGGS_HOOK:-produce}" in
   update)
     # Refuse to update if the system is currently in mutable mode
     if command -v "${PIF_BIN}" &>/dev/null; then
-      STATUS=$("${PIF_BIN}" status --json 2>/dev/null || echo '{}')
+      STATUS=$("${PIF_BIN}" status --json 2>/dev/null)
       MUTABLE=$(echo "${STATUS}" | python3 -c \
-        "import sys,json; d=json.load(sys.stdin); print(d.get('mutable','false'))" 2>/dev/null || echo "false")
-      if [[ "${MUTABLE}" == "True" || "${MUTABLE}" == "true" ]]; then
+        "import sys,json; d=json.load(sys.stdin); print(d.get('mutable', False))" 2>/dev/null || echo "False")
+      if [[ "${MUTABLE}" == "True" ]]; then
         echo "[penguins-immutable-framework] WARNING: system is in mutable mode. Run 'pif mutable exit' before eggs update."
         exit 1
       fi
