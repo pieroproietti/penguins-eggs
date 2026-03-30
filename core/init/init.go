@@ -100,8 +100,12 @@ func LayoutForBackend(backend string, efi bool) ([]Partition, error) {
 
 // Run partitions disk, formats filesystems, mounts them under mountRoot,
 // and creates the BTRFS subvolume layout for the chosen backend.
+//
+// When layout.Encrypt is true, the root partition is wrapped in a LUKS2
+// container before the inner filesystem is created. The dm-crypt device
+// (/dev/mapper/ilf-root) is used for all subsequent operations.
 func Run(layout DiskLayout, mountRoot string) error {
-	if err := checkPrereqs(layout.Backend); err != nil {
+	if err := checkPrereqs(layout.Backend, layout.Encrypt); err != nil {
 		return err
 	}
 
@@ -116,11 +120,27 @@ func Run(layout DiskLayout, mountRoot string) error {
 		return fmt.Errorf("init: partition: %w", err)
 	}
 
-	if err := formatAll(layout.Disk, parts); err != nil {
+	// rootDev is the device used for the root filesystem.
+	// When encryption is enabled it becomes the LUKS mapper device.
+	rootDev := ""
+	if layout.Encrypt {
+		rootPart := rootPartition(layout.Disk, parts)
+		if rootPart == "" {
+			return fmt.Errorf("init: could not identify root partition for encryption")
+		}
+		luks, err := setupLUKS(rootPart, layout.LUKSPassword)
+		if err != nil {
+			return fmt.Errorf("init: luks: %w", err)
+		}
+		rootDev = luks.MapperDevice
+		fmt.Printf("init: root partition encrypted, mapper at %s\n", rootDev)
+	}
+
+	if err := formatAll(layout.Disk, parts, rootDev); err != nil {
 		return fmt.Errorf("init: format: %w", err)
 	}
 
-	if err := mountAll(layout.Disk, parts, mountRoot); err != nil {
+	if err := mountAll(layout.Disk, parts, mountRoot, rootDev); err != nil {
 		return fmt.Errorf("init: mount: %w", err)
 	}
 
@@ -132,6 +152,22 @@ func Run(layout DiskLayout, mountRoot string) error {
 
 	fmt.Printf("init: disk prepared at %s\n", mountRoot)
 	return nil
+}
+
+// RootPartition returns the device path of the root (/) partition.
+// Exported for testing and external tooling.
+func RootPartition(disk string, parts []Partition) string {
+	for _, p := range parts {
+		if p.Mount == "/" {
+			return partDev(disk, p.Number)
+		}
+	}
+	return ""
+}
+
+// rootPartition is the internal alias.
+func rootPartition(disk string, parts []Partition) string {
+	return RootPartition(disk, parts)
 }
 
 // ── Partitioning ──────────────────────────────────────────────────────────────
@@ -180,9 +216,15 @@ func partTypeCode(fsType string) string {
 
 // ── Formatting ────────────────────────────────────────────────────────────────
 
-func formatAll(disk string, parts []Partition) error {
+// formatAll formats each partition. When rootDev is non-empty, the root (/)
+// partition is formatted using rootDev (the LUKS mapper) instead of the raw
+// partition device.
+func formatAll(disk string, parts []Partition, rootDev string) error {
 	for _, p := range parts {
 		dev := partDev(disk, p.Number)
+		if p.Mount == "/" && rootDev != "" {
+			dev = rootDev
+		}
 		if err := formatPartition(dev, p); err != nil {
 			return err
 		}
@@ -209,18 +251,18 @@ func formatPartition(dev string, p Partition) error {
 
 // ── Mounting ──────────────────────────────────────────────────────────────────
 
-func mountAll(disk string, parts []Partition, mountRoot string) error {
-	// Mount root first, then others in order.
-	for _, p := range parts {
-		if p.Mount == "" || p.Mount == "/" {
-			continue
-		}
-	}
+// mountAll mounts all partitions under mountRoot. When rootDev is non-empty,
+// the root (/) partition is mounted using rootDev (the LUKS mapper) instead
+// of the raw partition device.
+func mountAll(disk string, parts []Partition, mountRoot string, rootDev string) error {
 	for _, p := range parts {
 		if p.Mount == "" {
 			continue
 		}
 		dev := partDev(disk, p.Number)
+		if p.Mount == "/" && rootDev != "" {
+			dev = rootDev
+		}
 		mnt := filepath.Join(mountRoot, p.Mount)
 		if err := os.MkdirAll(mnt, 0o755); err != nil {
 			return err
@@ -292,12 +334,15 @@ func PartDev(disk string, num int) string {
 // partDev is the internal alias used within this package.
 func partDev(disk string, num int) string { return PartDev(disk, num) }
 
-func checkPrereqs(backend string) error {
+func checkPrereqs(backend string, encrypt bool) error {
 	required := []string{"sgdisk", "partprobe", "mkfs.fat"}
 	if isBTRFSBackend(backend) {
 		required = append(required, "mkfs.btrfs", "btrfs")
 	} else {
 		required = append(required, "mkfs.ext4")
+	}
+	if encrypt {
+		required = append(required, "cryptsetup")
 	}
 	for _, cmd := range required {
 		if _, err := exec.LookPath(cmd); err != nil {

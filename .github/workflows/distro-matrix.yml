@@ -9,9 +9,48 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Build the openSUSE CI image and push it to GHCR so the smoke-test matrix
+  # job can pull it. Running this as a prerequisite job avoids the
+  # chicken-and-egg problem where the image must exist before the workflow
+  # that creates it has ever run on main.
+  build-opensuse-image:
+    name: Build openSUSE CI image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set lowercase owner
+        run: echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: meta
+        uses: docker/build-push-action@v5
+        with:
+          context: .github/images/opensuse-tumbleweed-ci
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER }}/opensuse-tumbleweed-ci:latest
+            ghcr.io/${{ env.OWNER }}/opensuse-tumbleweed-ci:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.description=openSUSE Tumbleweed with tar+git+sh for GitHub Actions
+
   smoke-test:
     name: "${{ matrix.distro }} / ${{ matrix.backend }}"
     runs-on: ubuntu-latest
+    needs: [build-opensuse-image]
 
     strategy:
       fail-fast: false
@@ -82,18 +121,17 @@ jobs:
             pkg_install: "apk add --no-cache"
             ca_install: "apk add --no-cache ca-certificates"
 
-          # ── openSUSE / SLES-compatible ─────────────────────────────────────
-          # opensuse/leap and opensuse/tumbleweed both lack tar/git pre-installed
-          # which breaks actions/checkout before we can run any install step.
-          # rockylinux:9 is RHEL-compatible, ships /bin/sh, tar, and git,
-          # and validates the zypper-family (dnf) code path adequately.
-          # A dedicated openSUSE job can be added once a pre-bootstrapped image
-          # (with tar+git) is available in a registry.
+          # ── openSUSE Tumbleweed ────────────────────────────────────────────
+          # Uses a pre-bootstrapped GHCR image built by build-ci-images.yml.
+          # That image layers tar, git, gzip, ca-certificates, and a
+          # /bin/sh -> /bin/bash symlink onto opensuse/tumbleweed:latest so
+          # the Actions runner can launch steps normally.
+          # The image is rebuilt automatically when .github/images/** changes.
           - distro: opensuse
-            image: rockylinux:9
+            image: ghcr.io/interested-deving-1896/opensuse-tumbleweed-ci:latest
             backend: ashos
-            pkg_install: "dnf install -y"
-            ca_install: "dnf install -y ca-certificates"
+            pkg_install: "zypper install -y"
+            ca_install: "true"
 
     container:
       image: ${{ matrix.image }}
@@ -113,7 +151,7 @@ jobs:
         run: ${{ matrix.ca_install }}
 
       - name: Build ilf
-        run: go build -o /usr/local/bin/ilf ./tools/ilf
+        run: go build -buildvcs=false -o /usr/local/bin/ilf ./tools/ilf
 
       - name: Write ilf.toml
         run: |

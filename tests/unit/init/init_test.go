@@ -114,6 +114,48 @@ func TestPartDevSATA(t *testing.T) {
 	}
 }
 
+func TestRootPartition_BTRFS(t *testing.T) {
+	parts, err := ilfinit.LayoutForBackend("ashos", true)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := ilfinit.RootPartition("/dev/sda", parts)
+	if got != "/dev/sda3" {
+		t.Errorf("RootPartition ashos/sda: got %q, want /dev/sda3", got)
+	}
+}
+
+func TestRootPartition_NVMe(t *testing.T) {
+	parts, err := ilfinit.LayoutForBackend("nixos", true)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := ilfinit.RootPartition("/dev/nvme0n1", parts)
+	if got != "/dev/nvme0n1p3" {
+		t.Errorf("RootPartition nixos/nvme: got %q, want /dev/nvme0n1p3", got)
+	}
+}
+
+func TestRootPartition_ABRoot(t *testing.T) {
+	// ABRoot has no single "/" mount — vos-a is the active root.
+	parts, err := ilfinit.LayoutForBackend("abroot", true)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := ilfinit.RootPartition("/dev/sda", parts)
+	// vos-a is partition 3 and has Mount "/"
+	if got != "/dev/sda3" {
+		t.Errorf("RootPartition abroot/sda: got %q, want /dev/sda3", got)
+	}
+}
+
+func TestLUKSStatus_NotOpen(t *testing.T) {
+	// /dev/mapper/ilf-root should not exist in a test environment.
+	if ilfinit.LUKSStatus() {
+		t.Skip("LUKS mapper device unexpectedly present; skipping")
+	}
+}
+
 // helpers
 
 func partLabels(parts []ilfinit.Partition) []string {

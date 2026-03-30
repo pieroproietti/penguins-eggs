@@ -180,21 +180,19 @@ func (b *Backend) MutableEnter() (func() error, error) {
 	}, nil
 }
 
-// PkgAdd installs packages into the user environment via nix-env,
-// then rebuilds the system to make them permanent.
+// PkgAdd adds packages to environment.systemPackages in configuration.nix
+// and rebuilds the system.
 func (b *Backend) PkgAdd(packages []string) error {
-	// nix-env -iA installs into the user profile immediately.
-	// For system-wide installation, packages should be added to
-	// configuration.nix; we do that by appending to the config.
-	if err := appendToNixConfig(packages, true); err != nil {
+	if err := EditNixConfig(nixConfigPath, packages, true); err != nil {
 		return fmt.Errorf("nixos pkg add (config): %w", err)
 	}
 	return run("nixos-rebuild", "switch")
 }
 
-// PkgRemove removes packages from configuration.nix and rebuilds.
+// PkgRemove removes packages from environment.systemPackages in
+// configuration.nix and rebuilds the system.
 func (b *Backend) PkgRemove(packages []string) error {
-	if err := appendToNixConfig(packages, false); err != nil {
+	if err := EditNixConfig(nixConfigPath, packages, false); err != nil {
 		return fmt.Errorf("nixos pkg remove (config): %w", err)
 	}
 	return run("nixos-rebuild", "switch")
@@ -233,35 +231,6 @@ func parseGeneration(line string) hal.SnapshotInfo {
 		Deployed:  strings.Contains(line, "(current)"),
 	}
 	return snap
-}
-
-// appendToNixConfig is a minimal helper that adds or removes package names
-// from the environment.systemPackages list in /etc/nixos/configuration.nix.
-// Production use should prefer a proper Nix AST editor; this is a best-effort
-// line-based approach for simple cases.
-func appendToNixConfig(packages []string, add bool) error {
-	const configPath = "/etc/nixos/configuration.nix"
-	data, err := os.ReadFile(configPath)
-	if err != nil {
-		return fmt.Errorf("read %s: %w", configPath, err)
-	}
-
-	content := string(data)
-	for _, pkg := range packages {
-		nixPkg := "pkgs." + pkg
-		if add {
-			// Insert before the closing ]; of environment.systemPackages
-			content = strings.Replace(content,
-				"environment.systemPackages = with pkgs; [",
-				"environment.systemPackages = with pkgs; [\n    "+nixPkg,
-				1)
-		} else {
-			content = strings.ReplaceAll(content, "\n    "+nixPkg, "")
-			content = strings.ReplaceAll(content, nixPkg+" ", "")
-		}
-	}
-
-	return os.WriteFile(configPath, []byte(content), 0o644)
 }
 
 func run(name string, args ...string) error {
