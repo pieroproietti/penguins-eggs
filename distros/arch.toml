@@ -1,0 +1,41 @@
+# Arch Linux distro profile
+# Covers: Arch, CachyOS, EndeavourOS, Manjaro, blendOS (base)
+
+[distro]
+id           = "arch"
+family       = "arch"
+pkg_manager  = "pacman"
+pkg_add      = "pacman -S --noconfirm"
+pkg_remove   = "pacman -Rns --noconfirm"
+pkg_update   = "pacman -Syu --noconfirm"
+bootstrap    = "pacstrap"
+
+# Architectures tested on this distro family
+architectures = ["x86_64", "aarch64", "riscv64"]
+
+# Backends compatible with this distro, in recommended order
+backends = ["ashos", "frzr", "akshara", "btrfs-dwarfs"]
+
+# Filesystem requirements per backend
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "Use Arch live ISO to bootstrap. Run src/prep/arch_prep.sh first."
+
+[backends.frzr]
+requires_fs  = "btrfs"
+notes        = "Source images must be built with frzr-release and hosted on GitHub releases."
+
+[backends.akshara]
+requires_fs  = "btrfs"
+notes        = "system.yaml must declare a valid Arch-based container image."
+
+[backends.btrfs-dwarfs]
+requires_fs  = "btrfs"
+notes        = "Requires kernel module btrfs_dwarfs.ko (Linux >= 5.15) and DwarFS userspace tools."
+
+# Bootloader support
+[bootloader]
+supported = ["grub", "systemd-boot"]
+default   = "grub"
+grub_pkg  = "grub"
+efi_pkg   = "efibootmgr"

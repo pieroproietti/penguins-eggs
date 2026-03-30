@@ -1,0 +1,28 @@
+# Fedora / RHEL / CentOS Stream / AlmaLinux / Rocky Linux distro profile
+
+[distro]
+id           = "fedora"
+family       = "fedora"
+pkg_manager  = "dnf"
+pkg_add      = "dnf install -y"
+pkg_remove   = "dnf remove -y"
+pkg_update   = "dnf upgrade -y"
+bootstrap    = "dnf --installroot"
+
+architectures = ["x86_64", "aarch64", "ppc64le", "s390x"]
+
+backends = ["ashos", "akshara"]
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "Fedora ships BTRFS by default since F33. Use Fedora live ISO to bootstrap."
+
+[backends.akshara]
+requires_fs  = "btrfs"
+notes        = "system.yaml must reference a Fedora/UBI-based container image."
+
+[bootloader]
+supported = ["grub"]
+default   = "grub"
+grub_pkg  = "grub2-efi-x64"
+efi_pkg   = "efibootmgr"

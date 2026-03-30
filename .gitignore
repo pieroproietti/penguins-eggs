@@ -1,0 +1,13 @@
+bin/
+*.o
+*.a
+*.so
+*.ko
+*.mod.c
+*.order
+*.symvers
+/build/
+/dist/
+*.test
+*.out
+.DS_Store

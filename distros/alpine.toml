@@ -1,0 +1,28 @@
+# Alpine Linux distro profile
+
+[distro]
+id           = "alpine"
+family       = "alpine"
+pkg_manager  = "apk"
+pkg_add      = "apk add"
+pkg_remove   = "apk del"
+pkg_update   = "apk upgrade"
+bootstrap    = "alpine-make-rootfs"
+
+architectures = ["x86_64", "aarch64", "armv7", "riscv64", "ppc64le", "s390x"]
+
+backends = ["ashos", "akshara"]
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "Alpine uses musl libc; ensure ashos Python deps are built for musl."
+
+[backends.akshara]
+requires_fs  = "btrfs"
+notes        = "system.yaml must reference an Alpine-based container image."
+
+[bootloader]
+supported = ["grub", "syslinux"]
+default   = "grub"
+grub_pkg  = "grub"
+efi_pkg   = "efibootmgr"

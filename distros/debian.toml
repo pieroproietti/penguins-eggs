@@ -1,0 +1,32 @@
+# Debian / Ubuntu / Linux Mint distro profile
+
+[distro]
+id           = "debian"
+family       = "debian"
+pkg_manager  = "apt"
+pkg_add      = "apt install -y"
+pkg_remove   = "apt remove -y"
+pkg_update   = "apt update && apt upgrade -y"
+bootstrap    = "debootstrap"
+
+architectures = ["x86_64", "aarch64", "armv7", "riscv64", "s390x", "ppc64le"]
+
+backends = ["abroot", "ashos", "akshara"]
+
+[backends.abroot]
+requires_fs  = "ext4"   # ABRoot v2 uses LVM thin provisioning or plain partitions
+notes        = "Use Vanilla OS as reference. Requires vos-a/vos-b partition labels."
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "Use Debian live ISO to bootstrap. Run src/prep/debian_prep.sh first."
+
+[backends.akshara]
+requires_fs  = "btrfs"
+notes        = "system.yaml must reference a Debian/Ubuntu-based container image."
+
+[bootloader]
+supported = ["grub", "systemd-boot"]
+default   = "grub"
+grub_pkg  = "grub-efi-amd64"
+efi_pkg   = "efibootmgr"

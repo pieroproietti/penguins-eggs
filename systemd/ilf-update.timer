@@ -1,0 +1,13 @@
+[Unit]
+Description=ILF periodic upgrade check
+Documentation=man:ilf(1)
+
+[Timer]
+# Check for updates daily, with a random delay up to 30 minutes to
+# avoid thundering-herd on shared image registries.
+OnCalendar=daily
+RandomizedDelaySec=1800
+Persistent=true
+
+[Install]
+WantedBy=timers.target

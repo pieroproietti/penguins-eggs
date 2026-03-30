@@ -1,0 +1,27 @@
+# Gentoo Linux distro profile
+
+[distro]
+id           = "gentoo"
+family       = "gentoo"
+pkg_manager  = "portage"
+pkg_add      = "emerge"
+pkg_remove   = "emerge --deselect"
+pkg_update   = "emerge --sync && emerge -uDN @world"
+bootstrap    = "stage3"
+
+architectures = ["x86_64", "aarch64", "ppc64le", "riscv64", "s390x"]
+
+# Only ashos is currently validated on Gentoo.
+# akshara requires a container image; Gentoo's source-based model makes this
+# non-trivial but possible with a pre-built binary-packages stage3.
+backends = ["ashos"]
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "Bootstrap from a Gentoo stage3 tarball. Portage must be configured before running ilf init."
+
+[bootloader]
+supported = ["grub"]
+default   = "grub"
+grub_pkg  = "sys-boot/grub"
+efi_pkg   = "sys-boot/efibootmgr"
