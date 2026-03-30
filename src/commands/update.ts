@@ -16,6 +16,7 @@ import Diversions from '../classes/diversions.js'
 import Tools from '../classes/tools.js'
 import Utils from '../classes/utils.js'
 import { exec, spawn } from '../lib/utils.js'
+import { runPlugins } from '../lib/plugin-loader.js'
 const agent = new https.Agent({
   rejectUnauthorized: false
 })
@@ -373,6 +374,11 @@ export default class Update extends Command {
       } else if (Utils.isPackage()) {
         Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package`)
       }
+
+      // Run update plugins before proceeding — plugins may abort (exit 1) if
+      // the system is in an unsafe state (e.g. pif mutable mode active).
+      const { flags } = await this.parse(Update)
+      await runPlugins({ hook: 'update' }, undefined, flags.verbose)
 
       await this.chooseUpdate()
     } else {

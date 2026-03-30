@@ -17,6 +17,7 @@ import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
+import { runPlugins } from '../lib/plugin-loader.js'
 import Config from './config.js'
 
 // _dirname
@@ -393,6 +394,13 @@ export default class Produce extends Command {
           }
         }
 
+        // Run pre-produce plugins (e.g. pkm-hook.sh, pif-hook.sh embed state into ISO root)
+        await runPlugins(
+          { hook: 'produce', isoRoot: ovary.settings.config.snapshot_dir },
+          undefined,
+          verbose,
+        )
+
         await ovary.produce(kernel, clone, homecrypt, fullcrypt, hidden, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRootHome, verbose)
         ovary.finished(scriptOnly)
 
@@ -458,6 +466,20 @@ export default class Produce extends Command {
           } catch (err: any) {
             Utils.warning(`SBOM generation failed: ${err.message}`)
           }
+        }
+
+        // Run post-produce plugins with the final ISO path available
+        if (!scriptOnly) {
+          await runPlugins(
+            {
+              hook: 'produce',
+              isoRoot: ovary.settings.config.snapshot_dir,
+              isoFile: isoPath,
+              workDir: ovary.settings.config.snapshot_dir,
+            },
+            undefined,
+            verbose,
+          )
         }
       }
     } else {
