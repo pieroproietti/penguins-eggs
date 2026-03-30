@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -43,8 +44,8 @@ type LUKSResult struct {
 //
 // If password is empty, cryptsetup prompts interactively.
 func setupLUKS(rawDev, password string) (*LUKSResult, error) {
-	if _, err := exec.LookPath("cryptsetup"); err != nil {
-		return nil, fmt.Errorf("luks: cryptsetup not found (install cryptsetup)")
+	if err := checkCryptsetup(); err != nil {
+		return nil, err
 	}
 
 	fmt.Printf("init: formatting %s as LUKS2 container\n", rawDev)
@@ -72,6 +73,39 @@ func CloseLUKS() error {
 		return nil // already closed
 	}
 	return run("cryptsetup", "close", luksMapperName)
+}
+
+// checkCryptsetup verifies that cryptsetup is present and is version ≥ 2.0.
+// LUKS2 format and Argon2id KDF require cryptsetup 2.x; 1.x only supports LUKS1.
+func checkCryptsetup() error {
+	if _, err := exec.LookPath("cryptsetup"); err != nil {
+		return fmt.Errorf("luks: cryptsetup not found (install cryptsetup ≥ 2.0)")
+	}
+	out, err := exec.Command("cryptsetup", "--version").Output()
+	if err != nil {
+		// If --version fails for some reason, allow execution to continue;
+		// cryptsetup itself will produce a clear error if LUKS2 is unsupported.
+		return nil
+	}
+	// Output format: "cryptsetup 2.6.1"
+	fields := strings.Fields(strings.TrimSpace(string(out)))
+	if len(fields) < 2 {
+		return nil
+	}
+	parts := strings.SplitN(fields[1], ".", 3)
+	if len(parts) == 0 {
+		return nil
+	}
+	major, err := strconv.Atoi(parts[0])
+	if err != nil {
+		return nil
+	}
+	if major < 2 {
+		return fmt.Errorf(
+			"luks: cryptsetup %s is too old — LUKS2 requires version ≥ 2.0 (found %s)",
+			fields[1], fields[1])
+	}
+	return nil
 }
 
 // luksFormat runs cryptsetup luksFormat on rawDev.

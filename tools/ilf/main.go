@@ -177,19 +177,45 @@ func cmdUpgrade() *cobra.Command {
 
 func cmdRollback() *cobra.Command {
 	var snapshotID string
+	var list bool
 	cmd := &cobra.Command{
 		Use:   "rollback",
 		Short: "Revert to the previous system state",
+		Long: `Revert to the previous system state, or to a specific snapshot.
+
+Use --list to see available snapshots and their IDs before committing.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, cfg, err := loadBackend()
 			if err != nil {
 				return err
 			}
 			mgr := snapshot.New(b, cfg.ILF.MaxSnapshots)
+
+			if list {
+				snaps, err := mgr.List()
+				if err != nil {
+					return fmt.Errorf("rollback --list: %w", err)
+				}
+				if len(snaps) == 0 {
+					fmt.Println("no snapshots available")
+					return nil
+				}
+				fmt.Printf("%-20s %-30s %-10s %s\n", "ID", "NAME", "DEPLOYED", "TIMESTAMP")
+				for _, s := range snaps {
+					deployed := ""
+					if s.Deployed {
+						deployed = "*"
+					}
+					fmt.Printf("%-20s %-30s %-10s %s\n", s.ID, s.Name, deployed, s.Timestamp)
+				}
+				return nil
+			}
+
 			return mgr.Rollback(snapshotID)
 		},
 	}
 	cmd.Flags().StringVar(&snapshotID, "snapshot", "", "specific snapshot ID to roll back to")
+	cmd.Flags().BoolVar(&list, "list", false, "list available snapshots without rolling back")
 	return cmd
 }
 

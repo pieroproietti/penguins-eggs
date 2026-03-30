@@ -134,6 +134,17 @@ func Run(layout DiskLayout, mountRoot string) error {
 		}
 		rootDev = luks.MapperDevice
 		fmt.Printf("init: root partition encrypted, mapper at %s\n", rootDev)
+
+		// If anything after this point fails, close the LUKS device so it is
+		// not left open across a reboot or retry.
+		defer func() {
+			if rootDev != "" {
+				// rootDev is cleared on success (below) so this only fires on error.
+				if cerr := CloseLUKS(); cerr != nil {
+					fmt.Fprintf(os.Stderr, "init: warning: failed to close LUKS device: %v\n", cerr)
+				}
+			}
+		}()
 	}
 
 	if err := formatAll(layout.Disk, parts, rootDev); err != nil {
@@ -149,6 +160,10 @@ func Run(layout DiskLayout, mountRoot string) error {
 			return fmt.Errorf("init: subvolumes: %w", err)
 		}
 	}
+
+	// Clear rootDev so the deferred CloseLUKS does not fire on the success path.
+	// The caller is responsible for closing the device after unmounting.
+	rootDev = ""
 
 	fmt.Printf("init: disk prepared at %s\n", mountRoot)
 	return nil
@@ -341,12 +356,16 @@ func checkPrereqs(backend string, encrypt bool) error {
 	} else {
 		required = append(required, "mkfs.ext4")
 	}
-	if encrypt {
-		required = append(required, "cryptsetup")
-	}
 	for _, cmd := range required {
 		if _, err := exec.LookPath(cmd); err != nil {
 			return fmt.Errorf("init: required tool %q not found (install gdisk, btrfs-progs, dosfstools)", cmd)
+		}
+	}
+	// cryptsetup version check is deferred to setupLUKS so the error message
+	// includes the found version. Only verify presence here.
+	if encrypt {
+		if _, err := exec.LookPath("cryptsetup"); err != nil {
+			return fmt.Errorf("init: cryptsetup not found (install cryptsetup ≥ 2.0)")
 		}
 	}
 	return nil

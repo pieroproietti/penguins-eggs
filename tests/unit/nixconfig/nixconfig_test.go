@@ -191,6 +191,65 @@ func TestPreservesUnrelatedContent(t *testing.T) {
 	}
 }
 
+func TestAddPackage_SingleLine_WithPkgs(t *testing.T) {
+	config := `{ config, pkgs, ... }:
+{
+  environment.systemPackages = with pkgs; [ git vim ];
+}
+`
+	path := writeConfig(t, config)
+
+	if err := nixos.EditNixConfig(path, []string{"curl"}, true); err != nil {
+		t.Fatalf("EditNixConfig on single-line form: %v", err)
+	}
+
+	got := readConfig(t, path)
+	for _, want := range []string{"git", "vim", "curl"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("expected %q in config after add; got:\n%s", want, got)
+		}
+	}
+}
+
+func TestAddPackage_SingleLine_ExplicitPkgs(t *testing.T) {
+	config := `{ config, pkgs, ... }:
+{
+  environment.systemPackages = [ pkgs.git pkgs.vim ];
+}
+`
+	path := writeConfig(t, config)
+
+	if err := nixos.EditNixConfig(path, []string{"curl"}, true); err != nil {
+		t.Fatalf("EditNixConfig on single-line explicit form: %v", err)
+	}
+
+	got := readConfig(t, path)
+	if !strings.Contains(got, "pkgs.curl") {
+		t.Errorf("expected 'pkgs.curl' in config; got:\n%s", got)
+	}
+}
+
+func TestRemovePackage_SingleLine(t *testing.T) {
+	config := `{ config, pkgs, ... }:
+{
+  environment.systemPackages = with pkgs; [ git vim ];
+}
+`
+	path := writeConfig(t, config)
+
+	if err := nixos.EditNixConfig(path, []string{"vim"}, false); err != nil {
+		t.Fatalf("EditNixConfig remove on single-line form: %v", err)
+	}
+
+	got := readConfig(t, path)
+	if strings.Contains(got, "vim") {
+		t.Errorf("expected 'vim' removed; got:\n%s", got)
+	}
+	if !strings.Contains(got, "git") {
+		t.Errorf("expected 'git' preserved; got:\n%s", got)
+	}
+}
+
 func TestMissingSystemPackages(t *testing.T) {
 	config := `{ config, pkgs, ... }:
 {

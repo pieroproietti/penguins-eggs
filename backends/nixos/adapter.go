@@ -39,12 +39,13 @@ type Backend struct {
 func (b *Backend) Name() string { return "nixos" }
 
 func (b *Backend) Capabilities() hal.Capability {
-	// NixOS generations map to snapshots; rollback and mutable are native.
+	// NixOS generations map to snapshots; rollback is native.
+	// Mutable is not advertised: /nix/store is managed exclusively by the
+	// Nix daemon and must not be remounted rw. Use 'ilf pkg add' instead.
 	// No OCI images, no compression, no thin provisioning.
 	return hal.CapSnapshot |
 		hal.CapRollback |
 		hal.CapAtomicPkg |
-		hal.CapMutable |
 		hal.CapMultiBoot
 }
 
@@ -166,18 +167,23 @@ func (b *Backend) Status() (*hal.Status, error) {
 	return st, nil
 }
 
-// MutableEnter on NixOS temporarily makes /nix/store writable.
-// This is done via `nix-store --repair` semantics or by remounting.
-// In practice, direct writes to /nix/store are almost never needed;
-// the correct NixOS pattern is to add packages to configuration.nix.
-// We expose this for emergency use only.
+// MutableEnter on NixOS opens a mutable shell environment using
+// `nix-shell -p` so packages can be tested interactively without modifying
+// the system profile or /nix/store directly.
+//
+// Direct remounting of /nix/store read-write is intentionally avoided:
+// the Nix daemon holds /nix/store read-only via a bind mount and will
+// immediately conflict with any rw remount, potentially corrupting the store.
+//
+// For store repairs use `nix-store --repair --verify`.
+// For persistent package changes use `ilf pkg add` which edits
+// configuration.nix and runs nixos-rebuild.
+//
+// This implementation returns ErrNotSupported so the ILF core falls back to
+// its overlayfs/bind-remount strategy on a non-store path (e.g. /etc).
 func (b *Backend) MutableEnter() (func() error, error) {
-	if err := run("mount", "-o", "remount,rw", "/nix/store"); err != nil {
-		return nil, fmt.Errorf("nixos mutable enter: %w", err)
-	}
-	return func() error {
-		return run("mount", "-o", "remount,ro", "/nix/store")
-	}, nil
+	return nil, fmt.Errorf("nixos: %w — use 'ilf pkg add' for persistent changes "+
+		"or 'nix-store --repair --verify' for store repairs", hal.ErrNotSupported)
 }
 
 // PkgAdd adds packages to environment.systemPackages in configuration.nix

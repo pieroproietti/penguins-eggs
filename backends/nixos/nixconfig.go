@@ -52,6 +52,68 @@ var (
 	rePkgEntry = regexp.MustCompile(`^\s*(pkgs\.)?(\S+)\s*$`)
 )
 
+// maybeExpandSingleLine scans lines for a single-line environment.systemPackages
+// declaration and expands it in-place. Returns the (possibly modified) slice.
+func maybeExpandSingleLine(lines []string) ([]string, error) {
+	for i, line := range lines {
+		if !reListOpen.MatchString(line) {
+			continue
+		}
+		depth := strings.Count(line, "[") - strings.Count(line, "]")
+		if depth > 0 {
+			return lines, nil // already multi-line
+		}
+		withPkgs := strings.Contains(line, "with pkgs")
+		expanded, err := expandSingleLine(line, withPkgs)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]string, 0, len(lines)+len(expanded)-1)
+		out = append(out, lines[:i]...)
+		out = append(out, expanded...)
+		out = append(out, lines[i+1:]...)
+		return out, nil
+	}
+	return lines, nil
+}
+
+// expandSingleLine converts a single-line environment.systemPackages declaration
+// into the multi-line form the editor expects.
+//
+//	"  environment.systemPackages = with pkgs; [ git vim ];"
+//	→ ["  environment.systemPackages = with pkgs; [", "    git", "    vim", "  ];"]
+func expandSingleLine(line string, withPkgs bool) ([]string, error) {
+	// Extract the indent of the original line.
+	indent := line[:len(line)-len(strings.TrimLeft(line, " \t"))]
+
+	// Pull out the content between [ and ].
+	open := strings.Index(line, "[")
+	close := strings.LastIndex(line, "]")
+	if open < 0 || close < 0 || close <= open {
+		return nil, fmt.Errorf("could not parse single-line systemPackages list")
+	}
+	inner := strings.TrimSpace(line[open+1 : close])
+
+	// Reconstruct the opening line up to and including "[".
+	openLine := strings.TrimRight(line[:open+1], " \t")
+
+	result := []string{openLine}
+	if inner != "" {
+		for _, tok := range strings.Fields(inner) {
+			// Strip any trailing semicolons that may appear in malformed input.
+			tok = strings.TrimSuffix(tok, ";")
+			if tok == "" {
+				continue
+			}
+			// Normalise: strip pkgs. prefix if withPkgs, add it if not.
+			name := strings.TrimPrefix(tok, "pkgs.")
+			result = append(result, indent+"  "+pkgEntry(name, withPkgs))
+		}
+	}
+	result = append(result, indent+"];")
+	return result, nil
+}
+
 // parseNixConfig reads and parses configPath into a nixEditor.
 func parseNixConfig(configPath string) (*nixEditor, error) {
 	data, err := os.ReadFile(configPath)
@@ -60,6 +122,14 @@ func parseNixConfig(configPath string) (*nixEditor, error) {
 	}
 
 	lines := strings.Split(string(data), "\n")
+
+	// If the list is on a single line, expand it to multi-line first so the
+	// rest of the parser always sees the canonical form.
+	lines, err = maybeExpandSingleLine(lines)
+	if err != nil {
+		return nil, fmt.Errorf("nixconfig: %w", err)
+	}
+
 	ed := &nixEditor{raw: lines, listStart: -1, listEnd: -1}
 
 	inList := false
@@ -71,11 +141,6 @@ func parseNixConfig(configPath string) (*nixEditor, error) {
 			ed.withPkgs = strings.Contains(line, "with pkgs")
 			inList = true
 			depth = strings.Count(line, "[") - strings.Count(line, "]")
-			if depth <= 0 {
-				// Single-line list — not supported for editing.
-				return nil, fmt.Errorf(
-					"nixconfig: single-line environment.systemPackages not supported")
-			}
 			continue
 		}
 		if inList {

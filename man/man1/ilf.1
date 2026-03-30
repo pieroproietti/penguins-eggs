@@ -127,12 +127,26 @@ Disable with
 for BIOS/legacy boot.
 .TP
 .B \-\-encrypt
-Encrypt the root partition with LUKS2.
+Encrypt the root partition with LUKS2 (requires cryptsetup \(>= 2.0).
+The container is formatted with AES\-XTS\-512 and the Argon2id key derivation
+function.
+If no passphrase is supplied, cryptsetup prompts interactively on the terminal.
+Only the root partition is encrypted; the EFI/boot partition remains
+unencrypted so the bootloader can read the kernel and initramfs.
 .TP
 .BI \-\-extra-subvols " LIST"
 Comma-separated list of additional BTRFS subvolumes to create beyond the
 backend defaults (e.g.\&
 .IR @snapshots,@opt ).
+Only meaningful for BTRFS-based backends:
+.BR ashos ,
+.BR frzr ,
+.BR akshara ,
+.BR btrfs-dwarfs .
+Ignored for
+.B abroot
+and
+.BR nixos .
 .
 .SS ilf upgrade
 .B ilf upgrade
@@ -162,6 +176,7 @@ May be specified multiple times or as a comma-separated list.
 .SS ilf rollback
 .B ilf rollback
 [\fB\-\-snapshot\fR \fIID\fR]
+[\fB\-\-list\fR]
 .PP
 Revert the system to the previous state.
 If
@@ -170,6 +185,11 @@ is omitted, the backend chooses the most recent previous state.
 .TP
 .BI \-\-snapshot " ID"
 Specific snapshot ID to roll back to.
+.TP
+.B \-\-list
+Print available snapshots (ID, name, deployed marker, timestamp) and exit
+without performing a rollback.
+Use this to identify the target ID before committing.
 .
 .SS ilf snapshot
 .B ilf snapshot
@@ -336,6 +356,23 @@ Make the root temporarily writable, install a package, then restore:
 ilf mutable enter
 pacman \-S --noconfirm htop
 ilf mutable exit
+.EE
+.RE
+.PP
+Initialise with LUKS2 encryption on
+.IR /dev/sda :
+.PP
+.RS
+.EX
+ilf init \-\-distro arch \-\-backend ashos \-\-disk /dev/sda \-\-efi \-\-encrypt
+.EE
+.RE
+.PP
+List available snapshots before rolling back:
+.PP
+.RS
+.EX
+ilf rollback \-\-list
 .EE
 .RE
 .PP

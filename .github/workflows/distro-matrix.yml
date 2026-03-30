@@ -121,6 +121,28 @@ jobs:
             pkg_install: "apk add --no-cache"
             ca_install: "apk add --no-cache ca-certificates"
 
+          # ── Rocky Linux ───────────────────────────────────────────────────
+          - distro: rocky
+            image: rockylinux:9
+            backend: ashos
+            pkg_install: "dnf install -y -q"
+            ca_install: "dnf install -y -q ca-certificates"
+
+          - distro: rocky
+            image: rockylinux:9
+            backend: akshara
+            pkg_install: "dnf install -y -q"
+            ca_install: "dnf install -y -q ca-certificates"
+
+          # ── Void Linux ────────────────────────────────────────────────────
+          # Void uses xbps and has no systemd; the slim image ships with
+          # bash and xbps-install but lacks ca-certificates by default.
+          - distro: void
+            image: voidlinux/voidlinux:latest
+            backend: ashos
+            pkg_install: "xbps-install -Sy"
+            ca_install: "xbps-install -Sy ca-certificates"
+
           # ── openSUSE Tumbleweed ────────────────────────────────────────────
           # Uses a pre-bootstrapped GHCR image built by build-ci-images.yml.
           # That image layers tar, git, gzip, ca-certificates, and a

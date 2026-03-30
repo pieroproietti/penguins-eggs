@@ -27,10 +27,13 @@ jobs:
           go-version: "1.22"
           cache: true
 
-      - name: go mod tidy (verify go.sum is up to date)
+      - name: Verify go.sum is up to date
         run: |
           go mod tidy
           git diff --exit-code go.sum
+
+      - name: Verify module checksums
+        run: go mod verify
 
       - name: Build
         env:
