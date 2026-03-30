@@ -76,13 +76,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: ShellCheck
+      - name: ShellCheck — scripts
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./scripts"
           severity: warning
 
-      - name: ShellCheck integration tests
+      - name: ShellCheck — integration plugins
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./integration"
+          severity: warning
+
+      - name: ShellCheck — integration tests
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: "./tests/integration"
