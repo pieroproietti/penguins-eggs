@@ -130,9 +130,27 @@ for BIOS/legacy boot.
 Encrypt the root partition with LUKS2 (requires cryptsetup \(>= 2.0).
 The container is formatted with AES\-XTS\-512 and the Argon2id key derivation
 function.
-If no passphrase is supplied, cryptsetup prompts interactively on the terminal.
 Only the root partition is encrypted; the EFI/boot partition remains
 unencrypted so the bootloader can read the kernel and initramfs.
+.IP
+The passphrase is resolved in this order:
+.RS
+.IP 1. 4
+.B \-\-encrypt\-passphrase\-file
+.IP 2. 4
+.B ILF_LUKS_PASSPHRASE
+environment variable
+.IP 3. 4
+Interactive prompt via cryptsetup
+.RE
+.TP
+.BI \-\-encrypt\-passphrase\-file " FILE"
+Path to a file containing the LUKS2 passphrase (trailing newline stripped).
+The file should be readable only by root (mode 0400); a warning is printed
+if group or world read bits are set.
+Using a file or the
+.B ILF_LUKS_PASSPHRASE
+env var keeps the passphrase out of the process argument list.
 .TP
 .BI \-\-extra-subvols " LIST"
 Comma-separated list of additional BTRFS subvolumes to create beyond the
@@ -319,6 +337,20 @@ Systemd timer that triggers
 .I ilf-update.service
 daily with a randomised delay.
 .
+.SH ENVIRONMENT
+.TP
+.B ILF_LUKS_PASSPHRASE
+Passphrase used for LUKS2 encryption when
+.B \-\-encrypt
+is set and
+.B \-\-encrypt\-passphrase\-file
+is not provided.
+Keeping the passphrase in an environment variable avoids it appearing in
+.IR /proc/<pid>/cmdline .
+If both this variable and
+.B \-\-encrypt\-passphrase\-file
+are set, the file takes precedence.
+.
 .SH EXAMPLES
 .PP
 Initialise a new system on
@@ -360,11 +392,21 @@ ilf mutable exit
 .RE
 .PP
 Initialise with LUKS2 encryption on
-.IR /dev/sda :
+.IR /dev/sda
+(interactive passphrase prompt):
 .PP
 .RS
 .EX
 ilf init \-\-distro arch \-\-backend ashos \-\-disk /dev/sda \-\-efi \-\-encrypt
+.EE
+.RE
+.PP
+Initialise with LUKS2 encryption using a passphrase file:
+.PP
+.RS
+.EX
+ilf init \-\-distro arch \-\-backend ashos \-\-disk /dev/sda \-\-efi \-\-encrypt \e
+    \-\-encrypt\-passphrase\-file /root/luks.key
 .EE
 .RE
 .PP

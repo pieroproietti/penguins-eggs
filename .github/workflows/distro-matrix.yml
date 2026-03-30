@@ -13,14 +13,23 @@ jobs:
   # job can pull it. Running this as a prerequisite job avoids the
   # chicken-and-egg problem where the image must exist before the workflow
   # that creates it has ever run on main.
-  build-opensuse-image:
-    name: Build openSUSE CI image
+  # Build all distro CI images and push to GHCR before the smoke-test matrix
+  # runs. This avoids the chicken-and-egg problem where images must exist
+  # before the workflow that creates them has ever run on main.
+  build-ci-images:
+    name: "Build CI image: ${{ matrix.image }}"
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    outputs:
-      image: ${{ steps.meta.outputs.tags }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: opensuse-tumbleweed-ci
+            context: .github/images/opensuse-tumbleweed-ci
+          - image: voidlinux-ci
+            context: .github/images/voidlinux-ci
     steps:
       - uses: actions/checkout@v4
 
@@ -35,22 +44,20 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        id: meta
         uses: docker/build-push-action@v5
         with:
-          context: .github/images/opensuse-tumbleweed-ci
+          context: ${{ matrix.context }}
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER }}/opensuse-tumbleweed-ci:latest
-            ghcr.io/${{ env.OWNER }}/opensuse-tumbleweed-ci:${{ github.sha }}
+            ghcr.io/${{ env.OWNER }}/${{ matrix.image }}:latest
+            ghcr.io/${{ env.OWNER }}/${{ matrix.image }}:${{ github.sha }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.description=openSUSE Tumbleweed with tar+git+sh for GitHub Actions
 
   smoke-test:
     name: "${{ matrix.distro }} / ${{ matrix.backend }}"
     runs-on: ubuntu-latest
-    needs: [build-opensuse-image]
+    needs: [build-ci-images]
 
     strategy:
       fail-fast: false
@@ -135,20 +142,20 @@ jobs:
             ca_install: "dnf install -y -q ca-certificates"
 
           # ── Void Linux ────────────────────────────────────────────────────
-          # Void uses xbps and has no systemd; the slim image ships with
-          # bash and xbps-install but lacks ca-certificates by default.
-          - distro: void
-            image: voidlinux/voidlinux:latest
-            backend: ashos
-            pkg_install: "xbps-install -Sy"
-            ca_install: "xbps-install -Sy ca-certificates"
-
-          # ── openSUSE Tumbleweed ────────────────────────────────────────────
           # Uses a pre-bootstrapped GHCR image built by build-ci-images.yml.
           # That image layers tar, git, gzip, ca-certificates, and a
-          # /bin/sh -> /bin/bash symlink onto opensuse/tumbleweed:latest so
+          # /bin/sh -> /bin/bash symlink onto voidlinux/voidlinux:latest so
           # the Actions runner can launch steps normally.
-          # The image is rebuilt automatically when .github/images/** changes.
+          - distro: void
+            image: ghcr.io/interested-deving-1896/voidlinux-ci:latest
+            backend: ashos
+            pkg_install: "xbps-install -Sy"
+            ca_install: "true"
+
+          # ── openSUSE Tumbleweed ────────────────────────────────────────────
+          # Uses a pre-bootstrapped GHCR image built by the build-ci-images
+          # job above. That image layers tar, git, gzip, ca-certificates, and
+          # a /bin/sh -> /bin/bash symlink onto opensuse/tumbleweed:latest.
           - distro: opensuse
             image: ghcr.io/interested-deving-1896/opensuse-tumbleweed-ci:latest
             backend: ashos

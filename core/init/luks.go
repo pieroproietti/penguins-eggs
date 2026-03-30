@@ -75,6 +75,47 @@ func CloseLUKS() error {
 	return run("cryptsetup", "close", luksMapperName)
 }
 
+// LUKSPassphraseEnvVar is the environment variable checked for a LUKS
+// passphrase when neither --encrypt-passphrase-file nor an interactive
+// terminal is available. Using an env var keeps the passphrase out of
+// the process argument list (/proc/<pid>/cmdline).
+const LUKSPassphraseEnvVar = "ILF_LUKS_PASSPHRASE"
+
+// ResolvePassphrase returns the LUKS passphrase to use, applying this
+// precedence (highest to lowest):
+//
+//  1. Contents of passphraseFile (if non-empty path given)
+//  2. ILF_LUKS_PASSPHRASE environment variable
+//  3. Empty string — cryptsetup will prompt interactively
+//
+// The file is read with a trailing newline stripped. It must be
+// readable only by root (0400/0600); a warning is printed if it is
+// world- or group-readable.
+func ResolvePassphrase(passphraseFile string) (string, error) {
+	if passphraseFile != "" {
+		data, err := os.ReadFile(passphraseFile)
+		if err != nil {
+			return "", fmt.Errorf("luks: read passphrase file %s: %w", passphraseFile, err)
+		}
+		// Warn if the file is readable by group or others.
+		if info, err := os.Stat(passphraseFile); err == nil {
+			if info.Mode().Perm()&0o077 != 0 {
+				fmt.Fprintf(os.Stderr,
+					"init: warning: passphrase file %s has loose permissions (%04o); "+
+						"restrict to 0400\n", passphraseFile, info.Mode().Perm())
+			}
+		}
+		return strings.TrimRight(string(data), "\r\n"), nil
+	}
+
+	if v := os.Getenv(LUKSPassphraseEnvVar); v != "" {
+		return v, nil
+	}
+
+	// Empty — cryptsetup will prompt on the terminal.
+	return "", nil
+}
+
 // checkCryptsetup verifies that cryptsetup is present and is version ≥ 2.0.
 // LUKS2 format and Argon2id KDF require cryptsetup 2.x; 1.x only supports LUKS1.
 func checkCryptsetup() error {

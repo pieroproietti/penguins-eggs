@@ -1,6 +1,7 @@
 package init_test
 
 import (
+	"os"
 	"testing"
 
 	ilfinit "github.com/ilf/core/init"
@@ -111,6 +112,82 @@ func TestPartDevSATA(t *testing.T) {
 	want := "/dev/sda2"
 	if got != want {
 		t.Errorf("PartDev sata: got %q, want %q", got, want)
+	}
+}
+
+func TestResolvePassphrase_File(t *testing.T) {
+	dir := t.TempDir()
+	f := dir + "/passphrase"
+	if err := os.WriteFile(f, []byte("s3cr3t\n"), 0o400); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	got, err := ilfinit.ResolvePassphrase(f)
+	if err != nil {
+		t.Fatalf("ResolvePassphrase: %v", err)
+	}
+	if got != "s3cr3t" {
+		t.Errorf("got %q, want %q", got, "s3cr3t")
+	}
+}
+
+func TestResolvePassphrase_FileStripsNewline(t *testing.T) {
+	dir := t.TempDir()
+	f := dir + "/passphrase"
+	if err := os.WriteFile(f, []byte("hunter2\r\n"), 0o400); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	got, err := ilfinit.ResolvePassphrase(f)
+	if err != nil {
+		t.Fatalf("ResolvePassphrase: %v", err)
+	}
+	if got != "hunter2" {
+		t.Errorf("got %q, want %q", got, "hunter2")
+	}
+}
+
+func TestResolvePassphrase_EnvVar(t *testing.T) {
+	t.Setenv(ilfinit.LUKSPassphraseEnvVar, "envpassword")
+	got, err := ilfinit.ResolvePassphrase("")
+	if err != nil {
+		t.Fatalf("ResolvePassphrase: %v", err)
+	}
+	if got != "envpassword" {
+		t.Errorf("got %q, want %q", got, "envpassword")
+	}
+}
+
+func TestResolvePassphrase_FileBeatsEnv(t *testing.T) {
+	t.Setenv(ilfinit.LUKSPassphraseEnvVar, "envpassword")
+	dir := t.TempDir()
+	f := dir + "/passphrase"
+	if err := os.WriteFile(f, []byte("filepassword"), 0o400); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	got, err := ilfinit.ResolvePassphrase(f)
+	if err != nil {
+		t.Fatalf("ResolvePassphrase: %v", err)
+	}
+	if got != "filepassword" {
+		t.Errorf("file should beat env: got %q, want %q", got, "filepassword")
+	}
+}
+
+func TestResolvePassphrase_EmptyFallback(t *testing.T) {
+	// No file, no env var — should return empty string (interactive prompt).
+	t.Setenv(ilfinit.LUKSPassphraseEnvVar, "")
+	got, err := ilfinit.ResolvePassphrase("")
+	if err != nil {
+		t.Fatalf("ResolvePassphrase: %v", err)
+	}
+	if got != "" {
+		t.Errorf("expected empty passphrase for interactive fallback, got %q", got)
+	}
+}
+
+func TestResolvePassphrase_MissingFile(t *testing.T) {
+	_, err := ilfinit.ResolvePassphrase("/nonexistent/path/passphrase")
+	if err == nil {
+		t.Fatal("expected error for missing passphrase file, got nil")
 	}
 }
 

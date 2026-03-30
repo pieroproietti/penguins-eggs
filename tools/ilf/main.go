@@ -83,7 +83,7 @@ func loadBackend() (hal.Backend, *config.ILF, error) {
 // ── Commands ──────────────────────────────────────────────────────────────────
 
 func cmdInit() *cobra.Command {
-	var distro, backend, arch, disk string
+	var distro, backend, arch, disk, passphraseFile string
 	var efi, encrypt bool
 	var extraSubvols []string
 
@@ -94,7 +94,12 @@ func cmdInit() *cobra.Command {
 layout for the chosen backend, and run the backend's own Init() routine.
 
 If --disk is omitted, only the backend Init() is run (useful when the disk
-is already partitioned, e.g. inside a live installer that handled partitioning).`,
+is already partitioned, e.g. inside a live installer that handled partitioning).
+
+When --encrypt is set, the LUKS2 passphrase is resolved in this order:
+  1. --encrypt-passphrase-file FILE  (contents of file, newline stripped)
+  2. ILF_LUKS_PASSPHRASE env var
+  3. Interactive prompt via cryptsetup`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, cfg, err := loadBackend()
 			if err != nil && (distro == "" || backend == "") {
@@ -109,11 +114,19 @@ is already partitioned, e.g. inside a live installer that handled partitioning).
 
 			// ── Real disk setup ───────────────────────────────────────────
 			if disk != "" {
+				var passphrase string
+				if encrypt {
+					passphrase, err = ilfinit.ResolvePassphrase(passphraseFile)
+					if err != nil {
+						return err
+					}
+				}
 				layout := ilfinit.DiskLayout{
 					Disk:         disk,
 					Backend:      b.Name(),
 					EFI:          efi,
 					Encrypt:      encrypt,
+					LUKSPassword: passphrase,
 					ExtraSubvols: extraSubvols,
 				}
 				if err := ilfinit.Run(layout, "/mnt"); err != nil {
@@ -141,7 +154,9 @@ is already partitioned, e.g. inside a live installer that handled partitioning).
 	cmd.Flags().StringVar(&arch, "arch", "", "target architecture (default: auto-detect)")
 	cmd.Flags().StringVar(&disk, "disk", "", "target block device to partition (e.g. /dev/sda); omit to skip partitioning")
 	cmd.Flags().BoolVar(&efi, "efi", true, "create an EFI System Partition (disable for BIOS/legacy boot)")
-	cmd.Flags().BoolVar(&encrypt, "encrypt", false, "encrypt the root partition with LUKS")
+	cmd.Flags().BoolVar(&encrypt, "encrypt", false, "encrypt the root partition with LUKS2")
+	cmd.Flags().StringVar(&passphraseFile, "encrypt-passphrase-file", "",
+		"file containing the LUKS2 passphrase (overrides ILF_LUKS_PASSPHRASE; omit for interactive prompt)")
 	cmd.Flags().StringSliceVar(&extraSubvols, "extra-subvols", nil, "additional BTRFS subvolumes to create (e.g. @snapshots,@opt)")
 	return cmd
 }
