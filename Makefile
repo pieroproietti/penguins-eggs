@@ -107,18 +107,13 @@ install-integration:
 	install -Dm644 integration/recovery-plugin/README.md \
 	               $(SHAREDIR)/integration/recovery-plugin/README.md
 
-	# Symlink into penguins-eggs plugin directory (if it exists)
-	@if [ -d "$(EGGS_PLUGIN_DIR)" ]; then \
-	    ln -sf $(SHAREDIR)/integration/eggs-plugin/powerwash-hook.sh \
-	           $(EGGS_PLUGIN_DIR)/powerwash-hook.sh; \
-	    echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/powerwash-hook.sh"; \
-	else \
-	    echo "  penguins-eggs plugin dir not found ($(EGGS_PLUGIN_DIR)) — skipping symlink"; \
-	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/eggs-plugin/powerwash-hook.sh $(EGGS_PLUGIN_DIR)/powerwash-hook.sh"; \
-	fi
+	# Create plugin directories and symlink into them
+	install -dm755 $(EGGS_PLUGIN_DIR)
+	ln -sf $(SHAREDIR)/integration/eggs-plugin/powerwash-hook.sh \
+	       $(EGGS_PLUGIN_DIR)/powerwash-hook.sh
+	@echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/powerwash-hook.sh"
 
-	# Symlink self-plugin into powerwash distro plugin directory
-	install -d $(RECOVERY_PLUGIN_DIR)
+	install -dm755 $(RECOVERY_PLUGIN_DIR)
 	ln -sf $(SHAREDIR)/integration/recovery-plugin/powerwash-plugin.sh \
 	       $(RECOVERY_PLUGIN_DIR)/powerwash-self-plugin.sh
 	@echo "  Linked recovery plugin → $(RECOVERY_PLUGIN_DIR)/powerwash-self-plugin.sh"
