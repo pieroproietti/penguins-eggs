@@ -1,0 +1,382 @@
+.TH ILF 1 "2025" "Immutable Linux Framework" "User Commands"
+.
+.SH NAME
+ilf \- manage immutable Linux systems through a unified interface
+.
+.SH SYNOPSIS
+.B ilf
+[\fB\-\-config\fR \fIFILE\fR]
+[\fB\-v\fR]
+\fICOMMAND\fR [\fIARGS\fR]
+.
+.SH DESCRIPTION
+.B ilf
+is the command-line interface for the Immutable Linux Framework.
+It provides a single, backend-agnostic surface for initialising,
+upgrading, rolling back, and managing snapshots on immutable Linux systems.
+.PP
+The active backend is selected in
+.I /etc/ilf/ilf.toml
+under the
+.B [ilf].backend
+key.
+All operations are dispatched through the Hardware Abstraction Layer (HAL)
+to the configured backend.
+.PP
+Supported backends:
+.RS
+.TP
+.B abroot
+Vanilla-OS/ABRoot \(em A/B partition swap + OCI images
+.TP
+.B ashos
+ashos/ashos \(em BTRFS snapshot tree
+.TP
+.B frzr
+ChimeraOS/frzr \(em read-only BTRFS subvolume deploy
+.TP
+.B akshara
+blend-os/akshara \(em YAML-declared system rebuild
+.TP
+.B btrfs-dwarfs
+btrfs-dwarfs-framework \(em BTRFS+DwarFS hybrid blend layer
+.TP
+.B nixos
+NixOS \(em generation-based passthrough
+.RE
+.
+.SH GLOBAL OPTIONS
+.TP
+.BI \-\-config " FILE"
+Path to the configuration file.
+Defaults to the first file found in:
+.IR $HOME/.config/ilf/ilf.toml ,
+.IR /etc/ilf/ilf.toml ,
+.IR /usr/share/ilf/ilf.toml ,
+.IR ./ilf.toml .
+.TP
+.BR \-v ", " \-\-verbose
+Enable verbose output.
+.
+.SH COMMANDS
+.
+.SS ilf init
+.B ilf init
+[\fB\-\-distro\fR \fINAME\fR]
+[\fB\-\-backend\fR \fINAME\fR]
+[\fB\-\-arch\fR \fIARCH\fR]
+[\fB\-\-disk\fR \fIDEVICE\fR]
+[\fB\-\-efi\fR]
+[\fB\-\-encrypt\fR]
+[\fB\-\-extra-subvols\fR \fILIST\fR]
+.PP
+Initialise ILF on this system.
+When
+.B \-\-disk
+is provided, the target disk is partitioned, formatted, and the BTRFS
+subvolume layout for the chosen backend is created under
+.IR /mnt .
+The backend's own
+.B Init()
+routine is then called to complete setup.
+.PP
+When
+.B \-\-disk
+is omitted, only the backend
+.B Init()
+is run.
+This is useful when the disk is already partitioned by a live installer.
+.TP
+.BI \-\-distro " NAME"
+Target distro identifier (e.g.\&
+.IR arch ,
+.IR debian ,
+.IR fedora ).
+Must match a file in
+.IR /etc/ilf/distros/<NAME>.toml .
+.TP
+.BI \-\-backend " NAME"
+Immutability backend to use.
+Overrides
+.B [ilf].backend
+in the config file.
+.TP
+.BI \-\-arch " ARCH"
+Target CPU architecture.
+Auto-detected if omitted.
+Valid values:
+.IR x86_64 ,
+.IR aarch64 ,
+.IR armv7 ,
+.IR riscv64 ,
+.IR ppc64le ,
+.IR s390x .
+.TP
+.BI \-\-disk " DEVICE"
+Block device to partition (e.g.\&
+.IR /dev/sda ,
+.IR /dev/nvme0n1 ).
+.B Warning:
+all existing data on this device will be destroyed.
+.TP
+.B \-\-efi
+Create an EFI System Partition.
+Enabled by default.
+Disable with
+.B \-\-efi=false
+for BIOS/legacy boot.
+.TP
+.B \-\-encrypt
+Encrypt the root partition with LUKS2.
+.TP
+.BI \-\-extra-subvols " LIST"
+Comma-separated list of additional BTRFS subvolumes to create beyond the
+backend defaults (e.g.\&
+.IR @snapshots,@opt ).
+.
+.SS ilf upgrade
+.B ilf upgrade
+[\fB\-\-dry\-run\fR]
+[\fB\-\-force\fR]
+[\fB\-\-pkg\fR \fIPKG\fR[,\fIPKG\fR...]]
+.PP
+Perform an atomic system upgrade.
+Before upgrading, a pre-upgrade snapshot is created automatically.
+If the upgrade fails and
+.B auto_rollback
+is enabled in
+.IR ilf.toml ,
+the system is rolled back to the pre-upgrade snapshot.
+Pre- and post-upgrade hooks are run if configured.
+.TP
+.B \-\-dry\-run
+Report what would change without applying it.
+.TP
+.B \-\-force
+Skip pre-flight checks.
+.TP
+.BI \-\-pkg " PKG"
+Additional packages to install during the upgrade.
+May be specified multiple times or as a comma-separated list.
+.
+.SS ilf rollback
+.B ilf rollback
+[\fB\-\-snapshot\fR \fIID\fR]
+.PP
+Revert the system to the previous state.
+If
+.B \-\-snapshot
+is omitted, the backend chooses the most recent previous state.
+.TP
+.BI \-\-snapshot " ID"
+Specific snapshot ID to roll back to.
+.
+.SS ilf snapshot
+.B ilf snapshot
+.IR SUBCOMMAND " [" OPTIONS ]
+.PP
+Manage snapshots.
+.TP
+.B ilf snapshot create [\-\-label LABEL]
+Create a snapshot of the current root.
+The snapshot is named
+.IB LABEL - TIMESTAMP
+where
+.I TIMESTAMP
+is in ISO 8601 format.
+Prints the backend-assigned snapshot ID on success.
+.TP
+.B ilf snapshot list
+List all snapshots.
+The currently deployed snapshot is marked with
+.BR * .
+.TP
+.B ilf snapshot delete \-\-id ID
+Delete the snapshot with the given ID.
+Deployed snapshots are never deleted.
+.TP
+.B ilf snapshot deploy \-\-id ID
+Set the snapshot with the given ID as the next boot target.
+.
+.SS ilf status
+.B ilf status
+.PP
+Display the current system state: active backend, current root,
+mutability, snapshot count, and any backend-specific metadata.
+.
+.SS ilf mutable
+.B ilf mutable
+.IR SUBCOMMAND
+.PP
+Toggle filesystem mutability.
+.TP
+.B ilf mutable enter
+Make the root filesystem temporarily writable.
+The active session is recorded in
+.I /run/ilf-mutable.lock
+so that
+.B ilf mutable exit
+can restore immutability from a separate process.
+.TP
+.B ilf mutable exit
+Restore immutability by reading
+.I /run/ilf-mutable.lock
+and reversing the toggle method used during
+.BR enter .
+Returns an error if no session is active.
+.
+.SS ilf pkg
+.B ilf pkg
+.IR SUBCOMMAND " " PACKAGE ...
+.PP
+Manage packages inside an atomic transaction.
+Not all backends support this operation; see
+.B ilf backends
+for capability information.
+.TP
+.B ilf pkg add PACKAGE...
+Install one or more packages atomically.
+.TP
+.B ilf pkg remove PACKAGE...
+Remove one or more packages atomically.
+.
+.SS ilf backends
+.B ilf backends
+.PP
+List all registered backends and their capability flags.
+.PP
+Capability flags:
+.RS
+.TP
+.B snapshot
+Named snapshot create/list/delete/deploy
+.TP
+.B rollback
+Revert to previous state
+.TP
+.B atomic-pkg
+Per-package install/remove in a transaction
+.TP
+.B oci-images
+Pull and apply OCI container images
+.TP
+.B mutable
+Toggle read-write mode at runtime
+.TP
+.B compression
+Backend-native data compression
+.TP
+.B multi-boot
+Manage multiple bootable entries
+.TP
+.B thin-provision
+LVM thin provisioning support
+.RE
+.
+.SH FILES
+.TP
+.I /etc/ilf/ilf.toml
+System-wide configuration file.
+See
+.BR ilf.toml (5)
+for the full schema.
+.TP
+.I /etc/ilf/distros/*.toml
+Per-distro capability declarations.
+.TP
+.I /run/ilf-mutable.lock
+Active mutable session token.
+Created by
+.B ilf mutable enter
+and removed by
+.BR "ilf mutable exit" .
+.TP
+.I /usr/lib/systemd/system/ilf-update.service
+Systemd service unit for periodic upgrades.
+.TP
+.I /usr/lib/systemd/system/ilf-update.timer
+Systemd timer that triggers
+.I ilf-update.service
+daily with a randomised delay.
+.
+.SH EXAMPLES
+.PP
+Initialise a new system on
+.I /dev/nvme0n1
+using the
+.B ashos
+backend on Arch Linux:
+.PP
+.RS
+.EX
+ilf init \-\-distro arch \-\-backend ashos \-\-disk /dev/nvme0n1 \-\-efi
+.EE
+.RE
+.PP
+Perform a dry-run upgrade to see what would change:
+.PP
+.RS
+.EX
+ilf upgrade \-\-dry\-run
+.EE
+.RE
+.PP
+Create a named snapshot before making manual changes:
+.PP
+.RS
+.EX
+ilf snapshot create \-\-label before\-experiment
+.EE
+.RE
+.PP
+Make the root temporarily writable, install a package, then restore:
+.PP
+.RS
+.EX
+ilf mutable enter
+pacman \-S --noconfirm htop
+ilf mutable exit
+.EE
+.RE
+.PP
+Roll back to a specific snapshot:
+.PP
+.RS
+.EX
+ilf rollback \-\-snapshot 20250101T120000Z
+.EE
+.RE
+.PP
+List all registered backends and their capabilities:
+.PP
+.RS
+.EX
+ilf backends
+.EE
+.RE
+.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+An error occurred.
+The error message is printed to stderr.
+.
+.SH SEE ALSO
+.BR ilf.toml (5),
+.BR btrfs (8),
+.BR nixos-rebuild (8),
+.BR abroot (1),
+.BR ash (1)
+.
+.SH AUTHORS
+Immutable Linux Framework contributors.
+Backends are maintained by their respective upstream projects:
+Vanilla-OS (ABRoot), ashos project (AshOS), ChimeraOS (frzr),
+blendOS (akshara), btrfs-dwarfs-framework contributors, NixOS project.
+.
+.SH LICENSE
+ILF core and CLI: GPL-3.0.
+Each backend retains its upstream license.

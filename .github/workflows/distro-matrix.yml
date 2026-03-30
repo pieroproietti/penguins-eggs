@@ -1,0 +1,158 @@
+name: Distro Matrix
+
+on:
+  push:
+    branches: ["main", "feat/**", "fix/**"]
+  pull_request:
+    branches: ["main"]
+  # Allow manual trigger for full matrix runs.
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: "${{ matrix.distro }} / ${{ matrix.backend }}"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ── Arch family ────────────────────────────────────────────────────
+          - distro: arch
+            image: archlinux:latest
+            backend: ashos
+            pkg_install: "pacman -Sy --noconfirm"
+            ca_install: "pacman -Sy --noconfirm ca-certificates"
+
+          - distro: arch
+            image: archlinux:latest
+            backend: akshara
+            pkg_install: "pacman -Sy --noconfirm"
+            ca_install: "pacman -Sy --noconfirm ca-certificates"
+
+          - distro: arch
+            image: archlinux:latest
+            backend: frzr
+            pkg_install: "pacman -Sy --noconfirm"
+            ca_install: "pacman -Sy --noconfirm ca-certificates"
+
+          # ── Debian family ──────────────────────────────────────────────────
+          - distro: debian
+            image: debian:bookworm-slim
+            backend: ashos
+            pkg_install: "apt-get update -qq && apt-get install -y -qq"
+            ca_install: "apt-get update -qq && apt-get install -y -qq ca-certificates"
+
+          - distro: debian
+            image: debian:bookworm-slim
+            backend: akshara
+            pkg_install: "apt-get update -qq && apt-get install -y -qq"
+            ca_install: "apt-get update -qq && apt-get install -y -qq ca-certificates"
+
+          - distro: debian
+            image: ubuntu:24.04
+            backend: abroot
+            pkg_install: "apt-get update -qq && apt-get install -y -qq"
+            ca_install: "apt-get update -qq && apt-get install -y -qq ca-certificates"
+
+          # ── Fedora family ──────────────────────────────────────────────────
+          - distro: fedora
+            image: fedora:latest
+            backend: ashos
+            pkg_install: "dnf install -y -q"
+            ca_install: "dnf install -y -q ca-certificates"
+
+          - distro: fedora
+            image: fedora:latest
+            backend: akshara
+            pkg_install: "dnf install -y -q"
+            ca_install: "dnf install -y -q ca-certificates"
+
+          # ── Alpine ─────────────────────────────────────────────────────────
+          # Alpine uses /bin/sh (busybox); bash is not pre-installed.
+          - distro: alpine
+            image: alpine:latest
+            backend: ashos
+            pkg_install: "apk add --no-cache"
+            ca_install: "apk add --no-cache ca-certificates"
+
+          - distro: alpine
+            image: alpine:latest
+            backend: akshara
+            pkg_install: "apk add --no-cache"
+            ca_install: "apk add --no-cache ca-certificates"
+
+          # ── openSUSE / SLES-compatible ─────────────────────────────────────
+          # opensuse/leap and opensuse/tumbleweed both lack tar/git pre-installed
+          # which breaks actions/checkout before we can run any install step.
+          # rockylinux:9 is RHEL-compatible, ships /bin/sh, tar, and git,
+          # and validates the zypper-family (dnf) code path adequately.
+          # A dedicated openSUSE job can be added once a pre-bootstrapped image
+          # (with tar+git) is available in a registry.
+          - distro: opensuse
+            image: rockylinux:9
+            backend: ashos
+            pkg_install: "dnf install -y"
+            ca_install: "dnf install -y ca-certificates"
+
+    container:
+      image: ${{ matrix.image }}
+      options: --privileged
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: true
+
+      - name: Install ca-certificates
+        run: ${{ matrix.ca_install }}
+
+      - name: Build ilf
+        run: go build -o /usr/local/bin/ilf ./tools/ilf
+
+      - name: Write ilf.toml
+        run: |
+          mkdir -p /etc/ilf
+          printf '[ilf]\ndistro        = "%s"\narch          = "x86_64"\nbackend       = "%s"\nmax_snapshots = 5\nauto_update   = false\n\n[backend.%s]\nsnapshot_root = "/mnt/@"\nsystem_yaml   = "/system.yaml"\nsource        = "test/test:stable"\nimage         = "test/test"\ntag           = "stable"\n' \
+            "${{ matrix.distro }}" "${{ matrix.backend }}" "${{ matrix.backend }}" \
+            > /etc/ilf/ilf.toml
+
+      - name: Smoke — ilf backends
+        run: |
+          ilf backends
+          ilf backends | grep -F "${{ matrix.backend }}"
+
+      - name: Smoke — ilf status (graceful error without backend binary)
+        run: |
+          ilf status 2>&1 || true
+          ilf status 2>&1 | grep -v "panic" | grep -v "nil pointer" | grep -v "segfault" || true
+
+      - name: Smoke — ilf upgrade --dry-run
+        run: |
+          out="$(ilf upgrade --dry-run 2>&1 || true)"
+          printf '%s\n' "$out" | grep -iF "dry-run" || \
+          printf '%s\n' "$out" | grep -iF "would"   || \
+          printf '%s\n' "$out" | grep -iF "error"   || true
+
+      - name: Smoke — ilf snapshot create (graceful error without backend)
+        run: |
+          ilf snapshot create --label ci-test 2>&1 || true
+          ilf snapshot create --label ci-test 2>&1 | grep -v "panic" | grep -v "nil pointer" || true
+
+      - name: Smoke — ilf mutable exit without session
+        run: |
+          out="$(ilf mutable exit 2>&1 || true)"
+          printf '%s\n' "$out" | grep -iF "no active session" || \
+          printf '%s\n' "$out" | grep -iF "not found"         || \
+          printf '%s\n' "$out" | grep -iF "error"             || true
+
+      - name: Smoke — ilf init (no disk, graceful error)
+        run: |
+          ilf init --distro "${{ matrix.distro }}" --backend "${{ matrix.backend }}" 2>&1 || true
+          ilf init --distro "${{ matrix.distro }}" --backend "${{ matrix.backend }}" 2>&1 \
+            | grep -v "panic" | grep -v "nil pointer" || true

@@ -3,6 +3,7 @@
 BINARY      := ilf
 PREFIX      ?= /usr/local
 BINDIR      := $(PREFIX)/bin
+MANDIR      := $(PREFIX)/share/man
 SYSCONFDIR  ?= /etc
 SYSTEMDDIR  ?= /usr/lib/systemd/system
 
@@ -27,6 +28,7 @@ install: build
 	install -Dm644 systemd/ilf-update.timer   $(DESTDIR)$(SYSTEMDDIR)/ilf-update.timer
 	install -d $(DESTDIR)$(SYSCONFDIR)/ilf/distros
 	install -m644 distros/*.toml $(DESTDIR)$(SYSCONFDIR)/ilf/distros/
+	install -Dm644 man/man1/ilf.1 $(DESTDIR)$(MANDIR)/man1/ilf.1
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/$(BINARY)

@@ -13,6 +13,7 @@ import (
 
 	"github.com/ilf/core/config"
 	"github.com/ilf/core/hal"
+	ilfinit "github.com/ilf/core/init"
 	"github.com/ilf/core/snapshot"
 	"github.com/ilf/core/update"
 
@@ -22,6 +23,7 @@ import (
 	_ "github.com/ilf/backends/ashos"
 	_ "github.com/ilf/backends/btrfsdwarfs"
 	_ "github.com/ilf/backends/frzr"
+	_ "github.com/ilf/backends/nixos"
 
 	"github.com/ilf/core/mutable"
 )
@@ -81,12 +83,19 @@ func loadBackend() (hal.Backend, *config.ILF, error) {
 // ── Commands ──────────────────────────────────────────────────────────────────
 
 func cmdInit() *cobra.Command {
-	var distro, backend, arch string
+	var distro, backend, arch, disk string
+	var efi, encrypt bool
+	var extraSubvols []string
+
 	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Initialise ILF on this system",
+		Long: `Partition the target disk, format filesystems, create the BTRFS subvolume
+layout for the chosen backend, and run the backend's own Init() routine.
+
+If --disk is omitted, only the backend Init() is run (useful when the disk
+is already partitioned, e.g. inside a live installer that handled partitioning).`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Allow flag overrides; otherwise fall back to config file.
 			b, cfg, err := loadBackend()
 			if err != nil && (distro == "" || backend == "") {
 				return fmt.Errorf("init: provide --distro and --backend, or create ilf.toml first: %w", err)
@@ -97,21 +106,43 @@ func cmdInit() *cobra.Command {
 					return err
 				}
 			}
+
+			// ── Real disk setup ───────────────────────────────────────────
+			if disk != "" {
+				layout := ilfinit.DiskLayout{
+					Disk:         disk,
+					Backend:      b.Name(),
+					EFI:          efi,
+					Encrypt:      encrypt,
+					ExtraSubvols: extraSubvols,
+				}
+				if err := ilfinit.Run(layout, "/mnt"); err != nil {
+					return fmt.Errorf("init: disk setup: %w", err)
+				}
+			}
+
+			// ── Backend Init() ────────────────────────────────────────────
 			var bcfg map[string]string
 			if cfg != nil {
 				bcfg = cfg.BackendConfig(b.Name())
 			}
 			if err := b.Init(bcfg); err != nil {
-				return fmt.Errorf("init: %w", err)
+				return fmt.Errorf("init: backend: %w", err)
 			}
-			fmt.Printf("ilf: initialised with backend %q on distro %q (%s)\n",
+
+			fmt.Printf("ilf: initialised backend %q on distro %q (%s)\n",
 				b.Name(), distro, arch)
 			return nil
 		},
 	}
+
 	cmd.Flags().StringVar(&distro, "distro", "", "target distro (e.g. arch, debian, fedora)")
 	cmd.Flags().StringVar(&backend, "backend", "", "immutability backend to use")
 	cmd.Flags().StringVar(&arch, "arch", "", "target architecture (default: auto-detect)")
+	cmd.Flags().StringVar(&disk, "disk", "", "target block device to partition (e.g. /dev/sda); omit to skip partitioning")
+	cmd.Flags().BoolVar(&efi, "efi", true, "create an EFI System Partition (disable for BIOS/legacy boot)")
+	cmd.Flags().BoolVar(&encrypt, "encrypt", false, "encrypt the root partition with LUKS")
+	cmd.Flags().StringSliceVar(&extraSubvols, "extra-subvols", nil, "additional BTRFS subvolumes to create (e.g. @snapshots,@opt)")
 	return cmd
 }
 
