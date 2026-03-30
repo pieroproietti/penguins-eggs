@@ -28,10 +28,10 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Lint (ruff)
-        run: ruff check penguins-kernel-manager/
+        run: ruff check penguins_kernel_manager/
 
       - name: Test
-        run: pytest --tb=short --cov=penguins-kernel-manager --cov-report=term-missing
+        run: pytest --tb=short --cov=penguins_kernel_manager --cov-report=term-missing
 
       - name: Upload coverage
         if: matrix.python == '3.12' && matrix.os == 'ubuntu-latest'
@@ -74,7 +74,7 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Type check
-        run: mypy penguins-kernel-manager/ --ignore-missing-imports
+        run: mypy penguins_kernel_manager/ --ignore-missing-imports
 
   integration-apt:
     name: Integration / apt (Ubuntu)
