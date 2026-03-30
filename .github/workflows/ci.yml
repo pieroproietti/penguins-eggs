@@ -52,10 +52,11 @@ jobs:
         run: apk add --no-cache gcc musl-dev linux-headers
 
       - name: Install
-        run: pip install -e ".[dev]"
+        # PySide6 has no musl wheel; use dev-no-gui to skip it on Alpine
+        run: pip install -e ".[dev-no-gui]"
 
       - name: Test
-        run: pytest --tb=short
+        run: python -m pytest --tb=short
 
   type-check:
     name: mypy
@@ -74,3 +75,65 @@ jobs:
 
       - name: Type check
         run: mypy lkm/ --ignore-missing-imports
+
+  integration-apt:
+    name: Integration / apt (Ubuntu)
+    runs-on: ubuntu-latest
+    # Real package manager operations; allowed to fail without blocking the PR
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Integration tests (apt)
+        # Use the venv python explicitly so sudo can find pytest.
+        # Failures are informational; the unit test matrix is the hard gate.
+        run: sudo -E "$(which python)" -m pytest tests/integration/test_apt_backend.py -v --tb=short || true
+
+  integration-xbps:
+    name: Integration / xbps (Void Linux)
+    runs-on: ubuntu-latest
+    # xbps is not available on standard runners; tests self-skip via requires_xbps marker
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install lkm
+        run: pip install -e ".[dev-no-gui]"
+
+      - name: Integration tests (xbps)
+        # Tests skip automatically when xbps-install is not on PATH
+        run: python -m pytest tests/integration/test_xbps_backend.py -v --tb=short || true
+
+  integration-pacman:
+    name: Integration / pacman (Arch Linux)
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    # Real package manager operations; allowed to fail without blocking the PR
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Python
+        run: pacman -Sy --noconfirm python python-pip
+
+      - name: Install lkm
+        run: pip install -e ".[dev-no-gui]" --break-system-packages
+
+      - name: Integration tests (pacman)
+        run: python -m pytest tests/integration/test_pacman_backend.py -v --tb=short || true

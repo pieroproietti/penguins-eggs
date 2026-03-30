@@ -8,9 +8,8 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from enum import Enum, auto
+from enum import Enum
 from functools import total_ordering
-from typing import Optional
 
 
 class KernelFamily(Enum):
@@ -44,7 +43,7 @@ class KernelVersion:
     )
 
     @classmethod
-    def parse(cls, s: str) -> "KernelVersion":
+    def parse(cls, s: str) -> KernelVersion:
         m = cls._VERSION_RE.match(s.strip())
         if not m:
             raise ValueError(f"Cannot parse kernel version: {s!r}")
@@ -62,7 +61,7 @@ class KernelVersion:
             return NotImplemented
         return (self.major, self.minor, self.patch) == (other.major, other.minor, other.patch)
 
-    def __lt__(self, other: "KernelVersion") -> bool:
+    def __lt__(self, other: KernelVersion) -> bool:
         return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
 
     def __hash__(self) -> int:
@@ -81,7 +80,7 @@ class KernelEntry:
     held:        bool         = False
     notes:       str          = ""
     # For LOCAL_FILE / LKF_BUILD: path to the package file
-    local_path:  Optional[str] = field(default=None)
+    local_path:  str | None = field(default=None)
 
     @property
     def display_name(self) -> str:

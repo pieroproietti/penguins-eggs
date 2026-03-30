@@ -9,17 +9,17 @@ works.
 from __future__ import annotations
 
 from lkm.core.backends import get_backend
-from lkm.core.providers.base        import KernelProvider
-from lkm.core.providers.mainline    import MainlinePpaProvider
-from lkm.core.providers.xanmod      import XanmodProvider
-from lkm.core.providers.liquorix    import LiquorixProvider
-from lkm.core.providers.distro      import DistroNativeProvider
-from lkm.core.providers.local_file  import LocalFileProvider
-from lkm.core.providers.lkf_build   import LkfBuildProvider
-from lkm.core.providers.gentoo      import GentooProvider
-from lkm.core.providers.void        import VoidProvider
-from lkm.core.providers.nixos       import NixOSProvider
-from lkm.core.system import system_info, DistroFamily
+from lkm.core.providers.base import KernelProvider
+from lkm.core.providers.distro import DistroNativeProvider
+from lkm.core.providers.gentoo import GentooProvider
+from lkm.core.providers.liquorix import LiquorixProvider
+from lkm.core.providers.lkf_build import LkfBuildProvider
+from lkm.core.providers.local_file import LocalFileProvider
+from lkm.core.providers.mainline import MainlinePpaProvider
+from lkm.core.providers.nixos import NixOSProvider
+from lkm.core.providers.void import VoidProvider
+from lkm.core.providers.xanmod import XanmodProvider
+from lkm.core.system import DistroFamily, system_info
 
 
 def get_providers(arch: str) -> list[KernelProvider]:

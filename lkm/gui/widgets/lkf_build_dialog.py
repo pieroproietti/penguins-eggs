@@ -15,19 +15,29 @@ and worker pattern.
 """
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
-from lkm.qt import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
-    QPushButton, QCheckBox, QLineEdit, QSpinBox, QGroupBox,
-    QTabWidget, QWidget, QSizePolicy, QFileDialog,
-    QThread, Signal, Slot, QMessageBox,
-)
-from lkm.gui.widgets.log_panel import LogPanel
 from lkm.core.providers.lkf_build import LkfBuildProvider
-from lkm.core.system import system_info
-
+from lkm.gui.widgets.log_panel import LogPanel
+from lkm.qt import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QFileDialog,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QSizePolicy,
+    QTabWidget,
+    QThread,
+    QVBoxLayout,
+    QWidget,
+    Signal,
+    Slot,
+)
 
 # ---------------------------------------------------------------------------
 # Worker thread
@@ -204,7 +214,6 @@ class LkfBuildDialog(QDialog):
 
         row2.addWidget(QLabel("Arch:"))
         self._arch_combo = QComboBox()
-        host_arch = system_info().arch_raw
         for a in ["(host)", "x86_64", "aarch64", "arm", "riscv64"]:
             self._arch_combo.addItem(a)
         row2.addWidget(self._arch_combo)
@@ -241,7 +250,7 @@ class LkfBuildDialog(QDialog):
     # ------------------------------------------------------------------
 
     def _populate_profiles(self) -> None:
-        from lkm.core.providers.lkf_build import _find_profiles, _find_lkf_root
+        from lkm.core.providers.lkf_build import _find_lkf_root, _find_profiles
         profiles = _find_profiles(_find_lkf_root())
         if not profiles:
             self._profile_combo.addItem("No profiles found", "")

@@ -10,6 +10,10 @@ override_dh_auto_install:
 	# Install example profiles
 	install -dm755 debian/lkm/usr/share/lkm/profiles
 	install -m644 profiles/*.toml debian/lkm/usr/share/lkm/profiles/
+	# Install man page
+	install -dm755 debian/lkm/usr/share/man/man1
+	install -m644 docs/lkm.1 debian/lkm/usr/share/man/man1/lkm.1
+	gzip -9 debian/lkm/usr/share/man/man1/lkm.1
 
 override_dh_auto_test:
 	python3 -m pytest tests/ --tb=short

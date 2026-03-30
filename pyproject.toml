@@ -46,6 +46,12 @@ dev     = [
     "mypy",
     "PySide6>=6.6",
 ]
+dev-no-gui = [
+    "pytest>=8",
+    "pytest-cov",
+    "ruff",
+    "mypy",
+]
 
 [project.scripts]
 lkm     = "lkm.cli.main:main"

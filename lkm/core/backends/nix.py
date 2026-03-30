@@ -15,8 +15,8 @@ import os
 import re
 import shutil
 import tempfile
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 from lkm.core.backends.base import PackageBackend
 from lkm.core.system import privilege_escalation_cmd
@@ -184,7 +184,7 @@ class NixBackend(PackageBackend):
         rc, out, _ = self._run(["nix-env", "-qaP", "--no-name", "linuxPackages"])
         if rc != 0:
             return list(_NIXPKGS_KERNEL_ATTRS)
-        return [l.strip() for l in out.splitlines() if "linuxPackages" in l]
+        return [line.strip() for line in out.splitlines() if "linuxPackages" in line]
 
     def _rebuild(self) -> Iterator[str]:
         if not shutil.which("nixos-rebuild"):

@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 from lkm.qt import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QTextEdit, QPushButton, QDialogButtonBox,
+    QDialog,
+    QDialogButtonBox,
+    QLabel,
+    QTextEdit,
+    QVBoxLayout,
 )
 
 

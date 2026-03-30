@@ -8,12 +8,21 @@ from __future__ import annotations
 
 import os
 
-from lkm.qt import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
-    QPushButton, QCheckBox, QSizePolicy, QThread, Signal, Slot,
-)
-from lkm.gui.widgets.log_panel import LogPanel
 from lkm.core.providers.gentoo import GentooProvider
+from lkm.gui.widgets.log_panel import LogPanel
+from lkm.qt import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QThread,
+    QVBoxLayout,
+    Signal,
+    Slot,
+)
 
 
 class _CompileWorker(QThread):

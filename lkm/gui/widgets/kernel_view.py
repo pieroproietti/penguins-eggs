@@ -4,9 +4,18 @@ from __future__ import annotations
 from lkm.core.kernel import KernelEntry, KernelFamily
 from lkm.gui.kernel_model import KernelTableModel
 from lkm.qt import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QComboBox, QTableView, QHeaderView, QAbstractItemView,
-    QSortFilterProxyModel, QSizePolicy, Qt, Signal,
+    QAbstractItemView,
+    QComboBox,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QSortFilterProxyModel,
+    Qt,
+    QTableView,
+    QVBoxLayout,
+    QWidget,
+    Signal,
 )
 
 

@@ -44,7 +44,7 @@ class TestXbpsBackend:
             assert XbpsBackend.available() is False
 
     def test_install_packages_calls_xbps_install(self, backend):
-        with patch("lkm.core.system.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter(["ok\n"])) as mock_stream:
                 list(backend.install_packages(["linux6.6"]))
                 mock_stream.assert_called_once_with(
@@ -52,7 +52,7 @@ class TestXbpsBackend:
                 )
 
     def test_remove_packages_no_purge(self, backend):
-        with patch("lkm.core.system.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter([])) as mock_stream:
                 list(backend.remove_packages(["linux6.6"]))
                 mock_stream.assert_called_once_with(
@@ -60,7 +60,7 @@ class TestXbpsBackend:
                 )
 
     def test_remove_packages_purge(self, backend):
-        with patch("lkm.core.system.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter([])) as mock_stream:
                 list(backend.remove_packages(["linux6.6"], purge=True))
                 mock_stream.assert_called_once_with(
@@ -68,7 +68,7 @@ class TestXbpsBackend:
                 )
 
     def test_hold_calls_xbps_pkgdb(self, backend):
-        with patch("lkm.core.system.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run", return_value=(0, "", "")) as mock_run:
                 rc, _, _ = backend.hold(["linux6.6"])
                 assert rc == 0
@@ -77,7 +77,7 @@ class TestXbpsBackend:
                 )
 
     def test_unhold_calls_xbps_pkgdb(self, backend):
-        with patch("lkm.core.system.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run", return_value=(0, "", "")) as mock_run:
                 rc, _, _ = backend.unhold(["linux6.6"])
                 assert rc == 0
@@ -139,7 +139,7 @@ class TestXbpsBackend:
     def test_install_local_uses_repo_dir(self, backend, tmp_path):
         pkg = tmp_path / "linux-6.6.30-1.x86_64.xbps"
         pkg.write_text("")
-        with patch("lkm.core.system.privilege_escalation_cmd", return_value=["sudo"]):
+        with patch("lkm.core.backends.xbps.privilege_escalation_cmd", return_value=["sudo"]):
             with patch.object(backend, "_run_streaming", return_value=iter([])) as mock_stream:
                 list(backend.install_local(str(pkg)))
                 args = mock_stream.call_args[0][0]
@@ -186,7 +186,7 @@ class TestNixBackend:
             with patch("lkm.core.backends.nix._write_config", return_value=(0, "", "")):
                 with patch("lkm.core.backends.nix._is_flake_system", return_value=False):
                     with patch("shutil.which", return_value="/run/current-system/sw/bin/nixos-rebuild"):
-                        with patch("lkm.core.system.privilege_escalation_cmd", return_value=["sudo"]):
+                        with patch("lkm.core.backends.nix.privilege_escalation_cmd", return_value=["sudo"]):
                             with patch.object(backend, "_run_streaming", return_value=iter(["switching...\n"])) as mock_stream:
                                 list(backend.install_packages(["linuxPackages_latest"]))
                                 mock_stream.assert_called_once_with(

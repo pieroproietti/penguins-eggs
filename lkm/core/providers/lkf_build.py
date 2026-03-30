@@ -25,12 +25,11 @@ import os
 import re
 import shutil
 import subprocess
+from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
 from lkm.core.providers.base import KernelProvider
-from lkm.core.providers.local_file import LocalFileProvider
 from lkm.core.system import system_info
 
 _DEFAULT_OUTPUT_DIR = Path.home() / ".cache" / "lkm" / "lkf-output"
@@ -204,10 +203,13 @@ class LkfBuildProvider(KernelProvider):
         Build the kernel described by entry.local_path (a remix.toml),
         then install the resulting package via the system backend.
         """
-        if not self._lkf_bin:
+        lkf_bin = self._lkf_bin
+        if not lkf_bin:
             raise RuntimeError("lkf binary not found.")
 
         profile_path = entry.local_path
+        if profile_path is None:
+            raise RuntimeError(f"No profile path set on entry '{entry.flavor}'.")
         self._output_dir.mkdir(parents=True, exist_ok=True)
 
         yield f"Building kernel '{entry.flavor}' with lkf...\n"
@@ -215,7 +217,7 @@ class LkfBuildProvider(KernelProvider):
         yield f"Output:  {self._output_dir}\n\n"
 
         cmd = [
-            self._lkf_bin, "remix",
+            lkf_bin, "remix",
             "--file", profile_path,
             "--output-dir", str(self._output_dir),
         ]
@@ -230,8 +232,7 @@ class LkfBuildProvider(KernelProvider):
             env={**os.environ, "LKF_ROOT": str(self._lkf_root or "")},
         ) as proc:
             assert proc.stdout is not None
-            for line in proc.stdout:
-                yield line
+            yield from proc.stdout
             proc.wait()
             if proc.returncode != 0:
                 raise RuntimeError(
@@ -262,22 +263,24 @@ class LkfBuildProvider(KernelProvider):
     def build_only(
         self,
         profile_path: str,
-        extra_args: list[str] | None = None,
+        extra_args: Sequence[str] | None = None,
     ) -> Iterator[str]:
         """
         Run lkf remix/build and stream output without installing.
 
         Yields log lines.  Raises RuntimeError on non-zero exit.
         """
-        if not self._lkf_bin:
+        lkf_bin = self._lkf_bin
+        if not lkf_bin:
             raise RuntimeError("lkf binary not found.")
 
         self._output_dir.mkdir(parents=True, exist_ok=True)
         cmd = [
-            self._lkf_bin, "remix",
+            lkf_bin, "remix",
             "--file", profile_path,
             "--output-dir", str(self._output_dir),
-        ] + (extra_args or [])
+            *( extra_args or []),
+        ]
 
         with subprocess.Popen(
             cmd,
@@ -288,8 +291,7 @@ class LkfBuildProvider(KernelProvider):
             env={**os.environ, "LKF_ROOT": str(self._lkf_root or "")},
         ) as proc:
             assert proc.stdout is not None
-            for line in proc.stdout:
-                yield line
+            yield from proc.stdout
             proc.wait()
             if proc.returncode != 0:
                 raise RuntimeError(
@@ -304,21 +306,22 @@ class LkfBuildProvider(KernelProvider):
         llvm: bool = False,
         lto: str = "none",
         output_fmt: str = "deb",
-        extra_args: list[str] | None = None,
+        extra_args: Sequence[str] | None = None,
     ) -> Iterator[str]:
         """
         Drive `lkf build` directly (no profile file) and stream output.
 
         This is the path used by the GUI Build tab's "Custom build" mode.
         """
-        if not self._lkf_bin:
+        lkf_bin = self._lkf_bin
+        if not lkf_bin:
             raise RuntimeError("lkf binary not found.")
 
         self._output_dir.mkdir(parents=True, exist_ok=True)
         target_arch = arch or system_info().arch_raw
 
         cmd = [
-            self._lkf_bin, "build",
+            lkf_bin, "build",
             "--version", version,
             "--flavor",  flavor,
             "--arch",    target_arch,
@@ -329,7 +332,7 @@ class LkfBuildProvider(KernelProvider):
             cmd.append("--llvm")
         if lto != "none":
             cmd += ["--lto", lto]
-        cmd += (extra_args or [])
+        cmd += list(extra_args or [])
 
         with subprocess.Popen(
             cmd,
@@ -340,8 +343,7 @@ class LkfBuildProvider(KernelProvider):
             env={**os.environ, "LKF_ROOT": str(self._lkf_root or "")},
         ) as proc:
             assert proc.stdout is not None
-            for line in proc.stdout:
-                yield line
+            yield from proc.stdout
             proc.wait()
             if proc.returncode != 0:
                 raise RuntimeError(

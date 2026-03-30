@@ -1,10 +1,9 @@
 """XanMod provider — x86_64 only, apt repository."""
 from __future__ import annotations
 
-import re
 import shutil
 import urllib.request
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
 from lkm.core.providers.base import KernelProvider

@@ -8,6 +8,7 @@ URL:            https://github.com/Interested-Deving-1896/lkm
 Source0:        https://github.com/Interested-Deving-1896/lkm/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python3-devel >= 3.11
 BuildRequires:  python3-hatchling
 BuildRequires:  python3-build
@@ -46,6 +47,9 @@ xbps (Void Linux), and nix (NixOS).
 # Install example profiles
 install -dm755 %{buildroot}%{_datadir}/%{name}/profiles
 install -m644 profiles/*.toml %{buildroot}%{_datadir}/%{name}/profiles/
+# Man page
+install -dm755 %{buildroot}%{_mandir}/man1
+install -m644 docs/lkm.1 %{buildroot}%{_mandir}/man1/lkm.1
 
 %check
 %pytest tests/ --tb=short
@@ -56,6 +60,7 @@ install -m644 profiles/*.toml %{buildroot}%{_datadir}/%{name}/profiles/
 %{_bindir}/lkm
 %{_bindir}/lkm-gui
 %{_datadir}/%{name}/
+%{_mandir}/man1/lkm.1*
 
 %changelog
 * Sun Mar 30 2025 lkm contributors <lkm@example.com> - 0.1.0-1

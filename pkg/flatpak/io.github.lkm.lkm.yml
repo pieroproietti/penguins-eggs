@@ -30,7 +30,7 @@ modules:
     sources:
       - type: file
         url: https://files.pythonhosted.org/packages/py3/d/docopt_ng/docopt_ng-0.9.0-py3-none-any.whl
-        sha256: a9b9e4e0e7e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8
+        sha256: bfe4c8b03f9fca424c24ee0b4ffa84bf7391cb18c29ce0f6a8227a3b01b81ff9
 
   - name: python3-certifi
     buildsystem: simple
@@ -39,7 +39,7 @@ modules:
     sources:
       - type: file
         url: https://files.pythonhosted.org/packages/ba/06/a07f096c664aeb9f01624f858c3add0a4e913d6c96257acb4fce61e7de14/certifi-2024.2.2-py3-none-any.whl
-        sha256: ab7947bb6e5f769f4b5e4f9e3470a7e2a4b5e4f9e3470a7e2a4b5e4f9e3470a
+        sha256: dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1
 
   - name: python3-urllib3
     buildsystem: simple
@@ -57,7 +57,7 @@ modules:
     sources:
       - type: file
         url: https://files.pythonhosted.org/packages/28/76/e6222113b83e3622caa4bb41032d0b1bf785250607392e1b778aca0b8a7d/charset_normalizer-3.3.2-py3-none-any.whl
-        sha256: 3d563de47707959a1a6a5ada701e8c4f6f2a5e1e4e4f9e3470a7e2a4b5e4f9e3
+        sha256: 3e4d1f6587322d2788836a99c69062fbb091331ec940e02d12d179c1d53e25fc
 
   - name: python3-idna
     buildsystem: simple
@@ -75,7 +75,7 @@ modules:
     sources:
       - type: file
         url: https://files.pythonhosted.org/packages/70/8e/0e2d847013cb52cd35b38c009bb167a1a26b2ce6cd6965bf26b47bc0bf44/requests-2.31.0-py3-none-any.whl
-        sha256: 58cd2187423839f7c52c6b4c8a7de9b5c2e0775b3a8e3f5e4f9e3470a7e2a4b5
+        sha256: 58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f
 
   # ── PySide6 (Qt6 Python bindings) ────────────────────────────────────────────
   # NOTE: PySide6 wheels are large (~200 MB). The KDE Platform runtime ships Qt6

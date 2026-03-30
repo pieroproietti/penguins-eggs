@@ -3,7 +3,11 @@ from __future__ import annotations
 
 from lkm.core.kernel import KernelEntry, KernelStatus
 from lkm.qt import (
-    QAbstractTableModel, QModelIndex, Qt, QColor, QFont,
+    QAbstractTableModel,
+    QColor,
+    QFont,
+    QModelIndex,
+    Qt,
 )
 
 _COLUMNS = ["Version", "Family", "Flavor", "Arch", "Status", "Notes"]

@@ -23,38 +23,90 @@ else:
         _use_pyqt6 = True
 
 if _use_pyqt6:
-    from PyQt6.QtWidgets import (
-        QApplication, QMainWindow, QWidget, QDialog,
-        QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
-        QPushButton, QCheckBox, QDialogButtonBox,
-        QSizePolicy, QTabWidget, QTextEdit, QLineEdit,
-        QSpinBox, QGroupBox, QSplitter, QToolBar,
-        QStatusBar, QMessageBox, QFileDialog, QAction,
-        QTableView, QHeaderView, QAbstractItemView,
-        QMenu,
+    from PyQt6.QtCore import (
+        QAbstractTableModel,
+        QModelIndex,
+        QSortFilterProxyModel,
+        Qt,
+        QThread,
+        QTimer,
     )
     from PyQt6.QtCore import (
-        Qt, QThread, QAbstractTableModel, QModelIndex,
-        QSortFilterProxyModel, pyqtSignal as Signal,
-        pyqtSlot as Slot, QTimer,
+        pyqtSignal as Signal,
     )
-    from PyQt6.QtGui import QFont, QColor, QIcon
-else:
-    from PySide6.QtWidgets import (
-        QApplication, QMainWindow, QWidget, QDialog,
-        QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
-        QPushButton, QCheckBox, QDialogButtonBox,
-        QSizePolicy, QTabWidget, QTextEdit, QLineEdit,
-        QSpinBox, QGroupBox, QSplitter, QToolBar,
-        QStatusBar, QMessageBox, QFileDialog, QAction,
-        QTableView, QHeaderView, QAbstractItemView,
+    from PyQt6.QtCore import (
+        pyqtSlot as Slot,
+    )
+    from PyQt6.QtGui import QColor, QFont, QIcon
+    from PyQt6.QtWidgets import (
+        QAbstractItemView,
+        QAction,
+        QApplication,
+        QCheckBox,
+        QComboBox,
+        QDialog,
+        QDialogButtonBox,
+        QFileDialog,
+        QGroupBox,
+        QHBoxLayout,
+        QHeaderView,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
         QMenu,
+        QMessageBox,
+        QPushButton,
+        QSizePolicy,
+        QSpinBox,
+        QSplitter,
+        QStatusBar,
+        QTableView,
+        QTabWidget,
+        QTextEdit,
+        QToolBar,
+        QVBoxLayout,
+        QWidget,
     )
+else:
     from PySide6.QtCore import (
-        Qt, QThread, QAbstractTableModel, QModelIndex,
-        QSortFilterProxyModel, Signal, Slot, QTimer,
+        QAbstractTableModel,
+        QModelIndex,
+        QSortFilterProxyModel,
+        Qt,
+        QThread,
+        QTimer,
+        Signal,
+        Slot,
     )
-    from PySide6.QtGui import QFont, QColor, QIcon
+    from PySide6.QtGui import QAction, QColor, QFont, QIcon
+    from PySide6.QtWidgets import (
+        QAbstractItemView,
+        QApplication,
+        QCheckBox,
+        QComboBox,
+        QDialog,
+        QDialogButtonBox,
+        QFileDialog,
+        QGroupBox,
+        QHBoxLayout,
+        QHeaderView,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
+        QMenu,
+        QMessageBox,
+        QPushButton,
+        QSizePolicy,
+        QSpinBox,
+        QSplitter,
+        QStatusBar,
+        QTableView,
+        QTabWidget,
+        QTextEdit,
+        QToolBar,
+        QVBoxLayout,
+        QWidget,
+    )
 
 __all__ = [
     "QApplication", "QMainWindow", "QWidget", "QDialog",

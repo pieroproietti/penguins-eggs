@@ -5,15 +5,15 @@ Use get_backend() to obtain the correct backend for the current system.
 """
 from __future__ import annotations
 
-from lkm.core.backends.base    import PackageBackend
-from lkm.core.backends.apt     import AptBackend
-from lkm.core.backends.pacman  import PacmanBackend
-from lkm.core.backends.dnf     import DnfBackend
-from lkm.core.backends.zypper  import ZypperBackend
-from lkm.core.backends.apk     import ApkBackend
+from lkm.core.backends.apk import ApkBackend
+from lkm.core.backends.apt import AptBackend
+from lkm.core.backends.base import PackageBackend
+from lkm.core.backends.dnf import DnfBackend
+from lkm.core.backends.nix import NixBackend
+from lkm.core.backends.pacman import PacmanBackend
 from lkm.core.backends.portage import PortageBackend
-from lkm.core.backends.xbps    import XbpsBackend
-from lkm.core.backends.nix     import NixBackend
+from lkm.core.backends.xbps import XbpsBackend
+from lkm.core.backends.zypper import ZypperBackend
 from lkm.core.system import PackageManagerKind, system_info
 
 _BACKEND_MAP: dict[PackageManagerKind, type[PackageBackend]] = {

@@ -12,19 +12,26 @@ Right-click context menu on any kernel row:
 """
 from __future__ import annotations
 
-from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus
+from lkm.core.kernel import KernelEntry, KernelFamily
 from lkm.core.manager import KernelManager
-from lkm.gui.kernel_model import KernelTableModel
 from lkm.gui.widgets.kernel_view import KernelView
 from lkm.gui.widgets.log_panel import LogPanel
 from lkm.gui.widgets.note_dialog import NoteDialog
 from lkm.qt import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QTabWidget, QToolBar, QStatusBar, QAction,
-    QMessageBox, QMenu, QThread, Signal, Slot, Qt,
-    QLabel, QSizePolicy,
+    QAction,
+    QMainWindow,
+    QMenu,
+    QMessageBox,
+    QStatusBar,
+    Qt,
+    QTabWidget,
+    QThread,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+    Signal,
+    Slot,
 )
-
 
 # ---------------------------------------------------------------------------
 # Background worker for streaming operations
@@ -155,7 +162,6 @@ class MainWindow(QMainWindow):
         def _load():
             return self._mgr.list_all(refresh=background)
 
-        worker = _OpWorker(lambda: iter([]))  # dummy — we call list_all directly
         # For listing we don't need streaming; just call synchronously in a thread
         self._list_worker = QThread()
 

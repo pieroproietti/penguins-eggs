@@ -1,7 +1,7 @@
 """pacman backend — Arch, Manjaro, EndeavourOS, CachyOS, and derivatives."""
 from __future__ import annotations
 
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.backends.base import PackageBackend
 from lkm.core.system import privilege_escalation_cmd
@@ -50,7 +50,7 @@ class PacmanBackend(PackageBackend):
             )
         else:
             text = text.replace("[options]", f"[options]\nIgnorePkg = {pkg_str}", 1)
-        import tempfile, subprocess
+        import tempfile
         with tempfile.NamedTemporaryFile("w", suffix=".conf", delete=False) as f:
             f.write(text)
             tmp = f.name

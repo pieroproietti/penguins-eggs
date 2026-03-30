@@ -6,7 +6,7 @@ Unchanged from ukm except imports are updated to lkm namespace.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily
 

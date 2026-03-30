@@ -9,10 +9,9 @@ This is the handoff point for packages built externally (e.g. by lkf).
 """
 from __future__ import annotations
 
-import os
 import re
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
 from lkm.core.providers.base import KernelProvider

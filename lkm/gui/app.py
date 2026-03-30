@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import sys
 
-from lkm.qt import QApplication
 from lkm.gui.main_window import MainWindow
+from lkm.qt import QApplication
 
 _STYLESHEET = """
 QMainWindow, QDialog {

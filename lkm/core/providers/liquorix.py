@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import shutil
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
 from lkm.core.providers.base import KernelProvider
@@ -62,7 +62,9 @@ class LiquorixProvider(KernelProvider):
 
     def install(self, entry: KernelEntry) -> Iterator[str]:
         yield "Downloading Liquorix install script...\n"
-        import tempfile, os, stat
+        import os
+        import stat
+        import tempfile
         with tempfile.NamedTemporaryFile(suffix=".sh", delete=False) as f:
             tmp = f.name
         import urllib.request

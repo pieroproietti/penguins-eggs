@@ -50,10 +50,8 @@ package() {
     install -dm755 "$pkgdir/usr/share/$pkgname/profiles"
     install -m644 profiles/*.toml "$pkgdir/usr/share/$pkgname/profiles/"
 
-    # Man page placeholder (generated from --help if pandoc available)
-    if command -v pandoc &>/dev/null; then
-        install -dm755 "$pkgdir/usr/share/man/man1"
-        python -m lkm.cli.main --help | \
-            pandoc -s -f man -t man -o "$pkgdir/usr/share/man/man1/$pkgname.1" || true
-    fi
+    # Man page
+    install -dm755 "$pkgdir/usr/share/man/man1"
+    install -m644 docs/lkm.1 "$pkgdir/usr/share/man/man1/$pkgname.1"
+    gzip -9 "$pkgdir/usr/share/man/man1/$pkgname.1"
 }

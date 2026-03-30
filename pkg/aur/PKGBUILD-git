@@ -55,4 +55,7 @@ package() {
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
     install -dm755 "$pkgdir/usr/share/lkm/profiles"
     install -m644 profiles/*.toml "$pkgdir/usr/share/lkm/profiles/"
+    install -dm755 "$pkgdir/usr/share/man/man1"
+    install -m644 docs/lkm.1 "$pkgdir/usr/share/man/man1/lkm.1"
+    gzip -9 "$pkgdir/usr/share/man/man1/lkm.1"
 }

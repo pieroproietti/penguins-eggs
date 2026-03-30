@@ -8,12 +8,11 @@ from __future__ import annotations
 
 import platform
 import re
-import shutil
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
 from lkm.core.providers.base import KernelProvider
-from lkm.core.system import system_info, PackageManagerKind
+from lkm.core.system import PackageManagerKind, system_info
 
 
 class DistroNativeProvider(KernelProvider):

@@ -9,7 +9,7 @@ from __future__ import annotations
 import re
 import shutil
 import urllib.request
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
 from lkm.core.providers.base import KernelProvider
@@ -86,7 +86,8 @@ class MainlinePpaProvider(KernelProvider):
         if not debs:
             raise RuntimeError(f"No .deb packages found at {base}")
 
-        import tempfile, os
+        import os
+        import tempfile
         with tempfile.TemporaryDirectory() as tmp:
             for deb in debs:
                 url = base + deb

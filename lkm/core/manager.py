@@ -8,14 +8,14 @@ and the GUI.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus
 from lkm.core.providers import get_providers
 from lkm.core.providers.base import KernelProvider
-from lkm.core.providers.local_file import LocalFileProvider
 from lkm.core.providers.lkf_build import LkfBuildProvider
+from lkm.core.providers.local_file import LocalFileProvider
 from lkm.core.system import system_info
 
 _STATE_FILE = Path.home() / ".config" / "lkm" / "state.json"

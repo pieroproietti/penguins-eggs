@@ -1,7 +1,7 @@
 """zypper backend — openSUSE Leap, Tumbleweed, SLES, Regata."""
 from __future__ import annotations
 
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.backends.base import PackageBackend
 from lkm.core.system import privilege_escalation_cmd

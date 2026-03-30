@@ -1,8 +1,7 @@
 """apt/dpkg backend — Debian, Ubuntu, Mint, Pop!_OS, Kali, and derivatives."""
 from __future__ import annotations
 
-import shutil
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.backends.base import PackageBackend
 from lkm.core.system import privilege_escalation_cmd
@@ -61,7 +60,7 @@ class AptBackend(PackageBackend):
 
     def add_apt_repo(self, repo_line: str, key_url: str) -> Iterator[str]:
         """Add an apt repository and its signing key."""
-        import os, tempfile
+        import tempfile
         priv = privilege_escalation_cmd()
         # Download and add key
         with tempfile.NamedTemporaryFile(suffix=".gpg", delete=False) as f:

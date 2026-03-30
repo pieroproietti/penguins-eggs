@@ -6,9 +6,7 @@ all accessible from a single `lkm` command.
 
 Usage:
   lkm list [--family=<f>] [--installed] [--json] [--refresh]
-  lkm install <version> [--flavor=<f>] [--provider=<p>]
-  lkm install --local <path>
-  lkm install --last-build
+  lkm install [<version>] [--flavor=<f>] [--provider=<p>] [--local=<path>] [--last-build]
   lkm remove <version> [--purge]
   lkm hold <version>
   lkm unhold <version>
@@ -16,20 +14,17 @@ Usage:
   lkm remove-old [--keep=<n>] [--purge]
   lkm providers
   lkm info
-  lkm build [--version=<v>] [--flavor=<f>] [--arch=<a>] [--llvm] [--lto=<t>]
-             [--output=<fmt>] [--install]
+  lkm build [--version=<v>] [--flavor=<f>] [--arch=<a>] [--llvm] [--lto=<t>] [--output=<fmt>] [--install]
   lkm remix [--file=<path>] [--install]
-  lkm (-h | --help)
-  lkm --version
+  lkm -h
 """
 from __future__ import annotations
 
 import sys
 
+from lkm.cli.output import die, header, ok, print_json, print_table, warn
 from lkm.core.manager import KernelManager
 from lkm.core.system import system_info
-from lkm.cli.output import ok, warn, err, die, header, print_json, print_table
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -126,7 +121,7 @@ def cmd_install(args: dict) -> None:
         ok(f"Installed from {local_path}")
         return
 
-    version  = args["<version>"]
+    version  = args.get("<version>") or die("Specify a version, --local <path>, or --last-build")
     flavor   = args.get("--flavor")
     provider = args.get("--provider")
     entry    = _find_entry(mgr, version, flavor, provider)
@@ -201,8 +196,8 @@ def cmd_info(args: dict) -> None:
 
 def cmd_build(args: dict) -> None:
     """Drive lkf build directly from the CLI."""
-    mgr  = KernelManager()
-    lkf  = mgr.lkf_provider
+    mgr = KernelManager()
+    lkf = mgr.lkf_provider
     if lkf is None:
         die("lkf is not installed. Cannot build kernels.")
 
@@ -273,9 +268,15 @@ _USAGE = __doc__
 
 
 def main() -> None:
+    from lkm import __version__
+    if "--version" in sys.argv:
+        print(f"lkm {__version__}")
+        return
+
+    args: dict
     try:
         from docopt import docopt
-        args = docopt(_USAGE, version="lkm 0.1.0")
+        args = docopt(_USAGE)  # type: ignore[assignment]
     except ImportError:
         # Minimal fallback parser when docopt is not installed
         args = _minimal_parse(sys.argv[1:])

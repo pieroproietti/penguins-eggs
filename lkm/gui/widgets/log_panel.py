@@ -2,8 +2,14 @@
 from __future__ import annotations
 
 from lkm.qt import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QTextEdit, QSizePolicy, QFont, Qt, Slot,
+    QFont,
+    QHBoxLayout,
+    QPushButton,
+    QSizePolicy,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+    Slot,
 )
 
 

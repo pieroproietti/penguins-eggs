@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import subprocess
 from abc import ABC, abstractmethod
-from typing import Iterator
+from collections.abc import Iterator
 
 
 class PackageBackend(ABC):
@@ -66,8 +66,7 @@ class PackageBackend(ABC):
             **kwargs,
         ) as proc:
             assert proc.stdout is not None
-            for line in proc.stdout:
-                yield line
+            yield from proc.stdout
             proc.wait()
             if proc.returncode != 0:
                 raise RuntimeError(

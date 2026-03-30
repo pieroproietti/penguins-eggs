@@ -2,12 +2,10 @@
 from __future__ import annotations
 
 import platform
-import re
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.kernel import KernelEntry, KernelFamily, KernelStatus, KernelVersion
 from lkm.core.providers.base import KernelProvider
-
 
 # Well-known nixpkgs kernel attribute → approximate version mapping.
 # Used to populate the list when nix-env queries are unavailable.

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 import shutil
-from typing import Iterator
+from collections.abc import Iterator
 
 from lkm.core.backends.base import PackageBackend
 from lkm.core.system import privilege_escalation_cmd
