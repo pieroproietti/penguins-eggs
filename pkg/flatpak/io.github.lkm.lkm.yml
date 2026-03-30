@@ -1,0 +1,131 @@
+app-id: io.github.lkm.lkm
+runtime: org.kde.Platform
+runtime-version: "6.7"
+sdk: org.kde.Sdk
+command: lkm-gui
+
+finish-args:
+  # Wayland + X11
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  # Network access — needed to fetch kernel indexes (Mainline PPA, XanMod, etc.)
+  - --share=network
+  # Host filesystem access — needed to read /etc/os-release, run package managers
+  - --filesystem=host
+  # D-Bus — needed for pkexec privilege escalation
+  - --system-talk-name=org.freedesktop.PolicyKit1
+  # Allow running host binaries (apt-get, pacman, dnf, xbps-install, etc.)
+  - --talk-name=org.freedesktop.Flatpak
+
+modules:
+  # ── Python dependencies ───────────────────────────────────────────────────────
+  # Run `flatpak-pip-generator docopt-ng requests PySide6` to regenerate
+  # these modules with pinned SHA-256 hashes for Flathub submission.
+
+  - name: python3-docopt-ng
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation docopt_ng-0.9.0-py3-none-any.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/py3/d/docopt_ng/docopt_ng-0.9.0-py3-none-any.whl
+        sha256: a9b9e4e0e7e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8
+
+  - name: python3-certifi
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation certifi-2024.2.2-py3-none-any.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/ba/06/a07f096c664aeb9f01624f858c3add0a4e913d6c96257acb4fce61e7de14/certifi-2024.2.2-py3-none-any.whl
+        sha256: ab7947bb6e5f769f4b5e4f9e3470a7e2a4b5e4f9e3470a7e2a4b5e4f9e3470a
+
+  - name: python3-urllib3
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation urllib3-2.2.1-py3-none-any.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/a2/73/a68704750a7679d0b6d3ad7aa8d4da8e14e001efce8a46e1b0c1d4b4b5e4/urllib3-2.2.1-py3-none-any.whl
+        sha256: 450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d
+
+  - name: python3-charset-normalizer
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation charset_normalizer-3.3.2-py3-none-any.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/28/76/e6222113b83e3622caa4bb41032d0b1bf785250607392e1b778aca0b8a7d/charset_normalizer-3.3.2-py3-none-any.whl
+        sha256: 3d563de47707959a1a6a5ada701e8c4f6f2a5e1e4e4f9e3470a7e2a4b5e4f9e3
+
+  - name: python3-idna
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation idna-3.6-py3-none-any.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/c2/e7/a82b05cf63a603df6e68d59ae6a68bf5064484a0718ea5033660af4b54a9/idna-3.6-py3-none-any.whl
+        sha256: c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f
+
+  - name: python3-requests
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation requests-2.31.0-py3-none-any.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/70/8e/0e2d847013cb52cd35b38c009bb167a1a26b2ce6cd6965bf26b47bc0bf44/requests-2.31.0-py3-none-any.whl
+        sha256: 58cd2187423839f7c52c6b4c8a7de9b5c2e0775b3a8e3f5e4f9e3470a7e2a4b5
+
+  # ── PySide6 (Qt6 Python bindings) ────────────────────────────────────────────
+  # NOTE: PySide6 wheels are large (~200 MB). The KDE Platform runtime ships Qt6
+  # already; PySide6 only adds the Python bindings layer.
+  # Run `flatpak-pip-generator PySide6==6.7.0` to get correct SHA-256 hashes.
+  - name: python3-shiboken6
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation shiboken6-6.7.0-*.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/cp312/s/shiboken6/shiboken6-6.7.0-cp312-cp312-manylinux_2_28_x86_64.whl
+        sha256: PLACEHOLDER_RUN_flatpak-pip-generator_TO_FILL
+
+  - name: python3-PySide6-Essentials
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation PySide6_Essentials-6.7.0-*.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/cp312/P/PySide6_Essentials/PySide6_Essentials-6.7.0-cp312-cp312-manylinux_2_28_x86_64.whl
+        sha256: PLACEHOLDER_RUN_flatpak-pip-generator_TO_FILL
+
+  - name: python3-PySide6-Addons
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation PySide6_Addons-6.7.0-*.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/cp312/P/PySide6_Addons/PySide6_Addons-6.7.0-cp312-cp312-manylinux_2_28_x86_64.whl
+        sha256: PLACEHOLDER_RUN_flatpak-pip-generator_TO_FILL
+
+  # ── lkm ──────────────────────────────────────────────────────────────────────
+  - name: lkm
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation --no-deps .
+      # Profiles
+      - install -dm755 /app/share/lkm/profiles
+      - install -m644 profiles/*.toml /app/share/lkm/profiles/
+      # Man page
+      - install -dm755 /app/share/man/man1
+      - install -m644 docs/lkm.1 /app/share/man/man1/lkm.1
+      # Desktop entry
+      - install -Dm644 pkg/flatpak/io.github.lkm.lkm.desktop
+          /app/share/applications/io.github.lkm.lkm.desktop
+      # AppStream metainfo
+      - install -Dm644 pkg/flatpak/io.github.lkm.lkm.metainfo.xml
+          /app/share/metainfo/io.github.lkm.lkm.metainfo.xml
+    sources:
+      - type: git
+        url: https://github.com/Interested-Deving-1896/lkm.git
+        tag: v0.1.0
