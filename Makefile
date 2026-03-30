@@ -34,25 +34,16 @@ install-integration:
 	install -Dm644 integration/recovery-plugin/README.md \
 	               $(SHAREDIR)/integration/recovery-plugin/README.md
 
-	# Symlink into penguins-eggs plugin directory (if it exists)
-	@if [ -d "$(EGGS_PLUGIN_DIR)" ]; then \
-	    ln -sf $(SHAREDIR)/integration/eggs-plugin/pkm-hook.sh \
-	           $(EGGS_PLUGIN_DIR)/pkm-hook.sh; \
-	    echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/pkm-hook.sh"; \
-	else \
-	    echo "  penguins-eggs plugin dir not found ($(EGGS_PLUGIN_DIR)) — skipping symlink"; \
-	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/eggs-plugin/pkm-hook.sh $(EGGS_PLUGIN_DIR)/pkm-hook.sh"; \
-	fi
+	# Create plugin directories and symlink into them
+	install -dm755 $(EGGS_PLUGIN_DIR)
+	ln -sf $(SHAREDIR)/integration/eggs-plugin/pkm-hook.sh \
+	       $(EGGS_PLUGIN_DIR)/pkm-hook.sh
+	@echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/pkm-hook.sh"
 
-	# Symlink into penguins-powerwash distro plugin directory (if it exists)
-	@if [ -d "$(POWERWASH_PLUGIN_DIR)" ]; then \
-	    ln -sf $(SHAREDIR)/integration/recovery-plugin/pkm-plugin.sh \
-	           $(POWERWASH_PLUGIN_DIR)/pkm-plugin.sh; \
-	    echo "  Linked powerwash plugin → $(POWERWASH_PLUGIN_DIR)/pkm-plugin.sh"; \
-	else \
-	    echo "  penguins-powerwash plugin dir not found ($(POWERWASH_PLUGIN_DIR)) — skipping symlink"; \
-	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/recovery-plugin/pkm-plugin.sh $(POWERWASH_PLUGIN_DIR)/pkm-plugin.sh"; \
-	fi
+	install -dm755 $(POWERWASH_PLUGIN_DIR)
+	ln -sf $(SHAREDIR)/integration/recovery-plugin/pkm-plugin.sh \
+	       $(POWERWASH_PLUGIN_DIR)/pkm-plugin.sh
+	@echo "  Linked powerwash plugin → $(POWERWASH_PLUGIN_DIR)/pkm-plugin.sh"
 
 	@echo "Integration install complete."
 
