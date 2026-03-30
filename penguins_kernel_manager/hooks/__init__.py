@@ -23,6 +23,22 @@ import subprocess
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
+# Patchable path constants — extracted so tests can override them without
+# needing to mock the Path class itself (which is fragile).
+# ---------------------------------------------------------------------------
+
+#: Path to the kernel manifest written by pkm-hook.sh during eggs produce.
+KERNEL_MANIFEST_PATH = Path("/etc/penguins-kernel-manager/kernel-manifest.json")
+
+#: Path to the eggs plugin hook script shipped with this package.
+EGGS_HOOK_SCRIPT = (
+    Path(__file__).parent.parent.parent
+    / "integration"
+    / "eggs-plugin"
+    / "pkm-hook.sh"
+)
+
+# ---------------------------------------------------------------------------
 # Configuration — read from /etc/penguins-kernel-manager/hooks.conf (TOML)
 # or fall back to environment variables / built-in defaults.
 # ---------------------------------------------------------------------------
@@ -97,10 +113,8 @@ def post_install(version: str, flavor: str = "") -> None:
         return
     # penguins-eggs reads EGGS_HOOK to decide what to do
     env = {**os.environ, "EGGS_HOOK": "kernel-changed", "PKM_KERNEL_VERSION": version}
-    hook_script = Path(__file__).parent.parent.parent / \
-        "integration" / "eggs-plugin" / "pkm-hook.sh"
-    if hook_script.exists():
-        _run(["bash", str(hook_script)], check=False)
+    if EGGS_HOOK_SCRIPT.exists():
+        _run(["bash", str(EGGS_HOOK_SCRIPT)], check=False)
 
 
 def pre_remove(version: str) -> str | None:
@@ -113,7 +127,7 @@ def pre_remove(version: str) -> str | None:
     cfg = _cfg()
     if not cfg.get("pre_remove_warn"):
         return None
-    manifest = Path("/etc/penguins-kernel-manager/kernel-manifest.json")
+    manifest = KERNEL_MANIFEST_PATH
     if not manifest.exists():
         return None
     try:
