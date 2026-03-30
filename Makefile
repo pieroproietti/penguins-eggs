@@ -6,11 +6,16 @@ BINDIR      := $(PREFIX)/bin
 MANDIR      := $(PREFIX)/share/man
 SYSCONFDIR  ?= /etc
 SYSTEMDDIR  ?= /usr/lib/systemd/system
+SHAREDIR    := $(PREFIX)/share/penguins-immutable-framework
+
+# Integration plugin directories (other tools must be installed first)
+EGGS_PLUGIN_DIR      ?= $(PREFIX)/share/penguins-eggs/plugins
+POWERWASH_PLUGIN_DIR ?= $(PREFIX)/share/penguins-powerwash/plugins/distro
 
 GO          := go
 GOFLAGS     := -trimpath -ldflags="-s -w"
 
-.PHONY: all build install uninstall systemd test lint clean
+.PHONY: all build install uninstall install-integration uninstall-integration systemd test lint clean
 
 all: build
 
@@ -34,6 +39,50 @@ uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/$(BINARY)
 	rm -f $(DESTDIR)$(SYSTEMDDIR)/pif-update.service
 	rm -f $(DESTDIR)$(SYSTEMDDIR)/pif-update.timer
+
+# ── Integration scripts ───────────────────────────────────────────────────────
+# Installs plugin scripts so penguins-eggs and penguins-powerwash can discover
+# penguins-immutable-framework automatically. Run after both tools are installed.
+
+install-integration:
+	@echo "Installing penguins-immutable-framework integration scripts..."
+
+	# Ship integration sources to a stable share path
+	install -Dm755 integration/eggs-plugin/pif-hook.sh \
+	               $(DESTDIR)$(SHAREDIR)/integration/eggs-plugin/pif-hook.sh
+	install -Dm644 integration/eggs-plugin/README.md \
+	               $(DESTDIR)$(SHAREDIR)/integration/eggs-plugin/README.md
+	install -Dm755 integration/recovery-plugin/pif-plugin.sh \
+	               $(DESTDIR)$(SHAREDIR)/integration/recovery-plugin/pif-plugin.sh
+	install -Dm644 integration/recovery-plugin/README.md \
+	               $(DESTDIR)$(SHAREDIR)/integration/recovery-plugin/README.md
+
+	# Symlink into penguins-eggs plugin directory (if it exists)
+	@if [ -d "$(DESTDIR)$(EGGS_PLUGIN_DIR)" ]; then \
+	    ln -sf $(SHAREDIR)/integration/eggs-plugin/pif-hook.sh \
+	           $(DESTDIR)$(EGGS_PLUGIN_DIR)/pif-hook.sh; \
+	    echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/pif-hook.sh"; \
+	else \
+	    echo "  penguins-eggs plugin dir not found ($(EGGS_PLUGIN_DIR)) — skipping symlink"; \
+	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/eggs-plugin/pif-hook.sh $(EGGS_PLUGIN_DIR)/pif-hook.sh"; \
+	fi
+
+	# Symlink into penguins-powerwash distro plugin directory (if it exists)
+	@if [ -d "$(DESTDIR)$(POWERWASH_PLUGIN_DIR)" ]; then \
+	    ln -sf $(SHAREDIR)/integration/recovery-plugin/pif-plugin.sh \
+	           $(DESTDIR)$(POWERWASH_PLUGIN_DIR)/pif-plugin.sh; \
+	    echo "  Linked powerwash plugin → $(POWERWASH_PLUGIN_DIR)/pif-plugin.sh"; \
+	else \
+	    echo "  penguins-powerwash plugin dir not found ($(POWERWASH_PLUGIN_DIR)) — skipping symlink"; \
+	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/recovery-plugin/pif-plugin.sh $(POWERWASH_PLUGIN_DIR)/pif-plugin.sh"; \
+	fi
+
+	@echo "Integration install complete."
+
+uninstall-integration:
+	rm -f  $(DESTDIR)$(EGGS_PLUGIN_DIR)/pif-hook.sh
+	rm -f  $(DESTDIR)$(POWERWASH_PLUGIN_DIR)/pif-plugin.sh
+	rm -rf $(DESTDIR)$(SHAREDIR)/integration
 
 # ── Systemd ───────────────────────────────────────────────────────────────────
 

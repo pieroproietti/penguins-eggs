@@ -6,6 +6,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -325,7 +326,8 @@ func cmdSnapshot() *cobra.Command {
 }
 
 func cmdStatus() *cobra.Command {
-	return &cobra.Command{
+	var jsonOut bool
+	cmd := &cobra.Command{
 		Use:   "status",
 		Short: "Display current system state",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -337,6 +339,9 @@ func cmdStatus() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			if jsonOut {
+				return printStatusJSON(st)
+			}
 			fmt.Printf("Backend:      %s\n", st.Backend)
 			fmt.Printf("Current root: %s\n", st.CurrentRoot)
 			fmt.Printf("Mutable:      %v\n", st.Mutable)
@@ -347,6 +352,49 @@ func cmdStatus() *cobra.Command {
 			return nil
 		},
 	}
+	cmd.Flags().BoolVar(&jsonOut, "json", false, "output status as JSON")
+	return cmd
+}
+
+// statusJSON is the machine-readable representation of hal.Status.
+// Kept as a local struct so the JSON shape is stable regardless of HAL changes.
+type statusJSON struct {
+	Backend     string            `json:"backend"`
+	CurrentRoot string            `json:"current_root"`
+	Mutable     bool              `json:"mutable"`
+	Snapshots   []snapshotJSON    `json:"snapshots"`
+	Extra       map[string]string `json:"extra,omitempty"`
+}
+
+type snapshotJSON struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Timestamp string `json:"timestamp"`
+	Deployed  bool   `json:"deployed"`
+	Parent    string `json:"parent,omitempty"`
+}
+
+func printStatusJSON(st *hal.Status) error {
+	snaps := make([]snapshotJSON, len(st.Snapshots))
+	for i, s := range st.Snapshots {
+		snaps[i] = snapshotJSON{
+			ID:        s.ID,
+			Name:      s.Name,
+			Timestamp: s.Timestamp,
+			Deployed:  s.Deployed,
+			Parent:    s.Parent,
+		}
+	}
+	out := statusJSON{
+		Backend:     st.Backend,
+		CurrentRoot: st.CurrentRoot,
+		Mutable:     st.Mutable,
+		Snapshots:   snaps,
+		Extra:       st.Extra,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	return enc.Encode(out)
 }
 
 func cmdMutable() *cobra.Command {
