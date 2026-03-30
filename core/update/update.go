@@ -15,14 +15,14 @@ import (
 
 // Options controls upgrade behaviour.
 type Options struct {
-	DryRun          bool
-	Force           bool
-	Packages        []string
-	PreHook         string // path to executable, or empty
-	PostHook        string
-	AutoRollback    bool // roll back if upgrade fails
-	SnapshotLabel   string
-	MaxSnapshots    int
+	DryRun        bool
+	Force         bool
+	Packages      []string
+	PreHook       string // path to executable, or empty
+	PostHook      string
+	AutoRollback  bool // roll back if upgrade fails
+	SnapshotLabel string
+	MaxSnapshots  int
 }
 
 // Run performs an atomic upgrade via the given backend.

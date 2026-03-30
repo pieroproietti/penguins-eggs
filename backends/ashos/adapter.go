@@ -132,11 +132,13 @@ func (b *Backend) MutableEnter() (func() error, error) {
 
 func (b *Backend) PkgAdd(packages []string) error {
 	// Install into the current snapshot (0) using the native package manager.
-	return run("ash", "install", append([]string{"0"}, packages...)...)
+	args := append([]string{"install", "0"}, packages...)
+	return run("ash", args...)
 }
 
 func (b *Backend) PkgRemove(packages []string) error {
-	return run("ash", "remove", append([]string{"0"}, packages...)...)
+	args := append([]string{"remove", "0"}, packages...)
+	return run("ash", args...)
 }
 
 // helpers

@@ -18,12 +18,12 @@ done
 # Detect architecture
 ARCH=$(uname -m)
 case "$ARCH" in
-    x86_64)  GOARCH="amd64" ;;
-    aarch64) GOARCH="arm64" ;;
-    armv7*)  GOARCH="arm" ;;
-    riscv64) GOARCH="riscv64" ;;
-    ppc64le) GOARCH="ppc64le" ;;
-    s390x)   GOARCH="s390x" ;;
+    x86_64)  export GOARCH="amd64" ;;
+    aarch64) export GOARCH="arm64" ;;
+    armv7*)  export GOARCH="arm" ;;
+    riscv64) export GOARCH="riscv64" ;;
+    ppc64le) export GOARCH="ppc64le" ;;
+    s390x)   export GOARCH="s390x" ;;
     *) echo "Unsupported architecture: $ARCH" >&2; exit 1 ;;
 esac
 

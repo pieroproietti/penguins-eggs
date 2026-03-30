@@ -44,21 +44,21 @@ func (b *Backend) Init(cfg map[string]string) error {
 
 	abrootCfg := map[string]any{
 		"maxParallelDownloads": 2,
-		"registry":            get(cfg, "registry", "ghcr.io"),
-		"registryService":     get(cfg, "registry_service", "registry.ghcr.io"),
-		"registryAPIVersion":  get(cfg, "registry_api", "v2"),
-		"name":                get(cfg, "image", ""),
-		"tag":                 get(cfg, "tag", "main"),
-		"iPkgMngPre":          get(cfg, "pkg_pre", ""),
-		"iPkgMngPost":         get(cfg, "pkg_post", ""),
-		"iPkgMngAdd":          get(cfg, "pkg_add", "apt install -y"),
-		"iPkgMngRm":           get(cfg, "pkg_remove", "apt remove -y"),
-		"partLabelA":          get(cfg, "part_label_a", "vos-a"),
-		"partLabelB":          get(cfg, "part_label_b", "vos-b"),
-		"partLabelBoot":       get(cfg, "part_label_boot", "vos-boot"),
-		"partLabelEfi":        get(cfg, "part_label_efi", "vos-efi"),
-		"partLabelVar":        get(cfg, "part_label_var", "vos-var"),
-		"thinProvisioning":    get(cfg, "thin_provisioning", "false") == "true",
+		"registry":             get(cfg, "registry", "ghcr.io"),
+		"registryService":      get(cfg, "registry_service", "registry.ghcr.io"),
+		"registryAPIVersion":   get(cfg, "registry_api", "v2"),
+		"name":                 get(cfg, "image", ""),
+		"tag":                  get(cfg, "tag", "main"),
+		"iPkgMngPre":           get(cfg, "pkg_pre", ""),
+		"iPkgMngPost":          get(cfg, "pkg_post", ""),
+		"iPkgMngAdd":           get(cfg, "pkg_add", "apt install -y"),
+		"iPkgMngRm":            get(cfg, "pkg_remove", "apt remove -y"),
+		"partLabelA":           get(cfg, "part_label_a", "vos-a"),
+		"partLabelB":           get(cfg, "part_label_b", "vos-b"),
+		"partLabelBoot":        get(cfg, "part_label_boot", "vos-boot"),
+		"partLabelEfi":         get(cfg, "part_label_efi", "vos-efi"),
+		"partLabelVar":         get(cfg, "part_label_var", "vos-var"),
+		"thinProvisioning":     get(cfg, "thin_provisioning", "false") == "true",
 	}
 
 	data, err := json.MarshalIndent(abrootCfg, "", "    ")
@@ -92,7 +92,7 @@ func (b *Backend) Snapshot(name string) (string, error) {
 	return "", hal.ErrNotSupported
 }
 func (b *Backend) DeleteSnapshot(id string) error { return hal.ErrNotSupported }
-func (b *Backend) Deploy(snapshotID string) error  { return hal.ErrNotSupported }
+func (b *Backend) Deploy(snapshotID string) error { return hal.ErrNotSupported }
 
 func (b *Backend) Status() (*hal.Status, error) {
 	out, err := exec.Command("abroot", "status", "--json").Output()

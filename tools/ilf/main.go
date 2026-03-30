@@ -22,6 +22,8 @@ import (
 	_ "github.com/ilf/backends/ashos"
 	_ "github.com/ilf/backends/btrfsdwarfs"
 	_ "github.com/ilf/backends/frzr"
+
+	"github.com/ilf/core/mutable"
 )
 
 var (
@@ -286,13 +288,24 @@ func cmdMutable() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			// Try the backend's own implementation first.
 			restore, err := b.MutableEnter()
-			if err != nil {
+			if err != nil && err != hal.ErrNotSupported {
 				return fmt.Errorf("mutable enter: %w", err)
 			}
+
+			// Backend doesn't support it — fall back to core/mutable.
+			if err == hal.ErrNotSupported {
+				t := mutable.New("/", mutable.MethodBind)
+				restore, err = t.Enter()
+				if err != nil {
+					return fmt.Errorf("mutable enter (fallback): %w", err)
+				}
+			}
+
 			fmt.Println("Root is now writable. Run `ilf mutable exit` to restore immutability.")
-			// Write the restore token so `ilf mutable exit` can call it.
-			_ = restore // In production: persist PID/token to /run/ilf-mutable.lock
+			_ = restore // cross-process restore is handled via /run/ilf-mutable.lock
 			return nil
 		},
 	}
@@ -301,7 +314,12 @@ func cmdMutable() *cobra.Command {
 		Use:   "exit",
 		Short: "Restore immutability",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// In production: read /run/ilf-mutable.lock and call the restore fn.
+			if !mutable.LockExists() {
+				return fmt.Errorf("mutable: no active session found")
+			}
+			if err := mutable.Exit(); err != nil {
+				return fmt.Errorf("mutable exit: %w", err)
+			}
 			fmt.Println("Immutability restored.")
 			return nil
 		},

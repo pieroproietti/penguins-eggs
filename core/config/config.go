@@ -20,10 +20,10 @@ var searchPaths = []string{
 
 // ILF is the top-level configuration structure.
 type ILF struct {
-	ILF        Core                       `toml:"ilf"`
-	Backend    map[string]map[string]any  `toml:"backend"`
-	Bootloader Bootloader                 `toml:"bootloader"`
-	Distro     DistroOverride             `toml:"distro"`
+	ILF        Core                      `toml:"ilf"`
+	Backend    map[string]map[string]any `toml:"backend"`
+	Bootloader Bootloader                `toml:"bootloader"`
+	Distro     DistroOverride            `toml:"distro"`
 }
 
 // Core holds the [ilf] section.

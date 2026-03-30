@@ -65,8 +65,8 @@ func (b *Backend) Rollback(snapshotID string) error {
 
 // frzr does not expose named snapshot management; these are unsupported.
 func (b *Backend) Snapshot(name string) (string, error) { return "", hal.ErrNotSupported }
-func (b *Backend) DeleteSnapshot(id string) error        { return hal.ErrNotSupported }
-func (b *Backend) Deploy(snapshotID string) error        { return hal.ErrNotSupported }
+func (b *Backend) DeleteSnapshot(id string) error       { return hal.ErrNotSupported }
+func (b *Backend) Deploy(snapshotID string) error       { return hal.ErrNotSupported }
 
 func (b *Backend) Status() (*hal.Status, error) {
 	out, err := exec.Command("frzr-release").Output()

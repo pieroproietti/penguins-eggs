@@ -15,14 +15,14 @@ import (
 type Capability uint32
 
 const (
-	CapSnapshot    Capability = 1 << iota // create/list/delete named snapshots
-	CapRollback                           // revert to a previous state
-	CapAtomicPkg                          // atomic package install inside a transaction
-	CapOCIImages                          // pull and apply OCI container images
-	CapMutable                            // toggle read-write mode at runtime
-	CapCompression                        // backend-native compression (e.g. DwarFS)
-	CapMultiBoot                          // manage multiple bootable entries
-	CapThinProvision                      // LVM thin provisioning support
+	CapSnapshot      Capability = 1 << iota // create/list/delete named snapshots
+	CapRollback                             // revert to a previous state
+	CapAtomicPkg                            // atomic package install inside a transaction
+	CapOCIImages                            // pull and apply OCI container images
+	CapMutable                              // toggle read-write mode at runtime
+	CapCompression                          // backend-native compression (e.g. DwarFS)
+	CapMultiBoot                            // manage multiple bootable entries
+	CapThinProvision                        // LVM thin provisioning support
 )
 
 // Status is returned by Backend.Status().

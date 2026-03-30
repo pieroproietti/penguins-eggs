@@ -1,0 +1,30 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - unconvert
+    - unparam
+
+linters-settings:
+  goimports:
+    local-prefixes: github.com/ilf
+
+issues:
+  exclude-rules:
+    # adapter.go files shell out to external binaries; unused function warnings
+    # for helpers like snapshotCount() are expected during initial scaffolding.
+    - path: "backends/.*/adapter.go"
+      linters: [unused, unparam]
+    # Test helpers intentionally use _ assignments.
+    - path: "tests/"
+      linters: [errcheck]

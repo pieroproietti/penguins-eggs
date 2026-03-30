@@ -12,18 +12,18 @@ type stubBackend struct {
 	caps hal.Capability
 }
 
-func (s *stubBackend) Name() string                                    { return s.name }
-func (s *stubBackend) Capabilities() hal.Capability                   { return s.caps }
-func (s *stubBackend) Init(cfg map[string]string) error                { return nil }
-func (s *stubBackend) Upgrade(opts hal.UpgradeOptions) error           { return nil }
-func (s *stubBackend) Rollback(id string) error                        { return nil }
-func (s *stubBackend) Snapshot(name string) (string, error)            { return "snap-1", nil }
-func (s *stubBackend) DeleteSnapshot(id string) error                  { return nil }
-func (s *stubBackend) Deploy(id string) error                          { return nil }
-func (s *stubBackend) Status() (*hal.Status, error)                    { return &hal.Status{Backend: s.name}, nil }
-func (s *stubBackend) MutableEnter() (func() error, error)             { return func() error { return nil }, nil }
-func (s *stubBackend) PkgAdd(pkgs []string) error                      { return nil }
-func (s *stubBackend) PkgRemove(pkgs []string) error                   { return nil }
+func (s *stubBackend) Name() string                          { return s.name }
+func (s *stubBackend) Capabilities() hal.Capability          { return s.caps }
+func (s *stubBackend) Init(cfg map[string]string) error      { return nil }
+func (s *stubBackend) Upgrade(opts hal.UpgradeOptions) error { return nil }
+func (s *stubBackend) Rollback(id string) error              { return nil }
+func (s *stubBackend) Snapshot(name string) (string, error)  { return "snap-1", nil }
+func (s *stubBackend) DeleteSnapshot(id string) error        { return nil }
+func (s *stubBackend) Deploy(id string) error                { return nil }
+func (s *stubBackend) Status() (*hal.Status, error)          { return &hal.Status{Backend: s.name}, nil }
+func (s *stubBackend) MutableEnter() (func() error, error)   { return func() error { return nil }, nil }
+func (s *stubBackend) PkgAdd(pkgs []string) error            { return nil }
+func (s *stubBackend) PkgRemove(pkgs []string) error         { return nil }
 
 func TestRegisterAndGet(t *testing.T) {
 	b := &stubBackend{name: "test-stub", caps: hal.CapSnapshot | hal.CapRollback}

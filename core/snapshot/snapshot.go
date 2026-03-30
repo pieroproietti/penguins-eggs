@@ -12,8 +12,8 @@ import (
 
 // Manager orchestrates snapshot operations on top of a HAL backend.
 type Manager struct {
-	backend  hal.Backend
-	maxKeep  int
+	backend hal.Backend
+	maxKeep int
 }
 
 // New creates a Manager for the given backend.

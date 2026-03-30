@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "feat/**", "fix/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    name: Build, vet, test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # Test across the two most relevant architectures.
+        # aarch64 cross-compile is validated via GOARCH; no emulation needed.
+        goarch: [amd64, arm64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: true
+
+      - name: go mod tidy (verify go.sum is up to date)
+        run: |
+          go mod tidy
+          git diff --exit-code go.sum
+
+      - name: Build
+        env:
+          GOARCH: ${{ matrix.goarch }}
+        run: go build ./...
+
+      - name: Vet
+        # vet only runs on native arch (cross-vet not supported)
+        if: matrix.goarch == 'amd64'
+        run: go vet ./...
+
+      - name: Test
+        # unit tests only run on native arch
+        if: matrix.goarch == 'amd64'
+        run: go test -v -race ./...
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
+
+  shellcheck:
+    name: Shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./scripts"
+          severity: warning
+
+      - name: ShellCheck integration tests
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./tests/integration"
+          severity: warning
