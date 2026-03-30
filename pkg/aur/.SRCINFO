@@ -1,0 +1,23 @@
+pkgbase = lkm
+	pkgdesc = Linux Kernel Manager — build, install, and manage kernels across all major distros and architectures
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/Interested-Deving-1896/lkm
+	arch = any
+	license = GPL3
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	makedepends = python-wheel
+	checkdepends = python-pytest
+	checkdepends = python-pytest-cov
+	depends = python>=3.11
+	depends = python-docopt-ng
+	depends = python-requests
+	optdepends = python-pyside6: GUI support (recommended)
+	optdepends = python-pyqt6: GUI support (alternative)
+	optdepends = lkf: kernel build pipeline integration
+	source = lkm-0.1.0.tar.gz::https://github.com/Interested-Deving-1896/lkm/archive/refs/tags/v0.1.0.tar.gz
+	b2sums = SKIP
+
+pkgname = lkm

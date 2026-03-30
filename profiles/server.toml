@@ -1,0 +1,36 @@
+# Server / headless kernel
+#
+# Targets throughput and stability over latency:
+#   - Mainline kernel, no exotic patches
+#   - EEVDF scheduler (default since 6.6, good for mixed server workloads)
+#   - Full LTO for maximum inlining across compilation units
+#   - Clang/LLVM (better LTO support than GCC for full mode)
+#   - CONFIG_HZ_250 (server default — lower timer overhead than 1000)
+#   - Produces a .deb; change output for other distros
+#
+# Suitable for: VMs, containers, CI runners, NAS, homelab.
+
+[remix]
+name    = "server"
+version = "6.12"
+flavor  = "mainline"
+arch    = "x86_64"
+
+[build]
+llvm   = true
+lto    = "full"
+target = "server"
+output = "deb"
+config = "localmodconfig"   # only modules needed by the current hardware
+
+[patches]
+sets = []   # no extra patches — stability first
+
+[config_overrides]
+# Reduce timer frequency for lower overhead
+CONFIG_HZ_250        = "y"
+CONFIG_HZ_1000       = "n"
+# Disable debug overhead
+CONFIG_DEBUG_KERNEL  = "n"
+CONFIG_KASAN         = "n"
+CONFIG_UBSAN         = "n"

@@ -1,0 +1,58 @@
+# Maintainer: lkm contributors <https://github.com/Interested-Deving-1896/lkm>
+#
+# lkm-git — tracks the main branch directly.
+# Use this for development or when a tagged release is not yet available.
+pkgname=lkm-git
+pkgver=r1.a262caa
+pkgrel=1
+pkgdesc="Linux Kernel Manager — build, install, and manage kernels (git)"
+arch=('any')
+url="https://github.com/Interested-Deving-1896/lkm"
+license=('GPL3')
+provides=('lkm')
+conflicts=('lkm')
+depends=(
+    'python>=3.11'
+    'python-docopt-ng'
+    'python-requests'
+)
+optdepends=(
+    'python-pyside6: GUI support (recommended)'
+    'python-pyqt6: GUI support (alternative)'
+    'lkf: kernel build pipeline integration'
+)
+makedepends=(
+    'git'
+    'python-build'
+    'python-installer'
+    'python-hatchling'
+    'python-wheel'
+)
+checkdepends=(
+    'python-pytest'
+)
+source=("$pkgname::git+https://github.com/Interested-Deving-1896/lkm.git#branch=main")
+b2sums=('SKIP')
+
+pkgver() {
+    cd "$pkgname"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+    cd "$pkgname"
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd "$pkgname"
+    python -m pytest tests/ --tb=short
+}
+
+package() {
+    cd "$pkgname"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    install -dm755 "$pkgdir/usr/share/lkm/profiles"
+    install -m644 profiles/*.toml "$pkgdir/usr/share/lkm/profiles/"
+}

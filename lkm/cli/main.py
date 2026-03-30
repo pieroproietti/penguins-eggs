@@ -8,6 +8,7 @@ Usage:
   lkm list [--family=<f>] [--installed] [--json] [--refresh]
   lkm install <version> [--flavor=<f>] [--provider=<p>]
   lkm install --local <path>
+  lkm install --last-build
   lkm remove <version> [--purge]
   lkm hold <version>
   lkm unhold <version>
@@ -113,6 +114,11 @@ def cmd_install(args: dict) -> None:
         warn(w)
     if w := mgr.nixos_build_warning():
         warn(w)
+
+    if args.get("--last-build"):
+        _stream(mgr.install_last_build())
+        ok("Installed last build")
+        return
 
     local_path = args.get("--local")
     if local_path:

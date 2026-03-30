@@ -10,6 +10,27 @@ readme      = "README.md"
 license     = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.11"
 
+keywords = [
+    "linux", "kernel", "package-manager", "kernel-manager",
+    "lkf", "ukm", "xanmod", "liquorix", "nixos", "void",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Operating System Kernels :: Linux",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+]
+
 dependencies = [
     "docopt-ng>=0.9",
     "requests>=2.31",

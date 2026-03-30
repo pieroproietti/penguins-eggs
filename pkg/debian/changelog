@@ -1,0 +1,10 @@
+lkm (0.1.0-1) unstable; urgency=medium
+
+  * Initial release.
+  * Merges lkf (Linux Kernel Framework) and ukm (Universal Kernel Manager).
+  * Supports apt, pacman, dnf, zypper, apk, portage, xbps, and nix backends.
+  * Adds xbps backend for Void Linux.
+  * Adds nix backend for NixOS with configuration.nix patching.
+  * GUI Build tab for lkf profile and custom kernel builds.
+
+ -- lkm contributors <lkm@example.com>  Sun, 30 Mar 2025 00:00:00 +0000

@@ -1,0 +1,39 @@
+Source: lkm
+Section: admin
+Priority: optional
+Maintainer: lkm contributors <https://github.com/Interested-Deving-1896/lkm>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-python,
+ python3-all,
+ python3-build,
+ python3-hatchling,
+ python3-installer,
+ python3-pytest <!nocheck>,
+Rules-Requires-Root: no
+Standards-Version: 4.6.2
+Homepage: https://github.com/Interested-Deving-1896/lkm
+Vcs-Git: https://github.com/Interested-Deving-1896/lkm.git
+Vcs-Browser: https://github.com/Interested-Deving-1896/lkm
+
+Package: lkm
+Architecture: all
+Depends:
+ ${python3:Depends},
+ ${misc:Depends},
+ python3-docopt-ng | python3-docopt,
+ python3-requests,
+Recommends:
+ python3-pyside6,
+Suggests:
+ lkf,
+Description: Linux Kernel Manager
+ lkm installs, builds, and manages Linux kernels across all major
+ distributions and CPU architectures from a single CLI or Qt GUI.
+ .
+ It merges lkf (Linux Kernel Framework, shell build pipeline) and
+ ukm (Universal Kernel Manager, Python runtime management) into one
+ tool covering the full kernel lifecycle: build, install, hold, remove.
+ .
+ Supported package managers: apt, pacman, dnf, zypper, apk, portage,
+ xbps (Void Linux), and nix (NixOS).

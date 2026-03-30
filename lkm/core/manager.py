@@ -98,10 +98,30 @@ class KernelManager:
         """Install a local package file directly, bypassing provider selection."""
         prov = self.provider("local_file")
         if prov is None or not isinstance(prov, LocalFileProvider):
-            # Fallback: use backend directly
             yield from self._providers[0]._backend.install_local(path)
             return
         yield from prov.install_from_path(path)
+
+    def install_last_build(self) -> Iterator[str]:
+        """
+        Install the most recently produced package from the lkf output directory.
+
+        Raises RuntimeError if lkf is not available or no package is found.
+        """
+        lkf = self.lkf_provider
+        if lkf is None:
+            raise RuntimeError(
+                "lkf is not installed. Cannot locate a last-build package."
+            )
+        from lkm.core.providers.lkf_build import _find_output_package
+        pkg = _find_output_package(lkf.output_dir, "")
+        if pkg is None:
+            raise RuntimeError(
+                f"No package found in {lkf.output_dir}.\n"
+                "Run 'lkm build' or 'lkm remix' first."
+            )
+        yield f"Installing last build: {pkg.name}\n"
+        yield from self.install_local(str(pkg))
 
     def remove(self, entry: KernelEntry, purge: bool = False) -> Iterator[str]:
         if entry.is_running:

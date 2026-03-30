@@ -1,34 +1,90 @@
 """
 nix backend — NixOS.
 
-NixOS manages kernels declaratively via /etc/nixos/configuration.nix.
-Direct imperative install/remove of kernels is not idiomatic and will be
-overwritten on the next `nixos-rebuild switch`.
+NixOS manages kernels declaratively via /etc/nixos/configuration.nix (channels)
+or a flake.nix (flakes).  This backend:
 
-This backend therefore takes a pragmatic approach:
-  - install_packages / install_local: emit a configuration snippet the user
-    should add to configuration.nix, then optionally run nixos-rebuild switch.
-  - remove_packages: same pattern — emit a snippet and rebuild.
-  - hold/unhold: no-op with an explanation (NixOS pinning is done via flake
-    inputs or fetchTarball with a fixed hash).
-
-For lkf-built kernels, the recommended path on NixOS is to use the lkf nix/
-shell.nix / flake.nix environment for building, then reference the result
-store path in configuration.nix.  lkm surfaces that path after a build.
+  - Detects whether the system uses channels or flakes.
+  - Patches boot.kernelPackages in the appropriate config file.
+  - Runs nixos-rebuild switch to apply the change.
+  - Hold/unhold explains flake input pinning rather than silently failing.
 """
 from __future__ import annotations
 
+import os
+import re
 import shutil
+import tempfile
+from pathlib import Path
 from typing import Iterator
 
 from lkm.core.backends.base import PackageBackend
 from lkm.core.system import privilege_escalation_cmd
 
+_NIXPKGS_KERNEL_ATTRS = {
+    "linuxPackages", "linuxPackages_latest", "linuxPackages_6_6",
+    "linuxPackages_6_1", "linuxPackages_5_15", "linuxPackages_rt",
+    "linuxPackages_hardened", "linuxPackages_zen",
+    "linuxPackages_xanmod", "linuxPackages_xanmod_latest",
+}
 
-_NIXOS_REBUILD_HINT = (
-    "Add the kernel to /etc/nixos/configuration.nix, then run:\n"
-    "  sudo nixos-rebuild switch\n"
+_NIXOS_CONFIG = Path("/etc/nixos/configuration.nix")
+_NIXOS_FLAKE  = Path("/etc/nixos/flake.nix")
+
+_KERNEL_PKG_RE = re.compile(
+    r"(boot\.kernelPackages\s*=\s*)([^;]+)(;)",
+    re.MULTILINE,
 )
+
+
+def _is_flake_system() -> bool:
+    return _NIXOS_FLAKE.exists()
+
+
+def _config_path() -> Path:
+    return _NIXOS_FLAKE if _is_flake_system() else _NIXOS_CONFIG
+
+
+def _read_config(path: Path) -> str:
+    try:
+        return path.read_text()
+    except OSError:
+        return ""
+
+
+def _write_config(path: Path, text: str) -> tuple[int, str, str]:
+    priv = privilege_escalation_cmd()
+    with tempfile.NamedTemporaryFile("w", suffix=".nix", delete=False) as f:
+        f.write(text)
+        tmp = f.name
+    import subprocess
+    result = subprocess.run(priv + ["cp", tmp, str(path)], capture_output=True, text=True)
+    os.unlink(tmp)
+    return result.returncode, result.stdout, result.stderr
+
+
+def _patch_kernel_attr(text: str, new_attr: str) -> tuple[str, bool]:
+    """Replace boot.kernelPackages = <old>; or insert it if absent."""
+    if _KERNEL_PKG_RE.search(text):
+        patched = _KERNEL_PKG_RE.sub(lambda m: m.group(1) + new_attr + m.group(3), text)
+        return patched, patched != text
+    insert = f"\n  boot.kernelPackages = {new_attr};\n"
+    idx = text.rfind("}")
+    if idx == -1:
+        return text + insert, True
+    return text[:idx] + insert + text[idx:], True
+
+
+def _nixpkgs_attr_for(package_name: str) -> str:
+    """Convert a package name / version string to a pkgs.linuxPackages_* expression."""
+    if package_name.startswith("pkgs."):
+        return package_name
+    if package_name in _NIXPKGS_KERNEL_ATTRS:
+        return f"pkgs.{package_name}"
+    m = re.match(r"^(\d+)\.(\d+)", package_name)
+    if m:
+        return f"pkgs.linuxPackages_{m.group(1)}_{m.group(2)}"
+    return f"pkgs.{package_name}"
 
 
 class NixBackend(PackageBackend):
@@ -37,13 +93,9 @@ class NixBackend(PackageBackend):
     def name(self) -> str:
         return "nix"
 
-    # ------------------------------------------------------------------
-    # Availability guard
-    # ------------------------------------------------------------------
-
     @staticmethod
     def available() -> bool:
-        return bool(shutil.which("nix-env") or shutil.which("nixos-rebuild"))
+        return bool(shutil.which("nixos-rebuild") or shutil.which("nix-env"))
 
     @staticmethod
     def is_nixos() -> bool:
@@ -52,82 +104,92 @@ class NixBackend(PackageBackend):
         except OSError:
             return False
 
-    # ------------------------------------------------------------------
-    # Core operations
-    # ------------------------------------------------------------------
+    @staticmethod
+    def is_flake() -> bool:
+        return _is_flake_system()
 
     def install_packages(self, packages: list[str]) -> Iterator[str]:
-        """
-        On NixOS, kernel selection is declarative.  Emit the configuration
-        snippet and, if nixos-rebuild is available, offer to apply it.
-        """
-        for pkg in packages:
-            yield f"NixOS: to use kernel '{pkg}', add to /etc/nixos/configuration.nix:\n"
-            yield f"  boot.kernelPackages = pkgs.linuxPackages_{pkg.replace('-', '_')};\n"
-        yield _NIXOS_REBUILD_HINT
-        # Attempt an actual rebuild if the caller is running as root / with sudo
-        if shutil.which("nixos-rebuild"):
-            yield "Running nixos-rebuild switch...\n"
-            priv = privilege_escalation_cmd()
-            yield from self._run_streaming(priv + ["nixos-rebuild", "switch"])
+        if not packages:
+            return
+        attr  = _nixpkgs_attr_for(packages[0])
+        cfg   = _config_path()
+        text  = _read_config(cfg)
+        if not text:
+            yield f"Cannot read {cfg} — is this NixOS?\n"
+            yield f"  boot.kernelPackages = {attr};\n"
+            return
+        patched, changed = _patch_kernel_attr(text, attr)
+        if not changed:
+            yield f"boot.kernelPackages already set to {attr} in {cfg}\n"
+        else:
+            yield f"Patching {cfg}: boot.kernelPackages = {attr}\n"
+            rc, _, err = _write_config(cfg, patched)
+            if rc != 0:
+                yield f"Failed to write {cfg}: {err}\n"
+                yield f"Apply manually: boot.kernelPackages = {attr};\n"
+                return
+            yield f"Written {cfg}\n"
+        yield from self._rebuild()
 
     def install_local(self, path: str) -> Iterator[str]:
-        """
-        For a locally built kernel (e.g. from lkf), copy the store path into
-        the Nix store and emit the configuration snippet.
-        """
-        yield f"NixOS: installing local kernel from {path}\n"
+        yield f"Adding {path} to the Nix store...\n"
         if shutil.which("nix-store"):
             priv = privilege_escalation_cmd()
-            yield from self._run_streaming(
-                priv + ["nix-store", "--add-fixed", "sha256", path]
-            )
-        yield "Add the resulting store path to boot.kernelPackages in configuration.nix.\n"
-        yield _NIXOS_REBUILD_HINT
+            yield from self._run_streaming(priv + ["nix-store", "--add-fixed", "sha256", path])
+        yield f"Add the store path to boot.kernelPackages in {_config_path()}\n"
+        yield "Then run: sudo nixos-rebuild switch\n"
 
     def remove_packages(self, packages: list[str], purge: bool = False) -> Iterator[str]:
-        for pkg in packages:
-            yield f"NixOS: to remove kernel '{pkg}', update boot.kernelPackages in\n"
-            yield "  /etc/nixos/configuration.nix and run: sudo nixos-rebuild switch\n"
-        yield _NIXOS_REBUILD_HINT
+        yield f"Reverting boot.kernelPackages to pkgs.linuxPackages in {_config_path()}\n"
+        yield from self.install_packages(["linuxPackages"])
 
     def hold(self, packages: list[str]) -> tuple[int, str, str]:
-        msg = (
-            "NixOS: kernel pinning is done via flake inputs or fetchTarball with a "
-            "fixed hash in configuration.nix.  lkm cannot manage this imperatively.\n"
-        )
+        if _is_flake_system():
+            msg = (
+                "NixOS (flakes): pin nixpkgs to a specific revision in flake.lock:\n"
+                "  nix flake lock --update-input nixpkgs "
+                "--override-input nixpkgs github:NixOS/nixpkgs/<commit>\n"
+            )
+        else:
+            msg = (
+                "NixOS (channels): pin to a fixed channel URL:\n"
+                "  sudo nix-channel --add "
+                "https://releases.nixos.org/nixos/<version>/nixos-<version> nixos\n"
+                "  sudo nix-channel --update\n"
+            )
         return 0, msg, ""
 
     def unhold(self, packages: list[str]) -> tuple[int, str, str]:
-        return self.hold(packages)
+        if _is_flake_system():
+            msg = "NixOS (flakes): unpin by running: nix flake update\n"
+        else:
+            msg = (
+                "NixOS (channels): unpin by switching back to the rolling channel:\n"
+                "  sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos\n"
+                "  sudo nix-channel --update\n"
+            )
+        return 0, msg, ""
 
     def is_installed(self, package: str) -> bool:
-        # Check if the kernel is the currently booted one or in the system profile
-        rc, out, _ = self._run(["nix-env", "-q", "--installed", package])
-        return rc == 0 and package in out
-
-    # ------------------------------------------------------------------
-    # NixOS-specific helpers
-    # ------------------------------------------------------------------
-
-    def list_available_kernels(self) -> list[str]:
-        """Return kernel package names available in nixpkgs."""
-        rc, out, _ = self._run(
-            ["nix-env", "-qaP", "--no-name", "linuxPackages"]
-        )
-        if rc != 0:
-            return []
-        return [line.strip() for line in out.splitlines() if "linuxPackages" in line]
+        attr    = _nixpkgs_attr_for(package).replace("pkgs.", "")
+        current = self.current_kernel_attr()
+        return bool(current) and attr in current
 
     def current_kernel_attr(self) -> str:
-        """
-        Return the current boot.kernelPackages attribute from configuration.nix,
-        or an empty string if it cannot be determined.
-        """
-        try:
-            text = open("/etc/nixos/configuration.nix").read()
-            import re
-            m = re.search(r"boot\.kernelPackages\s*=\s*([^;]+);", text)
-            return m.group(1).strip() if m else ""
-        except OSError:
-            return ""
+        text = _read_config(_config_path())
+        m = _KERNEL_PKG_RE.search(text)
+        return m.group(2).strip() if m else ""
+
+    def list_available_kernels(self) -> list[str]:
+        rc, out, _ = self._run(["nix-env", "-qaP", "--no-name", "linuxPackages"])
+        if rc != 0:
+            return list(_NIXPKGS_KERNEL_ATTRS)
+        return [l.strip() for l in out.splitlines() if "linuxPackages" in l]
+
+    def _rebuild(self) -> Iterator[str]:
+        if not shutil.which("nixos-rebuild"):
+            yield "nixos-rebuild not found — run: sudo nixos-rebuild switch\n"
+            return
+        priv = privilege_escalation_cmd()
+        yield "Running nixos-rebuild switch...\n"
+        yield from self._run_streaming(priv + ["nixos-rebuild", "switch"])

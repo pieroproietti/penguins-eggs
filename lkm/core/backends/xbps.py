@@ -10,6 +10,7 @@ official Void mechanism for pinning packages.
 """
 from __future__ import annotations
 
+import re
 import shutil
 from typing import Iterator
 
@@ -102,16 +103,34 @@ class XbpsBackend(PackageBackend):
     # ------------------------------------------------------------------
 
     def list_available_kernels(self) -> list[str]:
-        """Return kernel package names available in the xbps repos."""
+        """
+        Return kernel package names available in the xbps repos.
+
+        xbps-query -Rs output format (varies by version):
+          [-] linux-6.6.30_1  The Linux kernel and modules
+          [*] linux-6.6.30_1  The Linux kernel and modules  (installed)
+
+        We accept both the flag-prefixed form and bare pkgver strings.
+        Only packages whose name starts with "linux" and whose name does
+        NOT contain "-headers" or "-dbg" are returned.
+        """
         rc, out, _ = self._run(["xbps-query", "-Rs", "linux"])
         if rc != 0:
             return []
-        names = []
+
+        names: list[str] = []
+        # Match: optional [x] prefix, then pkgver like linux-6.6.30_1
+        _LINE_RE = re.compile(r"(?:\[.\]\s+)?(linux[a-zA-Z0-9._+-]+?)(?:_\d+)?\s")
         for line in out.splitlines():
-            # lines look like: [-] linux-6.6.30_1  The Linux kernel and modules
-            parts = line.split()
-            if len(parts) >= 2 and parts[1].startswith("linux"):
-                names.append(parts[1].split("_")[0])
+            m = _LINE_RE.search(line)
+            if not m:
+                continue
+            name = m.group(1)
+            # Skip sub-packages
+            if any(x in name for x in ("-headers", "-dbg", "-doc", "-devel")):
+                continue
+            if name not in names:
+                names.append(name)
         return names
 
     def sync(self) -> Iterator[str]:
