@@ -57,25 +57,16 @@ install-integration:
 	install -Dm644 integration/recovery-plugin/README.md \
 	               $(DESTDIR)$(SHAREDIR)/integration/recovery-plugin/README.md
 
-	# Symlink into penguins-eggs plugin directory (if it exists)
-	@if [ -d "$(DESTDIR)$(EGGS_PLUGIN_DIR)" ]; then \
-	    ln -sf $(SHAREDIR)/integration/eggs-plugin/pif-hook.sh \
-	           $(DESTDIR)$(EGGS_PLUGIN_DIR)/pif-hook.sh; \
-	    echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/pif-hook.sh"; \
-	else \
-	    echo "  penguins-eggs plugin dir not found ($(EGGS_PLUGIN_DIR)) — skipping symlink"; \
-	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/eggs-plugin/pif-hook.sh $(EGGS_PLUGIN_DIR)/pif-hook.sh"; \
-	fi
+	# Create plugin directories and symlink into them
+	install -dm755 $(DESTDIR)$(EGGS_PLUGIN_DIR)
+	ln -sf $(SHAREDIR)/integration/eggs-plugin/pif-hook.sh \
+	       $(DESTDIR)$(EGGS_PLUGIN_DIR)/pif-hook.sh
+	@echo "  Linked eggs plugin → $(EGGS_PLUGIN_DIR)/pif-hook.sh"
 
-	# Symlink into penguins-powerwash distro plugin directory (if it exists)
-	@if [ -d "$(DESTDIR)$(POWERWASH_PLUGIN_DIR)" ]; then \
-	    ln -sf $(SHAREDIR)/integration/recovery-plugin/pif-plugin.sh \
-	           $(DESTDIR)$(POWERWASH_PLUGIN_DIR)/pif-plugin.sh; \
-	    echo "  Linked powerwash plugin → $(POWERWASH_PLUGIN_DIR)/pif-plugin.sh"; \
-	else \
-	    echo "  penguins-powerwash plugin dir not found ($(POWERWASH_PLUGIN_DIR)) — skipping symlink"; \
-	    echo "  Run manually: ln -sf $(SHAREDIR)/integration/recovery-plugin/pif-plugin.sh $(POWERWASH_PLUGIN_DIR)/pif-plugin.sh"; \
-	fi
+	install -dm755 $(DESTDIR)$(POWERWASH_PLUGIN_DIR)
+	ln -sf $(SHAREDIR)/integration/recovery-plugin/pif-plugin.sh \
+	       $(DESTDIR)$(POWERWASH_PLUGIN_DIR)/pif-plugin.sh
+	@echo "  Linked powerwash plugin → $(POWERWASH_PLUGIN_DIR)/pif-plugin.sh"
 
 	@echo "Integration install complete."
 
