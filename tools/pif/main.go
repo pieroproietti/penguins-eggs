@@ -15,9 +15,10 @@ import (
 	"github.com/penguins-immutable-framework/core/config"
 	"github.com/penguins-immutable-framework/core/hal"
 	ilfinit "github.com/penguins-immutable-framework/core/init"
+	"github.com/penguins-immutable-framework/core/hooks"
+	"github.com/penguins-immutable-framework/core/mutable"
 	"github.com/penguins-immutable-framework/core/snapshot"
 	"github.com/penguins-immutable-framework/core/update"
-	"github.com/penguins-immutable-framework/core/hooks"
 
 	// Import all backend adapters so their init() functions register them.
 	_ "github.com/penguins-immutable-framework/backends/abroot"
@@ -339,6 +340,10 @@ func cmdStatus() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			// The lock file is the authoritative source for mutable state.
+			// Backends that don't track this themselves will return false by
+			// default, so we always override with the lock-file check.
+			st.Mutable = mutable.LockExists()
 			if jsonOut {
 				return printStatusJSON(st)
 			}

@@ -29,9 +29,14 @@ const (
 type Status struct {
 	Backend     string
 	CurrentRoot string // e.g. "A", "snapshot-3", "subvol-@.20250101"
-	Mutable     bool
-	Snapshots   []SnapshotInfo
-	Extra       map[string]string // backend-specific key/value pairs
+
+	// Mutable indicates whether the system is currently in a writable session.
+	// Backends that do not track this themselves should leave it false; the CLI
+	// layer overrides it with mutable.LockExists() which is always authoritative.
+	Mutable bool
+
+	Snapshots []SnapshotInfo
+	Extra     map[string]string // backend-specific key/value pairs
 }
 
 // SnapshotInfo describes a single snapshot entry.
