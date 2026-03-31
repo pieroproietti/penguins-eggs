@@ -14,8 +14,8 @@ import (
 
 	"github.com/penguins-immutable-framework/core/config"
 	"github.com/penguins-immutable-framework/core/hal"
-	ilfinit "github.com/penguins-immutable-framework/core/init"
 	"github.com/penguins-immutable-framework/core/hooks"
+	ilfinit "github.com/penguins-immutable-framework/core/init"
 	"github.com/penguins-immutable-framework/core/mutable"
 	"github.com/penguins-immutable-framework/core/snapshot"
 	"github.com/penguins-immutable-framework/core/update"
