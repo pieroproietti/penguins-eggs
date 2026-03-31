@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Stub tar for snapshot create: find -czf <dest> and touch that file.
+while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "-czf" ]]; then
+        touch "${2:-/dev/null}" 2>/dev/null || true
+        exit 0
+    fi
+    shift
+done
+exit 0

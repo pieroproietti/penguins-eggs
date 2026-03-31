@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Stub btrfs: subvolume show always fails (forces tar fallback in CLI)
+case "${1:-}" in
+  subvolume)
+    case "${2:-}" in
+      show)     exit 1 ;;
+      snapshot) mkdir -p "${4:-/tmp/snap}"; exit 0 ;;
+      delete)   rm -rf "${2}"; exit 0 ;;
+    esac ;;
+esac
+exit 0

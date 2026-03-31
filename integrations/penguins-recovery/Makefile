@@ -151,3 +151,17 @@ clean: ## Remove build artifacts
 	rm -rf /tmp/mbr-image-work-*
 	rm -f builders/gpt-image/recovery.hdd
 	rm -f builders/mbr-image/recovery-mbr.img
+
+# ── CLI install ───────────────────────────────────────────────────────────────
+
+PREFIX  ?= /usr/local
+BINDIR  := $(PREFIX)/bin
+
+.PHONY: install-cli uninstall-cli
+
+install-cli: ## Install penguins-recovery CLI to $(PREFIX)/bin
+	install -Dm755 bin/penguins-recovery $(DESTDIR)$(BINDIR)/penguins-recovery
+	@echo "Installed: $(BINDIR)/penguins-recovery"
+
+uninstall-cli: ## Remove penguins-recovery CLI
+	rm -f $(DESTDIR)$(BINDIR)/penguins-recovery

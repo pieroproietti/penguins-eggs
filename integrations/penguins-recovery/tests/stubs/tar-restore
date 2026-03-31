@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Stub tar for snapshot restore: touch RESTORE_RECORD when called with -xzf.
+while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "-xzf" ]]; then
+        [[ -n "${RESTORE_RECORD:-}" ]] && touch "${RESTORE_RECORD}"
+        exit 0
+    fi
+    shift
+done
+exit 0

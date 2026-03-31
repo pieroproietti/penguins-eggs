@@ -140,6 +140,7 @@ sign_with_sbctl() {
     info "Signing EFI binaries with sbctl..."
     local signed_count=0
 
+    # shellcheck disable=SC2044
     for efi_file in $(find "$ISO_COPY/EFI" -name "*.efi" -o -name "*.EFI" 2>/dev/null); do
         if sbctl sign -s "$efi_file" 2>/dev/null; then
             info "  Signed: ${efi_file#$ISO_COPY/}"
@@ -182,6 +183,7 @@ sign_with_sbsign() {
     info "Signing EFI binaries with sbsign..."
     local signed_count=0
 
+    # shellcheck disable=SC2044
     for efi_file in $(find "$ISO_COPY/EFI" -name "*.efi" -o -name "*.EFI" 2>/dev/null); do
         if sbsign --key "$sb_key" --cert "$sb_cert" --output "$efi_file" "$efi_file" 2>/dev/null; then
             info "  Signed: ${efi_file#$ISO_COPY/}"

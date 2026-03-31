@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "feat/**", "fix/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ShellCheck — bin
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./bin"
+          severity: warning
+
+      - name: ShellCheck — adapters
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./adapters"
+          severity: warning
+
+      - name: ShellCheck — integration
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./integration"
+          severity: warning
+
+  test-cli:
+    name: CLI tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check — penguins-recovery CLI
+        run: bash -n bin/penguins-recovery
+
+      - name: Run snapshot CLI tests
+        run: bash tests/test-snapshot-cli.sh
+
+  install-dry-run:
+    name: Install dry-run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify install-cli target
+        run: make --dry-run install-cli PREFIX=/tmp/test-prefix 2>&1 | head -10

@@ -1,0 +1,356 @@
+#!/usr/bin/env bash
+# bin/penguins-recovery — top-level CLI dispatcher
+#
+# Usage:
+#   penguins-recovery snapshot create <label>
+#   penguins-recovery snapshot list
+#   penguins-recovery snapshot delete <label>
+#   penguins-recovery snapshot restore <label>
+#   penguins-recovery adapter.sh --input <iso> [options]
+#   penguins-recovery adapt     --input <iso> [options]   (alias)
+#   penguins-recovery help
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RECOVERY_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# ── Snapshot storage ──────────────────────────────────────────────────────────
+# Snapshots are stored as JSON records in SNAPSHOT_DIR.
+# Each entry: { "label": "...", "timestamp": "...", "path": "...", "method": "..." }
+SNAPSHOT_DIR="${PENGUINS_RECOVERY_SNAPSHOT_DIR:-/var/lib/penguins-recovery/snapshots}"
+SNAPSHOT_INDEX="${SNAPSHOT_DIR}/index.json"
+
+_info()  { echo -e "\033[1;32m[penguins-recovery]\033[0m $*"; }
+_warn()  { echo -e "\033[1;33m[penguins-recovery]\033[0m $*" >&2; }
+_error() { echo -e "\033[1;31m[penguins-recovery]\033[0m $*" >&2; }
+
+_require_root() {
+    # PENGUINS_RECOVERY_SKIP_ROOT_CHECK=1 bypasses the check in test environments
+    if [[ "${PENGUINS_RECOVERY_SKIP_ROOT_CHECK:-0}" == "1" ]]; then
+        return 0
+    fi
+    if [[ "${EUID}" -ne 0 ]]; then
+        _error "This operation requires root."
+        exit 1
+    fi
+}
+
+# ── Snapshot index helpers ────────────────────────────────────────────────────
+
+_index_init() {
+    mkdir -p "${SNAPSHOT_DIR}"
+    if [[ ! -f "${SNAPSHOT_INDEX}" ]]; then
+        if _py3_ok; then
+            echo "[]" > "${SNAPSHOT_INDEX}"
+        else
+            # Bash fallback uses one-object-per-line format; start with empty file
+            touch "${SNAPSHOT_INDEX}"
+        fi
+    fi
+}
+
+_PY_INDEX_ADD='
+import sys, json
+idx_file, label, ts, path, method = sys.argv[1:]
+with open(idx_file) as f:
+    data = json.load(f)
+data.append({"label": label, "timestamp": ts, "path": path, "method": method})
+with open(idx_file, "w") as f:
+    json.dump(data, f, indent=2)
+'
+
+_index_add() {
+    local label="$1" path="$2" method="$3"
+    local ts
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    if _py3_ok; then
+        python3 -c "${_PY_INDEX_ADD}" "${SNAPSHOT_INDEX}" "${label}" "${ts}" "${path}" "${method}"
+    else
+        # Pure-bash fallback: append one compact JSON object per line.
+        # _index_list, _index_get_path, and _index_delete all handle this format.
+        local entry="{\"label\":\"${label}\",\"timestamp\":\"${ts}\",\"path\":\"${path}\",\"method\":\"${method}\"}"
+        echo "${entry}" >> "${SNAPSHOT_INDEX}"
+    fi
+}
+
+_PY_INDEX_LIST='
+import sys, json
+with open(sys.argv[1]) as f:
+    data = json.load(f)
+if not data:
+    print("(no snapshots)")
+    sys.exit(0)
+fmt = "{:<40} {:<25} {:<12} {}"
+print(fmt.format("LABEL", "TIMESTAMP", "METHOD", "PATH"))
+print("-" * 100)
+for e in data:
+    print(fmt.format(e.get("label","?"), e.get("timestamp","?"),
+                     e.get("method","?"), e.get("path","?")))
+'
+
+_index_list() {
+    [[ -f "${SNAPSHOT_INDEX}" ]] || { echo "(no snapshots)"; return; }
+    # Check for empty: no lines containing a '{' means no entries
+    if ! grep -q '{' "${SNAPSHOT_INDEX}" 2>/dev/null; then
+        echo "(no snapshots)"
+        return
+    fi
+    if _py3_ok; then
+        python3 -c "${_PY_INDEX_LIST}" "${SNAPSHOT_INDEX}"
+    else
+        # No python3: print lines that are JSON objects (start with '{')
+        grep '^{' "${SNAPSHOT_INDEX}" || true
+    fi
+}
+
+_PY_INDEX_GET='
+import sys, json
+with open(sys.argv[1]) as f:
+    data = json.load(f)
+for e in data:
+    if e.get("label") == sys.argv[2]:
+        print(e.get("path",""))
+        sys.exit(0)
+sys.exit(1)
+'
+
+_index_get_path() {
+    local label="$1"
+    [[ -f "${SNAPSHOT_INDEX}" ]] || return 1
+    if _py3_ok; then
+        python3 -c "${_PY_INDEX_GET}" "${SNAPSHOT_INDEX}" "${label}"
+    else
+        # Pure-bash fallback: find the line containing the label and extract path
+        local escaped_label
+        escaped_label="$(printf '%s' "${label}" | sed 's/[[\.*^$()+?{|]/\\&/g')"
+        if ! grep -q "^{.*\"label\":\"${escaped_label}\"" "${SNAPSHOT_INDEX}" 2>/dev/null; then
+            return 1
+        fi
+        grep "^{.*\"label\":\"${escaped_label}\"" "${SNAPSHOT_INDEX}" \
+            | sed 's/.*"path":"\([^"]*\)".*/\1/' \
+            | head -1
+    fi
+}
+
+_PY_INDEX_DELETE='
+import sys, json
+with open(sys.argv[1]) as f:
+    data = json.load(f)
+data = [e for e in data if e.get("label") != sys.argv[2]]
+with open(sys.argv[1], "w") as f:
+    json.dump(data, f, indent=2)
+'
+
+_index_delete() {
+    local label="$1"
+    [[ -f "${SNAPSHOT_INDEX}" ]] || return 0
+    if _py3_ok; then
+        python3 -c "${_PY_INDEX_DELETE}" "${SNAPSHOT_INDEX}" "${label}"
+    else
+        # Pure-bash fallback: remove lines containing the label
+        local escaped_label
+        escaped_label="$(printf '%s' "${label}" | sed 's/[[\.*^$()+?{|]/\\&/g')"
+        local tmp="${SNAPSHOT_INDEX}.tmp"
+        # grep -v exits 1 when all lines are filtered (last entry deleted); treat that as success
+        grep -v "^{.*\"label\":\"${escaped_label}\"" "${SNAPSHOT_INDEX}" > "${tmp}" || true
+        mv "${tmp}" "${SNAPSHOT_INDEX}"
+    fi
+}
+
+# ── Python3 availability ──────────────────────────────────────────────────────
+# Cached check: python3 must exist AND be functional (not a broken stub).
+
+_PY3_OK=""
+_py3_ok() {
+    if [[ -z "${_PY3_OK}" ]]; then
+        if command -v python3 &>/dev/null && python3 -c "import sys" 2>/dev/null; then
+            _PY3_OK="yes"
+        else
+            _PY3_OK="no"
+        fi
+    fi
+    [[ "${_PY3_OK}" == "yes" ]]
+}
+
+# ── Snapshot backend detection ────────────────────────────────────────────────
+# Prefer btrfs subvolume snapshots when available, fall back to tar archive.
+
+_detect_method() {
+    local root="${1:-/}"
+    if command -v btrfs &>/dev/null && btrfs subvolume show "${root}" &>/dev/null 2>&1; then
+        echo "btrfs"
+    else
+        echo "tar"
+    fi
+}
+
+# ── snapshot create ───────────────────────────────────────────────────────────
+
+_snapshot_create() {
+    local label="${1:?snapshot create requires a label}"
+    _require_root
+    _index_init
+
+    # Sanitise label for use as a filename
+    local safe_label
+    safe_label="$(echo "${label}" | tr '[:space:]/\\' '---' | tr -cd '[:alnum:]._-')"
+    local ts
+    ts="$(date +%Y%m%d_%H%M%S)"
+    local method
+    method="$(_detect_method /)"
+
+    case "${method}" in
+        btrfs)
+            local snap_path="${SNAPSHOT_DIR}/${safe_label}-${ts}"
+            _info "Creating btrfs snapshot '${label}' → ${snap_path}"
+            btrfs subvolume snapshot / "${snap_path}"
+            ;;
+        tar)
+            local snap_path="${SNAPSHOT_DIR}/${safe_label}-${ts}.tar.gz"
+            _info "Creating tar snapshot '${label}' → ${snap_path}"
+            # Exclude volatile and pseudo-filesystems
+            tar -czf "${snap_path}" \
+                --exclude=/proc \
+                --exclude=/sys \
+                --exclude=/dev \
+                --exclude=/run \
+                --exclude=/tmp \
+                --exclude=/var/tmp \
+                --exclude="${SNAPSHOT_DIR}" \
+                / 2>/dev/null || true
+            ;;
+    esac
+
+    _index_add "${label}" "${snap_path}" "${method}"
+    _info "Snapshot '${label}' created (method=${method})."
+}
+
+# ── snapshot list ─────────────────────────────────────────────────────────────
+
+_snapshot_list() {
+    _index_init
+    _index_list
+}
+
+# ── snapshot delete ───────────────────────────────────────────────────────────
+
+_snapshot_delete() {
+    local label="${1:?snapshot delete requires a label}"
+    _require_root
+    _index_init
+
+    local snap_path
+    snap_path="$(_index_get_path "${label}")" || {
+        _error "Snapshot '${label}' not found."
+        exit 1
+    }
+
+    if [[ -d "${snap_path}" ]]; then
+        if command -v btrfs &>/dev/null && btrfs subvolume show "${snap_path}" &>/dev/null 2>&1; then
+            btrfs subvolume delete "${snap_path}"
+        else
+            rm -rf "${snap_path}"
+        fi
+    elif [[ -f "${snap_path}" ]]; then
+        rm -f "${snap_path}"
+    fi
+
+    _index_delete "${label}"
+    _info "Snapshot '${label}' deleted."
+}
+
+# ── snapshot restore ──────────────────────────────────────────────────────────
+
+_snapshot_restore() {
+    local label="${1:?snapshot restore requires a label}"
+    _require_root
+    _index_init
+
+    local snap_path
+    snap_path="$(_index_get_path "${label}")" || {
+        _error "Snapshot '${label}' not found."
+        exit 1
+    }
+
+    _warn "Restoring snapshot '${label}' from ${snap_path}."
+    _warn "This will overwrite the current system. Press Ctrl-C within 5 seconds to abort."
+    sleep "${PENGUINS_RECOVERY_RESTORE_SLEEP:-5}"
+
+    if [[ -d "${snap_path}" ]]; then
+        # btrfs: swap subvolumes
+        _info "Restoring btrfs subvolume snapshot..."
+        btrfs subvolume snapshot "${snap_path}" /
+    elif [[ "${snap_path}" == *.tar.gz ]]; then
+        _info "Restoring tar snapshot..."
+        tar -xzf "${snap_path}" -C / 2>/dev/null || true
+    else
+        _error "Unknown snapshot format: ${snap_path}"
+        exit 1
+    fi
+
+    _info "Snapshot '${label}' restored. Reboot recommended."
+}
+
+# ── snapshot dispatcher ───────────────────────────────────────────────────────
+
+_cmd_snapshot() {
+    local subcmd="${1:-list}"
+    shift || true
+    case "${subcmd}" in
+        create)  _snapshot_create "$@" ;;
+        list)    _snapshot_list ;;
+        delete)  _snapshot_delete "$@" ;;
+        restore) _snapshot_restore "$@" ;;
+        *)
+            _error "Unknown snapshot subcommand: ${subcmd}"
+            echo "Usage: penguins-recovery snapshot {create <label>|list|delete <label>|restore <label>}"
+            exit 1
+            ;;
+    esac
+}
+
+# ── help ──────────────────────────────────────────────────────────────────────
+
+_cmd_help() {
+    cat << 'HELP'
+penguins-recovery — recovery toolkit CLI
+
+Usage:
+  penguins-recovery snapshot create <label>    Create a system snapshot
+  penguins-recovery snapshot list              List all snapshots
+  penguins-recovery snapshot delete <label>    Delete a snapshot
+  penguins-recovery snapshot restore <label>   Restore a snapshot (destructive)
+
+  penguins-recovery adapt --input <iso> [options]
+                                               Layer recovery tools onto a naked ISO
+  penguins-recovery adapter.sh --input <iso> [options]
+                                               Alias for adapt
+
+  penguins-recovery help                       Show this help
+
+Snapshot storage:
+  Default: /var/lib/penguins-recovery/snapshots/
+  Override: PENGUINS_RECOVERY_SNAPSHOT_DIR=/path/to/dir penguins-recovery snapshot ...
+
+Snapshot methods (auto-detected):
+  btrfs   — btrfs subvolume snapshot (preferred when / is on btrfs)
+  tar     — compressed tar archive (fallback)
+HELP
+}
+
+# ── main dispatcher ───────────────────────────────────────────────────────────
+
+CMD="${1:-help}"
+shift || true
+
+case "${CMD}" in
+    snapshot)          _cmd_snapshot "$@" ;;
+    adapt|adapter.sh)  exec "${RECOVERY_ROOT}/adapters/adapter.sh" "$@" ;;
+    help|--help|-h)    _cmd_help ;;
+    *)
+        _error "Unknown command: ${CMD}"
+        _cmd_help
+        exit 1
+        ;;
+esac

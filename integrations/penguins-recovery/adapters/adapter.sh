@@ -41,8 +41,9 @@ warn()  { echo -e "\033[1;33m[adapter]\033[0m $*"; }
 error() { echo -e "\033[1;31m[adapter]\033[0m $*" >&2; }
 
 usage() {
+    local code="${1:-0}"
     sed -n '2,/^$/s/^# //p' "$0"
-    exit 0
+    exit "${code}"
 }
 
 # Parse arguments
@@ -56,13 +57,13 @@ while [[ $# -gt 0 ]]; do
         --work-dir)   WORK_DIR="$2"; shift 2 ;;
         --keep-work)  KEEP_WORK="true"; shift ;;
         --help|-h)    usage ;;
-        *) error "Unknown option: $1"; usage ;;
+        *) error "Unknown option: $1"; usage 1 ;;
     esac
 done
 
 if [ -z "$ISO_INPUT" ]; then
     error "Missing required --input argument."
-    usage
+    usage 1
 fi
 
 if [ "$EUID" -ne 0 ]; then
@@ -174,6 +175,7 @@ cp -L /etc/resolv.conf "${ROOTFS}/etc/resolv.conf" 2>/dev/null || true
 
 # Run the family-specific installer
 export ROOTFS RECOVERY_ROOT FAMILY
+# shellcheck source=/dev/null
 source "$ADAPTER_SCRIPT"
 
 # Tear down chroot bind mounts
