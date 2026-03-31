@@ -8,6 +8,7 @@
 #   pw_plugin_pre_reset()   -- exit mutable mode before a factory reset
 #   pw_plugin_post_reset()  -- re-initialise the PIF backend after a hard reset
 
+# shellcheck disable=SC2034  # plugin metadata read by the powerwash plugin loader
 PW_PLUGIN_NAME="penguins-immutable-framework"
 PW_PLUGIN_TYPE="distro"
 PW_PLUGIN_MATCH=".*"   # matches all distros

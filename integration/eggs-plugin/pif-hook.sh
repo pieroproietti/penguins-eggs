@@ -18,6 +18,7 @@ set -euo pipefail
 
 PIF_BIN="${PIF_BIN:-pif}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC2034  # PIF_ROOT is available to hook cases that need it
 PIF_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 case "${EGGS_HOOK:-produce}" in

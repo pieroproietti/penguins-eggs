@@ -27,8 +27,6 @@ import (
 	_ "github.com/penguins-immutable-framework/backends/btrfsdwarfs"
 	_ "github.com/penguins-immutable-framework/backends/frzr"
 	_ "github.com/penguins-immutable-framework/backends/nixos"
-
-	"github.com/penguins-immutable-framework/core/mutable"
 )
 
 var (
