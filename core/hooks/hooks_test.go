@@ -9,8 +9,6 @@ import (
 	"github.com/penguins-immutable-framework/core/hooks"
 )
 
-
-
 // recordingScript writes a script that appends its arguments to a file,
 // then exits 0. Returns (scriptPath, recordPath).
 func recordingScript(t *testing.T) (string, string) {
