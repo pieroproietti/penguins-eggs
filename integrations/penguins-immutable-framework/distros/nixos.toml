@@ -1,0 +1,39 @@
+# NixOS distro profile
+# NixOS has native immutability via the Nix generation model.
+# The nixos backend is a passthrough to nixos-rebuild / nix-env.
+# Other backends are not applicable — NixOS's store layout is incompatible
+# with BTRFS snapshot trees and A/B partition models.
+
+[distro]
+id           = "nixos"
+family       = "nixos"
+pkg_manager  = "nix-env"
+pkg_add      = "nix-env -iA"
+pkg_remove   = "nix-env -e"
+pkg_update   = "nixos-rebuild switch"
+bootstrap    = "nixos-install"
+
+architectures = ["x86_64", "aarch64", "riscv64"]
+
+# Only the nixos passthrough backend is supported.
+# The generation model does not map to ashos/frzr/akshara/abroot.
+backends = ["nixos"]
+
+[backends.nixos]
+requires_fs  = "ext4"   # /nix/store lives on whatever fs NixOS was installed on
+notes        = """
+NixOS manages immutability natively. The nixos backend delegates to
+nixos-rebuild (upgrade/rollback/snapshot) and nix-env (package management).
+Snapshots correspond to NixOS generations stored in /nix/var/nix/profiles/system.
+PkgAdd/PkgRemove edit /etc/nixos/configuration.nix and run nixos-rebuild switch.
+"""
+
+[bootloader]
+supported = ["grub", "systemd-boot"]
+default   = "systemd-boot"
+grub_pkg  = "grub2"
+efi_pkg   = "efibootmgr"
+
+[init]
+system = "systemd"
+notes  = "NixOS uses systemd exclusively."

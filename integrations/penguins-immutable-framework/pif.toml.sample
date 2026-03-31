@@ -1,0 +1,164 @@
+# ILF Reference Configuration
+# Copy to /etc/ilf/ilf.toml or ~/.config/ilf/ilf.toml
+
+[ilf]
+# Target distro family. Must match a file in distros/<distro>.toml
+distro = "arch"
+
+# CPU architecture: x86_64 | aarch64 | riscv64 | armv7 | ppc64le | s390x
+arch = "x86_64"
+
+# Immutability backend to use at runtime.
+# Must be one of the backends listed as compatible in distros/<distro>.toml
+# Options: abroot | ashos | frzr | akshara | btrfs-dwarfs
+backend = "ashos"
+
+# Maximum snapshots to retain before pruning oldest
+max_snapshots = 10
+
+# Run upgrade check on boot via systemd timer
+auto_update = true
+
+# Hook scripts (optional)
+pre_upgrade_hook  = ""
+post_upgrade_hook = ""
+
+# ---------------------------------------------------------------------------
+# Backend-specific configuration blocks.
+# Only the block matching [ilf].backend is used at runtime.
+# ---------------------------------------------------------------------------
+
+[backend.abroot]
+# OCI registry for system images
+registry         = "ghcr.io"
+registry_service = "registry.ghcr.io"
+registry_api     = "v2"
+image            = "myorg/myos"
+tag              = "stable"
+
+# Partition labels (must match your disk layout)
+part_label_a    = "vos-a"
+part_label_b    = "vos-b"
+part_label_boot = "vos-boot"
+part_label_efi  = "vos-efi"
+part_label_var  = "vos-var"
+
+# Package manager integration
+pkg_add    = "apt install -y"
+pkg_remove = "apt remove -y"
+pkg_pre    = ""
+pkg_post   = ""
+
+thin_provisioning = false
+
+[backend.ashos]
+# BTRFS subvolume that holds snapshot roots
+snapshot_root = "/@"
+
+# Subvolume layout
+home_subvol = "/@home"
+var_subvol  = "/@var"
+
+# Deploy the latest snapshot on next boot automatically
+deploy_on_boot = true
+
+# Distro-specific package manager (auto-detected if empty)
+package_manager = ""
+
+[backend.frzr]
+# Source channel for image downloads
+# Format: <user>/<repo>:<channel>  (GitHub releases)
+source = "myorg/myos:stable"
+
+# Mount points that persist across deploys
+persist = ["/home", "/var"]
+
+# Cache directory for downloaded images
+cache_dir = "/var/.frzr"
+
+# Verify image checksums before deploy
+verify = true
+
+[backend.akshara]
+# Path to the system declaration file
+system_yaml = "/system.yaml"
+
+# Container runtime used for layer assembly
+# Options: podman | docker | buildah
+container_runtime = "podman"
+
+# Whether to rebuild the system image on every upgrade
+rebuild_on_upgrade = true
+
+[backend.btrfs-dwarfs]
+# BTRFS partition for the writable upper layer
+btrfs_device = "/dev/sda2"
+btrfs_mount  = "/mnt/btrfs"
+
+# DwarFS partition for compressed read-only lower layers
+dwarfs_device = "/dev/sda3"
+dwarfs_mount  = "/mnt/dwarfs"
+
+# Blend namespace mountpoint
+blend_mount = "/"
+
+# Compression algorithm for demote operations
+# Options: zstd | lz4 | lzma
+compression = "zstd"
+
+# DwarFS read cache in MiB
+cache_mb = 512
+
+# ---------------------------------------------------------------------------
+# Bootloader configuration (shared across backends)
+# ---------------------------------------------------------------------------
+
+[bootloader]
+# Options: grub | systemd-boot | auto
+type = "auto"
+
+# Path to grub config (used when type = grub)
+grub_cfg = "/boot/grub/grub.cfg"
+
+# EFI directory
+efi_dir = "/boot/efi"
+
+# ---------------------------------------------------------------------------
+# Distro matrix overrides (rarely needed; prefer distros/<distro>.toml)
+# ---------------------------------------------------------------------------
+
+[distro]
+# Override the detected package manager command
+pkg_manager = ""
+
+# Extra repos to enable before upgrade
+extra_repos = []
+
+# ---------------------------------------------------------------------------
+# penguins-eggs & penguins-recovery integration hooks
+# ---------------------------------------------------------------------------
+
+[hooks]
+# Path to the penguins-eggs binary. Set to "" to disable eggs integration.
+eggs_bin = "/usr/bin/eggs"
+
+# Path to the penguins-recovery binary. Set to "" to disable recovery integration.
+recovery_bin = "/usr/bin/penguins-recovery"
+
+# Create a penguins-recovery snapshot before every upgrade.
+pre_upgrade_snapshot = true
+
+# Notify penguins-eggs after a successful upgrade so the next ISO reflects
+# the new immutable root.
+post_upgrade_notify = true
+
+# Warn penguins-eggs when entering mutable mode (ISO builds should be deferred
+# while the system is writable).
+mutable_warn_eggs = true
+
+# Automatically run `eggs produce --update-root` after exiting mutable mode.
+# Disabled by default because it can be slow.
+post_mutable_produce = false
+
+# Create a penguins-recovery snapshot before every rollback.
+pre_rollback_snapshot = true

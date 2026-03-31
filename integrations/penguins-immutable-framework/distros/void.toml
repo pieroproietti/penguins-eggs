@@ -1,0 +1,32 @@
+# Void Linux distro profile
+
+[distro]
+id           = "void"
+family       = "void"
+pkg_manager  = "xbps"
+pkg_add      = "xbps-install -y"
+pkg_remove   = "xbps-remove -y"
+pkg_update   = "xbps-install -Syu"
+bootstrap    = "xbps-install --rootdir"
+
+architectures = ["x86_64", "aarch64", "armv7"]
+
+backends = ["ashos", "frzr"]
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "Void uses runit init; ensure ashos systemd units are replaced with runit services."
+
+[backends.frzr]
+requires_fs  = "btrfs"
+notes        = "frzr images must be built with Void as the base."
+
+[bootloader]
+supported = ["grub", "systemd-boot"]
+default   = "grub"
+grub_pkg  = "grub"
+efi_pkg   = "efibootmgr"
+
+[init]
+system = "runit"
+notes  = "Replace systemd service units with runit sv equivalents."

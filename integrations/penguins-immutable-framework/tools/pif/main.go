@@ -1,0 +1,577 @@
+// pif — Penguins Immutable Framework CLI
+//
+// Dispatches all operations through the HAL to the configured backend.
+// Backend is selected from pif.toml at startup; all commands are
+// backend-agnostic from the caller's perspective.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+
+	"github.com/penguins-immutable-framework/core/config"
+	"github.com/penguins-immutable-framework/core/hal"
+	"github.com/penguins-immutable-framework/core/hooks"
+	ilfinit "github.com/penguins-immutable-framework/core/init"
+	"github.com/penguins-immutable-framework/core/mutable"
+	"github.com/penguins-immutable-framework/core/snapshot"
+	"github.com/penguins-immutable-framework/core/update"
+
+	// Import all backend adapters so their init() functions register them.
+	_ "github.com/penguins-immutable-framework/backends/abroot"
+	_ "github.com/penguins-immutable-framework/backends/akshara"
+	_ "github.com/penguins-immutable-framework/backends/ashos"
+	_ "github.com/penguins-immutable-framework/backends/btrfsdwarfs"
+	_ "github.com/penguins-immutable-framework/backends/frzr"
+	_ "github.com/penguins-immutable-framework/backends/nixos"
+)
+
+var (
+	cfgFile string
+	verbose bool
+)
+
+func main() {
+	root := &cobra.Command{
+		Use:   "pif",
+		Short: "Penguins Immutable Framework",
+		Long: `pif manages immutable Linux systems through a unified interface.
+The active backend is selected in pif.toml ([pif].backend).`,
+		SilenceUsage: true,
+	}
+
+	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default: /etc/pif/pif.toml)")
+	root.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+
+	root.AddCommand(
+		cmdInit(),
+		cmdUpgrade(),
+		cmdRollback(),
+		cmdSnapshot(),
+		cmdStatus(),
+		cmdMutable(),
+		cmdPkg(),
+		cmdBackends(),
+	)
+
+	if err := root.Execute(); err != nil {
+		os.Exit(1)
+	}
+}
+
+// loadBackend reads config and returns the active backend.
+func loadBackend() (hal.Backend, *config.PIF, error) {
+	var cfg *config.PIF
+	var err error
+	if cfgFile != "" {
+		cfg, err = config.LoadFile(cfgFile)
+	} else {
+		cfg, err = config.Load()
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+	b, err := hal.Get(cfg.PIF.Backend)
+	if err != nil {
+		return nil, nil, err
+	}
+	return b, cfg, nil
+}
+
+// ── Commands ──────────────────────────────────────────────────────────────────
+
+func cmdInit() *cobra.Command {
+	var distro, backend, arch, disk, passphraseFile string
+	var efi, encrypt bool
+	var extraSubvols []string
+
+	cmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialise PIF on this system",
+		Long: `Partition the target disk, format filesystems, create the BTRFS subvolume
+layout for the chosen backend, and run the backend's own Init() routine.
+
+If --disk is omitted, only the backend Init() is run (useful when the disk
+is already partitioned, e.g. inside a live installer that handled partitioning).
+
+When --encrypt is set, the LUKS2 passphrase is resolved in this order:
+  1. --encrypt-passphrase-file FILE  (contents of file, newline stripped)
+  2. ILF_LUKS_PASSPHRASE env var
+  3. Interactive prompt via cryptsetup`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil && (distro == "" || backend == "") {
+				return fmt.Errorf("init: provide --distro and --backend, or create pif.toml first: %w", err)
+			}
+			if backend != "" {
+				b, err = hal.Get(backend)
+				if err != nil {
+					return err
+				}
+			}
+
+			// ── Real disk setup ───────────────────────────────────────────
+			if disk != "" {
+				var passphrase string
+				if encrypt {
+					passphrase, err = ilfinit.ResolvePassphrase(passphraseFile)
+					if err != nil {
+						return err
+					}
+				}
+				layout := ilfinit.DiskLayout{
+					Disk:         disk,
+					Backend:      b.Name(),
+					EFI:          efi,
+					Encrypt:      encrypt,
+					LUKSPassword: passphrase,
+					ExtraSubvols: extraSubvols,
+				}
+				if err := ilfinit.Run(layout, "/mnt"); err != nil {
+					return fmt.Errorf("init: disk setup: %w", err)
+				}
+			}
+
+			// ── Backend Init() ────────────────────────────────────────────
+			var bcfg map[string]string
+			if cfg != nil {
+				bcfg = cfg.BackendConfig(b.Name())
+			}
+			if err := b.Init(bcfg); err != nil {
+				return fmt.Errorf("init: backend: %w", err)
+			}
+
+			fmt.Printf("pif: initialised backend %q on distro %q (%s)\n",
+				b.Name(), distro, arch)
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVar(&distro, "distro", "", "target distro (e.g. arch, debian, fedora)")
+	cmd.Flags().StringVar(&backend, "backend", "", "immutability backend to use")
+	cmd.Flags().StringVar(&arch, "arch", "", "target architecture (default: auto-detect)")
+	cmd.Flags().StringVar(&disk, "disk", "", "target block device to partition (e.g. /dev/sda); omit to skip partitioning")
+	cmd.Flags().BoolVar(&efi, "efi", true, "create an EFI System Partition (disable for BIOS/legacy boot)")
+	cmd.Flags().BoolVar(&encrypt, "encrypt", false, "encrypt the root partition with LUKS2")
+	cmd.Flags().StringVar(&passphraseFile, "encrypt-passphrase-file", "",
+		"file containing the LUKS2 passphrase (overrides ILF_LUKS_PASSPHRASE; omit for interactive prompt)")
+	cmd.Flags().StringSliceVar(&extraSubvols, "extra-subvols", nil, "additional BTRFS subvolumes to create (e.g. @snapshots,@opt)")
+	return cmd
+}
+
+func cmdUpgrade() *cobra.Command {
+	var dryRun, force bool
+	var packages []string
+	cmd := &cobra.Command{
+		Use:   "upgrade",
+		Short: "Perform an atomic system upgrade",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			return update.Run(b, update.Options{
+				DryRun:        dryRun,
+				Force:         force,
+				Packages:      packages,
+				PreHook:       cfg.PIF.PreUpgradeHook,
+				PostHook:      cfg.PIF.PostUpgradeHook,
+				AutoRollback:  true,
+				SnapshotLabel: "pre-upgrade",
+				MaxSnapshots:  cfg.PIF.MaxSnapshots,
+				Hooks:         cfg.HooksRunner(),
+			})
+		},
+	}
+	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "report what would change without applying")
+	cmd.Flags().BoolVar(&force, "force", false, "skip pre-flight checks")
+	cmd.Flags().StringSliceVar(&packages, "pkg", nil, "additional packages to install")
+	return cmd
+}
+
+func cmdRollback() *cobra.Command {
+	var snapshotID string
+	var list bool
+	cmd := &cobra.Command{
+		Use:   "rollback",
+		Short: "Revert to the previous system state",
+		Long: `Revert to the previous system state, or to a specific snapshot.
+
+Use --list to see available snapshots and their IDs before committing.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
+			mgr.SetHooks(cfg.HooksRunner())
+
+			if list {
+				snaps, err := mgr.List()
+				if err != nil {
+					return fmt.Errorf("rollback --list: %w", err)
+				}
+				if len(snaps) == 0 {
+					fmt.Println("no snapshots available")
+					return nil
+				}
+				fmt.Printf("%-20s %-30s %-10s %s\n", "ID", "NAME", "DEPLOYED", "TIMESTAMP")
+				for _, s := range snaps {
+					deployed := ""
+					if s.Deployed {
+						deployed = "*"
+					}
+					fmt.Printf("%-20s %-30s %-10s %s\n", s.ID, s.Name, deployed, s.Timestamp)
+				}
+				return nil
+			}
+
+			return mgr.Rollback(snapshotID)
+		},
+	}
+	cmd.Flags().StringVar(&snapshotID, "snapshot", "", "specific snapshot ID to roll back to")
+	cmd.Flags().BoolVar(&list, "list", false, "list available snapshots without rolling back")
+	return cmd
+}
+
+func cmdSnapshot() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "snapshot",
+		Short: "Manage snapshots",
+	}
+
+	var label string
+	create := &cobra.Command{
+		Use:   "create",
+		Short: "Create a snapshot of the current root",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
+			id, err := mgr.Create(label)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("snapshot created: %s\n", id)
+			return nil
+		},
+	}
+	create.Flags().StringVar(&label, "label", "", "human-readable label prefix")
+
+	list := &cobra.Command{
+		Use:   "list",
+		Short: "List all snapshots",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
+			snaps, err := mgr.List()
+			if err != nil {
+				return err
+			}
+			fmt.Printf("%-20s %-30s %-10s %s\n", "ID", "NAME", "DEPLOYED", "PARENT")
+			for _, s := range snaps {
+				deployed := ""
+				if s.Deployed {
+					deployed = "*"
+				}
+				fmt.Printf("%-20s %-30s %-10s %s\n", s.ID, s.Name, deployed, s.Parent)
+			}
+			return nil
+		},
+	}
+
+	var deleteID string
+	del := &cobra.Command{
+		Use:   "delete",
+		Short: "Delete a snapshot",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
+			return mgr.Delete(deleteID)
+		},
+	}
+	del.Flags().StringVar(&deleteID, "id", "", "snapshot ID to delete")
+	_ = del.MarkFlagRequired("id")
+
+	var deployID string
+	deploy := &cobra.Command{
+		Use:   "deploy",
+		Short: "Set a snapshot as the next boot target",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			mgr := snapshot.New(b, cfg.PIF.MaxSnapshots)
+			return mgr.Deploy(deployID)
+		},
+	}
+	deploy.Flags().StringVar(&deployID, "id", "", "snapshot ID to deploy")
+	_ = deploy.MarkFlagRequired("id")
+
+	cmd.AddCommand(create, list, del, deploy)
+	return cmd
+}
+
+func cmdStatus() *cobra.Command {
+	var jsonOut bool
+	cmd := &cobra.Command{
+		Use:   "status",
+		Short: "Display current system state",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Lock-file check is always authoritative and works even when
+			// pif.toml is absent or the backend is uninitialised.
+			isMutable := mutable.LockExists()
+
+			printSt := func(st *hal.Status) error {
+				st.Mutable = isMutable
+				if jsonOut {
+					return printStatusJSON(st)
+				}
+				fmt.Printf("Backend:      %s\n", st.Backend)
+				fmt.Printf("Current root: %s\n", st.CurrentRoot)
+				fmt.Printf("Mutable:      %v\n", st.Mutable)
+				fmt.Printf("Snapshots:    %d\n", len(st.Snapshots))
+				for k, v := range st.Extra {
+					fmt.Printf("  %-20s %s\n", k+":", v)
+				}
+				return nil
+			}
+
+			b, _, err := loadBackend()
+			if err != nil {
+				// Degraded: no config or backend — still report mutable state.
+				return printSt(&hal.Status{
+					Backend:     "unknown",
+					CurrentRoot: "unknown",
+					Extra:       map[string]string{"config_error": err.Error()},
+				})
+			}
+
+			st, err := b.Status()
+			if err != nil {
+				// Backend present but Status() failed — still report mutable state.
+				return printSt(&hal.Status{
+					Backend:     b.Name(),
+					CurrentRoot: "unknown",
+					Extra:       map[string]string{"status_error": err.Error()},
+				})
+			}
+
+			return printSt(st)
+		},
+	}
+	cmd.Flags().BoolVar(&jsonOut, "json", false, "output status as JSON")
+	return cmd
+}
+
+// statusJSON is the machine-readable representation of hal.Status.
+// Kept as a local struct so the JSON shape is stable regardless of HAL changes.
+type statusJSON struct {
+	Backend     string            `json:"backend"`
+	CurrentRoot string            `json:"current_root"`
+	Mutable     bool              `json:"mutable"`
+	Snapshots   []snapshotJSON    `json:"snapshots"`
+	Extra       map[string]string `json:"extra,omitempty"`
+}
+
+type snapshotJSON struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Timestamp string `json:"timestamp"`
+	Deployed  bool   `json:"deployed"`
+	Parent    string `json:"parent,omitempty"`
+}
+
+func printStatusJSON(st *hal.Status) error {
+	snaps := make([]snapshotJSON, len(st.Snapshots))
+	for i, s := range st.Snapshots {
+		snaps[i] = snapshotJSON{
+			ID:        s.ID,
+			Name:      s.Name,
+			Timestamp: s.Timestamp,
+			Deployed:  s.Deployed,
+			Parent:    s.Parent,
+		}
+	}
+	out := statusJSON{
+		Backend:     st.Backend,
+		CurrentRoot: st.CurrentRoot,
+		Mutable:     st.Mutable,
+		Snapshots:   snaps,
+		Extra:       st.Extra,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	return enc.Encode(out)
+}
+
+func cmdMutable() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "mutable",
+		Short: "Toggle filesystem mutability",
+	}
+
+	enter := &cobra.Command{
+		Use:   "enter",
+		Short: "Make the root filesystem temporarily writable",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, cfg, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			hr := cfg.HooksRunner()
+
+			// Try the backend's own implementation first.
+			restore, err := b.MutableEnter()
+			if err != nil && err != hal.ErrNotSupported {
+				return fmt.Errorf("mutable enter: %w", err)
+			}
+
+			// Backend doesn't support it — fall back to core/mutable.
+			if err == hal.ErrNotSupported {
+				t := mutable.New("/", mutable.MethodBind)
+				t.SetHooks(hr)
+				restore, err = t.Enter()
+				if err != nil {
+					return fmt.Errorf("mutable enter (fallback): %w", err)
+				}
+			} else {
+				// Backend handled it natively — fire the eggs warning directly.
+				hr.MutableEnter()
+			}
+
+			fmt.Println("Root is now writable. Run `pif mutable exit` to restore immutability.")
+			_ = restore // cross-process restore is handled via /run/pif-mutable.lock
+			return nil
+		},
+	}
+
+	exit := &cobra.Command{
+		Use:   "exit",
+		Short: "Restore immutability",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if !mutable.LockExists() {
+				return fmt.Errorf("mutable: no active session found")
+			}
+			if err := mutable.Exit(); err != nil {
+				return fmt.Errorf("mutable exit: %w", err)
+			}
+			// Notify eggs that immutability is restored (best-effort; load config
+			// separately so a missing pif.toml doesn't block the exit).
+			if cfg, err := config.Load(); err == nil {
+				cfg.HooksRunner().MutableExit()
+			} else {
+				hooks.New(hooks.DefaultConfig()).MutableExit()
+			}
+			fmt.Println("Immutability restored.")
+			return nil
+		},
+	}
+
+	cmd.AddCommand(enter, exit)
+	return cmd
+}
+
+func cmdPkg() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pkg",
+		Short: "Manage packages inside an atomic transaction",
+	}
+
+	add := &cobra.Command{
+		Use:   "add [packages...]",
+		Short: "Install packages atomically",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, _, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			if !hal.Has(b, hal.CapAtomicPkg) {
+				return fmt.Errorf("backend %q does not support atomic package management", b.Name())
+			}
+			return b.PkgAdd(args)
+		},
+	}
+
+	remove := &cobra.Command{
+		Use:   "remove [packages...]",
+		Short: "Remove packages atomically",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			b, _, err := loadBackend()
+			if err != nil {
+				return err
+			}
+			if !hal.Has(b, hal.CapAtomicPkg) {
+				return fmt.Errorf("backend %q does not support atomic package management", b.Name())
+			}
+			return b.PkgRemove(args)
+		},
+	}
+
+	cmd.AddCommand(add, remove)
+	return cmd
+}
+
+func cmdBackends() *cobra.Command {
+	return &cobra.Command{
+		Use:   "backends",
+		Short: "List registered backends and their capabilities",
+		Run: func(cmd *cobra.Command, args []string) {
+			names := hal.Registered()
+			fmt.Printf("%-16s %s\n", "BACKEND", "CAPABILITIES")
+			for _, name := range names {
+				b, _ := hal.Get(name)
+				caps := describeCaps(b.Capabilities())
+				fmt.Printf("%-16s %s\n", name, caps)
+			}
+		},
+	}
+}
+
+func describeCaps(c hal.Capability) string {
+	type flag struct {
+		cap  hal.Capability
+		name string
+	}
+	flags := []flag{
+		{hal.CapSnapshot, "snapshot"},
+		{hal.CapRollback, "rollback"},
+		{hal.CapAtomicPkg, "atomic-pkg"},
+		{hal.CapOCIImages, "oci-images"},
+		{hal.CapMutable, "mutable"},
+		{hal.CapCompression, "compression"},
+		{hal.CapMultiBoot, "multi-boot"},
+		{hal.CapThinProvision, "thin-provision"},
+	}
+	var out []string
+	for _, f := range flags {
+		if c&f.cap != 0 {
+			out = append(out, f.name)
+		}
+	}
+	if len(out) == 0 {
+		return "(none)"
+	}
+	result := ""
+	for i, s := range out {
+		if i > 0 {
+			result += ", "
+		}
+		result += s
+	}
+	return result
+}

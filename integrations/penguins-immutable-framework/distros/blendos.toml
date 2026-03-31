@@ -1,0 +1,30 @@
+# blendOS distro profile
+# blendOS is the upstream home of akshara and nearly.
+
+[distro]
+id           = "blendos"
+family       = "arch"
+pkg_manager  = "pacman"
+pkg_add      = "pacman -S --noconfirm"
+pkg_remove   = "pacman -Rns --noconfirm"
+pkg_update   = "pacman -Syu --noconfirm"
+bootstrap    = "pacstrap"
+
+architectures = ["x86_64", "aarch64"]
+
+# akshara is native to blendOS; ashos is available as an alternative.
+backends = ["akshara", "ashos"]
+
+[backends.akshara]
+requires_fs  = "btrfs"
+notes        = "akshara is the native immutability layer for blendOS. system.yaml must be present at /system.yaml."
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "ashos can be used as an alternative to akshara on blendOS."
+
+[bootloader]
+supported = ["grub", "systemd-boot"]
+default   = "grub"
+grub_pkg  = "grub"
+efi_pkg   = "efibootmgr"

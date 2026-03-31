@@ -1,0 +1,461 @@
+.TH PIF 1 "2025" "Penguins Immutable Framework" "User Commands"
+.
+.SH NAME
+pif \- manage immutable Linux systems through a unified interface
+.
+.SH SYNOPSIS
+.B pif
+[\fB\-\-config\fR \fIFILE\fR]
+[\fB\-v\fR]
+\fICOMMAND\fR [\fIARGS\fR]
+.
+.SH DESCRIPTION
+.B pif
+is the command-line interface for the Penguins Immutable Framework.
+It provides a single, backend-agnostic surface for initialising,
+upgrading, rolling back, and managing snapshots on immutable Linux systems.
+.PP
+The active backend is selected in
+.I /etc/pif/pif.toml
+under the
+.B [pif].backend
+key.
+All operations are dispatched through the Hardware Abstraction Layer (HAL)
+to the configured backend.
+.PP
+Supported backends:
+.RS
+.TP
+.B abroot
+Vanilla-OS/ABRoot \(em A/B partition swap + OCI images
+.TP
+.B ashos
+ashos/ashos \(em BTRFS snapshot tree
+.TP
+.B frzr
+ChimeraOS/frzr \(em read-only BTRFS subvolume deploy
+.TP
+.B akshara
+blend-os/akshara \(em YAML-declared system rebuild
+.TP
+.B btrfs-dwarfs
+btrfs-dwarfs-framework \(em BTRFS+DwarFS hybrid blend layer
+.TP
+.B nixos
+NixOS \(em generation-based passthrough
+.RE
+.
+.SH GLOBAL OPTIONS
+.TP
+.BI \-\-config " FILE"
+Path to the configuration file.
+Defaults to the first file found in:
+.IR $HOME/.config/pif/pif.toml ,
+.IR /etc/pif/pif.toml ,
+.IR /usr/share/pif/pif.toml ,
+.IR ./pif.toml .
+.TP
+.BR \-v ", " \-\-verbose
+Enable verbose output.
+.
+.SH COMMANDS
+.
+.SS pif init
+.B pif init
+[\fB\-\-distro\fR \fINAME\fR]
+[\fB\-\-backend\fR \fINAME\fR]
+[\fB\-\-arch\fR \fIARCH\fR]
+[\fB\-\-disk\fR \fIDEVICE\fR]
+[\fB\-\-efi\fR]
+[\fB\-\-encrypt\fR]
+[\fB\-\-extra-subvols\fR \fILIST\fR]
+.PP
+Initialise PIF on this system.
+When
+.B \-\-disk
+is provided, the target disk is partitioned, formatted, and the BTRFS
+subvolume layout for the chosen backend is created under
+.IR /mnt .
+The backend's own
+.B Init()
+routine is then called to complete setup.
+.PP
+When
+.B \-\-disk
+is omitted, only the backend
+.B Init()
+is run.
+This is useful when the disk is already partitioned by a live installer.
+.TP
+.BI \-\-distro " NAME"
+Target distro identifier (e.g.\&
+.IR arch ,
+.IR debian ,
+.IR fedora ).
+Must match a file in
+.IR /etc/pif/distros/<NAME>.toml .
+.TP
+.BI \-\-backend " NAME"
+Immutability backend to use.
+Overrides
+.B [pif].backend
+in the config file.
+.TP
+.BI \-\-arch " ARCH"
+Target CPU architecture.
+Auto-detected if omitted.
+Valid values:
+.IR x86_64 ,
+.IR aarch64 ,
+.IR armv7 ,
+.IR riscv64 ,
+.IR ppc64le ,
+.IR s390x .
+.TP
+.BI \-\-disk " DEVICE"
+Block device to partition (e.g.\&
+.IR /dev/sda ,
+.IR /dev/nvme0n1 ).
+.B Warning:
+all existing data on this device will be destroyed.
+.TP
+.B \-\-efi
+Create an EFI System Partition.
+Enabled by default.
+Disable with
+.B \-\-efi=false
+for BIOS/legacy boot.
+.TP
+.B \-\-encrypt
+Encrypt the root partition with LUKS2 (requires cryptsetup \(>= 2.0).
+The container is formatted with AES\-XTS\-512 and the Argon2id key derivation
+function.
+Only the root partition is encrypted; the EFI/boot partition remains
+unencrypted so the bootloader can read the kernel and initramfs.
+.IP
+The passphrase is resolved in this order:
+.RS
+.IP 1. 4
+.B \-\-encrypt\-passphrase\-file
+.IP 2. 4
+.B ILF_LUKS_PASSPHRASE
+environment variable
+.IP 3. 4
+Interactive prompt via cryptsetup
+.RE
+.TP
+.BI \-\-encrypt\-passphrase\-file " FILE"
+Path to a file containing the LUKS2 passphrase (trailing newline stripped).
+The file should be readable only by root (mode 0400); a warning is printed
+if group or world read bits are set.
+Using a file or the
+.B ILF_LUKS_PASSPHRASE
+env var keeps the passphrase out of the process argument list.
+.TP
+.BI \-\-extra-subvols " LIST"
+Comma-separated list of additional BTRFS subvolumes to create beyond the
+backend defaults (e.g.\&
+.IR @snapshots,@opt ).
+Only meaningful for BTRFS-based backends:
+.BR ashos ,
+.BR frzr ,
+.BR akshara ,
+.BR btrfs-dwarfs .
+Ignored for
+.B abroot
+and
+.BR nixos .
+.
+.SS pif upgrade
+.B pif upgrade
+[\fB\-\-dry\-run\fR]
+[\fB\-\-force\fR]
+[\fB\-\-pkg\fR \fIPKG\fR[,\fIPKG\fR...]]
+.PP
+Perform an atomic system upgrade.
+Before upgrading, a pre-upgrade snapshot is created automatically.
+If the upgrade fails and
+.B auto_rollback
+is enabled in
+.IR pif.toml ,
+the system is rolled back to the pre-upgrade snapshot.
+Pre- and post-upgrade hooks are run if configured.
+.TP
+.B \-\-dry\-run
+Report what would change without applying it.
+.TP
+.B \-\-force
+Skip pre-flight checks.
+.TP
+.BI \-\-pkg " PKG"
+Additional packages to install during the upgrade.
+May be specified multiple times or as a comma-separated list.
+.
+.SS pif rollback
+.B pif rollback
+[\fB\-\-snapshot\fR \fIID\fR]
+[\fB\-\-list\fR]
+.PP
+Revert the system to the previous state.
+If
+.B \-\-snapshot
+is omitted, the backend chooses the most recent previous state.
+.TP
+.BI \-\-snapshot " ID"
+Specific snapshot ID to roll back to.
+.TP
+.B \-\-list
+Print available snapshots (ID, name, deployed marker, timestamp) and exit
+without performing a rollback.
+Use this to identify the target ID before committing.
+.
+.SS pif snapshot
+.B pif snapshot
+.IR SUBCOMMAND " [" OPTIONS ]
+.PP
+Manage snapshots.
+.TP
+.B pif snapshot create [\-\-label LABEL]
+Create a snapshot of the current root.
+The snapshot is named
+.IB LABEL - TIMESTAMP
+where
+.I TIMESTAMP
+is in ISO 8601 format.
+Prints the backend-assigned snapshot ID on success.
+.TP
+.B pif snapshot list
+List all snapshots.
+The currently deployed snapshot is marked with
+.BR * .
+.TP
+.B pif snapshot delete \-\-id ID
+Delete the snapshot with the given ID.
+Deployed snapshots are never deleted.
+.TP
+.B pif snapshot deploy \-\-id ID
+Set the snapshot with the given ID as the next boot target.
+.
+.SS pif status
+.B pif status
+.PP
+Display the current system state: active backend, current root,
+mutability, snapshot count, and any backend-specific metadata.
+.
+.SS pif mutable
+.B pif mutable
+.IR SUBCOMMAND
+.PP
+Toggle filesystem mutability.
+.TP
+.B pif mutable enter
+Make the root filesystem temporarily writable.
+The active session is recorded in
+.I /run/pif-mutable.lock
+so that
+.B pif mutable exit
+can restore immutability from a separate process.
+.TP
+.B pif mutable exit
+Restore immutability by reading
+.I /run/pif-mutable.lock
+and reversing the toggle method used during
+.BR enter .
+Returns an error if no session is active.
+.
+.SS pif pkg
+.B pif pkg
+.IR SUBCOMMAND " " PACKAGE ...
+.PP
+Manage packages inside an atomic transaction.
+Not all backends support this operation; see
+.B pif backends
+for capability information.
+.TP
+.B pif pkg add PACKAGE...
+Install one or more packages atomically.
+.TP
+.B pif pkg remove PACKAGE...
+Remove one or more packages atomically.
+.
+.SS pif backends
+.B pif backends
+.PP
+List all registered backends and their capability flags.
+.PP
+Capability flags:
+.RS
+.TP
+.B snapshot
+Named snapshot create/list/delete/deploy
+.TP
+.B rollback
+Revert to previous state
+.TP
+.B atomic-pkg
+Per-package install/remove in a transaction
+.TP
+.B oci-images
+Pull and apply OCI container images
+.TP
+.B mutable
+Toggle read-write mode at runtime
+.TP
+.B compression
+Backend-native data compression
+.TP
+.B multi-boot
+Manage multiple bootable entries
+.TP
+.B thin-provision
+LVM thin provisioning support
+.RE
+.
+.SH FILES
+.TP
+.I /etc/pif/pif.toml
+System-wide configuration file.
+See
+.BR pif.toml (5)
+for the full schema.
+.TP
+.I /etc/pif/distros/*.toml
+Per-distro capability declarations.
+.TP
+.I /run/pif-mutable.lock
+Active mutable session token.
+Created by
+.B pif mutable enter
+and removed by
+.BR "pif mutable exit" .
+.TP
+.I /usr/lib/systemd/system/pif-update.service
+Systemd service unit for periodic upgrades.
+.TP
+.I /usr/lib/systemd/system/pif-update.timer
+Systemd timer that triggers
+.I pif-update.service
+daily with a randomised delay.
+.
+.SH ENVIRONMENT
+.TP
+.B ILF_LUKS_PASSPHRASE
+Passphrase used for LUKS2 encryption when
+.B \-\-encrypt
+is set and
+.B \-\-encrypt\-passphrase\-file
+is not provided.
+Keeping the passphrase in an environment variable avoids it appearing in
+.IR /proc/<pid>/cmdline .
+If both this variable and
+.B \-\-encrypt\-passphrase\-file
+are set, the file takes precedence.
+.
+.SH EXAMPLES
+.PP
+Initialise a new system on
+.I /dev/nvme0n1
+using the
+.B ashos
+backend on Arch Linux:
+.PP
+.RS
+.EX
+pif init \-\-distro arch \-\-backend ashos \-\-disk /dev/nvme0n1 \-\-efi
+.EE
+.RE
+.PP
+Perform a dry-run upgrade to see what would change:
+.PP
+.RS
+.EX
+pif upgrade \-\-dry\-run
+.EE
+.RE
+.PP
+Create a named snapshot before making manual changes:
+.PP
+.RS
+.EX
+pif snapshot create \-\-label before\-experiment
+.EE
+.RE
+.PP
+Make the root temporarily writable, install a package, then restore:
+.PP
+.RS
+.EX
+pif mutable enter
+pacman \-S --noconfirm htop
+pif mutable exit
+.EE
+.RE
+.PP
+Initialise with LUKS2 encryption on
+.IR /dev/sda
+(interactive passphrase prompt):
+.PP
+.RS
+.EX
+pif init \-\-distro arch \-\-backend ashos \-\-disk /dev/sda \-\-efi \-\-encrypt
+.EE
+.RE
+.PP
+Initialise with LUKS2 encryption using a passphrase file:
+.PP
+.RS
+.EX
+pif init \-\-distro arch \-\-backend ashos \-\-disk /dev/sda \-\-efi \-\-encrypt \e
+    \-\-encrypt\-passphrase\-file /root/luks.key
+.EE
+.RE
+.PP
+List available snapshots before rolling back:
+.PP
+.RS
+.EX
+pif rollback \-\-list
+.EE
+.RE
+.PP
+Roll back to a specific snapshot:
+.PP
+.RS
+.EX
+pif rollback \-\-snapshot 20250101T120000Z
+.EE
+.RE
+.PP
+List all registered backends and their capabilities:
+.PP
+.RS
+.EX
+pif backends
+.EE
+.RE
+.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+An error occurred.
+The error message is printed to stderr.
+.
+.SH SEE ALSO
+.BR pif.toml (5),
+.BR btrfs (8),
+.BR nixos-rebuild (8),
+.BR abroot (1),
+.BR ash (1)
+.
+.SH AUTHORS
+Penguins Immutable Framework contributors.
+Backends are maintained by their respective upstream projects:
+Vanilla-OS (ABRoot), ashos project (AshOS), ChimeraOS (frzr),
+blendOS (akshara), btrfs-dwarfs-framework contributors, NixOS project.
+.
+.SH LICENSE
+PIF core and CLI: GPL-3.0.
+Each backend retains its upstream license.

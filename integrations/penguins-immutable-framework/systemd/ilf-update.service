@@ -1,0 +1,14 @@
+[Unit]
+Description=PIF atomic system upgrade
+Documentation=man:pif(1)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/pif/pif.toml
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pif upgrade
+StandardOutput=journal
+StandardError=journal
+# Prevent concurrent upgrade runs
+ExecStartPre=/bin/sh -c '! systemctl is-active --quiet pif-update.service'

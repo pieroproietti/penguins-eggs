@@ -1,0 +1,30 @@
+# Vanilla OS distro profile
+# Vanilla OS is the upstream home of ABRoot; it is the reference abroot distro.
+
+[distro]
+id           = "vanillaos"
+family       = "debian"
+pkg_manager  = "apt"
+pkg_add      = "apt install -y"
+pkg_remove   = "apt remove -y"
+pkg_update   = "apt update && apt upgrade -y"
+bootstrap    = "debootstrap"
+
+architectures = ["x86_64", "aarch64"]
+
+# abroot is native to Vanilla OS; ashos is available as an alternative.
+backends = ["abroot", "ashos"]
+
+[backends.abroot]
+requires_fs  = "ext4"
+notes        = "abroot is the native immutability layer for Vanilla OS. Requires vos-a/vos-b/vos-boot/vos-efi/vos-var partition labels."
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "ashos can be used as an alternative to abroot on Vanilla OS."
+
+[bootloader]
+supported = ["grub"]
+default   = "grub"
+grub_pkg  = "grub-efi-amd64"
+efi_pkg   = "efibootmgr"

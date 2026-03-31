@@ -1,0 +1,30 @@
+# ChimeraOS distro profile
+# ChimeraOS is the upstream home of frzr; it is the reference frzr distro.
+
+[distro]
+id           = "chimeraos"
+family       = "arch"
+pkg_manager  = "pacman"
+pkg_add      = "pacman -S --noconfirm"
+pkg_remove   = "pacman -Rns --noconfirm"
+pkg_update   = "pacman -Syu --noconfirm"
+bootstrap    = "pacstrap"
+
+architectures = ["x86_64"]
+
+# frzr is native to ChimeraOS; ashos is available as an alternative.
+backends = ["frzr", "ashos"]
+
+[backends.frzr]
+requires_fs  = "btrfs"
+notes        = "frzr is the native immutability layer for ChimeraOS. Images are hosted on GitHub releases."
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "ashos can be layered on top of a ChimeraOS base for snapshot tree management."
+
+[bootloader]
+supported = ["grub", "systemd-boot"]
+default   = "systemd-boot"
+grub_pkg  = "grub"
+efi_pkg   = "efibootmgr"

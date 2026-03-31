@@ -1,0 +1,28 @@
+# openSUSE Tumbleweed / Leap / MicroOS distro profile
+
+[distro]
+id           = "opensuse"
+family       = "opensuse"
+pkg_manager  = "zypper"
+pkg_add      = "zypper install -y"
+pkg_remove   = "zypper remove -y"
+pkg_update   = "zypper dup -y"
+bootstrap    = "zypper --root"
+
+architectures = ["x86_64", "aarch64", "ppc64le", "s390x"]
+
+backends = ["ashos", "akshara"]
+
+[backends.ashos]
+requires_fs  = "btrfs"
+notes        = "openSUSE ships BTRFS by default. MicroOS users may prefer ashos for snapshot tree management."
+
+[backends.akshara]
+requires_fs  = "btrfs"
+notes        = "system.yaml must reference an openSUSE-based container image."
+
+[bootloader]
+supported = ["grub"]
+default   = "grub"
+grub_pkg  = "grub2-x86_64-efi"
+efi_pkg   = "efibootmgr"

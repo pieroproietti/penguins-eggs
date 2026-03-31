@@ -1,0 +1,78 @@
+name: Build CI images
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/images/**"
+  # Allow manual rebuild when base images update.
+  workflow_dispatch:
+
+jobs:
+  opensuse-tumbleweed-ci:
+    name: opensuse-tumbleweed-ci
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set lowercase owner
+        run: echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .github/images/opensuse-tumbleweed-ci
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER }}/opensuse-tumbleweed-ci:latest
+            ghcr.io/${{ env.OWNER }}/opensuse-tumbleweed-ci:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.description=openSUSE Tumbleweed with tar+git+sh for GitHub Actions
+
+  voidlinux-ci:
+    name: voidlinux-ci
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set lowercase owner
+        run: echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .github/images/voidlinux-ci
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER }}/voidlinux-ci:latest
+            ghcr.io/${{ env.OWNER }}/voidlinux-ci:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.description=Void Linux with tar+git+sh for GitHub Actions
