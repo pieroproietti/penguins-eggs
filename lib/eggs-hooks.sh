@@ -27,6 +27,7 @@ pw_eggs_pre_reset() {
 
     # 1. Create a penguins-recovery snapshot so the user can roll back
     if [[ "${PW_PRE_RESET_SNAPSHOT}" == "1" ]] && _pw_recovery_available; then
+        # shellcheck disable=SC2155  # date subshell in local assignment is intentional
         local label="pre-powerwash-${mode}-$(date +%Y%m%d_%H%M%S)"
         pw_info "penguins-recovery: creating snapshot '${label}' before ${mode} reset..."
         pw_run "${PW_RECOVERY_BIN}" snapshot create "${label}" || \

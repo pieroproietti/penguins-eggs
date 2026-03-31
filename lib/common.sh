@@ -4,12 +4,16 @@
 set -euo pipefail
 
 # ── Version ────────────────────────────────────────────────────────────────────
+# shellcheck disable=SC2034  # exported constants for consumers of this library
 readonly PW_VERSION="0.1.0"
 readonly PW_NAME="Penguins Powerwash"
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
+# shellcheck disable=SC2155  # readonly + subshell assignment is intentional here
 readonly PW_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC2155
 readonly PW_ROOT_DIR="$(cd "${PW_LIB_DIR}/.." && pwd)"
+# shellcheck disable=SC2034  # exported constant for consumers
 readonly PW_PLUGIN_DIR="${PW_ROOT_DIR}/plugins"
 readonly PW_BACKUP_DIR="${PW_BACKUP_DIR:-/var/lib/powerwash/backups}"
 readonly PW_STATE_DIR="/var/lib/powerwash"
