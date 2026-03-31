@@ -155,8 +155,6 @@ func available(binary string) bool {
 
 func run(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("%s %s: %s: %w", name, strings.Join(args, " "),
 			strings.TrimSpace(string(out)), err)
@@ -167,8 +165,6 @@ func run(name string, args ...string) error {
 func runEnv(env []string, name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Env = env
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("%s %s: %s: %w", name, strings.Join(args, " "),
 			strings.TrimSpace(string(out)), err)
