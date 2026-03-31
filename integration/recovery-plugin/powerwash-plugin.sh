@@ -12,6 +12,7 @@
 #   PW_PLUGIN_TYPE   -- distro | filesystem | hardware
 #   PW_PLUGIN_MATCH  -- regex matched against distro ID
 
+# shellcheck disable=SC2034  # plugin metadata read by the powerwash plugin loader
 PW_PLUGIN_NAME="penguins-powerwash-self"
 PW_PLUGIN_TYPE="distro"
 PW_PLUGIN_MATCH=".*"   # matches all distros
