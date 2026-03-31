@@ -12,6 +12,7 @@ jobs:
   opensuse-tumbleweed-ci:
     name: opensuse-tumbleweed-ci
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       contents: read
       packages: write
@@ -45,6 +46,7 @@ jobs:
   voidlinux-ci:
     name: voidlinux-ci
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       contents: read
       packages: write

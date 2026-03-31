@@ -9,18 +9,7 @@ import (
 	"github.com/penguins-immutable-framework/core/hooks"
 )
 
-// scriptThatExits writes a small shell script that exits with the given code
-// and returns its path. The file is cleaned up via t.Cleanup.
-func scriptThatExits(t *testing.T, code int) string {
-	t.Helper()
-	dir := t.TempDir()
-	p := filepath.Join(dir, "hook.sh")
-	content := "#!/bin/sh\nexit " + itoa(code) + "\n"
-	if err := os.WriteFile(p, []byte(content), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	return p
-}
+
 
 // recordingScript writes a script that appends its arguments to a file,
 // then exits 0. Returns (scriptPath, recordPath).
@@ -34,13 +23,6 @@ func recordingScript(t *testing.T) (string, string) {
 		t.Fatal(err)
 	}
 	return script, record
-}
-
-func itoa(n int) string {
-	if n == 0 {
-		return "0"
-	}
-	return "1"
 }
 
 // ── DefaultConfig ─────────────────────────────────────────────────────────────

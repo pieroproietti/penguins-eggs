@@ -21,7 +21,7 @@ import (
 
 // Config holds hook settings, typically loaded from pif.toml [hooks].
 type Config struct {
-	EggsBin    string `toml:"eggs_bin"`
+	EggsBin     string `toml:"eggs_bin"`
 	RecoveryBin string `toml:"recovery_bin"`
 
 	PreUpgradeSnapshot  bool `toml:"pre_upgrade_snapshot"`
