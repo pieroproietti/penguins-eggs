@@ -1,0 +1,36 @@
+# Gaming desktop kernel
+#
+# Targets low-latency, high-throughput desktop workloads:
+#   - TKG patch stack with BORE scheduler (better interactivity under load)
+#   - NTsync for Wine/Proton performance
+#   - Clang/LLVM + thin LTO for faster code
+#   - Clear Linux performance patches
+#   - -O3 optimisation
+#
+# Produces a .deb package. Change [build] output to "rpm" or "pkg.tar.zst"
+# for Fedora/Arch respectively.
+
+[remix]
+name    = "gaming"
+version = "6.12"
+flavor  = "tkg"
+arch    = "x86_64"
+
+[build]
+llvm   = true
+lto    = "thin"
+target = "desktop"
+output = "deb"
+
+[tkg]
+cpusched = "bore"   # bore | eevdf | cfs | bmq | pds
+ntsync   = true
+fsync    = true
+clear    = true
+o3       = true
+zenify   = false
+acs      = false    # set true for GPU passthrough (IOMMU ACS override)
+openrgb  = false    # set true for OpenRGB SMBus patch
+
+[patches]
+sets = ["cachyos"]

@@ -1,0 +1,80 @@
+name: Flatpak
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    paths:
+      - 'pkg/flatpak/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & validate Flatpak
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install flatpak-builder
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            flatpak flatpak-builder elfutils librsvg2-common
+
+      - name: Add Flathub remote
+        run: |
+          sudo flatpak remote-add --if-not-exists flathub \
+            https://dl.flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install KDE runtime & SDK
+        run: |
+          sudo flatpak install -y --noninteractive flathub \
+            org.kde.Platform//6.7 \
+            org.kde.Sdk//6.7
+
+      - name: Build Flatpak
+        run: |
+          flatpak-builder --force-clean --disable-rofiles-fuse \
+            build-dir pkg/flatpak/io.github.penguins-kernel-manager.penguins-kernel-manager.yml
+
+      - name: Validate metainfo
+        run: |
+          flatpak run --command=appstreamcli org.kde.Sdk//6.7 \
+            validate pkg/flatpak/io.github.penguins-kernel-manager.penguins-kernel-manager.metainfo.xml || true
+
+      - name: Export bundle
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          flatpak build-export repo build-dir
+          flatpak build-bundle repo LKM.flatpak io.github.penguins-kernel-manager.penguins-kernel-manager
+
+      - name: Upload bundle artifact
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: LKM-flatpak
+          path: LKM.flatpak
+          if-no-files-found: error
+
+  release:
+    name: Attach to GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: LKM-flatpak
+          path: dist/
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/LKM.flatpak

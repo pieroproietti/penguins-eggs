@@ -1,0 +1,52 @@
+# Hardened security kernel
+#
+# Enables the major kernel hardening options used by distributions like
+# Arch Linux's linux-hardened and Alpine's hardened kernel:
+#   - Mainline base, GCC (more mature hardening plugin support)
+#   - KASLR, SMEP, SMAP, stack canaries, FORTIFY_SOURCE
+#   - Disables legacy interfaces that are common attack surfaces
+#   - Suitable for: security-sensitive servers, Tor relays, hardened desktops
+#
+# Note: some hardening options reduce performance (5–15% typical).
+# Note: CONFIG_MODULES=n breaks DKMS; set to "m" if you need out-of-tree modules.
+
+[remix]
+name    = "hardened"
+version = "6.12"
+flavor  = "mainline"
+arch    = "x86_64"
+
+[build]
+llvm   = false
+lto    = "none"
+target = "server"
+output = "deb"
+config = "defconfig"
+
+[patches]
+sets = []
+
+[config_overrides]
+# Core hardening
+CONFIG_HARDENED_USERCOPY         = "y"
+CONFIG_FORTIFY_SOURCE            = "y"
+CONFIG_STACKPROTECTOR_STRONG     = "y"
+CONFIG_RANDOMIZE_BASE            = "y"   # KASLR
+CONFIG_RANDOMIZE_MEMORY          = "y"
+CONFIG_PAGE_TABLE_ISOLATION      = "y"   # Meltdown mitigation
+CONFIG_RETPOLINE                 = "y"   # Spectre v2 mitigation
+# Restrict kernel access
+CONFIG_STRICT_KERNEL_RWX         = "y"
+CONFIG_STRICT_MODULE_RWX         = "y"
+CONFIG_DEBUG_WX                  = "y"
+# Disable legacy / risky interfaces
+CONFIG_LEGACY_VSYSCALL_NONE      = "y"
+CONFIG_X86_VSYSCALL_EMULATION    = "n"
+CONFIG_PROC_KCORE                = "n"
+CONFIG_KEXEC                     = "n"
+CONFIG_HIBERNATION               = "n"
+CONFIG_BINFMT_MISC               = "n"
+# Restrict /dev/mem and /dev/kmem
+CONFIG_STRICT_DEVMEM             = "y"
+CONFIG_IO_STRICT_DEVMEM          = "y"
+CONFIG_DEVKMEM                   = "n"

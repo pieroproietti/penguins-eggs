@@ -1,0 +1,39 @@
+# Embedded / appliance kernel
+#
+# Targets minimal footprint for single-board computers and appliances:
+#   - Cross-compiled for aarch64 (Raspberry Pi 4/5, Rockchip, etc.)
+#   - localyesconfig: bakes all needed drivers in (no module loading)
+#   - RT patch set for deterministic latency (industrial / robotics use)
+#   - Output: tar.gz for manual deployment; change to "deb" for Debian-based SBCs
+#
+# To cross-compile from an x86_64 host, ensure the cross toolchain is installed:
+#   apt install gcc-aarch64-linux-gnu   # Debian/Ubuntu
+#   pacman -S aarch64-linux-gnu-gcc     # Arch
+#
+# Set cross = "" to build natively on the target device itself.
+
+[remix]
+name    = "embedded"
+version = "6.6"        # LTS — preferred for long-lived embedded deployments
+flavor  = "rt"
+arch    = "aarch64"
+
+[build]
+llvm   = false         # GCC cross-compile is better tested for aarch64 RT
+lto    = "none"
+target = "embedded"
+output = "tar.gz"
+config = "localyesconfig"
+cross  = "aarch64-linux-gnu-"
+
+[patches]
+sets = ["rt"]          # PREEMPT_RT patch set
+
+[config_overrides]
+CONFIG_PREEMPT_RT        = "y"
+CONFIG_HZ_1000           = "y"
+CONFIG_NO_HZ_FULL        = "y"
+CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE = "y"
+# Reduce memory footprint
+CONFIG_MODULES           = "n"
+CONFIG_DEBUG_KERNEL      = "n"

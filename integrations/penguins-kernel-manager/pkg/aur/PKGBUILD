@@ -1,0 +1,57 @@
+# Maintainer: lkm contributors <https://github.com/Interested-Deving-1896/lkm>
+pkgname=lkm
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Linux Kernel Manager — build, install, and manage kernels across all major distros and architectures"
+arch=('any')
+url="https://github.com/Interested-Deving-1896/lkm"
+license=('GPL3')
+depends=(
+    'python>=3.11'
+    'python-docopt-ng'
+    'python-requests'
+)
+optdepends=(
+    'python-pyside6: GUI support (recommended)'
+    'python-pyqt6: GUI support (alternative)'
+    'lkf: kernel build pipeline integration'
+)
+makedepends=(
+    'python-build'
+    'python-installer'
+    'python-hatchling'
+    'python-wheel'
+)
+checkdepends=(
+    'python-pytest'
+    'python-pytest-cov'
+)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/Interested-Deving-1896/lkm/archive/refs/tags/v$pkgver.tar.gz")
+b2sums=('SKIP')
+
+build() {
+    cd "$pkgname-$pkgver"
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd "$pkgname-$pkgver"
+    python -m pytest tests/ --tb=short
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+
+    # License
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+    # Example profiles
+    install -dm755 "$pkgdir/usr/share/$pkgname/profiles"
+    install -m644 profiles/*.toml "$pkgdir/usr/share/$pkgname/profiles/"
+
+    # Man page
+    install -dm755 "$pkgdir/usr/share/man/man1"
+    install -m644 docs/lkm.1 "$pkgdir/usr/share/man/man1/$pkgname.1"
+    gzip -9 "$pkgdir/usr/share/man/man1/$pkgname.1"
+}
