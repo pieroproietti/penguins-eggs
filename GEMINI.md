@@ -147,14 +147,37 @@ kernel changes so the next ISO reflects the active kernel.
 - Config: `/etc/penguins-kernel-manager/hooks.conf`
 - eggs hook: `integration/eggs-plugin/pkm-hook.sh`
 
+### eggs-gui (`integrations/eggs-gui/` and `eggs-gui/`)
+Unified GUI for penguins-eggs. A Go daemon exposes all eggs operations over
+JSON-RPC on a Unix socket; three frontends connect to it: BubbleTea TUI (Go),
+NodeGUI desktop (Qt6/TypeScript), NiceGUI web (Python). Features: ISO produce
+with full option control, AUTO mode, Dad/Tools config editors, wardrobe browser,
+Calamares management, i18n (es, en, pt, it).
+- Build: `make all` (daemon + TUI); `make run` to start
+
+### eggs-ai (`integrations/eggs-ai/` and `eggs-ai/`)
+AI assistant for penguins-eggs. 7 built-in LLM providers (Gemini, OpenAI,
+Anthropic, Mistral, Groq, Ollama, custom). Exposes a CLI, HTTP API
+(`http://127.0.0.1:3737/api/*`), MCP server (10 tools), TypeScript SDK, and
+client code for all three eggs-gui frontends.
+- Config: `~/.eggs-ai.yaml` (`eggs-ai providers init` to generate)
+- MCP: add `dist/mcp/server.js` to your MCP client config
+
+### penguins-eggs-audit (`integrations/penguins-eggs-audit/`)
+Security audit and supply chain transparency framework. Extends the 6 original
+plugin domains with Security & Audit (vouch attestation, OS hardening,
+vulnerability scanning) and SBOM & Supply Chain (syft, grant, SBOM-Generation).
+39 upstream projects, 8 domains, TypeScript + Shell.
+
 ### Plugin dispatch order (eggs produce)
 ```
 eggs produce
   └── plugin loader (src/)
-        ├── penguins-recovery  → snapshot before produce
-        ├── penguins-powerwash → embed binary + GRUB entry
-        ├── PIF                → embed backend state
-        └── PKM                → embed kernel list
+        ├── penguins-recovery    → snapshot before produce
+        ├── penguins-powerwash   → embed binary + GRUB entry
+        ├── PIF                  → embed backend state
+        ├── PKM                  → embed kernel list
+        └── penguins-eggs-audit  → SBOM + attestation + license scan
 ```
 
 See `integrations/ARCHITECTURE.md` for the full integration map.

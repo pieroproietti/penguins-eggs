@@ -236,18 +236,53 @@ the active kernel.
 - eggs hook: `integrations/penguins-kernel-manager/integration/eggs-plugin/pkm-hook.sh`
 - Config: `/etc/penguins-kernel-manager/hooks.conf`
 
+## eggs-gui
+
+Unified GUI for penguins-eggs. A shared Go daemon exposes all eggs operations
+over JSON-RPC on a Unix socket; three frontends connect to it:
+
+| Frontend | Framework | Use case |
+|---|---|---|
+| TUI | BubbleTea (Go) | Terminal / SSH sessions |
+| Desktop | NodeGUI (Qt6/TypeScript) | Native desktop |
+| Web | NiceGUI (Python) | Remote / headless via browser |
+
+- Source: [`integrations/eggs-gui/`](integrations/eggs-gui/) and [`eggs-gui/`](eggs-gui/)
+
+## eggs-ai
+
+AI assistant for penguins-eggs. Understands all eggs commands, configs, and
+workflows. Provides diagnostics, guided ISO building, config generation, and
+Calamares assistance. Supports 7 built-in LLM providers (Gemini, OpenAI,
+Anthropic, Mistral, Groq, Ollama, custom) plus any OpenAI-compatible endpoint.
+Exposes an HTTP API, an MCP server (for Cursor, Claude Desktop, etc.), and a
+TypeScript SDK for eggs-gui integration.
+
+- Source: [`integrations/eggs-ai/`](integrations/eggs-ai/) and [`eggs-ai/`](eggs-ai/)
+- MCP tools: `eggs_doctor`, `eggs_build_plan`, `eggs_config_explain`, `eggs_system_status`, and 6 more
+
+## penguins-eggs-audit
+
+Security audit and supply chain transparency framework. Extends eggs with 39
+projects across 8 domains: the original 6 plugin domains plus Security & Audit
+(vouch attestation, OS hardening, vulnerability scanning) and SBOM & Supply
+Chain (syft, grant, SBOM-Generation).
+
+- Source: [`integrations/penguins-eggs-audit/`](integrations/penguins-eggs-audit/)
+
 ## Plugin dispatch
 
-All four tools register hooks that `eggs produce` calls via the plugin loader
-in `src/`. The dispatch order is:
+All ecosystem tools register hooks that `eggs produce` calls via the plugin
+loader in `src/`. The dispatch order is:
 
 ```
 eggs produce
   └── plugin loader
-        ├── penguins-recovery/integration/eggs-plugin/   (snapshot before produce)
-        ├── penguins-powerwash/integration/eggs-plugin/  (embed powerwash + GRUB entry)
+        ├── penguins-recovery/integration/eggs-plugin/        (snapshot before produce)
+        ├── penguins-powerwash/integration/eggs-plugin/       (embed binary + GRUB entry)
         ├── penguins-immutable-framework/integration/eggs-plugin/ (embed PIF state)
-        └── penguins-kernel-manager/integration/eggs-plugin/     (embed kernel list)
+        ├── penguins-kernel-manager/integration/eggs-plugin/  (embed kernel list)
+        └── penguins-eggs-audit/plugins/                      (SBOM + audit hooks)
 ```
 
 See [`integrations/ARCHITECTURE.md`](integrations/ARCHITECTURE.md) for the

@@ -7,7 +7,7 @@ organized by type.
 
 ## Ecosystem Tools (subtree repos)
 
-Four full companion repositories merged into `integrations/` as subtrees.
+Seven full companion repositories merged into `integrations/` (and some also at the repo root) as subtrees.
 
 | Project | Language | Description | URL |
 |---|---|---|---|
@@ -15,6 +15,9 @@ Four full companion repositories merged into `integrations/` as subtrees.
 | penguins-powerwash | Shell | Factory reset tool: soft/medium/hard/sysprep/hardware modes, GPG backup | https://github.com/Interested-Deving-1896/penguins-powerwash |
 | penguins-immutable-framework | Go + Shell | Immutable distro framework: abroot, ashos, frzr, akshara, btrfs-dwarfs backends | https://github.com/Interested-Deving-1896/penguins-immutable-framework |
 | penguins-kernel-manager | Python | Kernel lifecycle manager: fetch, patch, compile, install, hold, remove | https://github.com/Interested-Deving-1896/penguins-kernel-manager |
+| penguins-eggs-audit | TypeScript + Shell | Security audit + SBOM framework: vouch, syft, grant, OS hardening (39 projects, 8 domains) | https://github.com/Interested-Deving-1896/penguins-eggs-audit |
+| eggs-gui | Go + TypeScript + Python | Unified GUI: Go daemon + BubbleTea TUI + NodeGUI desktop + NiceGUI web | https://github.com/Interested-Deving-1896/eggs-gui |
+| eggs-ai | TypeScript | AI assistant: diagnostics, build guidance, MCP server, HTTP API, 7 LLM providers | https://github.com/Interested-Deving-1896/eggs-ai |
 
 ---
 

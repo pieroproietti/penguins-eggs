@@ -20,8 +20,11 @@ This directory contains all projects integrated with
 | [`penguins-powerwash/`](penguins-powerwash/) | penguins-powerwash | Shell | Factory reset (soft/medium/hard/sysprep/hardware modes) |
 | [`penguins-immutable-framework/`](penguins-immutable-framework/) | PIF | Go + Shell | Immutable Linux framework (abroot, ashos, frzr, akshara, btrfs-dwarfs) |
 | [`penguins-kernel-manager/`](penguins-kernel-manager/) | PKM | Python | Full kernel lifecycle: fetch → compile → install → hold → remove |
+| [`penguins-eggs-audit/`](penguins-eggs-audit/) | penguins-eggs-audit | TypeScript + Shell | Security audit + SBOM framework (39 projects, 8 domains) |
+| [`eggs-gui/`](eggs-gui/) | eggs-gui | Go + TypeScript + Python | Unified GUI: Go daemon + BubbleTea TUI + NodeGUI desktop + NiceGUI web |
+| [`eggs-ai/`](eggs-ai/) | eggs-ai | TypeScript | AI assistant: diagnostics, build guidance, MCP server, HTTP API |
 
-Each tool registers an **eggs plugin** and a **recovery plugin**:
+Each tool with lifecycle hooks registers an **eggs plugin** and (where applicable) a **recovery plugin**:
 
 - `<tool>/integration/eggs-plugin/` — called by `eggs produce` to embed tool
   state/binaries into the ISO and coordinate lifecycle events.
@@ -36,6 +39,8 @@ Each tool registers an **eggs plugin** and a **recovery plugin**:
 | penguins-powerwash | `/etc/penguins-powerwash/eggs-hooks.conf` | `PRE_RESET_EGGS_PRODUCE`, `POST_HARD_RESET_ADAPT` |
 | PIF | `pif.toml` `[hooks]` | `pre_upgrade_snapshot`, `post_mutable_produce` |
 | PKM | `/etc/penguins-kernel-manager/hooks.conf` | `post_install_notify`, `post_remove_old_sync` |
+| penguins-eggs-audit | built-in plugin hooks | SBOM generation, license scan, attestation |
+| eggs-ai | `~/.eggs-ai.yaml` | `default_provider`, custom LLM endpoints |
 
 ---
 
@@ -83,9 +88,10 @@ integrations/
 ├── penguins-powerwash/            # ecosystem tool (subtree)
 ├── penguins-immutable-framework/  # ecosystem tool (subtree)
 ├── penguins-kernel-manager/       # ecosystem tool (subtree)
+├── penguins-eggs-audit/           # ecosystem tool (subtree)
 │
-├── eggs-ai/                       # eggs AI assistant integration
-├── eggs-gui/                      # eggs GUI integration
+├── eggs-ai/                       # eggs AI assistant (subtree)
+├── eggs-gui/                      # eggs unified GUI (subtree)
 │
 ├── plugins/                       # compiled plugin modules
 │   ├── build-infra/

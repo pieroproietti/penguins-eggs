@@ -11,18 +11,17 @@ redistributable live ISO/image.
 The integrations extend eggs in two layers:
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                      PENGUINS-EGGS CORE                          │
-│           (produce ISOs, install systems, wardrobes)             │
-└──┬──────────────┬──────────────┬──────────────┬──────────────────┘
-   │              │              │              │
-   ▼              ▼              ▼              ▼
-┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐
-│penguins- │ │penguins- │ │penguins- │ │penguins-         │
-│recovery  │ │powerwash │ │immutable │ │kernel-manager    │
-│(rescue)  │ │(reset)   │ │-framework│ │(PKM)             │
-└──────────┘ └──────────┘ └──────────┘ └──────────────────┘
-   ECOSYSTEM TOOLS (bidirectional hooks, subtree repos)
+┌──────────────────────────────────────────────────────────────────────┐
+│                        PENGUINS-EGGS CORE                            │
+│             (produce ISOs, install systems, wardrobes)               │
+└──┬──────┬──────┬──────┬──────┬──────┬──────┬────────────────────────┘
+   │      │      │      │      │      │      │
+   ▼      ▼      ▼      ▼      ▼      ▼      ▼
+┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
+│recov-││power-││immut-││kernel││audit ││eggs- ││eggs- │
+│ery   ││wash  ││able  ││-mgr  ││+SBOM ││gui   ││ai    │
+└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘
+   ECOSYSTEM TOOLS (7 subtree repos, bidirectional hooks)
 
 ┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
 │DISTRO││DECEN-││CONFIG││BUILD ││DEV   ││PACK- │
@@ -134,6 +133,100 @@ Gentoo source, local packages, lkf build profiles.
 | eggs → PKM | `eggs update` | checks for held kernels before updating |
 
 Config: `/etc/penguins-kernel-manager/hooks.conf`
+
+---
+
+### penguins-eggs-audit
+
+**Purpose:** Security audit, OS hardening, and supply chain transparency for
+eggs-produced ISOs. Extends the 6 original plugin domains with two new ones.
+
+**Additional domains:**
+
+| Domain | Key projects | Purpose |
+|---|---|---|
+| Security & Audit | vouch, OSs-security, ultimate-linux-suite | Cryptographic attestation, OS hardening, vulnerability scanning |
+| SBOM & Supply Chain | syft, grant, SBOM-Generation | Software bill of materials, license compliance, CISA reference workflows |
+
+**Integration points:**
+
+| Direction | Trigger | Action |
+|---|---|---|
+| audit → eggs | `eggs produce` | `syft-generate` plugin creates SBOM for the ISO artifact |
+| audit → eggs | `eggs produce` | `vouch-attest` plugin signs the ISO with cryptographic attestation |
+| audit → eggs | `eggs produce` | `grant-license` plugin scans ISO contents for license compliance |
+| audit → eggs | CI | `os-hardening` plugin applies hardening scripts to the produced system |
+
+Source: [`penguins-eggs-audit/`](penguins-eggs-audit/) — TypeScript + Shell, 54 files, 8 domains, 39 upstream projects.
+
+---
+
+### eggs-gui
+
+**Purpose:** Unified GUI for penguins-eggs. A single Go daemon exposes all
+eggs operations over JSON-RPC on a Unix socket; three frontends connect to it.
+
+**Architecture:**
+
+```
+Frontend (TUI / Desktop / Web)
+        │
+   JSON-RPC over Unix socket (/tmp/eggs-gui.sock)
+        │
+   eggs-daemon (Go)
+        │
+   penguins-eggs CLI
+```
+
+**Frontends:**
+
+| Frontend | Framework | Language | Use case |
+|---|---|---|---|
+| TUI | BubbleTea | Go | Terminal / SSH sessions |
+| Desktop | NodeGUI (Qt6) | TypeScript | Native desktop with CSS styling |
+| Web | NiceGUI | Python | Remote / headless via browser |
+
+**Features:** ISO produce with full option control, AUTO mode, Dad/Tools config
+editors, wardrobe browser, Calamares management, PPA/Skel/Yolk tools, USB copy
+with progress, i18n (es, en, pt, it).
+
+Source: [`eggs-gui/`](eggs-gui/) and root [`../eggs-gui/`](../eggs-gui/) — Go + TypeScript + Python.
+
+---
+
+### eggs-ai
+
+**Purpose:** AI assistant for penguins-eggs. Provides diagnostics, guided ISO
+building, config generation, and Calamares assistance via multiple LLM backends.
+
+**LLM providers (7 built-in):** Gemini, OpenAI, Anthropic, Mistral, Groq,
+Ollama (local), custom (any OpenAI-compatible endpoint).
+
+**Interfaces:**
+
+| Interface | Description |
+|---|---|
+| CLI | `eggs-ai doctor`, `build`, `config explain/generate`, `calamares`, `ask`, `chat` |
+| HTTP API | REST + SSE at `http://127.0.0.1:3737/api/*` |
+| MCP server | 10 tools for Cursor, Claude Desktop, opencode, etc. |
+| TypeScript SDK | `eggs-ai/sdk` — for eggs-gui NodeGUI desktop integration |
+| Python client | `integrations/web/ai_panel.py` — for eggs-gui NiceGUI web frontend |
+| Go client | `integrations/tui/ai_client.go` — for eggs-gui BubbleTea TUI |
+
+**MCP tools:** `eggs_doctor`, `eggs_build_plan`, `eggs_config_explain`,
+`eggs_config_generate`, `eggs_system_status`, `eggs_command_reference`,
+`eggs_troubleshoot`, `eggs_distro_guide`, `eggs_workflow`, `eggs_calamares_info`.
+
+**Integration with eggs-gui:**
+
+```
+eggs-gui frontends → HTTP REST → eggs-ai server (port 3737) → LLM provider
+eggs-gui daemon    → JSON-RPC  → ai.* methods (via proto/eggs-ai-rpc.json)
+```
+
+Config: `~/.eggs-ai.yaml` (run `eggs-ai providers init` to generate).
+
+Source: [`eggs-ai/`](eggs-ai/) and root [`../eggs-ai/`](../eggs-ai/) — TypeScript, 9 test files, 80 tests.
 
 ---
 
