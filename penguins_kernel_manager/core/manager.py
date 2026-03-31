@@ -193,7 +193,7 @@ class KernelManager:
         for entry in to_remove:
             yield f"Removing {entry.display_name}...\n"
             yield from self.remove(entry, purge=purge)
-        kept = [e.version for e in installed[:keep]]
+        kept = [str(e.version) for e in installed[:keep]]
         post_remove_old(kept)
 
     # ------------------------------------------------------------------
