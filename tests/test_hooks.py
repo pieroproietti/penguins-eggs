@@ -90,7 +90,10 @@ class TestPostInstall:
              patch("penguins_kernel_manager.hooks._cfg", return_value=_cfg()), \
              patch("penguins_kernel_manager.hooks.EGGS_HOOK_SCRIPT", hook):
             post_install("6.12.0", "rt")
-            mock_run.assert_called_once_with(["bash", str(hook)], check=False)
+            args, kwargs = mock_run.call_args
+            assert args == (["bash", str(hook)],)
+            assert kwargs.get("check") is False
+            assert "EGGS_HOOK" in kwargs.get("env", {})
 
     def test_noop_when_script_missing(self, tmp_path):
         """When the hook script does not exist, _run is not called."""

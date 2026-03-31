@@ -69,10 +69,10 @@ def _available(binary: str) -> bool:
     return bool(binary) and shutil.which(binary) is not None
 
 
-def _run(cmd: list[str], *, check: bool = False) -> int:
+def _run(cmd: list[str], *, check: bool = False, env: dict | None = None) -> int:
     """Run a subprocess, returning its exit code. Never raises unless check=True."""
     try:
-        return subprocess.run(cmd, check=check).returncode
+        return subprocess.run(cmd, check=check, env=env).returncode
     except Exception:
         return 1
 
@@ -114,10 +114,7 @@ def post_install(version: str, flavor: str = "") -> None:
     # penguins-eggs reads EGGS_HOOK to decide what to do
     if EGGS_HOOK_SCRIPT.exists():
         hook_env = {**os.environ, "EGGS_HOOK": "kernel-changed", "PKM_KERNEL_VERSION": version}
-        try:
-            subprocess.run(["bash", str(EGGS_HOOK_SCRIPT)], env=hook_env, check=False)
-        except Exception:
-            pass
+        _run(["bash", str(EGGS_HOOK_SCRIPT)], check=False, env=hook_env)
 
 
 def pre_remove(version: str) -> str | None:
