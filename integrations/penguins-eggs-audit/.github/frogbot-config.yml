@@ -1,0 +1,11 @@
+version: 2
+params:
+  git:
+    repoName: penguins-eggs-audit
+    branches:
+      pattern: ".*"
+  scan:
+    includeAllVulnerabilities: true
+    fixableOnly: false
+    minSeverity: "medium"
+  avoidPreviousPrCommentsDeletion: true

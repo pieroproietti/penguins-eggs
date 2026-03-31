@@ -1,0 +1,74 @@
+# .github/workflows/frogbot-scan.yml
+# Security vulnerability scanning for penguins-eggs using JFrog Frogbot.
+# Scans npm dependencies for CVEs and comments on PRs.
+#
+# Requires:
+#   - JF_URL: JFrog platform URL (secret)
+#   - JF_ACCESS_TOKEN: JFrog access token (secret)
+#
+# Free tier available at: https://jfrog.com/start-free/
+
+name: Frogbot Security Scan
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+  push:
+    branches: [master, main]
+  schedule:
+    # Weekly scan on Monday at 6am UTC
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  scan-pr:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - uses: jfrog/frogbot@v2
+        env:
+          JF_URL: ${{ secrets.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JF_GIT_PROVIDER: github
+          JF_GIT_OWNER: ${{ github.repository_owner }}
+          JF_GIT_REPO: penguins-eggs
+
+  scan-repo:
+    if: github.event_name == 'push' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - uses: jfrog/frogbot@v2
+        env:
+          JF_URL: ${{ secrets.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JF_GIT_PROVIDER: github
+          JF_GIT_OWNER: ${{ github.repository_owner }}
+          JF_GIT_REPO: penguins-eggs
+        with:
+          args: scan-and-fix
