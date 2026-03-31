@@ -93,9 +93,9 @@ class KernelManager:
                 f"Provider '{prov.display_name}' is not available: "
                 f"{prov.availability_reason()}"
             )
-        pre_install(entry.version, entry.flavor)
+        pre_install(str(entry.version), entry.flavor)
         yield from prov.install(entry)
-        post_install(entry.version, entry.flavor)
+        post_install(str(entry.version), entry.flavor)
 
     def install_local(self, path: str) -> Iterator[str]:
         """Install a local package file directly, bypassing provider selection."""
@@ -133,7 +133,7 @@ class KernelManager:
             raise RuntimeError(
                 f"Kernel {entry.display_name} is locked. Unlock it first."
             )
-        warning = pre_remove(entry.version)
+        warning = pre_remove(str(entry.version))
         if warning:
             yield f"WARNING: {warning}\n"
         prov = self.provider(entry.provider_id)

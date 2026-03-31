@@ -112,9 +112,12 @@ def post_install(version: str, flavor: str = "") -> None:
     if not _available(eggs):
         return
     # penguins-eggs reads EGGS_HOOK to decide what to do
-    env = {**os.environ, "EGGS_HOOK": "kernel-changed", "PKM_KERNEL_VERSION": version}
     if EGGS_HOOK_SCRIPT.exists():
-        _run(["bash", str(EGGS_HOOK_SCRIPT)], check=False)
+        hook_env = {**os.environ, "EGGS_HOOK": "kernel-changed", "PKM_KERNEL_VERSION": version}
+        try:
+            subprocess.run(["bash", str(EGGS_HOOK_SCRIPT)], env=hook_env, check=False)
+        except Exception:
+            pass
 
 
 def pre_remove(version: str) -> str | None:
