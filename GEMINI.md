@@ -108,6 +108,57 @@ qemu-system-riscv64 ... -device virtio-scsi-device,id=scsi0 -device scsi-hd,driv
 - **[fresh-eggs](https://github.com/pieroproietti/fresh-eggs)**: Bootstrap scripts to install eggs on various distros.
 - **[penguins-eggs.net/repos](https://penguins-eggs.net/repos/)**: Official package repositories.
 
+## Penguins Ecosystem (all-features branch)
+
+The `all-features` branch integrates four companion tools under `integrations/`.
+Each registers hooks that `eggs produce` calls via the plugin loader.
+
+### penguins-recovery (`integrations/penguins-recovery/`)
+Unified rescue toolkit. Layers recovery tools onto any penguins-eggs naked ISO
+via distro-family adapters (apt, pacman, dnf, zypper, apk, emerge). Includes
+standalone builders (Debian, Arch, UKI, Alpine lifeboat, Rescatux), a KDE
+Plasma Nano GUI (minimal/touch/full profiles), and the Rescapp wizard.
+- CLI: `penguins-recovery snapshot create <label>`
+- eggs hook: `integration/eggs-plugin/recovery-hook.sh`
+
+### penguins-powerwash (`integrations/penguins-powerwash/`)
+Factory reset tool with five modes: soft (dotfiles only), medium (+ packages),
+hard (+ home wipe), sysprep (machine-ID clear), hardware (full firmware reset).
+Calls `eggs produce --naked` before a hard reset and embeds the powerwash
+binary + a GRUB "Factory Reset" entry into produced ISOs.
+- Config: `/etc/penguins-powerwash/eggs-hooks.conf`
+- eggs hook: `integration/eggs-plugin/powerwash-hook.sh`
+
+### penguins-immutable-framework / PIF (`integrations/penguins-immutable-framework/`)
+Go + Shell framework for building immutable Linux distributions. Provides a
+unified CLI over five backends: abroot (A/B OCI), ashos (BTRFS snapshots),
+frzr (read-only BTRFS), akshara (declarative YAML), btrfs-dwarfs (compressed
+hybrid). Hooks into eggs so `pif upgrade` and `pif mutable exit` trigger ISO
+snapshots at the right moments.
+- Config: `pif.toml` `[hooks]` section
+- eggs hook: `integration/eggs-plugin/pif-hook.sh`
+
+### penguins-kernel-manager / PKM (`integrations/penguins-kernel-manager/`)
+Python tool covering the full kernel lifecycle: fetch → patch → configure →
+compile → package → install → hold → remove. Supports Ubuntu Mainline PPA,
+XanMod, Liquorix, distro-native, Gentoo source, local packages, and lkf build
+profiles across all architectures and package managers. Notifies eggs after
+kernel changes so the next ISO reflects the active kernel.
+- Config: `/etc/penguins-kernel-manager/hooks.conf`
+- eggs hook: `integration/eggs-plugin/pkm-hook.sh`
+
+### Plugin dispatch order (eggs produce)
+```
+eggs produce
+  └── plugin loader (src/)
+        ├── penguins-recovery  → snapshot before produce
+        ├── penguins-powerwash → embed binary + GRUB entry
+        ├── PIF                → embed backend state
+        └── PKM                → embed kernel list
+```
+
+See `integrations/ARCHITECTURE.md` for the full integration map.
+
 ## Development
 - **Build:** `pnpm run build`
 - **Test:** `pnpm test`

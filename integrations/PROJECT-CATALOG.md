@@ -1,6 +1,24 @@
 # Project Catalog
 
-All 31 projects integrated with Penguins-Eggs, organized by domain.
+All projects integrated with Penguins-Eggs on the `all-features` branch,
+organized by type.
+
+---
+
+## Ecosystem Tools (subtree repos)
+
+Four full companion repositories merged into `integrations/` as subtrees.
+
+| Project | Language | Description | URL |
+|---|---|---|---|
+| penguins-recovery | Shell | Unified rescue toolkit: adapters, builders, GUI profiles, Rescapp | https://github.com/Interested-Deving-1896/penguins-recovery |
+| penguins-powerwash | Shell | Factory reset tool: soft/medium/hard/sysprep/hardware modes, GPG backup | https://github.com/Interested-Deving-1896/penguins-powerwash |
+| penguins-immutable-framework | Go + Shell | Immutable distro framework: abroot, ashos, frzr, akshara, btrfs-dwarfs backends | https://github.com/Interested-Deving-1896/penguins-immutable-framework |
+| penguins-kernel-manager | Python | Kernel lifecycle manager: fetch, patch, compile, install, hold, remove | https://github.com/Interested-Deving-1896/penguins-kernel-manager |
+
+---
+
+## Plugin Projects (31 upstream projects)
 
 ## Distribution & Hosting
 

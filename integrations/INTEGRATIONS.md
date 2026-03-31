@@ -1,7 +1,37 @@
 # penguins-eggs integrations
 
-Integration plugins extending penguins-eggs with external projects across 6 domains.
-Total: **46 integrations**.
+This file documents all integrations on the `all-features` branch:
+**4 ecosystem tools** (full repos merged as subtrees) and **46 plugin
+integrations** across 6 domains.
+
+---
+
+## Ecosystem Tools
+
+Full companion repos with bidirectional hooks into `eggs produce`.
+
+| Tool | Directory | Language | Purpose |
+|---|---|---|---|
+| penguins-recovery | [`penguins-recovery/`](penguins-recovery/) | Shell | Rescue toolkit; adapters for all distro families; standalone builders |
+| penguins-powerwash | [`penguins-powerwash/`](penguins-powerwash/) | Shell | Factory reset: soft / medium / hard / sysprep / hardware modes |
+| penguins-immutable-framework | [`penguins-immutable-framework/`](penguins-immutable-framework/) | Go + Shell | Immutable distro framework: abroot, ashos, frzr, akshara, btrfs-dwarfs |
+| penguins-kernel-manager | [`penguins-kernel-manager/`](penguins-kernel-manager/) | Python | Kernel lifecycle: fetch → patch → compile → install → hold → remove |
+
+### Ecosystem hook events
+
+| Event | penguins-recovery | penguins-powerwash | PIF | PKM |
+|---|---|---|---|---|
+| `eggs produce` | embeds eggs-plugin hook | embeds binary + GRUB entry | embeds PIF state | embeds kernel list |
+| pre-reset | creates snapshot | calls `eggs produce --naked` | exits mutable mode | snapshots kernel state |
+| post-reset | — | re-layers recovery tools | re-initialises backend | reinstalls held kernel |
+| kernel change | — | — | — | notifies eggs via `eggs kernel-changed` |
+| immutable upgrade | creates snapshot | — | notifies eggs via `eggs pif-upgraded` | — |
+
+---
+
+## Plugin Integrations
+
+Total: **46 integrations** across 6 domains.
 
 ---
 

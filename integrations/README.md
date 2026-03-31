@@ -1,71 +1,107 @@
-# penguins-eggs-integrations
+# penguins-eggs integrations
 
-Integration framework extending [Penguins-Eggs](https://github.com/pieroproietti/penguins-eggs)
-with 31 git-based projects across 6 feature domains.
+This directory contains all projects integrated with
+[penguins-eggs](https://github.com/Interested-Deving-1896/penguins-eggs) on the
+`all-features` branch. It is split into two layers:
 
-## Feature Domains
+1. **Ecosystem tools** — four full companion repos merged as subtrees, each
+   with bidirectional hooks into `eggs produce` and related commands.
+2. **Plugin integrations** — 46 lightweight plugins extending eggs across six
+   feature domains (distribution, decentralized, config management, build
+   infrastructure, dev workflow, packaging).
 
-| Domain | Purpose | Key Projects |
+---
+
+## Ecosystem tools
+
+| Directory | Tool | Language | Purpose |
+|---|---|---|---|
+| [`penguins-recovery/`](penguins-recovery/) | penguins-recovery | Shell | Unified rescue toolkit; layers recovery onto naked ISOs |
+| [`penguins-powerwash/`](penguins-powerwash/) | penguins-powerwash | Shell | Factory reset (soft/medium/hard/sysprep/hardware modes) |
+| [`penguins-immutable-framework/`](penguins-immutable-framework/) | PIF | Go + Shell | Immutable Linux framework (abroot, ashos, frzr, akshara, btrfs-dwarfs) |
+| [`penguins-kernel-manager/`](penguins-kernel-manager/) | PKM | Python | Full kernel lifecycle: fetch → compile → install → hold → remove |
+
+Each tool registers an **eggs plugin** and a **recovery plugin**:
+
+- `<tool>/integration/eggs-plugin/` — called by `eggs produce` to embed tool
+  state/binaries into the ISO and coordinate lifecycle events.
+- `<tool>/integration/recovery-plugin/` — called by penguins-recovery before
+  and after factory resets.
+
+### Hook configuration
+
+| Tool | Config file | Key options |
 |---|---|---|
-| Distribution | ISO hosting & versioning | git-lfs, giftless, gogs |
-| Decentralized | P2P ISO distribution via IPFS | brig, git-lfs-ipfs, ipgit |
-| Config Management | Versioned wardrobe editing | presslabs/gitfs, dsxack/gitfs |
-| Build Infrastructure | Reproducible, verified builds | system-transparency, BtrFsGit |
-| Dev Workflow | CI/CD, security, automation | gitstream, frogbot, workflow-ts |
-| Packaging | Installation & app distribution | gitpack, github-paser |
+| penguins-recovery | built-in | snapshot label, GUI profile |
+| penguins-powerwash | `/etc/penguins-powerwash/eggs-hooks.conf` | `PRE_RESET_EGGS_PRODUCE`, `POST_HARD_RESET_ADAPT` |
+| PIF | `pif.toml` `[hooks]` | `pre_upgrade_snapshot`, `post_mutable_produce` |
+| PKM | `/etc/penguins-kernel-manager/hooks.conf` | `post_install_notify`, `post_remove_old_sync` |
+
+---
+
+## Plugin integrations
+
+46 plugins across 6 domains. See the full list in
+[INTEGRATIONS.md](INTEGRATIONS.md) and per-integration specs in
+[INTEGRATION-SPEC.md](INTEGRATION-SPEC.md).
+
+| Domain | Plugins | Key projects |
+|---|---|---|
+| Build Infrastructure | 14 | dwarfs, erofs, verity, mkosi, buildroot, gpt-image, partymix |
+| Distribution | 3 | git-lfs, opengist, gentoo-installer |
+| Dev Workflow | 2 | ts-ci, security-scan (VerityOps) |
+| Decentralized | 4 | brig, git-lfs-ipfs, ipgit, git-ipfs-rehost |
+| Config Management | 7 | presslabs/gitfs, dsxack/gitfs, wardrobe merge tools |
+| Packaging | 3 | gitpack, github-paser, github-directory-downloader |
+
+Plugin source lives in [`plugins/`](plugins/) and [`src/`](src/).
+
+---
 
 ## Documents
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — System design and project mapping
-- [INTEGRATION-SPEC.md](INTEGRATION-SPEC.md) — Per-integration specifications with CLI, config, and acceptance criteria
-- [PROJECT-CATALOG.md](PROJECT-CATALOG.md) — All 31 projects with descriptions and links
+| File | Contents |
+|---|---|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Full integration map: ecosystem tools + 6 plugin domains |
+| [INTEGRATIONS.md](INTEGRATIONS.md) | Plugin table with upstream links and purpose |
+| [INTEGRATION-SPEC.md](INTEGRATION-SPEC.md) | Per-plugin specs: trigger, config, CLI, acceptance criteria |
+| [PROJECT-CATALOG.md](PROJECT-CATALOG.md) | All upstream projects with descriptions and links |
 
-## Implementation Phases
+---
 
-1. **Foundation** — git-lfs, gitpack, release downloader, selective wardrobe download
-2. **Decentralized** — brig, git-lfs-ipfs, ipgit, git-ipfs-rehost
-3. **Config Management** — gitfs variants, wardrobe merge tools
-4. **Build Infrastructure** — system-transparency, BtrFsGit snapshots
-5. **Dev Workflow** — gitstream, frogbot, TypeScript CI, developer tools
-6. **Self-Hosted** — gogs registry, opengist sharing, giftless server
-
-## File Inventory
-
-46 files total: 26 TypeScript modules, 6 shell scripts, 5 YAML configs, 4 docs, 5 other.
-
-## Structure
+## Directory structure
 
 ```
-penguins-eggs-integrations/
+integrations/
 ├── README.md
 ├── ARCHITECTURE.md
 ├── INTEGRATION-SPEC.md
+├── INTEGRATIONS.md
 ├── PROJECT-CATALOG.md
-└── plugins/
-    ├── distribution/
-    │   ├── lfs-tracker/          # git-lfs ISO tracking + produce hook
-    │   ├── gogs-registry/        # Docker Compose self-hosted registry
-    │   └── opengist-sharing/     # wardrobe share/import via gists
-    ├── decentralized/
-    │   ├── brig-publish/         # IPFS distribution via brig
-    │   ├── lfs-ipfs/             # git-lfs-ipfs transfer agent setup
-    │   ├── ipfs-mirror/          # CI-driven IPFS repo mirroring
-    │   └── ipgit-remote/         # git remote backed by IPFS
-    ├── config-management/
-    │   ├── wardrobe-mount/       # FUSE mount with auto-commit (gitfs)
-    │   ├── wardrobe-browse/      # read-only revision browser
-    │   ├── wardrobe-merge/       # merge multiple wardrobe repos
-    │   └── wardrobe-read/        # programmatic API for wardrobe access
-    ├── build-infra/
-    │   ├── st-output/            # System Transparency boot artifacts
-    │   └── btrfs-snapshot/       # BTRFS snapshots around produce
-    ├── dev-workflow/
-    │   ├── pr-automation/        # gitStream rules (.cm)
-    │   ├── security-scan/        # Frogbot GitHub Action
-    │   ├── ts-ci/                # TypeScript-defined CI workflows
-    │   └── dev-tools/            # developer costume (lazygit, etc.)
-    └── packaging/
-        ├── gitpack-install/      # .install/ for gitpack support
-        ├── release-downloader/   # shell + oclif release downloader
-        └── dir-downloader/       # selective wardrobe directory download
+│
+├── penguins-recovery/             # ecosystem tool (subtree)
+├── penguins-powerwash/            # ecosystem tool (subtree)
+├── penguins-immutable-framework/  # ecosystem tool (subtree)
+├── penguins-kernel-manager/       # ecosystem tool (subtree)
+│
+├── eggs-ai/                       # eggs AI assistant integration
+├── eggs-gui/                      # eggs GUI integration
+│
+├── plugins/                       # compiled plugin modules
+│   ├── build-infra/
+│   ├── decentralized/
+│   ├── config-management/
+│   ├── dev-workflow/
+│   ├── distribution/
+│   └── packaging/
+│
+├── src/                           # plugin TypeScript source
+│   ├── build-infra/
+│   ├── decentralized/
+│   ├── config-management/
+│   ├── dev-workflow/
+│   ├── distribution/
+│   └── packaging/
+│
+└── test/                          # integration tests (phases 1–6)
 ```

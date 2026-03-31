@@ -2,27 +2,138 @@
 
 ## Overview
 
-This document defines how 31 external git-based projects integrate with
-Penguins-Eggs to extend its capabilities across six feature domains.
+This document defines how all external projects integrate with Penguins-Eggs
+on the `all-features` branch.
 
 Penguins-Eggs core function: snapshot a running Linux system into a
 redistributable live ISO/image.
 
-The integrations extend eggs in these directions:
+The integrations extend eggs in two layers:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    PENGUINS-EGGS CORE                        │
-│         (produce ISOs, install systems, wardrobes)           │
-└──────┬──────┬──────┬──────┬──────┬──────┬───────────────────┘
-       │      │      │      │      │      │
-       ▼      ▼      ▼      ▼      ▼      ▼
-   ┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
-   │DISTRO││DECEN-││CONFIG││BUILD ││DEV   ││PACK- │
-   │BUTION││TRAL- ││MGMT  ││INFRA ││WORK- ││AGING │
-   │      ││IZED  ││      ││      ││FLOW  ││      │
-   └──────┘└──────┘└──────┘└──────┘└──────┘└──────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                      PENGUINS-EGGS CORE                          │
+│           (produce ISOs, install systems, wardrobes)             │
+└──┬──────────────┬──────────────┬──────────────┬──────────────────┘
+   │              │              │              │
+   ▼              ▼              ▼              ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐
+│penguins- │ │penguins- │ │penguins- │ │penguins-         │
+│recovery  │ │powerwash │ │immutable │ │kernel-manager    │
+│(rescue)  │ │(reset)   │ │-framework│ │(PKM)             │
+└──────────┘ └──────────┘ └──────────┘ └──────────────────┘
+   ECOSYSTEM TOOLS (bidirectional hooks, subtree repos)
+
+┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
+│DISTRO││DECEN-││CONFIG││BUILD ││DEV   ││PACK- │
+│BUTION││TRAL- ││MGMT  ││INFRA ││WORK- ││AGING │
+│      ││IZED  ││      ││      ││FLOW  ││      │
+└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘
+   PLUGIN INTEGRATIONS (46 lightweight plugins)
 ```
+
+---
+
+## Ecosystem Tools
+
+### penguins-recovery
+
+**Purpose:** Layer rescue tools onto any penguins-eggs naked ISO; build
+standalone rescue images.
+
+**Integration points:**
+
+| Direction | Trigger | Action |
+|---|---|---|
+| recovery → eggs | `eggs produce` | eggs-plugin embeds recovery hook into ISO |
+| eggs → recovery | pre-reset | `penguins-recovery snapshot create <label>` |
+| eggs → recovery | post-hard-reset | `adapter.sh` re-layers recovery tools |
+
+**Key components:**
+- `adapters/` — distro-family adapters (apt, pacman, dnf, zypper, apk, emerge)
+- `builders/` — debian, arch, uki, uki-lite, lifeboat, rescatux
+- `gui/` — KDE Plasma Nano: minimal (~200 MB), touch (~400 MB), full (~800 MB)
+- `bin/penguins-recovery` — CLI with `snapshot` subcommand
+- `tools/rescapp/` — Qt5 GUI rescue wizard
+
+---
+
+### penguins-powerwash
+
+**Purpose:** Factory reset with five modes; pre-reset ISO snapshot; post-reset
+recovery re-layer.
+
+**Integration points:**
+
+| Direction | Trigger | Action |
+|---|---|---|
+| powerwash → eggs | pre-reset (any mode) | `eggs produce --naked` (if `PRE_RESET_EGGS_PRODUCE=1`) |
+| powerwash → recovery | pre-reset | `penguins-recovery snapshot create pre-powerwash-<mode>` |
+| powerwash → recovery | post-hard/sysprep | `adapter.sh` re-layers recovery tools |
+| eggs → powerwash | `eggs produce` | eggs-plugin embeds binary + GRUB "Factory Reset" entry |
+
+**Reset modes:**
+
+| Mode | Dotfiles | Packages | Home | System config | Machine ID |
+|---|---|---|---|---|---|
+| soft | reset | — | — | — | — |
+| medium | reset | purged | — | sources reset | — |
+| hard | reset | purged | wiped | reset | — |
+| sysprep | — | — | — | reset | cleared |
+| hardware | full wipe + firmware reset | | | | |
+
+Config: `/etc/penguins-powerwash/eggs-hooks.conf`
+
+---
+
+### penguins-immutable-framework (PIF)
+
+**Purpose:** Unified CLI and HAL over multiple immutability backends for
+building immutable Linux distributions.
+
+**Backends:**
+
+| Backend | Mechanism | Best for |
+|---|---|---|
+| abroot | A/B partition swap + OCI | Appliance/desktop, atomic OCI updates |
+| ashos | BTRFS snapshot tree | Multi-distro, hierarchical snapshots |
+| frzr | Read-only BTRFS subvolume | Gaming/appliance, image-based deploy |
+| akshara | YAML-declared rebuild | Declarative, container-native distros |
+| btrfs-dwarfs | BTRFS + DwarFS hybrid | Storage-constrained, high-compression |
+
+**Integration points:**
+
+| Direction | Trigger | Action |
+|---|---|---|
+| PIF → recovery | `pif upgrade` (pre) | `penguins-recovery snapshot create pre-pif-upgrade` |
+| PIF → eggs | `pif upgrade` (post) | `eggs pif-upgraded` hook — next ISO reflects new root |
+| PIF → eggs | `pif mutable enter` | warns eggs to defer ISO builds |
+| PIF → eggs | `pif mutable exit` | `eggs produce --update-root` (if `post_mutable_produce=true`) |
+| eggs → PIF | `eggs produce` | eggs-plugin embeds PIF config + backend state |
+| eggs → PIF | `eggs update` | checks mutable mode before updating |
+
+Config: `pif.toml` `[hooks]` section
+
+---
+
+### penguins-kernel-manager (PKM)
+
+**Purpose:** Full kernel lifecycle across all distros and architectures.
+
+**Kernel sources:** Ubuntu Mainline PPA, XanMod, Liquorix, distro-native,
+Gentoo source, local packages, lkf build profiles.
+
+**Integration points:**
+
+| Direction | Trigger | Action |
+|---|---|---|
+| PKM → recovery | pre-install | `penguins-recovery snapshot create pre-kernel-<version>` |
+| PKM → eggs | post-install | `eggs kernel-changed` hook — next ISO reflects new kernel |
+| PKM → eggs | pre-remove | warns if kernel is embedded in last ISO |
+| eggs → PKM | `eggs produce` | eggs-plugin embeds managed kernel list |
+| eggs → PKM | `eggs update` | checks for held kernels before updating |
+
+Config: `/etc/penguins-kernel-manager/hooks.conf`
 
 ---
 

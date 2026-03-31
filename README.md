@@ -30,6 +30,7 @@ intelligence that is now indispensable.
 * [Installation](#installation)
 * [Usage](#usage)
 * [The Aviary: Tools & Terminology](#the-aviary-tools--terminology)
+* [Penguins Ecosystem](#penguins-ecosystem)
 * [Supported Distributions](#supported-distributions)
 * [Links & Documentation](#links--documentation)
 * [Commands](#commands)
@@ -177,6 +178,80 @@ To keep your user data, configurations, and files:
   - `eggs mom`: Interactive help and documentation assistant.
   - `eggs dad`: Configuration wizard. Run `sudo eggs dad -d` to reset
     configuration.
+
+---
+
+# Penguins Ecosystem
+
+The `all-features` branch of this fork integrates four companion tools that
+extend the penguins-eggs lifecycle. Each lives under `integrations/` and
+registers itself as a plugin so `eggs produce` and related commands can
+coordinate with them automatically.
+
+## penguins-recovery
+
+Unified Linux system recovery toolkit. Layers rescue tools onto any
+penguins-eggs naked ISO via distro-family adapters (apt, pacman, dnf, zypper,
+apk, emerge). Includes standalone rescue image builders (Debian, Arch, UKI,
+Alpine lifeboat, Rescatux), a KDE Plasma Nano GUI with minimal/touch/full
+profiles, and the Rescapp wizard.
+
+- Source: [`integrations/penguins-recovery/`](integrations/penguins-recovery/)
+- eggs hook: `integrations/penguins-recovery/integration/eggs-plugin/`
+- Key commands: `penguins-recovery snapshot create <label>`, `make adapt INPUT=naked.iso`
+
+## penguins-powerwash
+
+Distro-agnostic, filesystem-agnostic factory reset tool. Supports five reset
+modes (soft → sysprep), pre-reset backup with optional GPG encryption, and a
+plugin system for distro/filesystem/hardware variants. Integrates bidirectionally
+with eggs: calls `eggs produce --naked` before a hard reset, and embeds the
+powerwash binary + a GRUB "Factory Reset" entry into produced ISOs.
+
+- Source: [`integrations/penguins-powerwash/`](integrations/penguins-powerwash/)
+- eggs hook: `integrations/penguins-powerwash/integration/eggs-plugin/powerwash-hook.sh`
+- Config: `/etc/penguins-powerwash/eggs-hooks.conf`
+
+## penguins-immutable-framework (PIF)
+
+Framework for building immutable Linux distributions. Provides a unified CLI
+and HAL over five backends: abroot (A/B OCI), ashos (BTRFS snapshot tree),
+frzr (read-only BTRFS deploy), akshara (declarative YAML rebuild), and
+btrfs-dwarfs (high-compression hybrid). Hooks into eggs so that `pif upgrade`
+and `pif mutable exit` trigger ISO snapshots at the right moments.
+
+- Source: [`integrations/penguins-immutable-framework/`](integrations/penguins-immutable-framework/)
+- eggs hook: `integrations/penguins-immutable-framework/integration/eggs-plugin/pif-hook.sh`
+- Config: `pif.toml` (`[hooks]` section)
+
+## penguins-kernel-manager (PKM)
+
+Full kernel lifecycle manager: fetch → patch → configure → compile → package →
+install → hold → remove. Supports Ubuntu Mainline PPA, XanMod, Liquorix,
+distro-native, Gentoo source, and local packages across all architectures and
+package managers. Notifies eggs after kernel changes so the next ISO reflects
+the active kernel.
+
+- Source: [`integrations/penguins-kernel-manager/`](integrations/penguins-kernel-manager/)
+- eggs hook: `integrations/penguins-kernel-manager/integration/eggs-plugin/pkm-hook.sh`
+- Config: `/etc/penguins-kernel-manager/hooks.conf`
+
+## Plugin dispatch
+
+All four tools register hooks that `eggs produce` calls via the plugin loader
+in `src/`. The dispatch order is:
+
+```
+eggs produce
+  └── plugin loader
+        ├── penguins-recovery/integration/eggs-plugin/   (snapshot before produce)
+        ├── penguins-powerwash/integration/eggs-plugin/  (embed powerwash + GRUB entry)
+        ├── penguins-immutable-framework/integration/eggs-plugin/ (embed PIF state)
+        └── penguins-kernel-manager/integration/eggs-plugin/     (embed kernel list)
+```
+
+See [`integrations/ARCHITECTURE.md`](integrations/ARCHITECTURE.md) for the
+full integration map.
 
 ---
 
