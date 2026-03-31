@@ -1,0 +1,364 @@
+#!/usr/bin/env bash
+# bin/penguins-powerwash — Penguins Powerwash main entrypoint
+#
+# Usage: penguins-powerwash <command> [options]
+#
+# A distro-agnostic, filesystem-agnostic factory reset tool for Linux.
+
+set -euo pipefail
+
+# ── Resolve project root regardless of symlinks or install location ────────────
+_PW_BIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_PW_ROOT="$(cd "${_PW_BIN_DIR}/.." && pwd)"
+
+# ── Source core libraries ──────────────────────────────────────────────────────
+# shellcheck source=../lib/common.sh
+source "${_PW_ROOT}/lib/common.sh"
+# shellcheck source=../lib/distro.sh
+source "${_PW_ROOT}/lib/distro.sh"
+# shellcheck source=../lib/filesystem.sh
+source "${_PW_ROOT}/lib/filesystem.sh"
+# shellcheck source=../lib/backup.sh
+source "${_PW_ROOT}/lib/backup.sh"
+# shellcheck source=../lib/plugin.sh
+source "${_PW_ROOT}/lib/plugin.sh"
+
+# shellcheck source=../lib/eggs-hooks.sh
+source "${_PW_ROOT}/lib/eggs-hooks.sh"
+
+# ── Source reset modes ─────────────────────────────────────────────────────────
+source "${_PW_ROOT}/modes/soft.sh"
+source "${_PW_ROOT}/modes/medium.sh"
+source "${_PW_ROOT}/modes/hard.sh"
+source "${_PW_ROOT}/modes/sysprep.sh"
+source "${_PW_ROOT}/modes/hardware.sh"
+
+# ── Global flag parsing (before subcommand) ────────────────────────────────────
+_pw_parse_global_flags() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --dry-run|-n)   export PW_DRY_RUN=1 ;;
+            --debug)        export PW_DEBUG=1 ;;
+            --log)          export PW_LOG_FILE="$2"; shift ;;
+            --backup-dir)   export PW_BACKUP_DIR="$2"; shift ;;
+            --version|-V)   _pw_version; exit 0 ;;
+            --help|-h)      _pw_usage; exit 0 ;;
+            --)             shift; break ;;
+            -*)             pw_die "Unknown global flag: $1. Run 'penguins-powerwash --help'." ;;
+            *)              break ;;  # first non-flag arg is the subcommand
+        esac
+        shift
+    done
+}
+
+# ── Version ────────────────────────────────────────────────────────────────────
+_pw_version() {
+    printf "%s %s\n" "${PW_NAME}" "${PW_VERSION}"
+}
+
+# ── Usage ──────────────────────────────────────────────────────────────────────
+_pw_usage() {
+    cat <<EOF
+${C_BLD}${PW_NAME} ${PW_VERSION}${C_RST}
+A distro-agnostic, filesystem-agnostic factory reset tool for Linux.
+
+${C_BLD}USAGE${C_RST}
+  penguins-powerwash [global-flags] <command> [options]
+
+${C_BLD}COMMANDS${C_RST}
+  ${C_GRN}soft${C_RST}       Clear user dotfiles only. Packages untouched.
+  ${C_GRN}medium${C_RST}     Remove user-installed packages and reset dotfiles.
+  ${C_GRN}hard${C_RST}       Full factory reset: packages, home dirs, system config.
+  ${C_GRN}sysprep${C_RST}    Generalize system for disk imaging (OEM/cloud).
+  ${C_GRN}hardware${C_RST}   Reset hardware devices (USB/PCI rebind, GPU vendor-reset).
+
+  ${C_GRN}backup${C_RST}     Manage backups (create, list, restore, decrypt).
+  ${C_GRN}snapshot${C_RST}   Manage filesystem snapshots (btrfs/zfs).
+  ${C_GRN}info${C_RST}       Show detected distro, filesystem, and loaded plugins.
+  ${C_GRN}plugins${C_RST}    List available and loaded plugins.
+  ${C_GRN}menu${C_RST}       Launch interactive TUI menu.
+
+${C_BLD}GLOBAL FLAGS${C_RST}
+  --dry-run, -n      Print actions without executing them.
+  --debug            Enable verbose debug output.
+  --log <file>       Write log to <file> (default: /var/log/penguins-powerwash.log).
+  --backup-dir <dir> Override backup destination directory.
+  --version, -V      Print version and exit.
+  --help, -h         Print this help and exit.
+
+${C_BLD}EXAMPLES${C_RST}
+  sudo penguins-powerwash soft
+  sudo penguins-powerwash --dry-run medium
+  sudo penguins-powerwash hard --no-backup
+  sudo penguins-powerwash sysprep --shutdown
+  sudo penguins-powerwash hardware rebind 0000:00:14.0
+  sudo penguins-powerwash backup create --encrypt
+  sudo penguins-powerwash info
+
+${C_BLD}RESET MODE COMPARISON${C_RST}
+  Mode      Dotfiles  Packages  Home data  System cfg  Machine ID
+  ────────  ────────  ────────  ─────────  ──────────  ──────────
+  soft      ✓ reset   unchanged unchanged  unchanged   unchanged
+  medium    ✓ reset   ✓ purged  unchanged  ✓ sources   unchanged
+  hard      ✓ reset   ✓ purged  ✓ wiped    ✓ reset     unchanged
+  sysprep   unchanged unchanged unchanged  ✓ reset     ✓ cleared
+
+EOF
+}
+
+# ── Subcommand: info ───────────────────────────────────────────────────────────
+_pw_cmd_info() {
+    pw_distro_detect
+    pw_fs_detect
+    pw_plugin_load_all
+
+    printf "\n${C_BLD}System Information${C_RST}\n"
+    printf '%s\n' "$(printf '─%.0s' {1..40})"
+    pw_distro_info
+    echo
+    pw_fs_info
+    echo
+    printf "Powerwash version : %s\n" "${PW_VERSION}"
+    printf "Dry-run mode      : %s\n" "$([[ "${PW_DRY_RUN}" == "1" ]] && echo yes || echo no)"
+    printf "Backup directory  : %s\n" "${PW_BACKUP_DIR}"
+    printf "Log file          : %s\n" "${PW_LOG_FILE}"
+    echo
+    printf "${C_BLD}Loaded Plugins${C_RST}\n"
+    printf '%s\n' "$(printf '─%.0s' {1..40})"
+    pw_plugin_list
+}
+
+# ── Subcommand: backup ─────────────────────────────────────────────────────────
+_pw_cmd_backup() {
+    local subcmd="${1:-help}"; shift || true
+    pw_distro_detect
+    pw_fs_detect
+
+    case "${subcmd}" in
+        create)
+            pw_backup_create "$@"
+            ;;
+        list)
+            pw_backup_list
+            ;;
+        restore-packages)
+            local backup_dir="$1"
+            pw_backup_restore_packages "${backup_dir}"
+            ;;
+        restore-home)
+            local backup_dir="$1"
+            pw_backup_restore_home "${backup_dir}"
+            ;;
+        decrypt)
+            local encrypted="$1"
+            local dest="${2:-.}"
+            pw_backup_decrypt "${encrypted}" "${dest}"
+            ;;
+        help|--help|-h)
+            cat <<EOF
+Usage: penguins-powerwash backup <subcommand> [options]
+
+Subcommands:
+  create [--encrypt] [--dest <dir>] [--users <u1,u2>]
+                         Create a pre-reset backup.
+  list                   List available backups.
+  restore-packages <dir> Reinstall packages from a backup.
+  restore-home <dir>     Restore home directories from a backup.
+  decrypt <file> [dest]  Decrypt a GPG-encrypted backup archive.
+EOF
+            ;;
+        *) pw_die "Unknown backup subcommand: ${subcmd}. Run 'penguins-powerwash backup help'." ;;
+    esac
+}
+
+# ── Subcommand: snapshot ───────────────────────────────────────────────────────
+_pw_cmd_snapshot() {
+    local subcmd="${1:-help}"; shift || true
+    pw_fs_detect
+
+    case "${subcmd}" in
+        create)  pw_fs_snapshot_create "${1:-}" ;;
+        list)    pw_fs_snapshot_list ;;
+        rollback) pw_fs_snapshot_rollback "${1:-}" ;;
+        delete)  pw_fs_snapshot_delete "${1:-}" ;;
+        help|--help|-h)
+            cat <<EOF
+Usage: penguins-powerwash snapshot <subcommand> [name]
+
+Subcommands:
+  create [label]   Create a snapshot (btrfs/zfs only).
+  list             List penguins-powerwash snapshots.
+  rollback <name>  Roll back to a snapshot.
+  delete <name>    Delete a snapshot.
+EOF
+            ;;
+        *) pw_die "Unknown snapshot subcommand: ${subcmd}." ;;
+    esac
+}
+
+# ── Subcommand: menu (interactive TUI) ────────────────────────────────────────
+_pw_cmd_menu() {
+    pw_distro_detect
+    pw_fs_detect
+    pw_plugin_load_all
+
+    while true; do
+        clear
+        cat <<EOF
+${C_BLD}${C_BLU}╔══════════════════════════════════════════╗
+║       Penguins Powerwash ${PW_VERSION}         ║
+║  Distro-agnostic factory reset for Linux ║
+╚══════════════════════════════════════════╝${C_RST}
+
+  Distro : ${PW_DISTRO_ID} (${PW_DISTRO_FAMILY})
+  FS     : ${PW_FS_TYPE}
+  DryRun : $([[ "${PW_DRY_RUN}" == "1" ]] && echo "${C_YEL}ON${C_RST}" || echo "off")
+
+${C_BLD}Reset Modes${C_RST}
+  1) Soft reset     — clear dotfiles only
+  2) Medium reset   — remove user packages + dotfiles
+  3) Hard reset     — full factory reset
+  4) Sysprep        — generalize for imaging
+
+${C_BLD}Tools${C_RST}
+  5) Backup         — create / list / restore
+  6) Snapshot       — filesystem snapshots
+  7) Hardware       — device rebind / vendor-reset
+  8) System info
+
+${C_BLD}Options${C_RST}
+  d) Toggle dry-run (currently: $([[ "${PW_DRY_RUN}" == "1" ]] && echo "${C_YEL}ON${C_RST}" || echo "off"))
+  q) Quit
+
+EOF
+        printf "${C_BLD}Select: ${C_RST}"
+        local choice
+        read -r choice
+
+        case "${choice}" in
+            1) _pw_menu_run_mode soft ;;
+            2) _pw_menu_run_mode medium ;;
+            3) _pw_menu_run_mode hard ;;
+            4) _pw_menu_run_mode sysprep ;;
+            5) _pw_menu_backup ;;
+            6) _pw_menu_snapshot ;;
+            7) pw_mode_hardware list; _pw_menu_pause ;;
+            8) _pw_cmd_info; _pw_menu_pause ;;
+            d|D)
+                if [[ "${PW_DRY_RUN}" == "1" ]]; then
+                    export PW_DRY_RUN=0
+                    pw_info "Dry-run disabled."
+                else
+                    export PW_DRY_RUN=1
+                    pw_info "Dry-run enabled — no changes will be made."
+                fi
+                sleep 1
+                ;;
+            q|Q) pw_info "Exiting."; exit 0 ;;
+            *) pw_warn "Invalid selection." ; sleep 1 ;;
+        esac
+    done
+}
+
+_pw_menu_run_mode() {
+    local mode="$1"
+    clear
+    printf "${C_BLD}Running: penguins-powerwash %s${C_RST}\n\n" "${mode}"
+    case "${mode}" in
+        soft)    pw_mode_soft ;;
+        medium)  pw_mode_medium ;;
+        hard)    pw_mode_hard ;;
+        sysprep) pw_mode_sysprep ;;
+    esac
+    _pw_menu_pause
+}
+
+_pw_menu_backup() {
+    clear
+    printf "${C_BLD}Backup Menu${C_RST}\n\n"
+    printf "  1) Create backup\n"
+    printf "  2) Create encrypted backup\n"
+    printf "  3) List backups\n"
+    printf "  b) Back\n\n"
+    printf "${C_BLD}Select: ${C_RST}"
+    local choice; read -r choice
+    case "${choice}" in
+        1) pw_backup_create ;;
+        2) pw_backup_create --encrypt ;;
+        3) pw_backup_list ;;
+        b|B) return ;;
+    esac
+    _pw_menu_pause
+}
+
+_pw_menu_snapshot() {
+    clear
+    printf "${C_BLD}Snapshot Menu${C_RST}\n\n"
+    printf "  1) Create snapshot\n"
+    printf "  2) List snapshots\n"
+    printf "  b) Back\n\n"
+    printf "${C_BLD}Select: ${C_RST}"
+    local choice; read -r choice
+    case "${choice}" in
+        1) pw_fs_snapshot_create ;;
+        2) pw_fs_snapshot_list ;;
+        b|B) return ;;
+    esac
+    _pw_menu_pause
+}
+
+_pw_menu_pause() {
+    printf "\n${C_BLD}Press Enter to continue...${C_RST}"
+    read -r
+}
+
+# ── Main dispatcher ────────────────────────────────────────────────────────────
+main() {
+    # Parse global flags first, leaving remaining args for the subcommand
+    local args=("$@")
+    local filtered=()
+    local i=0
+    while [[ ${i} -lt ${#args[@]} ]]; do
+        case "${args[${i}]}" in
+            --dry-run|-n)   export PW_DRY_RUN=1 ;;
+            --debug)        export PW_DEBUG=1 ;;
+            --log)          i=$(( i + 1 )); export PW_LOG_FILE="${args[${i}]}" ;;
+            --backup-dir)   i=$(( i + 1 )); export PW_BACKUP_DIR="${args[${i}]}" ;;
+            --version|-V)   _pw_version; exit 0 ;;
+            --help|-h)      _pw_usage; exit 0 ;;
+            *)              filtered+=("${args[${i}]}") ;;
+        esac
+        i=$(( i + 1 ))
+    done
+
+    local cmd="${filtered[0]:-menu}"
+    local rest=("${filtered[@]:1}")
+
+    # Announce dry-run mode prominently
+    if [[ "${PW_DRY_RUN}" == "1" ]]; then
+        printf "${C_YEL}[DRY-RUN MODE] No changes will be made to the system.${C_RST}\n\n"
+    fi
+
+    case "${cmd}" in
+        soft)     pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset soft;    pw_plugin_pre_reset; pw_mode_soft     "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset soft ;;
+        medium)   pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset medium;  pw_plugin_pre_reset; pw_mode_medium   "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset medium ;;
+        hard)     pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset hard;    pw_plugin_pre_reset; pw_mode_hard     "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset hard ;;
+        sysprep)  pw_distro_detect; pw_fs_detect; pw_plugin_load_all; pw_eggs_pre_reset sysprep; pw_plugin_pre_reset; pw_mode_sysprep  "${rest[@]+"${rest[@]}"}"; pw_plugin_post_reset; pw_eggs_post_reset sysprep ;;
+        hardware) pw_mode_hardware "${rest[@]+"${rest[@]}"}" ;;
+        backup)   _pw_cmd_backup   "${rest[@]+"${rest[@]}"}" ;;
+        snapshot) _pw_cmd_snapshot "${rest[@]+"${rest[@]}"}" ;;
+        info)     _pw_cmd_info ;;
+        plugins)
+            pw_distro_detect; pw_fs_detect; pw_plugin_load_all
+            pw_plugin_list_available
+            echo
+            pw_plugin_list
+            ;;
+        menu)     _pw_cmd_menu ;;
+        version)  _pw_version ;;
+        help)     _pw_usage ;;
+        *)        pw_die "Unknown command: '${cmd}'. Run 'penguins-powerwash --help'." ;;
+    esac
+}
+
+main "$@"

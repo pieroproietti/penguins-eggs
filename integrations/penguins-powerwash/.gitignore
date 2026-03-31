@@ -1,0 +1,18 @@
+# Backup artifacts
+*.pw_backup_*
+*.pw_disabled
+*.tar.gz
+*.tar.gz.gpg
+
+# Log files
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Test artifacts
+tests/tmp/

@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "feat/**", "fix/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ShellCheck — bin
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./bin"
+          severity: warning
+
+      - name: ShellCheck — lib
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./lib"
+          severity: warning
+
+      - name: ShellCheck — modes
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./modes"
+          severity: warning
+
+      - name: ShellCheck — integration
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./integration"
+          severity: warning
+
+  test:
+    name: Functional tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck + bats
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y shellcheck bats
+
+      - name: Run plugin loader smoke test
+        run: |
+          # Verify the plugin system loads without errors
+          bash -n bin/penguins-powerwash
+          bash -n lib/plugin.sh
+          bash -n lib/common.sh
+          bash -n lib/eggs-hooks.sh
+
+      - name: Run integration script syntax check
+        run: |
+          bash -n integration/eggs-plugin/powerwash-hook.sh
+          bash -n integration/recovery-plugin/powerwash-plugin.sh
+
+  install-dry-run:
+    name: Install dry-run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Makefile install targets exist
+        run: |
+          make --dry-run install PREFIX=/tmp/test-prefix 2>&1 | head -20
+          make --dry-run install-integration PREFIX=/tmp/test-prefix 2>&1 | head -20

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# systemd/rebind-helper — called by powerwash-rebind.service on resume
+#
+# Reads /etc/powerwash/rebind-devices.conf and rebinds each listed device
+# via sysfs unbind/bind. Equivalent to bulletmark/rebind-devices but
+# integrated into the powerwash ecosystem.
+
+set -euo pipefail
+
+CONF_FILE="${POWERWASH_REBIND_CONF:-/etc/powerwash/rebind-devices.conf}"
+LOG_TAG="powerwash-rebind"
+
+_log() { logger -t "${LOG_TAG}" "$*" || echo "$*" >&2; }
+
+[[ -f "${CONF_FILE}" ]] || { _log "Config not found: ${CONF_FILE}"; exit 0; }
+
+while IFS= read -r line; do
+    # Strip comments and whitespace
+    line="${line%%#*}"
+    line="${line//[[:space:]]/}"
+    [[ -z "${line}" ]] && continue
+
+    bus_id="${line}"
+
+    # Locate device in sysfs (PCI or USB)
+    dev_path=$(find /sys/bus/pci/devices /sys/bus/usb/devices \
+        -maxdepth 1 -name "${bus_id}" -type l 2>/dev/null | head -1 || true)
+
+    if [[ -z "${dev_path}" ]]; then
+        _log "Device not found in sysfs: ${bus_id}"
+        continue
+    fi
+
+    driver_link="${dev_path}/driver"
+    if [[ ! -L "${driver_link}" ]]; then
+        _log "No driver bound for ${bus_id}, skipping."
+        continue
+    fi
+
+    driver_dir=$(realpath "${driver_link}")
+
+    _log "Rebinding ${bus_id} (driver: $(basename "${driver_dir}"))"
+
+    # Unbind
+    echo "${bus_id}" > "${driver_dir}/unbind" 2>/dev/null \
+        && _log "Unbound ${bus_id}" \
+        || _log "Unbind failed for ${bus_id} (may already be unbound)"
+
+    sleep 0.5
+
+    # Bind
+    echo "${bus_id}" > "${driver_dir}/bind" 2>/dev/null \
+        && _log "Bound ${bus_id}" \
+        || _log "Bind failed for ${bus_id}"
+
+done < "${CONF_FILE}"
+
+_log "Rebind complete."
