@@ -6,6 +6,7 @@ set -euo pipefail
 # ── Version ────────────────────────────────────────────────────────────────────
 # shellcheck disable=SC2034  # exported constants for consumers of this library
 readonly PW_VERSION="0.1.0"
+# shellcheck disable=SC2034
 readonly PW_NAME="Penguins Powerwash"
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
