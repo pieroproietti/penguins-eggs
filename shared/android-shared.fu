@@ -1,0 +1,208 @@
+// android-shared.fu
+// penguins-eggs — shared Android logic
+// license: MIT
+//
+// Pure logic shared between penguins-eggs (TypeScript) and
+// waydroid-toolkit (Python). No I/O, no OS calls.
+//
+// Transpile with:
+//   fut -l ts -o android-shared.ts android-shared.fu
+//   fut -l py -o android-shared.py android-shared.fu
+
+public static class AndroidShared
+{
+    // ── ABI constants ────────────────────────────────────────────────────────
+
+    public const string AbiArm64   = "arm64-v8a";
+    public const string AbiArm32   = "armeabi-v7a";
+    public const string AbiX8664   = "x86_64";
+    public const string AbiX86     = "x86";
+    public const string AbiRiscv64 = "riscv64";
+
+    // ── Bootloader types ─────────────────────────────────────────────────────
+
+    public const string BootloaderGrub     = "grub";
+    public const string BootloaderSyslinux = "syslinux";
+    public const string BootloaderUboot    = "uboot";
+    public const string BootloaderOpensbi  = "opensbi";
+    public const string BootloaderEdk2     = "edk2";
+
+    // ── Kernel image names ───────────────────────────────────────────────────
+
+    public const string KernelBzImage = "bzImage";
+    public const string KernelImageGz = "Image.gz";
+    public const string KernelZImage  = "zImage";
+    public const string KernelVmlinux = "vmlinux";
+    public const string KernelVmlinuz = "vmlinuz";
+
+    // ── Build prop keys ──────────────────────────────────────────────────────
+
+    public const string PropCpuAbi        = "ro.product.cpu.abi";
+    public const string PropCpuAbilist    = "ro.product.cpu.abilist";
+    public const string PropCpuAbilist32  = "ro.product.cpu.abilist32";
+    public const string PropCpuAbilist64  = "ro.product.cpu.abilist64";
+    public const string PropAndroidVer    = "ro.build.version.release";
+    public const string PropSdkVer        = "ro.build.version.sdk";
+    public const string PropBuildId       = "ro.build.id";
+    public const string PropDisplayId     = "ro.build.display.id";
+    public const string PropFingerprint   = "ro.build.fingerprint";
+    public const string PropBuildType     = "ro.build.type";
+    public const string PropSecurityPatch = "ro.build.version.security_patch";
+    public const string PropProductDevice = "ro.product.device";
+    public const string PropProductBrand  = "ro.product.brand";
+    public const string PropProductModel  = "ro.product.model";
+    public const string PropBuildFlavor   = "ro.build.flavor";
+    public const string PropDynamicParts  = "ro.boot.dynamic_partitions";
+    public const string PropSlotSuffix    = "ro.boot.slot_suffix";
+
+    // ── Android variant identifiers ──────────────────────────────────────────
+
+    public const string VariantAosp       = "aosp";
+    public const string VariantBlissos    = "blissos";
+    public const string VariantGrapheneos = "grapheneos";
+    public const string VariantLineageos  = "lineageos";
+    public const string VariantWaydroid   = "waydroid";
+    public const string VariantCuttlefish = "cuttlefish";
+    public const string VariantBassos     = "bassos";
+    public const string VariantCustom     = "custom";
+
+    // ── Source types ─────────────────────────────────────────────────────────
+
+    public const string SourceLiveSystem        = "live-system";
+    public const string SourceWaydroidContainer = "waydroid-container";
+    public const string SourceBuildOutput       = "build-output";
+
+    // ── AVB algorithm identifiers ────────────────────────────────────────────
+
+    public const string AvbSha256Rsa2048 = "SHA256_RSA2048";
+    public const string AvbSha256Rsa4096 = "SHA256_RSA4096";
+    public const string AvbSha256Rsa8192 = "SHA256_RSA8192";
+    public const string AvbSha512Rsa4096 = "SHA512_RSA4096";
+
+    // ── Verified boot states ─────────────────────────────────────────────────
+
+    public const string BootStateGreen   = "green";
+    public const string BootStateYellow  = "yellow";
+    public const string BootStateOrange  = "orange";
+    public const string BootStateRed     = "red";
+    public const string BootStateUnknown = "unknown";
+
+    // ── Image manifest keys ──────────────────────────────────────────────────
+
+    public const string ManifestVersion     = "manifestVersion";
+    public const string ManifestSchemaVer   = "1";
+    public const string ManifestArch        = "arch";
+    public const string ManifestVariant     = "variant";
+    public const string ManifestAndroidVer  = "androidVersion";
+    public const string ManifestSdkLevel    = "sdkLevel";
+    public const string ManifestBuildId     = "buildId";
+    public const string ManifestSystemImg   = "systemImg";
+    public const string ManifestBootImg     = "bootImg";
+    public const string ManifestVendorImg   = "vendorImg";
+    public const string ManifestAvbSigned   = "avbSigned";
+    public const string ManifestAvbAlgo     = "avbAlgorithm";
+    public const string ManifestSourceType  = "sourceType";
+    public const string ManifestBuiltAt     = "builtAt";
+    public const string ManifestEggsVersion = "eggsVersion";
+
+    // ── Pure mapping functions ───────────────────────────────────────────────
+
+    /// Returns the Linux kernel arch string for a given Android ABI.
+    /// Returns "unknown" for unrecognised ABIs.
+    public static string KernelArchForAbi(string abi)
+    {
+        if (abi == AbiArm64)   return "aarch64";
+        if (abi == AbiArm32)   return "armv7l";
+        if (abi == AbiX8664)   return "x86_64";
+        if (abi == AbiX86)     return "i686";
+        if (abi == AbiRiscv64) return "riscv64";
+        return "unknown";
+    }
+
+    /// Returns the recommended bootloader for a given Android ABI.
+    public static string BootloaderForAbi(string abi)
+    {
+        if (abi == AbiX8664)   return BootloaderGrub;
+        if (abi == AbiX86)     return BootloaderSyslinux;
+        if (abi == AbiArm64)   return BootloaderUboot;
+        if (abi == AbiArm32)   return BootloaderUboot;
+        if (abi == AbiRiscv64) return BootloaderOpensbi;
+        return BootloaderGrub;
+    }
+
+    /// Returns the expected kernel image filename for a given Android ABI.
+    public static string KernelImageName(string abi)
+    {
+        if (abi == AbiX8664)   return KernelBzImage;
+        if (abi == AbiX86)     return KernelBzImage;
+        if (abi == AbiArm64)   return KernelImageGz;
+        if (abi == AbiArm32)   return KernelZImage;
+        if (abi == AbiRiscv64) return KernelVmlinux;
+        return KernelVmlinuz;
+    }
+
+    /// Returns true if the ABI supports ISO output.
+    /// ARM architectures use raw disk images instead.
+    public static bool ArchSupportsIso(string abi)
+    {
+        if (abi == AbiX8664)   return true;
+        if (abi == AbiX86)     return true;
+        if (abi == AbiRiscv64) return true;
+        return false;
+    }
+
+    /// Returns true if the ABI supports fastboot flashing.
+    public static bool ArchSupportsFastboot(string abi)
+    {
+        if (abi == AbiRiscv64) return false;
+        return true;
+    }
+
+    /// Returns true if the ABI is 64-bit.
+    public static bool Is64Bit(string abi)
+    {
+        if (abi == AbiArm64)   return true;
+        if (abi == AbiX8664)   return true;
+        if (abi == AbiRiscv64) return true;
+        return false;
+    }
+
+    /// Returns the secondary (32-bit) ABI for a 64-bit primary ABI,
+    /// or an empty string if there is no secondary ABI.
+    public static string SecondaryAbi(string primaryAbi)
+    {
+        if (primaryAbi == AbiArm64) return AbiArm32;
+        if (primaryAbi == AbiX8664) return AbiX86;
+        return "";
+    }
+
+    /// Returns true if the AVB algorithm string is valid.
+    public static bool IsValidAvbAlgorithm(string algo)
+    {
+        if (algo == AvbSha256Rsa2048) return true;
+        if (algo == AvbSha256Rsa4096) return true;
+        if (algo == AvbSha256Rsa8192) return true;
+        if (algo == AvbSha512Rsa4096) return true;
+        return false;
+    }
+
+    /// Returns true if the variant string is a known Android variant.
+    public static bool IsKnownVariant(string variant)
+    {
+        if (variant == VariantAosp)       return true;
+        if (variant == VariantBlissos)    return true;
+        if (variant == VariantGrapheneos) return true;
+        if (variant == VariantLineageos)  return true;
+        if (variant == VariantWaydroid)   return true;
+        if (variant == VariantCuttlefish) return true;
+        if (variant == VariantBassos)     return true;
+        if (variant == VariantCustom)     return true;
+        return false;
+    }
+
+    /// Returns true if the manifest version is supported by this library.
+    public static bool IsManifestVersionSupported(string version)
+    {
+        return version == ManifestSchemaVer;
+    }
+}
