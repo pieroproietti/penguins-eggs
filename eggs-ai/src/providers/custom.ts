@@ -1,8 +1,9 @@
+import { createOpenAI } from '@ai-sdk/openai';
+import { generateText, streamText } from 'ai';
 import type { LLMProvider, Message } from './base.js';
-import { openaiStreamChat } from './openai-stream.js';
 
 /**
- * Generic OpenAI-compatible provider for arbitrary endpoints.
+ * Generic OpenAI-compatible provider for arbitrary endpoints, backed by @ai-sdk/openai.
  * Works with: LM Studio, vLLM, text-generation-webui, LocalAI,
  * Together AI, Fireworks AI, Perplexity, DeepSeek, or any service
  * that implements the OpenAI chat completions API format.
@@ -22,73 +23,51 @@ import { openaiStreamChat } from './openai-stream.js';
  */
 export class CustomProvider implements LLMProvider {
   name: string;
-  private apiKey: string;
+  private client: ReturnType<typeof createOpenAI>;
   private model: string;
-  private baseUrl: string;
+  private baseURL: string;
 
   constructor(
     name: string,
-    baseUrl: string,
+    baseURL: string,
     model: string,
     apiKey = '',
   ) {
     this.name = name;
-    this.baseUrl = baseUrl.replace(/\/+$/, ''); // strip trailing slashes
+    this.baseURL = baseURL.replace(/\/+$/, '');
     this.model = model;
-    this.apiKey = apiKey;
+    this.client = createOpenAI({ apiKey: apiKey || 'no-key', baseURL: this.baseURL });
   }
 
   async chat(messages: Message[]): Promise<string> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    if (this.apiKey) {
-      headers['Authorization'] = `Bearer ${this.apiKey}`;
-    }
-
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: this.model,
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-      }),
+    const { text } = await generateText({
+      model: this.client(this.model),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
     });
-
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`${this.name} error: ${response.status} — ${err}`);
-    }
-
-    const data = (await response.json()) as {
-      choices: Array<{ message: { content: string } }>;
-    };
-    return data.choices[0].message.content;
+    return text;
   }
 
   async chatStream(messages: Message[], onChunk: (chunk: string) => void): Promise<string> {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (this.apiKey) headers['Authorization'] = `Bearer ${this.apiKey}`;
-    return openaiStreamChat(
-      `${this.baseUrl}/chat/completions`,
-      headers,
-      this.model,
-      messages.map((m) => ({ role: m.role, content: m.content })),
-      onChunk,
-    );
+    const { textStream } = streamText({
+      model: this.client(this.model),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    });
+    let full = '';
+    for await (const chunk of textStream) {
+      full += chunk;
+      onChunk(chunk);
+    }
+    return full;
   }
 
   async isAvailable(): Promise<boolean> {
     try {
-      const headers: Record<string, string> = {};
-      if (this.apiKey) {
-        headers['Authorization'] = `Bearer ${this.apiKey}`;
-      }
-      const response = await fetch(`${this.baseUrl}/models`, { headers });
-      return response.ok;
+      await generateText({
+        model: this.client(this.model),
+        messages: [{ role: 'user', content: 'ping' }],
+        maxTokens: 1,
+      });
+      return true;
     } catch {
       return false;
     }
