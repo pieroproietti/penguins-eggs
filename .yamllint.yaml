@@ -1,0 +1,17 @@
+# .yamllint.yaml
+# YAML linting rules for penguins-eggs.
+# Applied to: .github/workflows/, conf/
+# Run with: pnpm lint:yaml
+
+extends: relaxed
+
+rules:
+  line-length:
+    max: 160
+    level: warning
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1
+  document-start: disable

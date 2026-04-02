@@ -26,6 +26,8 @@ jobs:
         run: npm install -g pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Lint YAML
+        run: pnpm run lint:yaml
       - name: Build
         run: pnpm run build
   build-matrix:
