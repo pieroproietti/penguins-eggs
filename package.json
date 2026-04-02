@@ -72,7 +72,7 @@
         "ts-prune": "^0.10.3",
         "typescript": "^5.9.3",
         "typedoc": "^0.28.0",
-        "yamllint-ts": "^1.0.0",
+        "yamllint-ts": "^0.1.0",
         "typedoc-plugin-markdown": "^4.0.0",
         "typescript-eslint": "^8.56.0"
     },
