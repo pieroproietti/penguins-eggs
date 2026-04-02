@@ -1,7 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/index.ts"],
-  "entryPointStrategy": "expand",
+  "entryPointStrategy": "resolve",
   "out": "DOCS/api",
   "plugin": ["typedoc-plugin-markdown"],
   "readme": "README.md",
@@ -11,12 +11,5 @@
   "excludeProtected": false,
   "excludeExternals": true,
   "skipErrorChecking": true,
-  "githubPages": false,
-  "exclude": [
-    "**/integrations/**",
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/eggs-ai/**",
-    "**/eggs-gui/**"
-  ]
+  "githubPages": false
 }
