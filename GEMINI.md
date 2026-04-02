@@ -13,6 +13,17 @@
 - **Key Libraries:** `execa` (for shell commands), `chalk` (for TUI colors), `inquirer` (for prompts).
 - **Compression:** SquashFS (supports zstd, xz, gzip).
 
+## Upgrade Tracking
+
+### typescript-go (TS 7 native compiler)
+`microsoft/typescript-go` is a Go port of the TypeScript compiler targeting a ~10× build speed improvement.
+It is available as `@typescript/native-preview` on npm (preview channel).
+Currently pinned to `typescript: ^5.9.3`. When `typescript-go` reaches stable/GA:
+1. Replace `typescript` devDependency with `@typescript/native-preview` (or the stable package name once announced).
+2. Verify `tsconfig.json` compatibility — `module: Node16` and `moduleResolution: node16` are supported.
+3. Remove `ts-node` if it becomes redundant (tsgo includes a native runner).
+Track progress at: https://github.com/microsoft/typescript-go
+
 ## Installers
 - **krill:** A TUI system installer developed within eggs. Lightweight, fast, always available.
 - **calamares:** Integration with the popular GUI installer. Eggs creates the configuration files needed for Calamares to install the custom ISO.
