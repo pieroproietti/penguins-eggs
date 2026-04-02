@@ -8,9 +8,11 @@ on:
   push:
     branches:
       - master
+      - all-features
   pull_request:
     branches:
       - master
+      - all-features
 
 permissions:
   contents: read

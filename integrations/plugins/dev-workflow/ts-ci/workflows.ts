@@ -95,8 +95,8 @@ const testStep: Step = {
 const ciWorkflow: Workflow = {
   name: 'CI',
   on: {
-    push: { branches: ['master'] },
-    pull_request: { branches: ['master'] },
+    push: { branches: ['master', 'all-features'] },
+    pull_request: { branches: ['master', 'all-features'] },
   },
   permissions: {
     contents: 'read',
