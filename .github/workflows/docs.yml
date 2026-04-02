@@ -45,6 +45,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Remove dangling symlinks
+        run: find integrations -xtype l -delete
+
       - name: Generate docs
         run: pnpm run docs
 
