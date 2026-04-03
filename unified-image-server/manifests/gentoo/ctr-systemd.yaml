@@ -1,0 +1,47 @@
+# Gentoo container image — systemd init
+# Architectures: amd64 (arm64 support depends on Gentoo mirror stage3 availability)
+# Source: liangyongxiang/my-gentoo-incus-scripts
+image:
+  distribution: gentoo
+  description: "{{ image.distribution|capfirst }} {{ image.architecture_mapped }}{% if image.variant != \"default\" %} ({{ image.variant }}){% endif %} ({{ image.serial }})"
+
+source:
+  downloader: gentoo-http
+  url: https://distfiles.gentoo.org/releases/
+
+files:
+  - path: /etc/systemd/network/eth0.network
+    generator: dump
+    content: |-
+      [Match]
+      Name=eth0
+
+      [Network]
+      DHCP=ipv4
+
+  - path: /etc/machine-id
+    generator: dump
+
+packages:
+  manager: portage
+  update: false
+  cleanup: true
+  sets:
+    - packages:
+      action: install
+
+actions:
+  - trigger: post-files
+    action: |-
+      #!/bin/sh
+      set -eux
+      umount -l /etc/resolv.conf || true
+      rm /etc/resolv.conf
+      ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+      systemctl enable systemd-resolved
+      systemctl enable systemd-networkd
+
+environment:
+  variables:
+    - key: MAKEOPTS
+      value: --jobs 4

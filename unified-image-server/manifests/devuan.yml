@@ -1,0 +1,75 @@
+# Devuan container images (no systemd)
+# Architectures: amd64, arm64
+# Releases: daedalus (5), excalibur (6)
+# Init: sysvinit / OpenRC
+image:
+  distribution: devuan
+  release: daedalus
+  architecture: amd64
+  variant: default
+  name: "{{ image.distribution }}-{{ image.release }}-{{ image.variant }}-{{ image.serial }}"
+  description: "Devuan {{ image.release }} {{ image.architecture }}"
+
+source:
+  downloader: debootstrap
+  url: http://deb.devuan.org/merged
+  keyserver: keyserver.ubuntu.com
+  keys:
+    - 0x94532124541922FB
+
+targets:
+  lxc:
+    create_message: |
+      You just created a Devuan {{ image.release }} container.
+    config:
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+files:
+  - path: /etc/hostname
+    generator: hostname
+
+  - path: /etc/hosts
+    generator: hosts
+
+  - path: /etc/machine-id
+    generator: dump
+
+  - path: /etc/network/interfaces
+    generator: dump
+    content: |-
+      auto lo
+      iface lo inet loopback
+
+      auto eth0
+      iface eth0 inet dhcp
+
+packages:
+  manager: apt
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - curl
+        - git
+        - openssh-client
+        - sudo
+        - vim
+      action: install
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+      apt-get autoremove -y
+      apt-get clean
+
+mappings:
+  architecture_map: debian

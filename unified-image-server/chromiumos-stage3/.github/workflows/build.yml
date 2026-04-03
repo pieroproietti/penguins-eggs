@@ -1,0 +1,60 @@
+name: Build ChromiumOS Stage3
+
+on:
+  schedule:
+    # Weekly on Sunday 02:00 UTC — picks up new ChromiumOS release branches
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      board:
+        description: 'Board to build (leave empty to build all container-suitable boards)'
+        required: false
+        default: ''
+
+jobs:
+  # Determine which boards to build. Container-suitable boards are built by
+  # default (reven, arm64-generic). Hardware-specific boards require manual
+  # dispatch with an explicit board name.
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      boards: ${{ steps.set.outputs.boards }}
+    steps:
+      - id: set
+        run: |
+          if [ -n "${{ github.event.inputs.board }}" ]; then
+            echo "boards=[\"${{ github.event.inputs.board }}\"]" >> "$GITHUB_OUTPUT"
+          else
+            echo 'boards=["reven","arm64-generic"]' >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: matrix
+    runs-on: ${{ matrix.board == 'reven' && 'ubuntu-latest' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        board: ${{ fromJson(needs.matrix.outputs.boards) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install qemu-user-static (arm64 boards)
+        if: ${{ matrix.board != 'reven' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-user-static
+
+      - name: Build stage3
+        run: sudo ./build.sh --board ${{ matrix.board }} --jobs 4 --output .
+        timeout-minutes: 480
+
+      - name: Upload release artifact
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.CHROMIUMOS_SHORT_VERSION }}-${{ github.run_id }}
+          name: ChromiumOS Stage3 ${{ env.CHROMIUMOS_SHORT_VERSION }}
+          files: chromiumos-stage3-${{ matrix.board }}-*.tar.xz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,117 @@
+# Ubuntu container + VM images
+# Architectures: amd64, arm64
+# Releases: noble (24.04 LTS), jammy (22.04 LTS)
+# Source: f-bn/incus-images
+image:
+  distribution: ubuntu
+  release: noble
+  architecture: amd64
+  variant: default
+  name: "{{ image.distribution }}-{{ image.release }}-{{ image.variant }}-{{ image.serial }}"
+  description: "Ubuntu {{ image.release }} {{ image.architecture }}"
+
+source:
+  downloader: debootstrap
+  url: http://archive.ubuntu.com/ubuntu
+  keyserver: keyserver.ubuntu.com
+  keys:
+    - 0x790BC7277767219C42C86F933B4FE6ACC0B21F32
+    - 0xF6ECB3762474EDA9D21B7022871920D1991BC93C
+
+targets:
+  lxc:
+    create_message: |
+      You just created an Ubuntu {{ image.release }} container.
+    config:
+      - type: all
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/ubuntu.common.conf
+      - type: user
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/ubuntu.userns.conf
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+files:
+  - path: /etc/hostname
+    generator: hostname
+
+  - path: /etc/hosts
+    generator: hosts
+
+  - path: /etc/resolvconf/resolv.conf.d/original
+    generator: remove
+
+  - path: /etc/resolvconf/resolv.conf.d/tail
+    generator: remove
+
+  - path: /etc/machine-id
+    generator: dump
+
+  - path: /var/lib/dbus/machine-id
+    generator: remove
+
+  - path: /etc/netplan/10-lxc.yaml
+    generator: dump
+    content: |-
+      network:
+        version: 2
+        ethernets:
+          eth0:
+            dhcp4: true
+            dhcp-identifier: mac
+
+  - path: /etc/profile.d/z-lxc-color.sh
+    generator: dump
+    content: |-
+      if [ -e /dev/console ] && [ "$(stat -c '%t' /dev/console)" = "88" ]; then
+          export PS1='\[\033[1;31m\]\u@\h\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]\$ '
+      fi
+    types:
+      - container
+
+  - path: /etc/sudoers.d/90-lxd
+    generator: dump
+    content: |-
+      # User rules for ubuntu
+      ubuntu ALL=(ALL) NOPASSWD:ALL
+    types:
+      - container
+
+packages:
+  manager: apt
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - apt-transport-https
+        - curl
+        - dbus
+        - git
+        - language-pack-en
+        - openssh-client
+        - sudo
+        - vim
+      action: install
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+      # Disable irrelevant services in containers
+      systemctl disable --now systemd-networkd-wait-online.service || true
+      # Clean up
+      apt-get autoremove -y
+      apt-get clean
+
+mappings:
+  architecture_map: debian

@@ -1,0 +1,34 @@
+# Gentoo container image — OpenRC init
+# Architectures: amd64 (arm64 support depends on Gentoo mirror stage3 availability)
+# Source: liangyongxiang/my-gentoo-incus-scripts
+image:
+  distribution: gentoo
+  description: "{{ image.distribution|capfirst }} {{ image.architecture_mapped }}{% if image.variant != \"default\" %} ({{ image.variant }}){% endif %} ({{ image.serial }})"
+
+source:
+  downloader: gentoo-http
+  url: https://distfiles.gentoo.org/releases/
+
+files:
+  packages:
+    manager: portage
+    update: false
+    cleanup: true
+    sets:
+      - packages:
+          - net-misc/dhcpcd
+        action: install
+
+actions:
+  - trigger: post-files
+    action: |-
+      #!/bin/sh
+      set -eux
+      ln -s net.lo /etc/init.d/net.eth0
+      mkdir -p /etc/runlevels/default
+      rc-update add net.eth0 default || true
+
+environment:
+  variables:
+    - key: MAKEOPTS
+      value: --jobs 4
