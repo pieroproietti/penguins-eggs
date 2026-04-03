@@ -1,0 +1,34 @@
+---
+
+files:
+
+- generator: copy
+  source: ~/distrobuilder/files/alpine-base/home
+  path: /home/
+  mode: 644
+
+- generator: copy
+  source: ~/distrobuilder/files/alpine-base/etc
+  path: /etc/
+  mode: 644
+
+- generator: copy
+  source: ~/distrobuilder/files/alpine-base/root
+  path: /root/
+  mode: 644
+
+packages:
+  manager: apk
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - htop
+        - nano
+        - nano-syntax
+        - nftables
+        - apk-cron
+        - shadow
+        - tzdata
+        - msmtp
+      action: install

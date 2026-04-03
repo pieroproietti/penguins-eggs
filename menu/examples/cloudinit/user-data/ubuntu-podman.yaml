@@ -1,0 +1,16 @@
+#cloud-config
+version: v1
+apt:
+  preserve_sources_list: true
+  sources:
+    podman.list:
+      source: deb [signed-by=$KEY_FILE] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_22.04 /
+      keyid: 2472D6D0D2F66AF87ABA8DA34D64390375060AA4
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - podman
+  - slirp4netns
+#runcmd:
+#  - cloud-init status --wait && gitlab-ctl reconfigure

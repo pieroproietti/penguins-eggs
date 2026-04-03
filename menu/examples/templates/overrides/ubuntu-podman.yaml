@@ -1,0 +1,19 @@
+---
+
+files:
+
+- generator: copy
+  source: ~/distrobuilder/files/ubuntu-podman/home
+  path: /home/
+
+- generator: copy
+  source: ~/distrobuilder/files/ubuntu-podman/etc
+  path: /etc/
+
+- generator: copy
+  source: ~/distrobuilder/files/ubuntu-podman/usr
+  path: /usr/
+
+- generator: copy
+  source: ~/distrobuilder/files/ubuntu-podman/root
+  path: /root/
