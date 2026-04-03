@@ -1,16 +1,20 @@
 package app
 
 import (
-	"encoding/json"
 	"fmt"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/eggs-gui/tui/internal/client"
+	"github.com/eggs-gui/tui/internal/client" // for getDaemon / daemonClient
 )
 
 // daemonClient is the package-level persistent connection to eggs-daemon.
 // Bubbletea uses value receivers so we cannot cache it on the model directly.
 var daemonClient *client.Client
+
+// outputCh carries streamed lines from the daemon goroutine to the TUI.
+// A nil value signals the stream is done; an OutputMsg wraps each line.
+// Closed and recreated for each command invocation.
+var outputCh chan tea.Msg
 
 func getDaemon() (*client.Client, error) {
 	if daemonClient != nil {
@@ -22,6 +26,13 @@ func getDaemon() (*client.Client, error) {
 	}
 	daemonClient = c
 	return c, nil
+}
+
+// waitForOutput is a tea.Cmd that blocks until the next message arrives on
+// outputCh, then returns it. Update() re-issues this cmd after each OutputMsg
+// so the TUI re-renders every line as it arrives.
+func waitForOutput() tea.Msg {
+	return <-outputCh
 }
 
 // Messages for the Bubble Tea update loop.
@@ -135,6 +146,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case OutputMsg:
 		m.AppendOutput(msg.Line)
+		// Re-issue waitForOutput so the next line triggers another render.
+		return m, waitForOutput
 
 	case CommandDoneMsg:
 		m.Running = false
@@ -164,29 +177,40 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// cmdProduce returns a Bubbletea Cmd that calls eggs.produce on the daemon
-// and streams output back as OutputMsg / CommandDoneMsg.
+// cmdProduce launches eggs.produce on the daemon and returns two cmds:
+//   - a goroutine that feeds each output line into outputCh as OutputMsg,
+//     then sends CommandDoneMsg when the command finishes
+//   - waitForOutput, which reads the first message from outputCh
+//
+// Update() re-issues waitForOutput after every OutputMsg, so each line
+// triggers a re-render as it arrives.
 func (m Model) cmdProduce() tea.Cmd {
 	opts := buildProduceOpts(m)
-	return func() tea.Msg {
+
+	// Fresh buffered channel for this invocation.
+	outputCh = make(chan tea.Msg, 64)
+
+	// Goroutine: calls the daemon and feeds outputCh.
+	startCmd := func() tea.Msg {
 		c, err := getDaemon()
 		if err != nil {
-			return CommandDoneMsg{ExitCode: 1, Err: err}
+			outputCh <- CommandDoneMsg{ExitCode: 1, Err: err}
+			return nil // waitForOutput will pick up the done msg
 		}
 
-		c.OnNotification = func(method string, params json.RawMessage) {
-			// stream.output notifications are handled inside CallStream
-		}
-
-		// CallStream blocks until the command completes, calling onLine for
-		// each streamed output line. Full line-by-line streaming to the TUI
-		// requires a channel-based approach and is a future enhancement.
-		_, err = c.CallStream("eggs.produce", opts, func(line string) { _ = line })
+		_, err = c.CallStream("eggs.produce", opts, func(line string) {
+			outputCh <- OutputMsg{Line: line}
+		})
 		if err != nil {
-			return CommandDoneMsg{ExitCode: 1, Err: err}
+			outputCh <- CommandDoneMsg{ExitCode: 1, Err: err}
+		} else {
+			outputCh <- CommandDoneMsg{ExitCode: 0}
 		}
-		return CommandDoneMsg{ExitCode: 0}
+		return nil
 	}
+
+	// Run the goroutine and immediately start draining the channel.
+	return tea.Batch(startCmd, waitForOutput)
 }
 
 // cmdKill returns a Cmd that calls eggs.kill on the daemon.
