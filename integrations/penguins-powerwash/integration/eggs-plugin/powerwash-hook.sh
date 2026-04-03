@@ -18,6 +18,16 @@ EGGS_ISO_ROOT="${EGGS_ISO_ROOT:?EGGS_ISO_ROOT must be set by penguins-eggs}"
 case "${EGGS_HOOK:-produce}" in
 
   produce)
+    # eggs fires this hook twice:
+    #   pre-produce:  EGGS_ISO_ROOT=/  EGGS_ISO_FILE=""   → liveroot not yet mounted
+    #   post-produce: EGGS_ISO_ROOT=<liveroot> EGGS_ISO_FILE=<path.iso>
+    #
+    # Powerwash copies binaries into the live filesystem, so it must run
+    # post-produce (after bindLiveFs has populated liveroot). Skip pre-produce.
+    if [[ -z "${EGGS_ISO_FILE:-}" ]]; then
+      exit 0
+    fi
+
     echo "[penguins-powerwash] Embedding powerwash into ISO..."
 
     # 1. Copy the penguins-powerwash binary and libraries into the ISO

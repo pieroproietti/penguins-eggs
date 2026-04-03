@@ -19,6 +19,15 @@ RECOVERY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 EGGS_ISO_ROOT="${EGGS_ISO_ROOT:?EGGS_ISO_ROOT must be set by penguins-eggs}"
 
+# eggs fires this hook twice:
+#   pre-produce:  EGGS_ISO_ROOT=/  EGGS_ISO_FILE=""   → liveroot not yet mounted
+#   post-produce: EGGS_ISO_ROOT=<liveroot> EGGS_ISO_FILE=<path.iso>
+#
+# Recovery copies scripts into the live filesystem, so it must run post-produce.
+if [[ -z "${EGGS_ISO_FILE:-}" ]]; then
+  exit 0
+fi
+
 echo "[penguins-recovery] Embedding recovery tools into ISO..."
 
 # 1. Copy shared rescue scripts

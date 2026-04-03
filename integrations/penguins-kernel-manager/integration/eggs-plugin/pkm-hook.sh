@@ -20,13 +20,22 @@ _pkm_available() { command -v "${PKM_BIN}" &>/dev/null; }
 case "${EGGS_HOOK:-produce}" in
 
   produce)
-    # Embed the list of installed/held kernels into the ISO as a manifest.
-    # penguins-recovery can read this to know which kernel to restore.
+    # Embed the list of installed/held kernels as a manifest so penguins-recovery
+    # knows which kernel to restore.
+    #
+    # eggs fires this hook twice:
+    #   pre-produce:  EGGS_ISO_ROOT=/  EGGS_ISO_FILE=""   → write to real system
+    #   post-produce: EGGS_ISO_ROOT=<liveroot> EGGS_ISO_FILE=<path.iso>
+    #
+    # We only need to write once (pre-produce), so skip when EGGS_ISO_FILE is set.
+    if [[ -n "${EGGS_ISO_FILE:-}" ]]; then
+      exit 0
+    fi
     if _pkm_available && [[ -n "${EGGS_ISO_ROOT:-}" ]]; then
       MANIFEST_DIR="${EGGS_ISO_ROOT}/etc/penguins-kernel-manager"
       mkdir -p "${MANIFEST_DIR}"
       "${PKM_BIN}" list --installed --json > "${MANIFEST_DIR}/kernel-manifest.json" 2>/dev/null || true
-      echo "[penguins-kernel-manager] Kernel manifest written to ISO."
+      echo "[penguins-kernel-manager] Kernel manifest written to ${MANIFEST_DIR}."
     fi
     ;;
 

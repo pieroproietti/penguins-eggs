@@ -24,8 +24,17 @@ PIF_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 case "${EGGS_HOOK:-produce}" in
 
   produce)
-    # Embed the PIF config and backend state into the ISO so recovery tools
-    # know which backend was active when the ISO was built.
+    # Embed the PIF config and backend state so recovery tools know which
+    # backend was active when the ISO was built.
+    #
+    # eggs fires this hook twice:
+    #   pre-produce:  EGGS_ISO_ROOT=/  EGGS_ISO_FILE=""   → write to real system
+    #   post-produce: EGGS_ISO_ROOT=<liveroot> EGGS_ISO_FILE=<path.iso>
+    #
+    # We only need to write once (pre-produce), so skip when EGGS_ISO_FILE is set.
+    if [[ -n "${EGGS_ISO_FILE:-}" ]]; then
+      exit 0
+    fi
     if [[ -n "${EGGS_ISO_ROOT:-}" ]]; then
       PIF_CONF_DEST="${EGGS_ISO_ROOT}/etc/penguins-immutable-framework"
       mkdir -p "${PIF_CONF_DEST}"
@@ -43,7 +52,7 @@ case "${EGGS_HOOK:-produce}" in
         "${PIF_BIN}" status --json > "${PIF_CONF_DEST}/backend-state.json" 2>/dev/null || true
       fi
 
-      echo "[penguins-immutable-framework] PIF state embedded into ISO."
+      echo "[penguins-immutable-framework] PIF state embedded into ${PIF_CONF_DEST}."
     fi
     ;;
 

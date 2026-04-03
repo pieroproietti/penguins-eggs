@@ -787,19 +787,24 @@ export default class Produce extends Command {
           }
         }
 
-        // Pre-produce: OS hardening applied to chroot BEFORE ISO assembly
-        // so the hardened filesystem ends up inside the produced ISO.
+        // Pre-produce: OS hardening applied to the running system BEFORE ISO assembly.
+        // liveroot (work_dir.merged) is not mounted until bindLiveFs runs inside
+        // ovary.produce(), so we harden '/' here — bindLiveFs will cp -r the hardened
+        // /etc, /usr, etc. into the live filesystem automatically.
         if (flags.audit && flags['audit-hardening'] && !scriptOnly) {
           await this.runHardening(
-            ovary.settings.config.snapshot_dir,
+            '/',
             flags['audit-output'] ?? '/var/lib/eggs/audit',
             verbose,
           )
         }
 
-        // Run pre-produce plugins (e.g. pkm-hook.sh, pif-hook.sh embed state into ISO root)
+        // Run pre-produce plugins (e.g. pkm-hook.sh, pif-hook.sh embed state into ISO root).
+        // EGGS_ISO_ROOT is set to '/' here because liveroot is not yet mounted — bindLiveFs
+        // (inside ovary.produce) will cp -r /etc and /usr into the live filesystem, so hooks
+        // that write to /etc/<tool>/ on the real system will be picked up automatically.
         await runPlugins(
-          { hook: 'produce', isoRoot: ovary.settings.config.snapshot_dir },
+          { hook: 'produce', isoRoot: '/' },
           undefined,
           verbose,
         )
@@ -923,7 +928,9 @@ export default class Produce extends Command {
           await runPlugins(
             {
               hook: 'produce',
-              isoRoot: ovary.settings.config.snapshot_dir,
+              // Post-produce: liveroot overlay is unbound but the directory tree
+              // remains accessible for inspection. isoFile is the primary output.
+              isoRoot: ovary.settings.work_dir.merged,
               isoFile: isoPath,
               workDir: ovary.settings.config.snapshot_dir,
               // Pass distrobuilder config so the plugin hook respects CLI flags
