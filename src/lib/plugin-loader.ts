@@ -6,8 +6,12 @@
  *
  * Plugin contract:
  *   - Scripts live in PLUGIN_DIR (default: /usr/share/penguins-eggs/plugins/)
- *   - Each script is called with EGGS_HOOK set to the current hook point
- *   - Additional context is passed via environment variables
+ *   - Each script receives these environment variables:
+ *       EGGS_HOOK      — hook point ('produce', 'update', etc.)
+ *       EGGS_ISO_ROOT  — '/' pre-produce; liveroot path post-produce
+ *       EGGS_ISO_FILE  — final ISO path (empty pre-produce)
+ *       EGGS_ISO_MNT   — ISO staging tree (snapshot_dir/mnt/iso); squashfs at live/filesystem.squashfs
+ *       EGGS_WORK      — snapshot working directory
  *   - A non-zero exit code is logged as a warning but never aborts eggs
  */
 

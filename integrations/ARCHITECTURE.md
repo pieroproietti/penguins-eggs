@@ -340,12 +340,12 @@ via the GitHub REST API. Config: `~/.config/dbmenu.yaml`.
 ```
 eggs produce --distrobuilder [--distrobuilder-type=incus|lxc|both]
   │
-  ├── ISO assembly (squashfs produced at EGGS_ISO_ROOT/live/filesystem.squashfs)
+  ├── ISO assembly (squashfs produced at snapshot_dir/mnt/iso/live/filesystem.squashfs)
   │
   └── runDistrobuilder() in produce.ts
         │
         └── distrobuilder-hook.sh
-              ├── locate filesystem.squashfs (EGGS_ISO_ROOT → EGGS_WORK → ISO mount fallback)
+              ├── locate filesystem.squashfs (EGGS_ISO_MNT/live/ → EGGS_ISO_ROOT → EGGS_WORK → ISO mount fallback)
               ├── unsquashfs etc/os-release → detect distro / release / arch
               ├── resolve templates/penguins-eggs.yaml
               └── distrobuilder build-incus|build-lxc \
