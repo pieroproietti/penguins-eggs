@@ -1,0 +1,254 @@
+#!/bin/sh
+# NOTE: systemctl is not available for systemd-generators
+set -eu
+
+# disable localization (faster grep)
+export LC_ALL=C
+
+## Helper functions
+# is_lxc_container succeeds if we're running inside a LXC container
+is_lxc_container() {
+	grep -q --text container=lxc /proc/1/environ
+}
+
+is_lxc_privileged_container() {
+	# The full positive 32-bit range is available
+	grep -qw 4294967295$ /proc/self/uid_map
+}
+
+# is_in_path succeeds if the given file exists in on of the paths
+is_in_path() {
+	# Don't use $PATH as that may not include all relevant paths
+	for path in /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin; do
+		[ -e "${path}/${1}" ] && return 0
+	done
+
+	return 1
+}
+
+## Fix functions
+# fix_ro_paths avoids udevd issues with /sys and /proc being writable
+fix_ro_paths() {
+	mkdir -p "/run/systemd/system/${1}.d"
+	cat <<-EOF > "/run/systemd/system/${1}.d/zzz-lxc-ropath.conf"
+		# This file was created by distrobuilder
+		[Service]
+		BindReadOnlyPaths=/sys
+		EOF
+}
+
+# fix_ro_run is a workaround for units failing to write in /run due to ProtectSystem=strict
+fix_ro_run() {
+	mkdir -p "/run/systemd/system/${1}.d"
+	cat <<-EOF > "/run/systemd/system/${1}.d/zzz-lxc-rorun.conf"
+		# This file was created by distrobuilder
+		[Service]
+		ReadWritePaths=/run
+		EOF
+}
+
+# fix_nm_link_state forces the network interface to a DOWN state ahead of NetworkManager starting up
+fix_nm_link_state() {
+	[ -e "/sys/class/net/${1}" ] || return 0
+
+	ip=
+	if [ -f "/sbin/ip" ]; then
+		ip="/sbin/ip"
+	elif [ -f "/bin/ip" ]; then
+		ip="/bin/ip"
+	else
+		return 0
+	fi
+
+	cat <<-EOF > /run/systemd/system/network-device-down.service
+		# This file was created by distrobuilder
+		[Unit]
+		Description=Turn off network device
+		Before=NetworkManager.service
+		Before=systemd-networkd.service
+
+		[Service]
+		# do not turn off if there is a default route to 169.254.0.1, i.e. the device is a routed nic
+		ExecCondition=/bin/sh -c '! /usr/bin/grep -qs 00000000.0100FEA9 /proc/net/route'
+		ExecStart=-${ip} link set ${1} down
+		Type=oneshot
+		RemainAfterExit=true
+
+		[Install]
+		WantedBy=default.target
+		EOF
+
+	mkdir -p /run/systemd/system/default.target.wants
+	ln -sf /run/systemd/system/network-device-down.service /run/systemd/system/default.target.wants/network-device-down.service
+}
+
+# fix_systemd_override_unit generates a unit specific override
+fix_systemd_override_unit() {
+	dropin_dir="/run/systemd/${1}.d"
+	mkdir -p "${dropin_dir}"
+
+	{
+		echo "[Service]";
+		[ "${SYSTEMD}" -ge 247 ] && echo "ProcSubset=all";
+		[ "${SYSTEMD}" -ge 247 ] && echo "ProtectProc=default";
+		[ "${SYSTEMD}" -ge 232 ] && echo "ProtectControlGroups=no";
+		[ "${SYSTEMD}" -ge 232 ] && echo "ProtectKernelTunables=no";
+		[ "${SYSTEMD}" -ge 239 ] && echo "NoNewPrivileges=no";
+		[ "${SYSTEMD}" -ge 249 ] && echo "LoadCredential=";
+		[ "${SYSTEMD}" -ge 254 ] && echo "PrivateNetwork=no";
+		[ "${SYSTEMD}" -ge 256 ] && echo "ImportCredential=";
+
+		# Additional settings for privileged containers
+		if is_lxc_privileged_container; then
+			echo "ProtectHome=no";
+			echo "ProtectSystem=no";
+			echo "PrivateDevices=no";
+			echo "PrivateTmp=no";
+			[ "${SYSTEMD}" -ge 244 ] && echo "ProtectKernelLogs=no";
+			[ "${SYSTEMD}" -ge 232 ] && echo "ProtectKernelModules=no";
+			[ "${SYSTEMD}" -ge 231 ] && echo "ReadWritePaths=" && echo "ReadOnlyPaths=";
+			[ "${SYSTEMD}" -ge 254 ] && [ "${SYSTEMD}" -lt 256 ] && echo "ImportCredential=";
+		fi
+
+		true;
+	} > "${dropin_dir}/zzz-lxc-service.conf"
+}
+
+# fix_systemd_mask masks the systemd unit
+fix_systemd_mask() {
+	ln -sf /dev/null "/run/systemd/system/${1}"
+}
+
+# fix_systemd_udev_trigger overrides the systemd-udev-trigger.service to match the latest version
+# of the file which uses "ExecStart=-" instead of "ExecStart=".
+fix_systemd_udev_trigger() {
+	udev=
+	if [ -f /usr/bin/udevadm ]; then
+		udev=/usr/bin/udevadm
+	elif [ -f /sbin/udevadm ]; then
+		udev=/sbin/udevadm
+	elif [ -f /bin/udevadm ]; then
+		udev=/bin/udevadm
+	else
+		return 0
+	fi
+
+	mkdir -p /run/systemd/system/systemd-udev-trigger.service.d
+	cat <<-EOF > /run/systemd/system/systemd-udev-trigger.service.d/zzz-lxc-override.conf
+		# This file was created by distrobuilder
+		[Service]
+		ExecStart=
+		ExecStart=-${udev} trigger --type=subsystems --action=add
+		ExecStart=-${udev} trigger --type=devices --action=add
+		EOF
+}
+
+# fix_systemd_sysctl overrides the systemd-sysctl.service to use "ExecStart=-" instead of "ExecStart=".
+fix_systemd_sysctl() {
+	sysctl=/usr/lib/systemd/systemd-sysctl
+	[ ! -e "${sysctl}" ] && sysctl=/lib/systemd/systemd-sysctl
+
+	mkdir -p /run/systemd/system/systemd-sysctl.service.d
+	cat <<-EOF > /run/systemd/system/systemd-sysctl.service.d/zzz-lxc-override.conf
+		# This file was created by distrobuilder
+		[Service]
+		ExecStart=
+		ExecStart=-${sysctl}
+		EOF
+}
+
+## Main logic
+# Exit immediately if not an Incus/LXC container
+is_lxc_container || exit 0
+
+# Determine systemd version
+SYSTEMD=""
+for path in /usr/lib/systemd/systemd /lib/systemd/systemd; do
+	[ -x "${path}" ] || continue
+
+	SYSTEMD="$("${path}" --version | head -n1 | cut -d' ' -f2 | cut -d'~' -f1)"
+	break
+done
+
+# Apply systemd overrides
+if [ "${SYSTEMD}" -ge 244 ]; then
+	fix_systemd_override_unit system/service
+else
+	# Setup per-unit overrides
+	find /lib/systemd /etc/systemd /run/systemd /usr/lib/systemd -name "*.service" -type f | sed 's#/\(lib\|etc\|run\|usr/lib\)/systemd/##g'| while read -r service_file; do
+		fix_systemd_override_unit "${service_file}"
+	done
+fi
+
+# Workarounds for unprivileged containers.
+if ! is_lxc_privileged_container; then
+	fix_ro_paths systemd-networkd.service
+	fix_ro_paths systemd-resolved.service
+fi
+
+# Ignore failures on some units.
+fix_systemd_udev_trigger
+fix_systemd_sysctl
+
+# Fix issues with /run not being writable.
+fix_ro_run systemd-nsresourced.service
+
+# Mask some units.
+fix_systemd_mask dev-hugepages.mount
+fix_systemd_mask run-ribchester-general.mount
+fix_systemd_mask systemd-hwdb-update.service
+fix_systemd_mask systemd-journald-audit.socket
+fix_systemd_mask systemd-modules-load.service
+fix_systemd_mask systemd-pstore.service
+fix_systemd_mask ua-messaging.service
+fix_systemd_mask systemd-firstboot.service
+fix_systemd_mask systemd-binfmt.service
+if [ ! -e /dev/tty1 ]; then
+	fix_systemd_mask vconsole-setup-kludge@tty1.service
+fi
+
+if [ -d /etc/udev ]; then
+	mkdir -p /run/udev/rules.d
+	cat <<-EOF > /run/udev/rules.d/90-lxc-net.rules
+		# This file was created by distrobuilder.
+		#
+		# Its purpose is to convince NetworkManager to treat the eth0 veth
+		# interface like a regular Ethernet. NetworkManager ordinarily doesn't
+		# like to manage the veth interfaces, because they are typically configured
+		# by container management tooling for specialized purposes.
+
+		ACTION=="add|change|move", ENV{ID_NET_DRIVER}=="veth", ENV{INTERFACE}=="eth[0-9]*", ENV{NM_UNMANAGED}="0"
+		EOF
+fi
+
+# Workarounds for NetworkManager in containers
+if is_in_path NetworkManager; then
+	fix_nm_link_state eth0
+fi
+
+# Allow masking units created by the lxc system-generator.
+for d in /etc/systemd/system /usr/lib/systemd/system /lib/systemd/system; do
+	if ! [ -d "${d}" ]; then
+		continue
+	fi
+
+	find "${d}" -maxdepth 1 -type l | while read -r f; do
+		unit="$(basename "${f}")"
+
+		if [ "${unit}" = "network-device-down.service" ] && [ "$(readlink "${f}")" = "/dev/null" ]; then
+			fix_systemd_mask "${unit}"
+		fi
+	done
+done
+
+# Fix issue with console-getty on recent systemd.
+if [ "${SYSTEMD}" -ge 258 ]; then
+	mkdir -p "/run/systemd/system/console-getty.service.d/"
+	cat <<-EOF > /run/systemd/system/console-getty.service.d/override.conf
+		[Service]
+		ExecStart=
+		ExecStart=-/sbin/agetty -o '-- \\\\u' --noreset --noclear --keep-baud 115200,57600,38400,9600 console
+		StandardInput=null
+		StandardOutput=null
+		EOF
+fi
