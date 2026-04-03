@@ -20,16 +20,17 @@ Full companion repos merged as subtrees with hooks into `eggs produce`.
 | eggs-gui | [`eggs-gui/`](eggs-gui/) | Go + TypeScript + Python | Unified GUI: Go daemon + BubbleTea TUI + NodeGUI desktop + NiceGUI web |
 | eggs-ai | [`eggs-ai/`](eggs-ai/) | TypeScript | AI assistant: diagnostics, build guidance, MCP server, HTTP API, 7 LLM providers |
 | penguins-distrobuilder | [`penguins-distrobuilder/`](penguins-distrobuilder/) | Go + Python | Unified distrobuilder: lxc/distrobuilder (Go) + distrobuilder-menu (Python TUI) |
+| incus-image-server | [`incus-image-server/`](incus-image-server/) | Elixir + Shell + TypeScript | Simplestreams image server for LXC/LXD/Incus; multi-distro manifests; ChromiumOS stage3 |
 
 ### Ecosystem hook events
 
-| Event | penguins-recovery | penguins-powerwash | PIF | PKM | eggs-audit | penguins-distrobuilder |
-|---|---|---|---|---|---|---|
-| `eggs produce` | embeds eggs-plugin hook | embeds binary + GRUB entry | embeds PIF state | embeds kernel list | generates SBOM + attestation | optionally builds LXC/Incus image |
-| pre-reset | creates snapshot | calls `eggs produce --naked` | exits mutable mode | snapshots kernel state | — | snapshots rootfs via `distrobuilder pack` |
-| post-reset | — | re-layers recovery tools | re-initialises backend | reinstalls held kernel | — | — |
-| kernel change | — | — | — | notifies eggs via `eggs kernel-changed` | — | — |
-| immutable upgrade | creates snapshot | — | notifies eggs via `eggs pif-upgraded` | — | — | — |
+| Event | penguins-recovery | penguins-powerwash | PIF | PKM | eggs-audit | penguins-distrobuilder | incus-image-server |
+|---|---|---|---|---|---|---|---|
+| `eggs produce` | embeds eggs-plugin hook | embeds binary + GRUB entry | embeds PIF state | embeds kernel list | generates SBOM + attestation | optionally builds LXC/Incus image | optionally publishes image via `--publish-incus` |
+| pre-reset | creates snapshot | calls `eggs produce --naked` | exits mutable mode | snapshots kernel state | — | snapshots rootfs via `distrobuilder pack` | — |
+| post-reset | — | re-layers recovery tools | re-initialises backend | reinstalls held kernel | — | — | — |
+| kernel change | — | — | — | notifies eggs via `eggs kernel-changed` | — | — | — |
+| immutable upgrade | creates snapshot | — | notifies eggs via `eggs pif-upgraded` | — | — | — | — |
 
 ---
 

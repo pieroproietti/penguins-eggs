@@ -277,12 +277,79 @@ Unified project combining [lxc/distrobuilder](https://github.com/lxc/distrobuild
 [itoffshore/distrobuilder-menu](https://github.com/itoffshore/distrobuilder-menu)
 (Python — console TUI frontend) in a single subtree layout.
 
-- `distrobuilder/` — builds rootfs images from YAML templates (`build-incus`, `build-lxc`, `build-dir`, `repack-windows`)
-- `menu/` — `dbmenu` TUI: menu-driven image building, template management, cloud-init config, auto-updates
-- `integration/eggs-plugin/` — optionally builds a distrobuilder LXC/Incus image alongside the standard ISO on `eggs produce`
-- `integration/recovery-plugin/` — snapshots the current rootfs via `distrobuilder pack` before a factory reset
+penguins-eggs can now export any produced system directly to an **Incus or LXC container image**:
+
+```bash
+# One-off export (Incus by default)
+sudo eggs produce --distrobuilder
+
+# Export as LXC image
+sudo eggs produce --distrobuilder --distrobuilder-type=lxc
+
+# Export both Incus and LXC images
+sudo eggs produce --distrobuilder --distrobuilder-type=both
+
+# Custom output directory
+sudo eggs produce --distrobuilder --distrobuilder-output=/srv/images
+```
+
+**How it works:** after ISO assembly, eggs locates the `filesystem.squashfs` produced during the build, reads `os-release` from inside it to detect the distro/release/arch, then calls `distrobuilder build-incus` (or `build-lxc`) with the bundled `templates/penguins-eggs.yaml` template. The template strips live-boot artefacts (casper, eggs desktop shortcuts, live services) and resets hostname and machine-id so each container gets a clean identity.
+
+**Install:**
+```bash
+cd integrations/penguins-distrobuilder
+sudo make install-full          # snap + eggs plugin + template + config
+sudo make install-full-source   # build from source instead of snap
+```
+
+**Always-on mode** (export on every `eggs produce`):
+```sh
+# /etc/penguins-distrobuilder/eggs-hooks.conf
+DISTROBUILDER_ENABLED=1
+DISTROBUILDER_TYPE=incus   # incus | lxc | both
+DISTROBUILDER_OUTPUT=/var/lib/eggs/distrobuilder
+```
+
+- `distrobuilder/` — upstream Go builder (`build-incus`, `build-lxc`, `build-dir`, `repack-windows`)
+- `menu/` — `dbmenu` TUI: menu-driven image building, template management, cloud-init config
+- `templates/penguins-eggs.yaml` — distrobuilder template for eggs-produced systems
+- `scripts/install-distrobuilder.sh` — installer (snap or source, registers eggs plugin)
+- `integration/eggs-plugin/` — post-produce hook: squashfs detection, distro detection, build
+- `integration/recovery-plugin/` — pre-reset hook: snapshots rootfs via `distrobuilder pack`
 
 Source: [`integrations/penguins-distrobuilder/`](integrations/penguins-distrobuilder/) and https://github.com/Interested-Deving-1896/penguins-distrobuilder
+
+## incus-image-server
+
+Unified simplestreams image server for LXC/LXD/Incus. The natural companion
+to `penguins-distrobuilder`: distrobuilder produces the images, incus-image-server
+serves them so any Incus/LXD client can pull them with `incus image copy`.
+
+```bash
+# Build image AND publish to your incus-image-server in one command
+sudo eggs produce --publish-incus \
+  --publish-incus-url=https://images.example.com \
+  --publish-incus-token=<token> \
+  --publish-incus-product=<product-id>
+
+# Clients then pull with:
+incus image copy images:<product-id> local:
+```
+
+**Components:**
+- `server/` — Elixir/Phoenix simplestreams server (based on upmaru/polar); supports S3-compatible and local filesystem storage backends; direct multipart upload endpoint; no arch constraints
+- `manifests/` — distrobuilder YAML manifests for Debian, Ubuntu, Devuan, Alpine, Arch, Fedora, AlmaLinux, Rocky, openSUSE, Gentoo, ChromiumOS, Talos
+- `chromiumos-stage3/` — parameterized ChromiumOS stage3 builder (amd64 `reven` + arm64 openFyde boards)
+- `penguins-eggs/` — ChromiumOS family backend for eggs: Portage/Chromebrew package management, board detection, derivative detection, browser flavour selection
+
+**Always-on publish** (add to `/etc/penguins-distrobuilder/eggs-hooks.conf`):
+```sh
+INCUS_SERVER_URL=https://images.example.com
+INCUS_SERVER_TOKEN=<token>
+INCUS_SERVER_PRODUCT=<product-id>
+```
+
+Source: [`integrations/incus-image-server/`](integrations/incus-image-server/) and https://github.com/Interested-Deving-1896/incus-image-server
 
 ## Plugin dispatch
 

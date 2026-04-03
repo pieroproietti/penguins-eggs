@@ -11,17 +11,17 @@ redistributable live ISO/image.
 The integrations extend eggs in two layers:
 
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                          PENGUINS-EGGS CORE                              │
-│               (produce ISOs, install systems, wardrobes)                 │
-└──┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────────────────────┘
-   │      │      │      │      │      │      │      │
-   ▼      ▼      ▼      ▼      ▼      ▼      ▼      ▼
-┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────────┐
-│recov-││power-││immut-││kernel││audit ││eggs- ││eggs- ││distro-   │
-│ery   ││wash  ││able  ││-mgr  ││+SBOM ││gui   ││ai    ││builder   │
-└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────────┘
-   ECOSYSTEM TOOLS (8 subtree repos, bidirectional hooks)
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                            PENGUINS-EGGS CORE                                    │
+│                 (produce ISOs, install systems, wardrobes)                       │
+└──┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────────────────────┘
+   │      │      │      │      │      │      │      │      │
+   ▼      ▼      ▼      ▼      ▼      ▼      ▼      ▼      ▼
+┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────────┐┌──────────┐
+│recov-││power-││immut-││kernel││audit ││eggs- ││eggs- ││distro-   ││incus-    │
+│ery   ││wash  ││able  ││-mgr  ││+SBOM ││gui   ││ai    ││builder   ││image-svr │
+└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────────┘└──────────┘
+   ECOSYSTEM TOOLS (9 subtree repos, bidirectional hooks)
 
 ┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
 │DISTRO││DECEN-││CONFIG││BUILD ││DEV   ││PACK- │
@@ -271,14 +271,48 @@ via the GitHub REST API. Config: `~/.config/dbmenu.yaml`.
 | distrobuilder → eggs | `eggs produce` (post) | `distrobuilder-hook.sh` optionally builds LXC/Incus image of produced system |
 | distrobuilder → recovery | pre-reset | `distrobuilder-recovery-hook.sh` snapshots rootfs via `distrobuilder pack-incus` or `pack-lxc` |
 
+**Full export pipeline:**
+
+```
+eggs produce --distrobuilder [--distrobuilder-type=incus|lxc|both]
+  │
+  ├── ISO assembly (squashfs produced at EGGS_ISO_ROOT/live/filesystem.squashfs)
+  │
+  └── runDistrobuilder() in produce.ts
+        │
+        └── distrobuilder-hook.sh
+              ├── locate filesystem.squashfs (EGGS_ISO_ROOT → EGGS_WORK → ISO mount fallback)
+              ├── unsquashfs etc/os-release → detect distro / release / arch
+              ├── resolve templates/penguins-eggs.yaml
+              └── distrobuilder build-incus|build-lxc \
+                    -o image.distribution=<distro> \
+                    -o image.release=<release> \
+                    -o image.architecture=<arch> \
+                    templates/penguins-eggs.yaml \
+                    /var/lib/eggs/distrobuilder/
+```
+
+**Template actions** (`templates/penguins-eggs.yaml`):
+- `source.downloader: rootfs-http` with `url: file://<squashfs>` — consumes eggs squashfs directly
+- `packages.cleanup` — removes penguins-eggs, calamares, live-boot, casper
+- `post-unpack` actions — strips live artefacts, resets hostname, regenerates machine-id, cleans fstab
+
+**Install:**
+```bash
+sudo make install-full          # snap + eggs plugin + template + config
+sudo make install-full-source   # build distrobuilder from source
+```
+
 **Configuration** (`/etc/penguins-distrobuilder/eggs-hooks.conf`):
 
 ```sh
 # eggs-plugin
 DISTROBUILDER_ENABLED=1
-DISTROBUILDER_TEMPLATE=/path/to/template.yaml
-DISTROBUILDER_TYPE=incus          # incus | lxc
+DISTROBUILDER_TYPE=incus          # incus | lxc | both
 DISTROBUILDER_OUTPUT=/var/lib/eggs/distrobuilder
+DISTROBUILDER_TEMPLATE=           # leave empty to use bundled template
+DISTROBUILDER_EXTRA_OPTS=         # e.g. --debug
+DISTROBUILDER_CLEANUP_SQUASHFS=1  # remove temp squashfs copy after build
 
 # recovery-plugin
 DISTROBUILDER_RECOVERY_ENABLED=1
@@ -288,6 +322,82 @@ DISTROBUILDER_RECOVERY_OUTPUT=/var/lib/eggs/distrobuilder/recovery
 
 Source: [`penguins-distrobuilder/`](penguins-distrobuilder/) — Go + Python.
 Upstream repos: https://github.com/lxc/distrobuilder and https://github.com/itoffshore/distrobuilder-menu
+
+---
+
+### incus-image-server
+
+**Purpose:** Unified simplestreams image server for LXC/LXD/Incus. The serving
+layer for images produced by `penguins-distrobuilder`. Enables `eggs produce
+--publish-incus` to build and publish a container image in a single command.
+
+**Internal layout:**
+
+```
+incus-image-server/unified-image-server/
+├── server/            # Elixir/Phoenix simplestreams server (upmaru/polar base)
+├── manifests/         # distrobuilder YAMLs for all supported distros
+├── chromiumos-stage3/ # parameterized ChromiumOS stage3 builder
+└── penguins-eggs/     # ChromiumOS family backend drop-ins for eggs
+```
+
+**Full produce → publish pipeline:**
+
+```
+eggs produce --publish-incus \
+  --publish-incus-url=https://images.example.com \
+  --publish-incus-token=<token> \
+  --publish-incus-product=<id>
+  │
+  ├── ISO assembly
+  ├── runDistrobuilder() → distrobuilder-hook.sh → incus.tar.xz + rootfs.tar.xz
+  └── publishToIncusImageServer()
+        ├── POST /publish/products/:id/versions        → create version (serial=YYYYmmddHHMM)
+        └── POST /publish/products/:id/versions/:v/upload
+              ├── metadata=incus.tar.xz
+              └── rootfs=rootfs.tar.xz  (or kvmdisk=disk.qcow2 for VMs)
+
+# Clients pull with:
+incus image copy images:<product-id> local:
+lxc image copy images:<product-id> local:
+```
+
+**Server components:**
+
+| Component | Description |
+|---|---|
+| Storage backends | S3-compatible (AWS, MinIO, Cloudflare R2, Backblaze B2) or local filesystem |
+| Publish workflows | CI/CD (icepak/S3 pre-upload) or direct multipart upload |
+| Architecture support | Any lowercase alphanumeric string — no fixed list enforced |
+| Multi-tenancy | Per-space credential generation |
+
+**Manifests** (`manifests/`): Debian, Ubuntu, Devuan, Alpine, Arch, Fedora,
+AlmaLinux, Rocky Linux, openSUSE, Gentoo (OpenRC + systemd), ChromiumOS
+(via stage3 wrapper), Talos Linux (VM only).
+
+**ChromiumOS stage3** (`chromiumos-stage3/`): Parameterized builder derived
+from sebanc/chromiumos-stage3. Supports `amd64` (`reven` board) and `arm64`
+(generic + openFyde hardware boards: rpi4, rpi5, rock5b, rockpi4b, rock4cp,
+orangepi5, firefly-rk3588spc, firefly-itx3588j, arm64-openfyde_vmware).
+
+**penguins-eggs ChromiumOS drop-ins** (`penguins-eggs/`):
+- `src/classes/pacman.d/chromiumos.ts` — Portage/Chromebrew backend with
+  stage3 awareness, board detection, `capabilities()` diagnostic
+- `conf/derivatives_chromiumos.yaml` — adds stage3 + all openFyde board IDs
+- `conf/flavours/chromiumos.yaml` — arch-aware tarball filters, `openfyde`
+  flavour, stage3 notes for vanadium/cromite
+
+**Configuration** (shared with penguins-distrobuilder,
+`/etc/penguins-distrobuilder/eggs-hooks.conf`):
+
+```sh
+INCUS_SERVER_URL=https://images.example.com
+INCUS_SERVER_TOKEN=<publish-session-token>
+INCUS_SERVER_PRODUCT=<product-id>
+```
+
+Source: [`incus-image-server/`](incus-image-server/) — Elixir + Shell + TypeScript.
+Upstream: https://github.com/Interested-Deving-1896/incus-image-server
 
 ---
 

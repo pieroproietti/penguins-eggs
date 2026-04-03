@@ -19,6 +19,7 @@ Seven full companion repositories merged into `integrations/` (and some also at 
 | eggs-gui | Go + TypeScript + Python | Unified GUI: Go daemon + BubbleTea TUI + NodeGUI desktop + NiceGUI web | https://github.com/Interested-Deving-1896/eggs-gui |
 | eggs-ai | TypeScript | AI assistant: diagnostics, build guidance, MCP server, HTTP API, 7 LLM providers | https://github.com/Interested-Deving-1896/eggs-ai |
 | penguins-distrobuilder | Go + Python | Unified distrobuilder: lxc/distrobuilder (Go) + distrobuilder-menu (Python TUI) | https://github.com/Interested-Deving-1896/penguins-distrobuilder |
+| incus-image-server | Elixir + Shell + TypeScript | Simplestreams image server for LXC/LXD/Incus; multi-distro manifests; ChromiumOS stage3 builder | https://github.com/Interested-Deving-1896/incus-image-server |
 
 ---
 

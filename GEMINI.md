@@ -181,16 +181,47 @@ vulnerability scanning) and SBOM & Supply Chain (syft, grant, SBOM-Generation).
 39 upstream projects, 8 domains, TypeScript + Shell.
 
 ### penguins-distrobuilder (`integrations/penguins-distrobuilder/`)
-Unified project combining lxc/distrobuilder (Go — system container and VM
-image builder for Incus/LXC) and itoffshore/distrobuilder-menu (Python TUI
-frontend) in a subtree layout. The eggs-plugin hook optionally builds a
-distrobuilder LXC/Incus image of the produced system alongside the standard
-ISO. The recovery-plugin hook snapshots the rootfs via `distrobuilder pack`
-before a factory reset.
-- Build: `make build` (compiles distrobuilder Go binary)
-- Run TUI: `make run-menu` (LXD) or `make run-menu-lxc` (LXC)
-- Config: `/etc/penguins-distrobuilder/eggs-hooks.conf`
-- Upstream: https://github.com/lxc/distrobuilder + https://github.com/itoffshore/distrobuilder-menu
+Unified project combining lxc/distrobuilder (Go) and distrobuilder-menu
+(Python TUI). Enables `eggs produce --distrobuilder` to export any produced
+system to an Incus or LXC container image.
+
+Export pipeline: after ISO assembly, `runDistrobuilder()` in `produce.ts`
+invokes `distrobuilder-hook.sh`, which locates the eggs squashfs, reads
+`os-release` from inside it via `unsquashfs`, then calls
+`distrobuilder build-incus|build-lxc` with `templates/penguins-eggs.yaml`.
+The template uses `source.downloader: rootfs-http` with `url: file://<squashfs>`
+to consume the squashfs directly, strips live-boot artefacts in post-unpack
+actions, and resets hostname + machine-id.
+
+CLI flags added to `eggs produce`:
+- `--distrobuilder` — enable export
+- `--distrobuilder-type=incus|lxc|both` — image type (default: incus)
+- `--distrobuilder-output=<dir>` — output directory
+
+Install: `sudo make install-full` (in `integrations/penguins-distrobuilder/`)
+Config: `/etc/penguins-distrobuilder/eggs-hooks.conf`
+Always-on: set `DISTROBUILDER_ENABLED=1` in config
+Upstream: https://github.com/lxc/distrobuilder + https://github.com/itoffshore/distrobuilder-menu
+
+### incus-image-server (`integrations/incus-image-server/`)
+Simplestreams image server for LXC/LXD/Incus. Serving layer for images
+produced by penguins-distrobuilder. Enables `eggs produce --publish-incus`
+to build and publish in one command.
+
+Components:
+- `server/` — Elixir/Phoenix simplestreams server; S3-compatible + local
+  filesystem storage; direct multipart upload endpoint; no arch constraints
+- `manifests/` — distrobuilder YAMLs for all supported distros
+- `chromiumos-stage3/` — ChromiumOS stage3 builder (amd64 reven + arm64 openFyde)
+- `penguins-eggs/` — ChromiumOS family drop-ins: chromiumos.ts (Portage/
+  Chromebrew, stage3/board detection), derivatives_chromiumos.yaml,
+  flavours/chromiumos.yaml (arch-aware, openfyde flavour)
+
+Publish pipeline: `publishToIncusImageServer()` in `produce.ts` creates a
+version via `POST /publish/products/:id/versions`, then uploads
+`incus.tar.xz` + `rootfs.tar.xz` (or `disk.qcow2`) via multipart POST.
+Config: `INCUS_SERVER_URL`, `INCUS_SERVER_TOKEN`, `INCUS_SERVER_PRODUCT`
+in `/etc/penguins-distrobuilder/eggs-hooks.conf`.
 
 ### Plugin dispatch order (eggs produce)
 ```
@@ -201,7 +232,8 @@ eggs produce
         ├── PIF                    → embed backend state
         ├── PKM                    → embed kernel list
         ├── penguins-eggs-audit    → SBOM + attestation + license scan
-        └── penguins-distrobuilder → optional LXC/Incus image build
+        ├── penguins-distrobuilder → optional LXC/Incus image build
+        └── incus-image-server     → optional publish via --publish-incus
 ```
 
 See `integrations/ARCHITECTURE.md` for the full integration map.
