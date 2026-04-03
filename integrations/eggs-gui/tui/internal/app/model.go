@@ -28,18 +28,44 @@ type Model struct {
 	IncludeData    bool
 	MaxCompression bool
 
-	// Produce options (from pengui)
-	Prefix       string
-	Basename     string
-	Addons       string
-	Theme        string
-	Compression  string
-	Clone        bool
-	CryptedClone bool
-	Script       bool
-	Unsecure     bool
-	Yolk         bool
-	Excludes     []string
+	// Produce options
+	Prefix      string
+	Basename    string
+	Addons      string
+	Theme       string
+	Compression string
+	Clone       bool
+	Homecrypt   bool
+	Fullcrypt   bool
+	Script      bool
+	Yolk        bool
+	Release     bool
+	Excludes    []string
+	// Security / audit
+	Sbom             bool
+	Audit            bool
+	AuditFormat      string
+	AuditOutput      string
+	AuditVouchKey    string
+	AuditHardening   bool
+	AuditGrantPolicy string
+	AuditFailOnDeny  bool
+	// Recovery
+	Recovery        bool
+	RecoveryGui     string
+	RecoveryRescapp bool
+	// Distrobuilder / Incus export
+	Distrobuilder       bool
+	DistrobuilderType   string
+	DistrobuilderOutput string
+	PublishIncus        bool
+	PublishIncusUrl     string
+	PublishIncusToken   string
+	PublishIncusProduct string
+	// Post-build tracking
+	Snapshot bool
+	Lfs      bool
+	Ipfs     bool
 
 	// Status
 	Running     bool

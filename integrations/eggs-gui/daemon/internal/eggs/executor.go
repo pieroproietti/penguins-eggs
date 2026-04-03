@@ -144,6 +144,8 @@ func BuildProduceCommand(opts ProduceOptions) string {
 		cmd += " --pendrive"
 	} else if opts.Compression == "max" {
 		cmd += " --max"
+	} else if opts.Compression == "standard" {
+		cmd += " --standard"
 	}
 	if opts.Theme != "" && opts.Theme != "eggs" {
 		cmd += " --theme " + opts.Theme
@@ -154,17 +156,88 @@ func BuildProduceCommand(opts ProduceOptions) string {
 	if opts.Clone {
 		cmd += " --clone"
 	}
-	if opts.CryptedClone {
-		cmd += " --cryptedclone"
+	// eggs uses --homecrypt / --fullcrypt, not --cryptedclone
+	if opts.Homecrypt {
+		cmd += " --homecrypt"
+	}
+	if opts.Fullcrypt {
+		cmd += " --fullcrypt"
 	}
 	if opts.Script {
 		cmd += " --script"
 	}
-	if opts.Unsecure {
-		cmd += " --unsecure"
-	}
 	if opts.Yolk {
 		cmd += " --yolk"
+	}
+	if opts.Release {
+		cmd += " --release"
+	}
+	// Security / audit pipeline
+	if opts.Sbom {
+		cmd += " --sbom"
+	}
+	if opts.Audit {
+		cmd += " --audit"
+	}
+	if opts.AuditFormat != "" {
+		cmd += " --audit-format " + opts.AuditFormat
+	}
+	if opts.AuditOutput != "" {
+		cmd += " --audit-output " + opts.AuditOutput
+	}
+	if opts.AuditVouchKey != "" {
+		cmd += " --audit-vouch-key " + opts.AuditVouchKey
+	}
+	if opts.AuditHardening {
+		cmd += " --audit-hardening"
+	}
+	if opts.AuditGrantPolicy != "" {
+		cmd += " --audit-grant-policy " + opts.AuditGrantPolicy
+	}
+	if opts.AuditFailOnDeny {
+		cmd += " --audit-fail-on-deny"
+	}
+	// Recovery
+	if opts.Recovery {
+		cmd += " --recovery"
+	}
+	if opts.RecoveryGui != "" {
+		cmd += " --recovery-gui " + opts.RecoveryGui
+	}
+	if opts.RecoveryRescapp {
+		cmd += " --recovery-rescapp"
+	}
+	// Distrobuilder / Incus export
+	if opts.Distrobuilder {
+		cmd += " --distrobuilder"
+	}
+	if opts.DistrobuilderType != "" {
+		cmd += " --distrobuilder-type " + opts.DistrobuilderType
+	}
+	if opts.DistrobuilderOutput != "" {
+		cmd += " --distrobuilder-output " + opts.DistrobuilderOutput
+	}
+	if opts.PublishIncus {
+		cmd += " --publish-incus"
+	}
+	if opts.PublishIncusUrl != "" {
+		cmd += " --publish-incus-url " + opts.PublishIncusUrl
+	}
+	if opts.PublishIncusToken != "" {
+		cmd += " --publish-incus-token " + opts.PublishIncusToken
+	}
+	if opts.PublishIncusProduct != "" {
+		cmd += " --publish-incus-product " + opts.PublishIncusProduct
+	}
+	// Post-build tracking
+	if opts.Snapshot {
+		cmd += " --snapshot"
+	}
+	if opts.Lfs {
+		cmd += " --lfs"
+	}
+	if opts.Ipfs {
+		cmd += " --ipfs"
 	}
 
 	return cmd
@@ -172,18 +245,45 @@ func BuildProduceCommand(opts ProduceOptions) string {
 
 // ProduceOptions holds all options for the eggs produce command.
 type ProduceOptions struct {
-	Prefix       string   `json:"prefix"`
-	Basename     string   `json:"basename"`
-	Addons       string   `json:"addons"`
-	Links        string   `json:"links"`
-	Compression  string   `json:"compression"`
-	Theme        string   `json:"theme"`
-	Excludes     []string `json:"excludes"`
-	Clone        bool     `json:"clone"`
-	CryptedClone bool    `json:"cryptedclone"`
-	Script       bool     `json:"script"`
-	Unsecure     bool     `json:"unsecure"`
-	Yolk         bool     `json:"yolk"`
+	// Core
+	Prefix      string   `json:"prefix"`
+	Basename    string   `json:"basename"`
+	Addons      string   `json:"addons"`
+	Links       string   `json:"links"`
+	Compression string   `json:"compression"`
+	Theme       string   `json:"theme"`
+	Excludes    []string `json:"excludes"`
+	Clone       bool     `json:"clone"`
+	Homecrypt   bool     `json:"homecrypt"`
+	Fullcrypt   bool     `json:"fullcrypt"`
+	Script      bool     `json:"script"`
+	Yolk        bool     `json:"yolk"`
+	Release     bool     `json:"release"`
+	// Security / audit
+	Sbom             bool   `json:"sbom"`
+	Audit            bool   `json:"audit"`
+	AuditFormat      string `json:"audit_format"`
+	AuditOutput      string `json:"audit_output"`
+	AuditVouchKey    string `json:"audit_vouch_key"`
+	AuditHardening   bool   `json:"audit_hardening"`
+	AuditGrantPolicy string `json:"audit_grant_policy"`
+	AuditFailOnDeny  bool   `json:"audit_fail_on_deny"`
+	// Recovery
+	Recovery        bool   `json:"recovery"`
+	RecoveryGui     string `json:"recovery_gui"`
+	RecoveryRescapp bool   `json:"recovery_rescapp"`
+	// Distrobuilder / Incus export
+	Distrobuilder       bool   `json:"distrobuilder"`
+	DistrobuilderType   string `json:"distrobuilder_type"`
+	DistrobuilderOutput string `json:"distrobuilder_output"`
+	PublishIncus        bool   `json:"publish_incus"`
+	PublishIncusUrl     string `json:"publish_incus_url"`
+	PublishIncusToken   string `json:"publish_incus_token"`
+	PublishIncusProduct string `json:"publish_incus_product"`
+	// Post-build tracking
+	Snapshot bool `json:"snapshot"`
+	Lfs      bool `json:"lfs"`
+	Ipfs     bool `json:"ipfs"`
 }
 
 func detectEggsPath() string {
