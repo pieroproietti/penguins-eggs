@@ -18,6 +18,7 @@ Seven full companion repositories merged into `integrations/` (and some also at 
 | penguins-eggs-audit | TypeScript + Shell | Security audit + SBOM framework: vouch, syft, grant, OS hardening (39 projects, 8 domains) | https://github.com/Interested-Deving-1896/penguins-eggs-audit |
 | eggs-gui | Go + TypeScript + Python | Unified GUI: Go daemon + BubbleTea TUI + NodeGUI desktop + NiceGUI web | https://github.com/Interested-Deving-1896/eggs-gui |
 | eggs-ai | TypeScript | AI assistant: diagnostics, build guidance, MCP server, HTTP API, 7 LLM providers | https://github.com/Interested-Deving-1896/eggs-ai |
+| penguins-distrobuilder | Go + Python | Unified distrobuilder: lxc/distrobuilder (Go) + distrobuilder-menu (Python TUI) | https://github.com/Interested-Deving-1896/penguins-distrobuilder |
 
 ---
 

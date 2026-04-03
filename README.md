@@ -270,6 +270,20 @@ Chain (syft, grant, SBOM-Generation).
 
 - Source: [`integrations/penguins-eggs-audit/`](integrations/penguins-eggs-audit/)
 
+## penguins-distrobuilder
+
+Unified project combining [lxc/distrobuilder](https://github.com/lxc/distrobuilder)
+(Go — system container and VM image builder for Incus/LXC) and
+[itoffshore/distrobuilder-menu](https://github.com/itoffshore/distrobuilder-menu)
+(Python — console TUI frontend) in a single subtree layout.
+
+- `distrobuilder/` — builds rootfs images from YAML templates (`build-incus`, `build-lxc`, `build-dir`, `repack-windows`)
+- `menu/` — `dbmenu` TUI: menu-driven image building, template management, cloud-init config, auto-updates
+- `integration/eggs-plugin/` — optionally builds a distrobuilder LXC/Incus image alongside the standard ISO on `eggs produce`
+- `integration/recovery-plugin/` — snapshots the current rootfs via `distrobuilder pack` before a factory reset
+
+Source: [`integrations/penguins-distrobuilder/`](integrations/penguins-distrobuilder/) and https://github.com/Interested-Deving-1896/penguins-distrobuilder
+
 ## Plugin dispatch
 
 All ecosystem tools register hooks that `eggs produce` calls via the plugin
@@ -278,11 +292,12 @@ loader in `src/`. The dispatch order is:
 ```
 eggs produce
   └── plugin loader
-        ├── penguins-recovery/integration/eggs-plugin/        (snapshot before produce)
-        ├── penguins-powerwash/integration/eggs-plugin/       (embed binary + GRUB entry)
+        ├── penguins-recovery/integration/eggs-plugin/            (snapshot before produce)
+        ├── penguins-powerwash/integration/eggs-plugin/           (embed binary + GRUB entry)
         ├── penguins-immutable-framework/integration/eggs-plugin/ (embed PIF state)
-        ├── penguins-kernel-manager/integration/eggs-plugin/  (embed kernel list)
-        └── penguins-eggs-audit/plugins/                      (SBOM + audit hooks)
+        ├── penguins-kernel-manager/integration/eggs-plugin/      (embed kernel list)
+        ├── penguins-eggs-audit/plugins/                          (SBOM + audit hooks)
+        └── penguins-distrobuilder/integration/eggs-plugin/       (optional LXC/Incus image)
 ```
 
 See [`integrations/ARCHITECTURE.md`](integrations/ARCHITECTURE.md) for the

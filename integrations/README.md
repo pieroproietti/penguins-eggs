@@ -23,6 +23,7 @@ This directory contains all projects integrated with
 | [`penguins-eggs-audit/`](penguins-eggs-audit/) | penguins-eggs-audit | TypeScript + Shell | Security audit + SBOM framework (39 projects, 8 domains) |
 | [`eggs-gui/`](eggs-gui/) | eggs-gui | Go + TypeScript + Python | Unified GUI: Go daemon + BubbleTea TUI + NodeGUI desktop + NiceGUI web |
 | [`eggs-ai/`](eggs-ai/) | eggs-ai | TypeScript | AI assistant: diagnostics, build guidance, MCP server, HTTP API |
+| [`penguins-distrobuilder/`](penguins-distrobuilder/) | penguins-distrobuilder | Go + Python | Unified distrobuilder: lxc/distrobuilder (Go) + distrobuilder-menu (Python TUI) |
 
 Each tool with lifecycle hooks registers an **eggs plugin** and (where applicable) a **recovery plugin**:
 
@@ -41,6 +42,7 @@ Each tool with lifecycle hooks registers an **eggs plugin** and (where applicabl
 | PKM | `/etc/penguins-kernel-manager/hooks.conf` | `post_install_notify`, `post_remove_old_sync` |
 | penguins-eggs-audit | built-in plugin hooks | SBOM generation, license scan, attestation |
 | eggs-ai | `~/.eggs-ai.yaml` | `default_provider`, custom LLM endpoints |
+| penguins-distrobuilder | `/etc/penguins-distrobuilder/eggs-hooks.conf` | `DISTROBUILDER_ENABLED`, `DISTROBUILDER_TEMPLATE`, `DISTROBUILDER_TYPE` |
 
 ---
 
@@ -89,6 +91,7 @@ integrations/
 ├── penguins-immutable-framework/  # ecosystem tool (subtree)
 ├── penguins-kernel-manager/       # ecosystem tool (subtree)
 ├── penguins-eggs-audit/           # ecosystem tool (subtree)
+├── penguins-distrobuilder/        # ecosystem tool (subtree: distrobuilder/ + menu/)
 │
 ├── eggs-ai/                       # eggs AI assistant (subtree)
 ├── eggs-gui/                      # eggs unified GUI (subtree)

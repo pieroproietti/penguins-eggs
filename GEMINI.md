@@ -169,15 +169,28 @@ plugin domains with Security & Audit (vouch attestation, OS hardening,
 vulnerability scanning) and SBOM & Supply Chain (syft, grant, SBOM-Generation).
 39 upstream projects, 8 domains, TypeScript + Shell.
 
+### penguins-distrobuilder (`integrations/penguins-distrobuilder/`)
+Unified project combining lxc/distrobuilder (Go — system container and VM
+image builder for Incus/LXC) and itoffshore/distrobuilder-menu (Python TUI
+frontend) in a subtree layout. The eggs-plugin hook optionally builds a
+distrobuilder LXC/Incus image of the produced system alongside the standard
+ISO. The recovery-plugin hook snapshots the rootfs via `distrobuilder pack`
+before a factory reset.
+- Build: `make build` (compiles distrobuilder Go binary)
+- Run TUI: `make run-menu` (LXD) or `make run-menu-lxc` (LXC)
+- Config: `/etc/penguins-distrobuilder/eggs-hooks.conf`
+- Upstream: https://github.com/lxc/distrobuilder + https://github.com/itoffshore/distrobuilder-menu
+
 ### Plugin dispatch order (eggs produce)
 ```
 eggs produce
   └── plugin loader (src/)
-        ├── penguins-recovery    → snapshot before produce
-        ├── penguins-powerwash   → embed binary + GRUB entry
-        ├── PIF                  → embed backend state
-        ├── PKM                  → embed kernel list
-        └── penguins-eggs-audit  → SBOM + attestation + license scan
+        ├── penguins-recovery      → snapshot before produce
+        ├── penguins-powerwash     → embed binary + GRUB entry
+        ├── PIF                    → embed backend state
+        ├── PKM                    → embed kernel list
+        ├── penguins-eggs-audit    → SBOM + attestation + license scan
+        └── penguins-distrobuilder → optional LXC/Incus image build
 ```
 
 See `integrations/ARCHITECTURE.md` for the full integration map.

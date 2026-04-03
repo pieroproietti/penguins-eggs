@@ -11,17 +11,17 @@ redistributable live ISO/image.
 The integrations extend eggs in two layers:
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                        PENGUINS-EGGS CORE                            │
-│             (produce ISOs, install systems, wardrobes)               │
-└──┬──────┬──────┬──────┬──────┬──────┬──────┬────────────────────────┘
-   │      │      │      │      │      │      │
-   ▼      ▼      ▼      ▼      ▼      ▼      ▼
-┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
-│recov-││power-││immut-││kernel││audit ││eggs- ││eggs- │
-│ery   ││wash  ││able  ││-mgr  ││+SBOM ││gui   ││ai    │
-└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘
-   ECOSYSTEM TOOLS (7 subtree repos, bidirectional hooks)
+┌──────────────────────────────────────────────────────────────────────────┐
+│                          PENGUINS-EGGS CORE                              │
+│               (produce ISOs, install systems, wardrobes)                 │
+└──┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────────────────────┘
+   │      │      │      │      │      │      │      │
+   ▼      ▼      ▼      ▼      ▼      ▼      ▼      ▼
+┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────────┐
+│recov-││power-││immut-││kernel││audit ││eggs- ││eggs- ││distro-   │
+│ery   ││wash  ││able  ││-mgr  ││+SBOM ││gui   ││ai    ││builder   │
+└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────┘└──────────┘
+   ECOSYSTEM TOOLS (8 subtree repos, bidirectional hooks)
 
 ┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐
 │DISTRO││DECEN-││CONFIG││BUILD ││DEV   ││PACK- │
@@ -227,6 +227,67 @@ eggs-gui daemon    → JSON-RPC  → ai.* methods (via proto/eggs-ai-rpc.json)
 Config: `~/.eggs-ai.yaml` (run `eggs-ai providers init` to generate).
 
 Source: [`eggs-ai/`](eggs-ai/) and root [`../eggs-ai/`](../eggs-ai/) — TypeScript, 9 test files, 80 tests.
+
+---
+
+### penguins-distrobuilder
+
+**Purpose:** Unified project combining `lxc/distrobuilder` (Go) and
+`itoffshore/distrobuilder-menu` (Python TUI) in a single subtree layout,
+with penguins-eggs integration hooks.
+
+**Internal layout:**
+
+```
+penguins-distrobuilder/
+├── distrobuilder/   # lxc/distrobuilder — Go, Apache-2.0
+├── menu/            # itoffshore/distrobuilder-menu — Python, GPL-3.0
+├── integration/
+│   ├── eggs-plugin/distrobuilder-hook.sh
+│   └── recovery-plugin/distrobuilder-recovery-hook.sh
+└── Makefile
+```
+
+**distrobuilder (Go) commands:**
+
+| Command | Purpose |
+|---|---|
+| `distrobuilder build-incus` | Build Incus image from scratch |
+| `distrobuilder build-lxc` | Build LXC image from scratch |
+| `distrobuilder build-dir` | Build plain rootfs |
+| `distrobuilder pack-incus` | Create Incus image from existing rootfs |
+| `distrobuilder pack-lxc` | Create LXC image from existing rootfs |
+| `distrobuilder repack-windows` | Repack Windows ISO with drivers |
+
+**distrobuilder-menu (Python) — `dbmenu`:**
+Menu-driven LXD/LXC image building with template management, cloud-init
+config, custom template generation, and automatic weekly template updates
+via the GitHub REST API. Config: `~/.config/dbmenu.yaml`.
+
+**Integration points:**
+
+| Direction | Trigger | Action |
+|---|---|---|
+| distrobuilder → eggs | `eggs produce` (post) | `distrobuilder-hook.sh` optionally builds LXC/Incus image of produced system |
+| distrobuilder → recovery | pre-reset | `distrobuilder-recovery-hook.sh` snapshots rootfs via `distrobuilder pack-incus` or `pack-lxc` |
+
+**Configuration** (`/etc/penguins-distrobuilder/eggs-hooks.conf`):
+
+```sh
+# eggs-plugin
+DISTROBUILDER_ENABLED=1
+DISTROBUILDER_TEMPLATE=/path/to/template.yaml
+DISTROBUILDER_TYPE=incus          # incus | lxc
+DISTROBUILDER_OUTPUT=/var/lib/eggs/distrobuilder
+
+# recovery-plugin
+DISTROBUILDER_RECOVERY_ENABLED=1
+DISTROBUILDER_RECOVERY_ROOTFS=/
+DISTROBUILDER_RECOVERY_OUTPUT=/var/lib/eggs/distrobuilder/recovery
+```
+
+Source: [`penguins-distrobuilder/`](penguins-distrobuilder/) — Go + Python.
+Upstream repos: https://github.com/lxc/distrobuilder and https://github.com/itoffshore/distrobuilder-menu
 
 ---
 
