@@ -113,12 +113,12 @@ to it automatically for AI-assisted diagnostics and build guidance.
 
     if (!fs.existsSync(this.guiRoot)) {
       this.error(
-        'eggs-gui source not found. Run: sudo make install-full in integrations/eggs-gui/',
+        'eggs-gui source not found. Run: sudo ./integrations/eggs-gui/scripts/install-eggs-gui.sh',
         { exit: 1 },
       )
     }
 
-    if (!spawnSync('which', ['go'], { stdio: 'pipe' }).status === false) {
+    if (spawnSync('which', ['go'], { stdio: 'pipe' }).status !== 0) {
       this.error('Go is required to build eggs-gui. Install Go 1.21+ and retry.', { exit: 1 })
     }
 
