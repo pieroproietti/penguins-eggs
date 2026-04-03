@@ -182,11 +182,13 @@ export default class Produce extends Command {
     },
     verbose: boolean,
   ): Promise<void> {
-    // Resolve audit plugin classes from the integrations subtree
-    const auditBase = path.resolve(
-      __dirname,
-      '../../integrations/penguins-eggs-audit/plugins',
-    )
+    // Resolve audit plugin classes.
+    // In a compiled production build (dist/), plugins are pre-compiled to
+    // dist/audit-plugins/plugins/ by the build:audit-plugins script.
+    // In development (src/ via ts-node), fall back to the TypeScript source.
+    const auditPluginsDist = path.resolve(__dirname, '../audit-plugins/plugins')
+    const auditPluginsSrc  = path.resolve(__dirname, '../../integrations/penguins-eggs-audit/plugins')
+    const auditBase = fs.existsSync(auditPluginsDist) ? auditPluginsDist : auditPluginsSrc
 
     const exec = this.makeExec(verbose)
     fs.mkdirSync(opts.outputDir, { recursive: true })
@@ -195,9 +197,10 @@ export default class Produce extends Command {
 
     // ── 1. SBOM via syft ──────────────────────────────────────────────────
     try {
-      const { SyftGenerate } = await import(
-        path.join(auditBase, 'sbom/syft-generate/syft-generate.js')
-      ).catch(() => require(path.join(auditBase, 'sbom/syft-generate/syft-generate.ts')))
+      const syftPath = path.join(auditBase, 'sbom/syft-generate/syft-generate.js')
+      const { SyftGenerate } = fs.existsSync(syftPath)
+        ? await import(syftPath)
+        : await import(path.join(auditBase, 'sbom/syft-generate/syft-generate.ts'))
 
       const syft = new SyftGenerate(exec)
       if (await syft.isAvailable()) {
@@ -207,9 +210,10 @@ export default class Produce extends Command {
 
         // ── 2. License scan via grant ──────────────────────────────────────
         try {
-          const { GrantLicense } = await import(
-            path.join(auditBase, 'sbom/grant-license/grant-license.js')
-          ).catch(() => require(path.join(auditBase, 'sbom/grant-license/grant-license.ts')))
+          const grantPath = path.join(auditBase, 'sbom/grant-license/grant-license.js')
+          const { GrantLicense } = fs.existsSync(grantPath)
+            ? await import(grantPath)
+            : await import(path.join(auditBase, 'sbom/grant-license/grant-license.ts'))
 
           const grant = new GrantLicense(exec)
           if (await grant.isAvailable()) {
@@ -243,9 +247,10 @@ export default class Produce extends Command {
     // ── 3. Attestation via vouch ───────────────────────────────────────────
     if (opts.vouchKey) {
       try {
-        const { VouchAttest } = await import(
-          path.join(auditBase, 'security-audit/vouch-attest/vouch-attest.js')
-        ).catch(() => require(path.join(auditBase, 'security-audit/vouch-attest/vouch-attest.ts')))
+        const vouchPath = path.join(auditBase, 'security-audit/vouch-attest/vouch-attest.js')
+        const { VouchAttest } = fs.existsSync(vouchPath)
+          ? await import(vouchPath)
+          : await import(path.join(auditBase, 'security-audit/vouch-attest/vouch-attest.ts'))
 
         const vouch = new VouchAttest(exec)
         if (await vouch.isAvailable()) {
@@ -279,16 +284,16 @@ export default class Produce extends Command {
     outputDir: string,
     verbose: boolean,
   ): Promise<void> {
-    const auditBase = path.resolve(
-      __dirname,
-      '../../integrations/penguins-eggs-audit/plugins',
-    )
+    const auditPluginsDist = path.resolve(__dirname, '../audit-plugins/plugins')
+    const auditPluginsSrc  = path.resolve(__dirname, '../../integrations/penguins-eggs-audit/plugins')
+    const auditBase = fs.existsSync(auditPluginsDist) ? auditPluginsDist : auditPluginsSrc
     const exec = this.makeExec(verbose)
 
     try {
-      const { OsHardening } = await import(
-        path.join(auditBase, 'security-audit/os-hardening/os-hardening.js')
-      ).catch(() => require(path.join(auditBase, 'security-audit/os-hardening/os-hardening.ts')))
+      const hardeningPath = path.join(auditBase, 'security-audit/os-hardening/os-hardening.js')
+      const { OsHardening } = fs.existsSync(hardeningPath)
+        ? await import(hardeningPath)
+        : await import(path.join(auditBase, 'security-audit/os-hardening/os-hardening.ts'))
 
       const hardening = new OsHardening(exec)
 
@@ -782,6 +787,16 @@ export default class Produce extends Command {
           }
         }
 
+        // Pre-produce: OS hardening applied to chroot BEFORE ISO assembly
+        // so the hardened filesystem ends up inside the produced ISO.
+        if (flags.audit && flags['audit-hardening'] && !scriptOnly) {
+          await this.runHardening(
+            ovary.settings.config.snapshot_dir,
+            flags['audit-output'] ?? '/var/lib/eggs/audit',
+            verbose,
+          )
+        }
+
         // Run pre-produce plugins (e.g. pkm-hook.sh, pif-hook.sh embed state into ISO root)
         await runPlugins(
           { hook: 'produce', isoRoot: ovary.settings.config.snapshot_dir },
@@ -839,7 +854,11 @@ export default class Produce extends Command {
           }
         }
 
-        if (flags.sbom) {
+        // --sbom: standalone SBOM generation (subset of --audit)
+        // --audit: full pipeline (SBOM + license + attestation).
+        // If both are set, --audit handles SBOM so --sbom is skipped to avoid
+        // running syft twice.
+        if (flags.sbom && !flags.audit) {
           try {
             const { SyftGenerate } = await import('penguins-eggs-audit/sbom')
             const syft = new SyftGenerate(exec)
@@ -856,14 +875,19 @@ export default class Produce extends Command {
           }
         }
 
-        // Post-produce audit: SBOM + license scan + attestation
+        // Post-produce audit: SBOM + license scan + attestation.
+        // Covers --sbom functionality when --audit is set, so no duplication.
         if (flags.audit && !scriptOnly) {
           await this.runAudit(
             isoPath,
             ovary.settings.config.snapshot_dir,
             {
               format: (flags['audit-format'] as any) ?? 'spdx-json',
-              outputDir: flags['audit-output'] ?? '/var/lib/eggs/audit',
+              // If --sbom and --audit both set, write to the same sbom/ dir
+              // so the user gets one consistent output location.
+              outputDir: flags['audit-output'] ?? (flags.sbom
+                ? path.join(ovary.settings.config.snapshot_dir, 'sbom')
+                : '/var/lib/eggs/audit'),
               vouchKey: flags['audit-vouch-key'],
               grantPolicy: flags['audit-grant-policy'],
               failOnDeny: flags['audit-fail-on-deny'] ?? false,
@@ -890,17 +914,6 @@ export default class Produce extends Command {
             flags['publish-incus-url'],
             flags['publish-incus-token'],
             flags['publish-incus-product'],
-            verbose,
-          )
-        }
-
-        // Pre-produce hardening (applied to chroot before ISO assembly)
-        // Note: this runs AFTER the distrobuilder/audit blocks intentionally —
-        // hardening is applied to the snapshot dir which is still available.
-        if (flags.audit && flags['audit-hardening'] && !scriptOnly) {
-          await this.runHardening(
-            ovary.settings.config.snapshot_dir,
-            flags['audit-output'] ?? '/var/lib/eggs/audit',
             verbose,
           )
         }

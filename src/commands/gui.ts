@@ -87,9 +87,25 @@ to it automatically for AI-assisted diagnostics and build guidance.
   private isDaemonRunning(): boolean {
     const sock = '/tmp/eggs-gui.sock'
     if (!fs.existsSync(sock)) return false
-    // Try a quick nc probe; if it fails the socket is stale.
-    const r = spawnSync('nc', ['-zU', sock], { stdio: 'pipe' })
-    return r.status === 0
+    // Probe the Unix socket with a pure Node.js connect — no nc dependency,
+    // works on Alpine (busybox nc), Arch, Debian, and all other distros.
+    try {
+      const net = require('node:net') as typeof import('node:net')
+      const client = net.createConnection(sock)
+      // Synchronous probe: connect with a 300 ms timeout
+      let connected = false
+      client.on('connect', () => { connected = true; client.destroy() })
+      client.on('error', () => { client.destroy() })
+      // Block briefly using a spin-wait (acceptable for a CLI startup check)
+      const deadline = Date.now() + 300
+      while (Date.now() < deadline && !connected && !client.destroyed) {
+        // Node event loop tick — let the connect/error event fire
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10)
+      }
+      return connected
+    } catch {
+      return false
+    }
   }
 
   private async buildIfNeeded(verbose: boolean): Promise<void> {

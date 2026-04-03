@@ -123,7 +123,8 @@
     "repository": "pieroproietti/penguins-eggs",
     "scripts": {
         "appimage": "pnpm build && ./appimage.sh",
-        "build": "pnpm clean && shx rm -rf dist && tsc -p . && oclif manifest",
+        "build": "pnpm clean && shx rm -rf dist && tsc -p . && pnpm build:audit-plugins && oclif manifest",
+        "build:audit-plugins": "tsc -p integrations/penguins-eggs-audit/tsconfig.json --outDir dist/audit-plugins && echo 'audit plugins compiled'",
         "clean": "rm -rf build dist *.AppImage AppDir",
         "deb": "pnpm build && pb deb --release $(cat ./release)",
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",

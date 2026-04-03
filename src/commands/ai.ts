@@ -57,13 +57,16 @@ Run \`eggs ai mcp\` to start the MCP server.
   static strict = false  // pass all remaining args through to eggs-ai
 
   static flags = {
-    install: Flags.boolean({ description: 'install eggs-ai on this system' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose output' }),
+    install: Flags.boolean({ description: 'install eggs-ai on this system', allowNo: false }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose output', allowNo: false }),
   }
 
   static args = [
     { name: 'subcommand', description: 'eggs-ai subcommand and arguments', required: false },
   ]
+
+  // Flags that belong to `eggs ai` itself and must NOT be forwarded to eggs-ai.
+  private static readonly ownFlags = new Set(['--install', '--verbose', '-v'])
 
   private readonly aiCandidates = [
     '/usr/local/bin/eggs-ai',
@@ -170,10 +173,11 @@ WantedBy=multi-user.target
     }
 
     // ── Pass through all args to eggs-ai ──────────────────────────────────
-    // Strip our own flags (--install, --verbose) from argv before passing through
-    const passthrough = (argv as string[]).filter(
-      (a) => a !== '--install' && a !== '--verbose' && a !== '-v',
-    )
+    // Use process.argv directly (after the command name) so we get the raw
+    // tokens before oclif normalises them. Strip only our own flags.
+    // process.argv: ['node', '/path/to/eggs', 'ai', ...rest]
+    const rawArgs = process.argv.slice(3) // everything after 'ai'
+    const passthrough = rawArgs.filter((a) => !Ai.ownFlags.has(a))
 
     // Determine how to invoke: node script or direct binary
     const isScript = aiBin.endsWith('.js')
