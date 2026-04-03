@@ -1,16 +1,49 @@
 # ChromiumOS family derivatives
-# Detected by distroId from /etc/os-release or /etc/lsb-release
+# Detected via distroId from /etc/os-release or /etc/lsb-release.
+#
+# All entries here map to familyId: 'chromiumos' in distro.ts.
+# Detection order in distro.ts:
+#   1. Primary switch on distroId (handles the most common names directly)
+#   2. This file (handles less common derivatives and future forks)
+#
+# To add a new ChromiumOS derivative, append its ID here — no code change needed.
 ---
+# Upstream / reference builds
 - ChromiumOS
 - Chromiumos
 - ChromeOS
 - Chromeos
+
+# openFyde / FydeOS family
 - FydeOS
 - Fydeos
 - openFyde
 - Openfyde
+
+# Thorium (compiler-optimized Chromium fork)
 - ThoriumOS
 - Thoriumos
+
+# WayneOS
 - WayneOS
 - Wayneos
+
+# Brunch (ChromiumOS on generic x86 hardware)
 - Brunch
+
+# ChromiumOS stage3 build environments (from this project's chromiumos-stage3)
+# These run inside Incus containers and identify as ChromiumOS family.
+- ChromiumOS-stage3
+- Chromiumos-stage3
+
+# Hardware-specific openFyde boards
+# These set ID in /etc/os-release to the board name.
+- rpi4-openfyde
+- rpi5-openfyde
+- rock5b-openfyde
+- rockpi4b-openfyde
+- rock4cp-openfyde
+- orangepi5-openfyde
+- firefly-rk3588spc-openfyde
+- firefly-itx3588j-openfyde
+- arm64-openfyde

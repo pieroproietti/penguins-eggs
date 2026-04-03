@@ -1,21 +1,31 @@
 # ChromiumOS flavour registry
-# Each flavour defines a Chromium-based browser to bundle with the ChromiumOS image.
+#
+# Each flavour defines a Chromium-based browser to bundle with the ChromiumOS
+# image produced by penguins-eggs.
 #
 # Install methods:
-#   tarball  - Download pre-built tarball from GitHub releases, extract to /opt
-#   emerge   - Install via Portage ebuild
-#   crew     - Install via Chromebrew
-#   custom   - Clone a git repo and run its build script
+#   tarball - Download pre-built tarball from GitHub releases, extract to /opt
+#   emerge  - Install via Portage ebuild (requires cros_sdk or Gentoo Prefix)
+#   crew    - Install via Chromebrew
+#   custom  - Clone a git repo and run its build script
 #
-# To add a custom browser, use: eggs produce --cros-flavour custom --cros-browser-repo <git-url>
+# Stage3 awareness:
+#   When running inside a ChromiumOS stage3 container (from this project's
+#   chromiumos-stage3 component), the 'emerge' method is preferred because
+#   the stage3 includes a full Portage tree. The 'crew' fallback applies on
+#   standard ChromeOS/ChromiumOS runtime environments.
+#
+# To add a custom browser:
+#   eggs produce --cros-flavour custom --cros-browser-repo <url>
 ---
 flavours:
   chromium:
     name: Chromium
     description: Stock open-source Chromium browser
-    repo: https://github.com/nicothin/nicothin
     install_method: emerge
     package_name: www-client/chromium
+    # crew fallback for non-stage3 environments
+    crew_package: chromium
     branding:
       volid_prefix: CHROMIUMOS
       iso_prefix: chromiumos
@@ -26,7 +36,10 @@ flavours:
     repo: https://github.com/Alex313031/thorium
     releases_url: https://api.github.com/repos/Alex313031/thorium/releases/latest
     install_method: tarball
-    tarball_filter: thorium-browser_*_amd64.deb
+    # Architecture-specific tarball filters
+    tarball_filter:
+      amd64: "thorium-browser_*_amd64.deb"
+      arm64: "thorium-browser_*_arm64.deb"
     install_dir: /opt/thorium
     binary_name: thorium-browser
     desktop_file: thorium-browser.desktop
@@ -40,7 +53,9 @@ flavours:
     repo: https://github.com/brave/brave-browser
     releases_url: https://api.github.com/repos/brave/brave-browser/releases/latest
     install_method: tarball
-    tarball_filter: brave-browser-*-linux-amd64.zip
+    tarball_filter:
+      amd64: "brave-browser-*-linux-amd64.zip"
+      arm64: "brave-browser-*-linux-arm64.zip"
     install_dir: /opt/brave
     binary_name: brave-browser
     desktop_file: brave-browser.desktop
@@ -50,31 +65,39 @@ flavours:
 
   vanadium:
     name: Vanadium
-    description: GrapheneOS hardened Chromium (Android-only, requires source build for Linux)
+    description: GrapheneOS hardened Chromium (source build required for Linux)
     repo: https://github.com/GrapheneOS/Vanadium
     install_method: custom
     build_script: build.sh
-    notes: Vanadium is Android-only upstream. Linux builds require patching Chromium source.
+    notes: >
+      Vanadium is Android-only upstream. Linux builds require patching Chromium
+      source. Only viable inside a stage3 container with a full Portage tree.
     branding:
       volid_prefix: VANADIUMOS
       iso_prefix: vanadiumos
 
-  bromite:
-    name: Bromite
-    description: Chromium with ad blocking and privacy enhancements (discontinued, see Cromite)
-    repo: https://github.com/nicothin/nicothin
-    install_method: custom
-    notes: Bromite is discontinued. Use Cromite instead.
-    branding:
-      volid_prefix: BROMITEOS
-      iso_prefix: bromiteos
-
   cromite:
     name: Cromite
     description: Fork of Bromite with continued ad blocking and privacy patches
-    repo: https://github.com/nicothin/nicothin
+    repo: https://github.com/uazo/cromite
     install_method: custom
-    notes: Cromite is Android-only upstream. Linux builds require patching Chromium source.
+    notes: >
+      Cromite is Android-only upstream. Linux builds require patching Chromium
+      source. Only viable inside a stage3 container with a full Portage tree.
     branding:
       volid_prefix: CROMITEOS
       iso_prefix: cromiteos
+
+  # openFyde / FydeOS — uses the board's pre-installed browser
+  openfyde:
+    name: openFyde
+    description: openFyde default browser (board-specific, pre-installed)
+    install_method: emerge
+    package_name: chromeos-base/chromeos-chrome
+    notes: >
+      Only meaningful on openFyde boards (rpi4-openfyde, rock5b-openfyde, etc.).
+      The browser is already present in the board overlay; this flavour simply
+      ensures it is registered in the eggs image metadata.
+    branding:
+      volid_prefix: OPENFYDEOS
+      iso_prefix: openfydeos
