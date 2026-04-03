@@ -10,6 +10,7 @@
 import { Command, Flags } from '@oclif/core'
 import { spawnSync, spawn } from 'node:child_process'
 import fs from 'node:fs'
+import net from 'node:net'
 import path from 'node:path'
 import chalk from 'chalk'
 
@@ -90,7 +91,6 @@ to it automatically for AI-assisted diagnostics and build guidance.
     // Probe the Unix socket with a pure Node.js connect — no nc dependency,
     // works on Alpine (busybox nc), Arch, Debian, and all other distros.
     try {
-      const net = require('node:net') as typeof import('node:net')
       const client = net.createConnection(sock)
       // Synchronous probe: connect with a 300 ms timeout
       let connected = false

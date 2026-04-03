@@ -9,6 +9,7 @@
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 import fs from 'node:fs'
+import { spawnSync as spawnSyncNode } from 'node:child_process'
 import path from 'node:path'
 
 import Compressors from '../classes/compressors.js'
@@ -150,9 +151,8 @@ export default class Produce extends Command {
    */
   private makeExec(verbose: boolean) {
     return async (cmd: string, opts: { capture?: boolean; echo?: boolean } = {}) => {
-      const { spawnSync } = require('node:child_process') as typeof import('node:child_process')
       if (opts.echo || verbose) console.log(chalk.dim(`$ ${cmd}`))
-      const result = spawnSync('bash', ['-c', cmd], {
+      const result = spawnSyncNode('bash', ['-c', cmd], {
         stdio: opts.capture ? 'pipe' : 'inherit',
         encoding: 'utf8',
       })

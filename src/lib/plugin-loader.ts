@@ -11,7 +11,7 @@
  *   - A non-zero exit code is logged as a warning but never aborts eggs
  */
 
-import { execSync, spawnSync } from 'node:child_process'
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 
