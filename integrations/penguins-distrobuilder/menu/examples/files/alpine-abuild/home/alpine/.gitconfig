@@ -1,0 +1,24 @@
+[user]
+	email = user@domain.com
+	name = Your Name
+	signingkey = YOUR_KEY
+[core]
+	editor = nano
+	pager = less -FXRS
+[sendemail]
+	from = Your Name <user@domain.com>
+	smtpserver = smtp.your.mail.server
+	smtpuser = user@domain.com
+	smtpencryption = tls
+	smtppass = should_be_something_long
+	smtpserverport = 587
+	suppresscc = self
+
+[push]
+	default = simple
+[gpg]
+	program = gpg2
+[commit]
+	gpgsign = true
+[pull]
+	rebase = false

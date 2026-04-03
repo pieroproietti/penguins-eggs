@@ -1,0 +1,15 @@
+set titlecolor bold,white,magenta
+set promptcolor black,yellow
+set statuscolor bold,white,magenta
+set errorcolor bold,white,red
+set spotlightcolor black,orange
+set selectedcolor lightwhite,cyan
+set stripecolor ,yellow
+set scrollercolor magenta
+set numbercolor magenta
+set keycolor lightmagenta
+set functioncolor magenta
+
+# python config
+#set tabsize 4
+#set tabstospaces

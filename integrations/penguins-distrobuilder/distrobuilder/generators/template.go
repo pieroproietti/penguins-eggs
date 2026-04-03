@@ -1,0 +1,88 @@
+package generators
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/flosch/pongo2/v4"
+	"github.com/lxc/incus/v6/shared/api"
+
+	"github.com/lxc/distrobuilder/v3/image"
+	"github.com/lxc/distrobuilder/v3/shared"
+)
+
+type template struct {
+	common
+}
+
+// RunLXC dumps content to a file.
+func (g *template) RunLXC(img *image.LXCImage, target shared.DefinitionTargetLXC) error {
+	// no template support for LXC, ignoring generator
+	return nil
+}
+
+// RunIncus dumps content to a file.
+func (g *template) RunIncus(img *image.IncusImage, target shared.DefinitionTargetIncus) error {
+	templateDir := filepath.Join(g.cacheDir, "templates")
+
+	err := os.MkdirAll(templateDir, 0o755)
+	if err != nil {
+		return fmt.Errorf("Failed to create directory %q: %w", templateDir, err)
+	}
+
+	template := fmt.Sprintf("%s.tpl", g.defFile.Name)
+
+	file, err := os.Create(filepath.Join(templateDir, template))
+	if err != nil {
+		return fmt.Errorf("Failed to create file %q: %w", filepath.Join(templateDir, template), err)
+	}
+
+	defer file.Close()
+
+	content := g.defFile.Content
+
+	// Append final new line if missing
+	if !strings.HasSuffix(content, "\n") {
+		content += "\n"
+	}
+
+	if g.defFile.Pongo {
+		tpl, err := pongo2.FromString(content)
+		if err != nil {
+			return fmt.Errorf("Failed to parse template: %w", err)
+		}
+
+		content, err = tpl.Execute(pongo2.Context{"incus": target})
+		if err != nil {
+			return fmt.Errorf("Failed to execute template: %w", err)
+		}
+	}
+
+	_, err = file.WriteString(content)
+	if err != nil {
+		return fmt.Errorf("Failed to write to content to %s template: %w", g.defFile.Name, err)
+	}
+
+	// Add to Incus templates
+	img.Metadata.Templates[g.defFile.Path] = &api.ImageMetadataTemplate{
+		Template:   template,
+		Properties: g.defFile.Template.Properties,
+		When:       g.defFile.Template.When,
+	}
+
+	if len(g.defFile.Template.When) == 0 {
+		img.Metadata.Templates[g.defFile.Path].When = []string{
+			"create",
+			"copy",
+		}
+	}
+
+	return nil
+}
+
+// Run does nothing.
+func (g *template) Run() error {
+	return nil
+}

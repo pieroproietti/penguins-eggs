@@ -1,0 +1,29 @@
+---
+
+files:
+
+- generator: copy
+  source: ~/distrobuilder/files/ubuntu-gitlab/usr
+  path: /usr/
+
+- generator: copy
+  source: ~/distrobuilder/files/ubuntu-gitlab/etc
+  path: /etc/
+
+- generator: copy
+  source: ~/distrobuilder/files/ubuntu-gitlab/root
+  path: /root/
+
+packages:
+  manager: apt
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - openssh-server
+        - ca-certificates
+        - tzdata
+        - perl
+        - apt-transport-https
+        - gnupg
+      action: install

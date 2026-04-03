@@ -1,0 +1,23 @@
+---
+
+files:
+
+- generator: copy
+  source: ~/distrobuilder/files/alpine-abuild/home
+  mode: 644
+  path: /home/
+
+- generator: copy
+  source: ~/distrobuilder/files/alpine-abuild/etc
+  mode: 644
+  path: /etc/
+
+- generator: copy
+  source: ~/distrobuilder/files/alpine-abuild/root
+  mode: 644
+  path: /root/
+
+- generator: copy
+  source: ~/distrobuilder/files/alpine-abuild/cloudinit-per-once
+  mode: 700
+  path: /var/lib/cloud/scripts/per-once/

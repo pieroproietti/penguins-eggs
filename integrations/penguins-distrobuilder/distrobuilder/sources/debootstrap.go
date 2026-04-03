@@ -1,0 +1,100 @@
+package sources
+
+import (
+	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+	"slices"
+	"strings"
+
+	incus "github.com/lxc/incus/v6/shared/util"
+
+	"github.com/lxc/distrobuilder/v3/shared"
+)
+
+type debootstrap struct {
+	common
+}
+
+// Run runs debootstrap.
+func (s *debootstrap) Run() error {
+	var args []string
+
+	os.RemoveAll(s.rootfsDir)
+
+	if s.definition.Source.Variant != "" {
+		args = append(args, "--variant", s.definition.Source.Variant)
+	}
+
+	if s.definition.Image.ArchitectureMapped != "" {
+		args = append(args, "--arch", s.definition.Image.ArchitectureMapped)
+	}
+
+	if s.definition.Source.SkipVerification {
+		args = append(args, "--no-check-gpg")
+	}
+
+	if s.definition.Image.Distribution == "devuan" && slices.Contains([]string{"beowulf", "chimaera"}, s.definition.Image.Release) {
+		// Workaround for debootstrap attempting to fetch non-existent usr-is-merged.
+		args = append(args, "--exclude=usr-is-merged")
+	}
+
+	earlyPackagesInstall := s.definition.GetEarlyPackages("install")
+	earlyPackagesRemove := s.definition.GetEarlyPackages("remove")
+
+	if len(earlyPackagesInstall) > 0 {
+		args = append(args, fmt.Sprintf("--include=%s", strings.Join(earlyPackagesInstall, ",")))
+	}
+
+	if len(earlyPackagesRemove) > 0 {
+		args = append(args, fmt.Sprintf("--exclude=%s", strings.Join(earlyPackagesRemove, ",")))
+	}
+
+	if len(s.definition.Source.Components) > 0 {
+		args = append(args, fmt.Sprintf("--components=%s", strings.Join(s.definition.Source.Components, ",")))
+	}
+
+	if len(s.definition.Source.Keys) > 0 {
+		keyring, err := s.CreateGPGKeyring()
+		if err != nil {
+			return fmt.Errorf("Failed to create GPG keyring: %w", err)
+		}
+
+		defer os.RemoveAll(path.Dir(keyring))
+
+		args = append(args, "--keyring", keyring)
+	}
+
+	// If source.suite is set, debootstrap will use this instead of
+	// image.release as its first positional argument (SUITE). This is important
+	// for derivatives which don't have their own sources, e.g. Linux Mint.
+	if s.definition.Source.Suite != "" {
+		args = append(args, s.definition.Source.Suite, s.rootfsDir)
+	} else {
+		args = append(args, s.definition.Image.Release, s.rootfsDir)
+	}
+
+	if s.definition.Source.URL != "" {
+		args = append(args, s.definition.Source.URL)
+	}
+
+	// If s.definition.Source.SameAs is set, create a symlink in /usr/share/debootstrap/scripts
+	// pointing release to s.definition.Source.SameAs.
+	scriptPath := filepath.Join("/usr/share/debootstrap/scripts", s.definition.Image.Release)
+	if !incus.PathExists(scriptPath) && s.definition.Source.SameAs != "" {
+		err := os.Symlink(s.definition.Source.SameAs, scriptPath)
+		if err != nil {
+			return fmt.Errorf("Failed to create symlink: %w", err)
+		}
+
+		defer os.Remove(scriptPath)
+	}
+
+	err := shared.RunCommand(s.ctx, nil, nil, "debootstrap", args...)
+	if err != nil {
+		return fmt.Errorf(`Failed to run "debootstrap": %w`, err)
+	}
+
+	return nil
+}

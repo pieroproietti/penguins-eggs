@@ -1,0 +1,32 @@
+---
+files:
+
+  - generator: copy
+    source: ~/distrobuilder/files/ubuntu-base/etc
+    path: /etc/
+
+  - generator: copy
+    source: ~/distrobuilder/files/ubuntu-base/home
+    path: /home/
+
+  - generator: copy
+    source: ~/distrobuilder/files/ubuntu-base/root
+    path: /root/
+
+packages:
+  manager: apt
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - curl
+        - wget
+        - htop
+        - nano
+        - net-tools
+        - nftables
+        - iptables
+        - msmtp
+        - systemd-container
+        - unattended-upgrades
+      action: install

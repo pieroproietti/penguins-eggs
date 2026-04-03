@@ -1,0 +1,16 @@
+#cloud-config
+version: v1
+apt:
+  preserve_sources_list: true
+  sources:
+    gitlab-ce.list:
+      source: deb [signed-by=$KEY_FILE] https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/ focal main
+      keyid: F640 3F65 44A3 8863 DAA0  B6E0 3F01 618A 5131 2F3F
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - gitlab-ce
+  - libarchive13
+runcmd:
+  - cloud-init status --wait && gitlab-ctl reconfigure
