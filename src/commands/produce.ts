@@ -38,7 +38,10 @@ export default class Produce extends Command {
     'sudo eggs produce --cros-flavour=thorium   # ChromiumOS with Thorium browser',
     'sudo eggs produce --cros-flavour=brave     # ChromiumOS with Brave browser',
     'sudo eggs produce --cros-flavour=custom --cros-browser-repo=https://github.com/user/fork  # custom browser',
-    'sudo eggs produce --sbom                # generate SBOM for the produced ISO (requires syft)'
+    'sudo eggs produce --sbom                # generate SBOM for the produced ISO (requires syft)',
+    'sudo eggs produce --distrobuilder       # export to Incus/LXC image via distrobuilder (default: incus)',
+    'sudo eggs produce --distrobuilder --distrobuilder-type=lxc   # export as LXC image',
+    'sudo eggs produce --distrobuilder --distrobuilder-type=both  # export both Incus and LXC images'
   ]
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
@@ -67,6 +70,9 @@ export default class Produce extends Command {
     ipfs: Flags.boolean({ description: 'publish produced ISO to IPFS via brig after build' }),
     snapshot: Flags.boolean({ description: 'create BTRFS snapshots before/after build (requires BTRFS)' }),
     sbom: Flags.boolean({ description: 'generate a Software Bill of Materials (SBOM) for the produced ISO via syft' }),
+    distrobuilder: Flags.boolean({ description: 'export the produced system to an Incus/LXC container image via distrobuilder' }),
+    'distrobuilder-type': Flags.string({ description: 'distrobuilder image type: incus, lxc, or both (default: incus)', options: ['incus', 'lxc', 'both'] }),
+    'distrobuilder-output': Flags.string({ description: 'output directory for distrobuilder images (default: /var/lib/eggs/distrobuilder)' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
@@ -119,6 +125,71 @@ export default class Produce extends Command {
     } catch {
       console.log(chalk.red('penguins-recovery adapter failed. Original ISO is unchanged.'))
       console.log(chalk.yellow(`You can run manually: ${cmd}`))
+    }
+  }
+
+  /**
+   * Export the produced system to an Incus/LXC container image via distrobuilder.
+   * Delegates to the distrobuilder-hook.sh plugin script so all logic lives
+   * in one place and can be used both from the CLI flag and from the plugin loader.
+   */
+  private async runDistrobuilder(
+    isoPath: string,
+    snapshotDir: string,
+    type: string,
+    outputDir?: string,
+    verbose?: boolean,
+  ): Promise<void> {
+    const { spawnSync } = await import('node:child_process')
+
+    // Locate the hook script: prefer the installed copy, fall back to the
+    // integrations/ subtree inside the eggs repo.
+    const hookCandidates = [
+      '/usr/share/penguins-distrobuilder/integration/eggs-plugin/distrobuilder-hook.sh',
+      '/usr/local/share/penguins-distrobuilder/integration/eggs-plugin/distrobuilder-hook.sh',
+      path.resolve(__dirname, '../../integrations/penguins-distrobuilder/integration/eggs-plugin/distrobuilder-hook.sh'),
+    ]
+
+    let hookScript = ''
+    for (const candidate of hookCandidates) {
+      if (fs.existsSync(candidate)) {
+        hookScript = candidate
+        break
+      }
+    }
+
+    if (!hookScript) {
+      Utils.warning('distrobuilder hook script not found. Install penguins-distrobuilder or check integrations/penguins-distrobuilder/.')
+      console.log(chalk.yellow('Expected locations:'))
+      for (const c of hookCandidates) console.log(chalk.yellow(`  ${c}`))
+      return
+    }
+
+    Utils.warning(`Exporting to ${type} image via distrobuilder...`)
+
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      EGGS_HOOK: 'produce',
+      EGGS_ISO_FILE: isoPath,
+      EGGS_ISO_ROOT: snapshotDir,
+      EGGS_WORK: snapshotDir,
+      DISTROBUILDER_ENABLED: '1',
+      DISTROBUILDER_TYPE: type,
+    }
+    if (outputDir) env['DISTROBUILDER_OUTPUT'] = outputDir
+
+    const result = spawnSync('bash', [hookScript], {
+      env,
+      stdio: verbose ? 'inherit' : 'pipe',
+    })
+
+    if (result.status !== 0) {
+      const stderr = result.stderr?.toString().trim() ?? ''
+      console.log(chalk.red(`distrobuilder export failed (exit ${result.status})${stderr ? ': ' + stderr : ''}`))
+      console.log(chalk.yellow('Check /etc/penguins-distrobuilder/eggs-hooks.conf and ensure distrobuilder is installed.'))
+    } else {
+      const out = outputDir ?? '/var/lib/eggs/distrobuilder'
+      console.log(chalk.green(`distrobuilder: ${type} image written to ${out}`))
     }
   }
 
@@ -468,6 +539,17 @@ export default class Produce extends Command {
           }
         }
 
+        // Export to Incus/LXC via distrobuilder
+        if (flags.distrobuilder && !scriptOnly) {
+          await this.runDistrobuilder(
+            isoPath,
+            ovary.settings.config.snapshot_dir,
+            flags['distrobuilder-type'] ?? 'incus',
+            flags['distrobuilder-output'],
+            verbose,
+          )
+        }
+
         // Run post-produce plugins with the final ISO path available
         if (!scriptOnly) {
           await runPlugins(
@@ -476,6 +558,10 @@ export default class Produce extends Command {
               isoRoot: ovary.settings.config.snapshot_dir,
               isoFile: isoPath,
               workDir: ovary.settings.config.snapshot_dir,
+              // Pass distrobuilder config so the plugin hook respects CLI flags
+              distrobuilder_enabled: flags.distrobuilder ? '1' : '0',
+              distrobuilder_type: flags['distrobuilder-type'] ?? 'incus',
+              distrobuilder_output: flags['distrobuilder-output'] ?? '',
             },
             undefined,
             verbose,

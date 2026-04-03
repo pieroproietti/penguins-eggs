@@ -1,0 +1,125 @@
+# penguins-eggs distrobuilder template
+#
+# Builds an Incus or LXC container image from a penguins-eggs produced rootfs.
+#
+# Usage:
+#   distrobuilder build-incus penguins-eggs.yaml /output/dir
+#   distrobuilder build-lxc   penguins-eggs.yaml /output/dir
+#
+# The EGGS_SQUASHFS environment variable must point to the squashfs produced
+# by `eggs produce`. The hook script sets this automatically.
+# Override manually:
+#   EGGS_SQUASHFS=/path/to/filesystem.squashfs distrobuilder build-incus penguins-eggs.yaml /out
+#
+# The EGGS_DISTRO, EGGS_RELEASE, EGGS_ARCH variables are detected by the hook
+# and passed via -o overrides. They can also be set manually.
+
+image:
+  distribution: "{{ env.EGGS_DISTRO | default('penguins-eggs') }}"
+  release: "{{ env.EGGS_RELEASE | default('rolling') }}"
+  architecture: "{{ env.EGGS_ARCH | default('amd64') }}"
+  description: "penguins-eggs remastered system — {{ image.distribution }} {{ image.release }}"
+  expiry: 30d
+  variant: default
+
+source:
+  # rootfs-http with file:// consumes a local squashfs/tarball directly.
+  # distrobuilder will unsquash it and use it as the container rootfs.
+  downloader: rootfs-http
+  url: "file://{{ env.EGGS_SQUASHFS | default('/var/lib/eggs/filesystem.squashfs') }}"
+  skip_verification: true
+
+targets:
+  lxc:
+    create_message: |
+      penguins-eggs LXC container ready.
+      Distribution: {{ image.distribution }} {{ image.release }}
+      Built from: {{ env.EGGS_SQUASHFS }}
+    config:
+      - type: all
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+      - type: user
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+  incus:
+    vm:
+      size: 21474836480  # 20 GiB default VM disk
+      filesystem: ext4
+
+packages:
+  manager: auto
+  # Clean up eggs-specific packages that should not be in a container image.
+  # These are removed after the rootfs is imported; the container will still
+  # boot correctly without them.
+  cleanup:
+    - penguins-eggs
+    - calamares
+    - calamares-qml
+    - live-boot
+    - live-boot-initramfs-tools
+    - live-config
+    - live-config-systemd
+    - casper
+
+actions:
+  # Remove live-system artefacts that are irrelevant in a container context.
+  - trigger: post-unpack
+    action: |-
+      #!/bin/sh
+      set -e
+
+      # Remove live-boot / casper configuration
+      rm -rf /etc/live /etc/casper.conf /etc/calamares
+
+      # Remove eggs desktop shortcuts if present
+      rm -f /usr/share/applications/eggs*.desktop
+      rm -f /root/Desktop/eggs*.desktop
+
+      # Disable services that make no sense in a container
+      for svc in NetworkManager-wait-online live-config live-boot; do
+        systemctl disable "$svc" 2>/dev/null || true
+      done
+
+  # Ensure the container has a working hostname and hosts file.
+  - trigger: post-unpack
+    action: |-
+      #!/bin/sh
+      set -e
+      echo "penguins-eggs-container" > /etc/hostname
+      if ! grep -q "penguins-eggs-container" /etc/hosts 2>/dev/null; then
+        echo "127.0.1.1 penguins-eggs-container" >> /etc/hosts
+      fi
+
+  # Re-generate machine-id so each container gets a unique identity.
+  - trigger: post-unpack
+    action: |-
+      #!/bin/sh
+      set -e
+      rm -f /etc/machine-id /var/lib/dbus/machine-id
+      dbus-uuidgen --ensure=/etc/machine-id 2>/dev/null || \
+        systemd-machine-id-setup 2>/dev/null || \
+        cat /proc/sys/kernel/random/uuid | tr -d '-' > /etc/machine-id
+      mkdir -p /var/lib/dbus
+      cp /etc/machine-id /var/lib/dbus/machine-id
+
+  # Squash /etc/fstab entries that reference live-specific mounts.
+  - trigger: post-unpack
+    action: |-
+      #!/bin/sh
+      set -e
+      if [ -f /etc/fstab ]; then
+        # Comment out tmpfs/overlay/live entries
+        sed -i 's|^\(.*\(tmpfs\|overlay\|live\|casper\).*\)$|# \1|' /etc/fstab || true
+      fi
