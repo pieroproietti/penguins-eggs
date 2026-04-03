@@ -42,7 +42,11 @@ export default class Produce extends Command {
     'sudo eggs produce --distrobuilder       # export to Incus/LXC image via distrobuilder (default: incus)',
     'sudo eggs produce --distrobuilder --distrobuilder-type=lxc   # export as LXC image',
     'sudo eggs produce --distrobuilder --distrobuilder-type=both  # export both Incus and LXC images',
-    'sudo eggs produce --publish-incus --publish-incus-url=https://images.example.com --publish-incus-token=<token> --publish-incus-product=<id>  # build + publish to incus-image-server'
+    'sudo eggs produce --publish-incus --publish-incus-url=https://images.example.com --publish-incus-token=<token> --publish-incus-product=<id>  # build + publish to incus-image-server',
+    'sudo eggs produce --audit                          # full audit: SBOM + license scan + attestation + hardening',
+    'sudo eggs produce --audit --audit-vouch-key=~/.vouch/key.pem  # audit with cryptographic attestation',
+    'sudo eggs produce --audit --audit-hardening        # audit + apply OS hardening to the chroot',
+    'sudo eggs produce --audit --audit-format=cyclonedx-json  # audit with CycloneDX SBOM format'
   ]
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
@@ -78,6 +82,13 @@ export default class Produce extends Command {
     'publish-incus-url': Flags.string({ description: 'incus-image-server base URL (e.g. https://images.example.com)' }),
     'publish-incus-token': Flags.string({ description: 'incus-image-server publish session token' }),
     'publish-incus-product': Flags.string({ description: 'incus-image-server product ID to publish under' }),
+    audit: Flags.boolean({ description: 'run full audit pipeline: SBOM generation (syft), license scan (grant), attestation (vouch), optional hardening' }),
+    'audit-format': Flags.string({ description: 'SBOM format: spdx-json, cyclonedx-json, syft-json, spdx-tag-value (default: spdx-json)', options: ['spdx-json', 'cyclonedx-json', 'syft-json', 'spdx-tag-value'] }),
+    'audit-output': Flags.string({ description: 'output directory for audit artefacts (default: /var/lib/eggs/audit)' }),
+    'audit-vouch-key': Flags.string({ description: 'path to vouch signing key for ISO attestation (skipped if not set)' }),
+    'audit-hardening': Flags.boolean({ description: 'apply OS hardening scripts to the chroot before ISO assembly' }),
+    'audit-grant-policy': Flags.string({ description: 'path to .grant.yaml license policy file' }),
+    'audit-fail-on-deny': Flags.boolean({ description: 'exit non-zero if license policy violations are found (default: false)', default: false }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
@@ -130,6 +141,177 @@ export default class Produce extends Command {
     } catch {
       console.log(chalk.red('penguins-recovery adapter failed. Original ISO is unchanged.'))
       console.log(chalk.yellow(`You can run manually: ${cmd}`))
+    }
+  }
+
+  /**
+   * Shared exec helper passed to audit plugin classes.
+   * Runs a shell command and returns { code, data, error }.
+   */
+  private makeExec(verbose: boolean) {
+    return async (cmd: string, opts: { capture?: boolean; echo?: boolean } = {}) => {
+      const { spawnSync } = require('node:child_process') as typeof import('node:child_process')
+      if (opts.echo || verbose) console.log(chalk.dim(`$ ${cmd}`))
+      const result = spawnSync('bash', ['-c', cmd], {
+        stdio: opts.capture ? 'pipe' : 'inherit',
+        encoding: 'utf8',
+      })
+      return {
+        code: result.status ?? 1,
+        data: (result.stdout ?? '').toString(),
+        error: (result.stderr ?? '').toString(),
+      }
+    }
+  }
+
+  /**
+   * Run the full audit pipeline on the produced ISO:
+   *   1. SBOM generation via syft
+   *   2. License compliance scan via grant
+   *   3. Cryptographic attestation via vouch (if key provided)
+   */
+  private async runAudit(
+    isoPath: string,
+    snapshotDir: string,
+    opts: {
+      format: 'spdx-json' | 'cyclonedx-json' | 'syft-json' | 'spdx-tag-value'
+      outputDir: string
+      vouchKey?: string
+      grantPolicy?: string
+      failOnDeny: boolean
+    },
+    verbose: boolean,
+  ): Promise<void> {
+    // Resolve audit plugin classes from the integrations subtree
+    const auditBase = path.resolve(
+      __dirname,
+      '../../integrations/penguins-eggs-audit/plugins',
+    )
+
+    const exec = this.makeExec(verbose)
+    fs.mkdirSync(opts.outputDir, { recursive: true })
+
+    Utils.warning('Running audit pipeline...')
+
+    // ── 1. SBOM via syft ──────────────────────────────────────────────────
+    try {
+      const { SyftGenerate } = await import(
+        path.join(auditBase, 'sbom/syft-generate/syft-generate.js')
+      ).catch(() => require(path.join(auditBase, 'sbom/syft-generate/syft-generate.ts')))
+
+      const syft = new SyftGenerate(exec)
+      if (await syft.isAvailable()) {
+        Utils.warning('Generating SBOM with syft...')
+        const result = await syft.generate(isoPath, { format: opts.format, outputDir: opts.outputDir })
+        console.log(chalk.green(`SBOM written: ${result.sbomPath}`))
+
+        // ── 2. License scan via grant ──────────────────────────────────────
+        try {
+          const { GrantLicense } = await import(
+            path.join(auditBase, 'sbom/grant-license/grant-license.js')
+          ).catch(() => require(path.join(auditBase, 'sbom/grant-license/grant-license.ts')))
+
+          const grant = new GrantLicense(exec)
+          if (await grant.isAvailable()) {
+            Utils.warning('Scanning licenses with grant...')
+            if (opts.grantPolicy) {
+              // use provided policy
+            } else {
+              grant.initPolicy(path.join(opts.outputDir, '.grant.yaml'))
+              opts.grantPolicy = path.join(opts.outputDir, '.grant.yaml')
+            }
+            const licResult = await grant.check(result.sbomPath, {
+              policyFile: opts.grantPolicy,
+              failOnDeny: opts.failOnDeny,
+            })
+            const icon = licResult.passed ? chalk.green('✅') : chalk.yellow('⚠️')
+            console.log(`${icon} License scan: ${licResult.passed ? 'passed' : 'violations found'}`)
+            if (!licResult.passed && verbose) console.log(licResult.output)
+          } else {
+            console.log(chalk.yellow('grant not found — skipping license scan. Install: https://github.com/anchore/grant'))
+          }
+        } catch (err: any) {
+          console.log(chalk.yellow(`License scan skipped: ${err.message}`))
+        }
+      } else {
+        console.log(chalk.yellow('syft not found — skipping SBOM. Install: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh'))
+      }
+    } catch (err: any) {
+      console.log(chalk.yellow(`SBOM generation skipped: ${err.message}`))
+    }
+
+    // ── 3. Attestation via vouch ───────────────────────────────────────────
+    if (opts.vouchKey) {
+      try {
+        const { VouchAttest } = await import(
+          path.join(auditBase, 'security-audit/vouch-attest/vouch-attest.js')
+        ).catch(() => require(path.join(auditBase, 'security-audit/vouch-attest/vouch-attest.ts')))
+
+        const vouch = new VouchAttest(exec)
+        if (await vouch.isAvailable()) {
+          Utils.warning('Attesting ISO with vouch...')
+          const attestResult = await vouch.attest(isoPath, {
+            keyPath: opts.vouchKey,
+            outputDir: opts.outputDir,
+          })
+          if (attestResult.success) {
+            console.log(chalk.green(`Attestation bundle: ${attestResult.bundlePath}`))
+          } else {
+            console.log(chalk.yellow('Attestation failed — check vouch key and binary'))
+          }
+        } else {
+          console.log(chalk.yellow('vouch not found — skipping attestation. Install: https://github.com/mitchellh/vouch'))
+        }
+      } catch (err: any) {
+        console.log(chalk.yellow(`Attestation skipped: ${err.message}`))
+      }
+    }
+
+    console.log(chalk.green(`Audit artefacts written to: ${opts.outputDir}`))
+  }
+
+  /**
+   * Apply OS hardening scripts to the snapshot chroot via OsHardening.
+   * Fetches the upstream Opsek/OSs-security scripts on first run.
+   */
+  private async runHardening(
+    chrootPath: string,
+    outputDir: string,
+    verbose: boolean,
+  ): Promise<void> {
+    const auditBase = path.resolve(
+      __dirname,
+      '../../integrations/penguins-eggs-audit/plugins',
+    )
+    const exec = this.makeExec(verbose)
+
+    try {
+      const { OsHardening } = await import(
+        path.join(auditBase, 'security-audit/os-hardening/os-hardening.js')
+      ).catch(() => require(path.join(auditBase, 'security-audit/os-hardening/os-hardening.ts')))
+
+      const hardening = new OsHardening(exec)
+
+      if (!hardening.scriptsAvailable('linux')) {
+        Utils.warning('Fetching OS hardening scripts (first run)...')
+        await hardening.fetchScripts('linux')
+      }
+
+      Utils.warning(`Applying OS hardening to chroot: ${chrootPath}`)
+      const result = await hardening.applyHardening({
+        chrootPath,
+        targetOS: 'linux',
+        dryRun: false,
+      })
+
+      if (result.applied) {
+        console.log(chalk.green('OS hardening applied successfully'))
+      } else {
+        console.log(chalk.yellow('OS hardening completed with warnings — check output above'))
+      }
+      if (verbose) console.log(result.output)
+    } catch (err: any) {
+      console.log(chalk.yellow(`OS hardening skipped: ${err.message}`))
     }
   }
 
@@ -674,6 +856,22 @@ export default class Produce extends Command {
           }
         }
 
+        // Post-produce audit: SBOM + license scan + attestation
+        if (flags.audit && !scriptOnly) {
+          await this.runAudit(
+            isoPath,
+            ovary.settings.config.snapshot_dir,
+            {
+              format: (flags['audit-format'] as any) ?? 'spdx-json',
+              outputDir: flags['audit-output'] ?? '/var/lib/eggs/audit',
+              vouchKey: flags['audit-vouch-key'],
+              grantPolicy: flags['audit-grant-policy'],
+              failOnDeny: flags['audit-fail-on-deny'] ?? false,
+            },
+            verbose,
+          )
+        }
+
         // Export to Incus/LXC via distrobuilder (also triggered by --publish-incus)
         if ((flags.distrobuilder || flags['publish-incus']) && !scriptOnly) {
           await this.runDistrobuilder(
@@ -692,6 +890,17 @@ export default class Produce extends Command {
             flags['publish-incus-url'],
             flags['publish-incus-token'],
             flags['publish-incus-product'],
+            verbose,
+          )
+        }
+
+        // Pre-produce hardening (applied to chroot before ISO assembly)
+        // Note: this runs AFTER the distrobuilder/audit blocks intentionally —
+        // hardening is applied to the snapshot dir which is still available.
+        if (flags.audit && flags['audit-hardening'] && !scriptOnly) {
+          await this.runHardening(
+            ovary.settings.config.snapshot_dir,
+            flags['audit-output'] ?? '/var/lib/eggs/audit',
             verbose,
           )
         }

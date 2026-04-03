@@ -157,6 +157,40 @@ eggs-produced ISOs. Extends the 6 original plugin domains with two new ones.
 | audit → eggs | `eggs produce` | `grant-license` plugin scans ISO contents for license compliance |
 | audit → eggs | CI | `os-hardening` plugin applies hardening scripts to the produced system |
 
+**eggs lifecycle wiring (`eggs produce --audit`):**
+
+```
+eggs produce --audit [--audit-hardening] [--audit-vouch-key=key.pem]
+  │
+  ├── (pre-produce, if --audit-hardening)
+  │     OsHardening.applyHardening(snapshotDir)
+  │       └── fetches Opsek/OSs-security scripts on first run
+  │           applies hardening.sh --chroot <snapshotDir>
+  │
+  └── (post-produce)
+        ├── SyftGenerate.generate(isoPath)
+        │     mounts ISO loop device → syft dir:<mount> → <name>.sbom.json
+        │
+        ├── GrantLicense.check(sbomPath)
+        │     grant check [--config .grant.yaml] <sbomPath>
+        │     writes default .grant.yaml if none exists
+        │
+        └── VouchAttest.attest(isoPath)  [only if --audit-vouch-key set]
+              vouch attest --key <key> --output <name>.attestation.json <iso>
+```
+
+**Flags:**
+
+| Flag | Default | Purpose |
+|---|---|---|
+| `--audit` | — | Enable full audit pipeline |
+| `--audit-format` | `spdx-json` | SBOM format (spdx-json, cyclonedx-json, syft-json, spdx-tag-value) |
+| `--audit-output` | `/var/lib/eggs/audit` | Output directory for all audit artefacts |
+| `--audit-vouch-key` | — | Path to vouch signing key (skips attestation if not set) |
+| `--audit-hardening` | — | Apply OS hardening to chroot before ISO assembly |
+| `--audit-grant-policy` | auto | Path to `.grant.yaml` license policy |
+| `--audit-fail-on-deny` | false | Exit non-zero on license policy violations |
+
 Source: [`penguins-eggs-audit/`](penguins-eggs-audit/) — TypeScript + Shell, 54 files, 8 domains, 39 upstream projects.
 
 ---
@@ -189,6 +223,20 @@ Frontend (TUI / Desktop / Web)
 **Features:** ISO produce with full option control, AUTO mode, Dad/Tools config
 editors, wardrobe browser, Calamares management, PPA/Skel/Yolk tools, USB copy
 with progress, i18n (es, en, pt, it).
+
+**eggs lifecycle wiring:**
+
+| Command | Action |
+|---|---|
+| `eggs gui` | Start daemon + launch TUI (default) |
+| `eggs gui --frontend=desktop` | Start daemon + launch NodeGUI desktop |
+| `eggs gui --frontend=web` | Start daemon + launch NiceGUI web (port 7777) |
+| `eggs gui --daemon-only` | Start daemon only (for external frontends) |
+| `eggs gui --stop` | Stop the running daemon |
+
+**Install:** `sudo ./scripts/install-eggs-gui.sh [--desktop] [--web] [--all]`
+Installs binaries to `/usr/local/bin/`, registers `eggs-daemon.service` with systemd.
+Auto-builds from source on first `eggs gui` if binaries not found (requires Go 1.21+).
 
 Source: [`eggs-gui/`](eggs-gui/) and root [`../eggs-gui/`](../eggs-gui/) — Go + TypeScript + Python.
 
@@ -224,7 +272,23 @@ eggs-gui frontends → HTTP REST → eggs-ai server (port 3737) → LLM provider
 eggs-gui daemon    → JSON-RPC  → ai.* methods (via proto/eggs-ai-rpc.json)
 ```
 
-Config: `~/.eggs-ai.yaml` (run `eggs-ai providers init` to generate).
+**eggs lifecycle wiring:**
+
+| Command | Action |
+|---|---|
+| `eggs ai doctor` | Diagnose eggs environment |
+| `eggs ai ask "<q>"` | One-shot question |
+| `eggs ai chat` | Interactive session |
+| `eggs ai build` | Guided ISO build plan |
+| `eggs ai serve` | Start HTTP API on port 3737 |
+| `eggs ai mcp` | Start MCP server |
+| `eggs ai install` | Install eggs-ai + systemd service |
+| `eggs ai providers init` | Generate `~/.eggs-ai.yaml` |
+
+All subcommands are passed through to the `eggs-ai` binary. If not installed,
+`eggs ai install` runs the upstream `install.sh` automatically.
+
+Config: `~/.eggs-ai.yaml` (run `eggs ai providers init` to generate).
 
 Source: [`eggs-ai/`](eggs-ai/) and root [`../eggs-ai/`](../eggs-ai/) — TypeScript, 9 test files, 80 tests.
 

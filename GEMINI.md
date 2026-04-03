@@ -164,21 +164,30 @@ JSON-RPC on a Unix socket; three frontends connect to it: BubbleTea TUI (Go),
 NodeGUI desktop (Qt6/TypeScript), NiceGUI web (Python). Features: ISO produce
 with full option control, AUTO mode, Dad/Tools config editors, wardrobe browser,
 Calamares management, i18n (es, en, pt, it).
-- Build: `make all` (daemon + TUI); `make run` to start
+- New `eggs gui` command: starts daemon + launches chosen frontend
+- Install: `sudo ./integrations/eggs-gui/scripts/install-eggs-gui.sh [--desktop] [--web] [--all]`
+- systemd: `eggs-daemon.service` (installed by install script)
+- CLI: `eggs gui [--frontend=tui|desktop|web] [--daemon-only] [--stop]`
 
 ### eggs-ai (`integrations/eggs-ai/` and `eggs-ai/`)
 AI assistant for penguins-eggs. 7 built-in LLM providers (Gemini, OpenAI,
 Anthropic, Mistral, Groq, Ollama, custom). Exposes a CLI, HTTP API
 (`http://127.0.0.1:3737/api/*`), MCP server (10 tools), TypeScript SDK, and
 client code for all three eggs-gui frontends.
-- Config: `~/.eggs-ai.yaml` (`eggs-ai providers init` to generate)
-- MCP: add `dist/mcp/server.js` to your MCP client config
+- New `eggs ai` command: delegates all subcommands to eggs-ai binary
+- Install: `eggs ai install` (uses upstream install.sh; installs eggs-ai.service)
+- CLI: `eggs ai doctor|ask|chat|build|config|calamares|serve|mcp|providers`
+- Config: `~/.eggs-ai.yaml` (`eggs ai providers init` to generate)
 
 ### penguins-eggs-audit (`integrations/penguins-eggs-audit/`)
 Security audit and supply chain transparency framework. Extends the 6 original
 plugin domains with Security & Audit (vouch attestation, OS hardening,
 vulnerability scanning) and SBOM & Supply Chain (syft, grant, SBOM-Generation).
 39 upstream projects, 8 domains, TypeScript + Shell.
+- Wired into `eggs produce --audit` (SBOM via syft, license scan via grant,
+  attestation via vouch, OS hardening via OsHardening class)
+- Flags: `--audit-format`, `--audit-output`, `--audit-vouch-key`,
+  `--audit-hardening`, `--audit-grant-policy`, `--audit-fail-on-deny`
 
 ### penguins-distrobuilder (`integrations/penguins-distrobuilder/`)
 Unified project combining lxc/distrobuilder (Go) and distrobuilder-menu

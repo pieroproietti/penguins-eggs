@@ -247,6 +247,16 @@ over JSON-RPC on a Unix socket; three frontends connect to it:
 | Desktop | NodeGUI (Qt6/TypeScript) | Native desktop |
 | Web | NiceGUI (Python) | Remote / headless via browser |
 
+```bash
+eggs gui                    # launch TUI (default)
+eggs gui --frontend=desktop # launch NodeGUI desktop
+eggs gui --frontend=web     # launch NiceGUI web UI (http://localhost:7777)
+eggs gui --daemon-only      # start daemon without a frontend
+eggs gui --stop             # stop the daemon
+```
+
+Install: `sudo ./integrations/eggs-gui/scripts/install-eggs-gui.sh [--desktop] [--web] [--all]`
+
 - Source: [`integrations/eggs-gui/`](integrations/eggs-gui/) and [`eggs-gui/`](eggs-gui/)
 
 ## eggs-ai
@@ -258,6 +268,17 @@ Anthropic, Mistral, Groq, Ollama, custom) plus any OpenAI-compatible endpoint.
 Exposes an HTTP API, an MCP server (for Cursor, Claude Desktop, etc.), and a
 TypeScript SDK for eggs-gui integration.
 
+```bash
+eggs ai doctor              # diagnose eggs environment
+eggs ai ask "..."           # one-shot question
+eggs ai chat                # interactive session
+eggs ai build               # guided ISO build plan
+eggs ai serve               # start HTTP API on port 3737
+eggs ai mcp                 # start MCP server
+eggs ai install             # install eggs-ai on this system
+eggs ai providers init      # configure LLM provider
+```
+
 - Source: [`integrations/eggs-ai/`](integrations/eggs-ai/) and [`eggs-ai/`](eggs-ai/)
 - MCP tools: `eggs_doctor`, `eggs_build_plan`, `eggs_config_explain`, `eggs_system_status`, and 6 more
 
@@ -267,6 +288,14 @@ Security audit and supply chain transparency framework. Extends eggs with 39
 projects across 8 domains: the original 6 plugin domains plus Security & Audit
 (vouch attestation, OS hardening, vulnerability scanning) and SBOM & Supply
 Chain (syft, grant, SBOM-Generation).
+
+```bash
+eggs produce --audit                           # SBOM + license scan + attestation
+eggs produce --audit --audit-vouch-key=key.pem # + cryptographic attestation
+eggs produce --audit --audit-hardening         # + OS hardening applied to chroot
+eggs produce --audit --audit-format=cyclonedx-json
+eggs produce --audit --audit-output=/srv/audit
+```
 
 - Source: [`integrations/penguins-eggs-audit/`](integrations/penguins-eggs-audit/)
 
