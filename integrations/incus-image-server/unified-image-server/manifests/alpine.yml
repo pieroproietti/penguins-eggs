@@ -1,0 +1,73 @@
+# Alpine Linux container images
+# Architectures: amd64, arm64
+# Release: edge (rolling)
+# Init: OpenRC
+image:
+  distribution: alpine
+  release: edge
+  architecture: amd64
+  variant: default
+  name: "{{ image.distribution }}-{{ image.release }}-{{ image.variant }}-{{ image.serial }}"
+  description: "Alpine Linux {{ image.release }} {{ image.architecture }}"
+
+source:
+  downloader: alpinelinux-http
+  url: https://dl-cdn.alpinelinux.org/alpine/edge/releases/{{ image.architecture_mapped }}/
+
+targets:
+  lxc:
+    create_message: |
+      You just created an Alpine Linux container.
+    config:
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+files:
+  - path: /etc/hostname
+    generator: hostname
+
+  - path: /etc/hosts
+    generator: hosts
+
+  - path: /etc/network/interfaces
+    generator: dump
+    content: |-
+      auto lo
+      iface lo inet loopback
+
+      auto eth0
+      iface eth0 inet dhcp
+
+packages:
+  manager: apk
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - curl
+        - git
+        - openssh-client
+        - sudo
+        - vim
+      action: install
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+      # Enable community repo
+      sed -i 's/#.*community/http:\/\/dl-cdn.alpinelinux.org\/alpine\/edge\/community/' \
+        /etc/apk/repositories
+      # Set up OpenRC for containers
+      rc-update add networking default
+      rc-update add hostname default
+
+mappings:
+  architecture_map: alpine

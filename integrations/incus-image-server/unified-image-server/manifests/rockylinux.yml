@@ -1,0 +1,73 @@
+# Rocky Linux container + VM images
+# Architectures: amd64, arm64
+# Release: 9 (RHEL 9 compatible)
+# Init: systemd
+image:
+  distribution: rockylinux
+  release: "9"
+  architecture: amd64
+  variant: default
+  name: "{{ image.distribution }}-{{ image.release }}-{{ image.variant }}-{{ image.serial }}"
+  description: "Rocky Linux {{ image.release }} {{ image.architecture }}"
+
+source:
+  downloader: fedora-http
+  url: https://dl.rockylinux.org/pub/rocky/{{ image.release }}/images/{{ image.architecture_mapped }}/
+
+targets:
+  lxc:
+    create_message: |
+      You just created a Rocky Linux {{ image.release }} container.
+    config:
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+files:
+  - path: /etc/hostname
+    generator: hostname
+
+  - path: /etc/hosts
+    generator: hosts
+
+  - path: /etc/machine-id
+    generator: dump
+
+  - path: /etc/systemd/network/eth0.network
+    generator: dump
+    content: |-
+      [Match]
+      Name=eth0
+
+      [Network]
+      DHCP=ipv4
+    types:
+      - vm
+
+packages:
+  manager: dnf
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - curl
+        - git
+        - openssh-clients
+        - sudo
+        - vim-minimal
+      action: install
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+      dnf clean all
+
+mappings:
+  architecture_map: fedora

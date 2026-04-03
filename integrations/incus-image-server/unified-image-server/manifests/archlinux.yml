@@ -1,0 +1,75 @@
+# Arch Linux container images
+# Architectures: amd64, arm64
+# Release: current (rolling)
+# Init: systemd
+image:
+  distribution: archlinux
+  release: current
+  architecture: amd64
+  variant: default
+  name: "{{ image.distribution }}-{{ image.release }}-{{ image.variant }}-{{ image.serial }}"
+  description: "Arch Linux {{ image.architecture }}"
+
+source:
+  downloader: archlinux-http
+  url: https://geo.mirror.pkgbuild.com/
+
+targets:
+  lxc:
+    create_message: |
+      You just created an Arch Linux container.
+    config:
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+files:
+  - path: /etc/hostname
+    generator: hostname
+
+  - path: /etc/hosts
+    generator: hosts
+
+  - path: /etc/machine-id
+    generator: dump
+
+  - path: /etc/systemd/network/eth0.network
+    generator: dump
+    content: |-
+      [Match]
+      Name=eth0
+
+      [Network]
+      DHCP=ipv4
+
+packages:
+  manager: pacman
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - curl
+        - git
+        - openssh
+        - sudo
+        - vim
+      action: install
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+      systemctl enable systemd-networkd
+      systemctl enable systemd-resolved
+      ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+      # Clean pacman cache
+      pacman -Scc --noconfirm
+
+mappings:
+  architecture_map: archlinux

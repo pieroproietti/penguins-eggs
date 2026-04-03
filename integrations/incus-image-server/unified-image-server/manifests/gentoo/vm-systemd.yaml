@@ -1,0 +1,57 @@
+# Gentoo VM image — systemd init
+# Architectures: amd64
+# Source: liangyongxiang/my-gentoo-incus-scripts
+image:
+  distribution: gentoo
+  description: "{{ image.distribution|capfirst }} {{ image.architecture_mapped }} VM{% if image.variant != \"default\" %} ({{ image.variant }}){% endif %} ({{ image.serial }})"
+
+source:
+  downloader: gentoo-http
+  url: https://distfiles.gentoo.org/releases/
+
+targets:
+  incus:
+    vm:
+      filesystem: ext4
+      size: 10737418240
+
+files:
+  - path: /etc/systemd/network/eth0.network
+    generator: dump
+    content: |-
+      [Match]
+      Name=eth0
+
+      [Network]
+      DHCP=ipv4
+
+  - path: /etc/machine-id
+    generator: dump
+
+packages:
+  manager: portage
+  update: false
+  cleanup: true
+  sets:
+    - packages:
+        - sys-boot/grub
+        - sys-kernel/gentoo-kernel-bin
+      action: install
+
+actions:
+  - trigger: post-files
+    action: |-
+      #!/bin/sh
+      set -eux
+      umount -l /etc/resolv.conf || true
+      rm /etc/resolv.conf
+      ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+      systemctl enable systemd-resolved
+      systemctl enable systemd-networkd
+      grub-install /dev/vda || true
+      grub-mkconfig -o /boot/grub/grub.cfg || true
+
+environment:
+  variables:
+    - key: MAKEOPTS
+      value: --jobs 4
