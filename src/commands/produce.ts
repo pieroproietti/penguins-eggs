@@ -364,6 +364,10 @@ export default class Produce extends Command {
       EGGS_HOOK: 'produce',
       EGGS_ISO_FILE: isoPath,
       EGGS_ISO_ROOT: snapshotDir,
+      // EGGS_ISO_MNT points to the ISO staging tree where eggs places the
+      // squashfs at live/filesystem.squashfs — lets the hook find it directly
+      // without mounting the ISO.
+      EGGS_ISO_MNT: path.join(snapshotDir, 'mnt/iso'),
       EGGS_WORK: snapshotDir,
       DISTROBUILDER_ENABLED: '1',
       DISTROBUILDER_TYPE: type,
@@ -933,6 +937,8 @@ export default class Produce extends Command {
               isoRoot: ovary.settings.work_dir.merged,
               isoFile: isoPath,
               workDir: ovary.settings.config.snapshot_dir,
+              // ISO staging tree — squashfs lives at EGGS_ISO_MNT/live/filesystem.squashfs
+              isoMnt: ovary.settings.iso_work,
               // Pass distrobuilder config so the plugin hook respects CLI flags
               distrobuilder_enabled: flags.distrobuilder ? '1' : '0',
               distrobuilder_type: flags['distrobuilder-type'] ?? 'incus',

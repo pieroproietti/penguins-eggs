@@ -8,6 +8,7 @@
 #   EGGS_HOOK      — hook point (we only act on 'produce')
 #   EGGS_ISO_FILE  — full path to the produced ISO
 #   EGGS_ISO_ROOT  — snapshot directory
+#   EGGS_ISO_MNT   — ISO staging tree (snapshot_dir/mnt/iso); squashfs at live/filesystem.squashfs
 #   EGGS_WORK      — working directory
 #
 # Configuration (/etc/penguins-distrobuilder/eggs-hooks.conf):
@@ -43,10 +44,17 @@ if ! command -v unsquashfs >/dev/null 2>&1; then
 fi
 
 # ── Locate the squashfs ───────────────────────────────────────────────────────
+# Search order:
+#   1. EGGS_ISO_MNT/live/ — ISO staging tree (snapshot_dir/mnt/iso); the
+#      squashfs is written here by mksquashfs before the ISO is assembled.
+#      This is the direct path and avoids mounting the ISO entirely.
+#   2. Legacy / fallback paths.
+#   3. Mount EGGS_ISO_FILE and extract — last resort.
 SQUASHFS=""
 _SQUASHFS_TEMP=0
 
 for candidate in \
+    "${EGGS_ISO_MNT}/live/filesystem.squashfs" \
     "${EGGS_ISO_ROOT}/live/filesystem.squashfs" \
     "${EGGS_WORK}/live/filesystem.squashfs" \
     "/var/lib/eggs/live/filesystem.squashfs" \

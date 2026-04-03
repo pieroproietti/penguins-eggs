@@ -27,9 +27,10 @@ export type EggsHook =
 /** Context passed to each plugin as environment variables. */
 export interface PluginContext {
   hook: EggsHook
-  isoRoot?: string    // EGGS_ISO_ROOT — root of the ISO filesystem being built
-  workDir?: string    // EGGS_WORK     — working directory for ISO assembly
+  isoRoot?: string    // EGGS_ISO_ROOT — live filesystem root (/ pre-produce, liveroot post-produce)
+  workDir?: string    // EGGS_WORK     — working directory for ISO assembly (snapshot_dir)
   isoFile?: string    // EGGS_ISO_FILE — final ISO path
+  isoMnt?: string     // EGGS_ISO_MNT  — ISO staging tree (snapshot_dir/mnt/iso); squashfs at live/filesystem.squashfs
   [key: string]: string | undefined
 }
 
@@ -68,10 +69,11 @@ export async function runPlugins(
     EGGS_ISO_ROOT: ctx.isoRoot ?? '',
     EGGS_WORK: ctx.workDir ?? '',
     EGGS_ISO_FILE: ctx.isoFile ?? '',
+    EGGS_ISO_MNT: ctx.isoMnt ?? '',
   }
   // Forward any extra context keys
   for (const [k, v] of Object.entries(ctx)) {
-    if (!['hook', 'isoRoot', 'workDir', 'isoFile'].includes(k) && v !== undefined) {
+    if (!['hook', 'isoRoot', 'workDir', 'isoFile', 'isoMnt'].includes(k) && v !== undefined) {
       env[k.toUpperCase()] = v
     }
   }
