@@ -1,0 +1,10 @@
+{
+  "name": "@penguins-eggs/android-shared",
+  "version": "1.0.0",
+  "description": "Fusion-generated shared Android logic for penguins-eggs and waydroid-toolkit",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  }
+}

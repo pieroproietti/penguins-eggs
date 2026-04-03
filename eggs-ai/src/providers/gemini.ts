@@ -1,40 +1,48 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { generateText, streamText } from 'ai';
 import type { LLMProvider, Message } from './base.js';
 
+/**
+ * Google Gemini provider backed by @ai-sdk/google.
+ */
 export class GeminiProvider implements LLMProvider {
   name = 'gemini';
-  private client: GoogleGenerativeAI;
+  private client: ReturnType<typeof createGoogleGenerativeAI>;
   private model: string;
 
   constructor(apiKey: string, model = 'gemini-2.0-flash') {
-    this.client = new GoogleGenerativeAI(apiKey);
+    this.client = createGoogleGenerativeAI({ apiKey });
     this.model = model;
   }
 
   async chat(messages: Message[]): Promise<string> {
-    const model = this.client.getGenerativeModel({ model: this.model });
-
-    // Extract system instruction and conversation history
-    const systemMsg = messages.find((m) => m.role === 'system');
-    const conversationMsgs = messages.filter((m) => m.role !== 'system');
-
-    const chat = model.startChat({
-      systemInstruction: systemMsg?.content,
-      history: conversationMsgs.slice(0, -1).map((m) => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }],
-      })),
+    const { text } = await generateText({
+      model: this.client(this.model),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
     });
+    return text;
+  }
 
-    const lastMsg = conversationMsgs[conversationMsgs.length - 1];
-    const result = await chat.sendMessage(lastMsg.content);
-    return result.response.text();
+  async chatStream(messages: Message[], onChunk: (chunk: string) => void): Promise<string> {
+    const { textStream } = streamText({
+      model: this.client(this.model),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    });
+    let full = '';
+    for await (const chunk of textStream) {
+      full += chunk;
+      onChunk(chunk);
+    }
+    return full;
   }
 
   async isAvailable(): Promise<boolean> {
     try {
-      const model = this.client.getGenerativeModel({ model: this.model });
-      await model.generateContent('ping');
+      await generateText({
+        model: this.client(this.model),
+        messages: [{ role: 'user', content: 'ping' }],
+        maxTokens: 1,
+      });
       return true;
     } catch {
       return false;

@@ -6,9 +6,11 @@ name: CI
   push:
     branches:
       - master
+      - all-features
   pull_request:
     branches:
       - master
+      - all-features
 permissions:
   contents: read
 jobs:
@@ -26,6 +28,8 @@ jobs:
         run: npm install -g pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Lint YAML
+        run: pnpm run lint:yaml
       - name: Build
         run: pnpm run build
   build-matrix:

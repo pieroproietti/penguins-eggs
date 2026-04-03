@@ -1,69 +1,53 @@
+import { createMistral } from '@ai-sdk/mistral';
+import { generateText, streamText } from 'ai';
 import type { LLMProvider, Message } from './base.js';
-import { openaiStreamChat } from './openai-stream.js';
 
 /**
- * Mistral AI provider.
- * Uses the Mistral chat completions API (OpenAI-compatible format).
+ * Mistral AI provider backed by @ai-sdk/mistral.
  */
 export class MistralProvider implements LLMProvider {
   name = 'mistral';
-  private apiKey: string;
+  private client: ReturnType<typeof createMistral>;
   private model: string;
-  private baseUrl: string;
 
   constructor(
     apiKey: string,
     model = 'mistral-large-latest',
-    baseUrl = 'https://api.mistral.ai/v1',
+    baseURL?: string,
   ) {
-    this.apiKey = apiKey;
+    this.client = createMistral({ apiKey, ...(baseURL ? { baseURL } : {}) });
     this.model = model;
-    this.baseUrl = baseUrl;
   }
 
   async chat(messages: Message[]): Promise<string> {
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: this.model,
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-      }),
+    const { text } = await generateText({
+      model: this.client(this.model),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
     });
-
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Mistral error: ${response.status} — ${err}`);
-    }
-
-    const data = (await response.json()) as {
-      choices: Array<{ message: { content: string } }>;
-    };
-    return data.choices[0].message.content;
+    return text;
   }
 
   async chatStream(messages: Message[], onChunk: (chunk: string) => void): Promise<string> {
-    return openaiStreamChat(
-      `${this.baseUrl}/chat/completions`,
-      { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}` },
-      this.model,
-      messages.map((m) => ({ role: m.role, content: m.content })),
-      onChunk,
-    );
+    const { textStream } = streamText({
+      model: this.client(this.model),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    });
+    let full = '';
+    for await (const chunk of textStream) {
+      full += chunk;
+      onChunk(chunk);
+    }
+    return full;
   }
 
   async isAvailable(): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/models`, {
-        headers: { Authorization: `Bearer ${this.apiKey}` },
+      await generateText({
+        model: this.client(this.model),
+        messages: [{ role: 'user', content: 'ping' }],
+        maxTokens: 1,
       });
-      return response.ok;
+      return true;
     } catch {
       return false;
     }

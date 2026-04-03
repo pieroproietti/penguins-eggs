@@ -1,0 +1,34 @@
+name: Trigger Artifact Mirror
+
+# When a release is published in this repo, trigger the mirror-artifacts
+# workflow in fork-sync-all so OSP and OOC get the release immediately.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch mirror-artifacts in fork-sync-all
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          curl --disable --silent --fail -X POST \
+            -H "Authorization: token ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/Interested-Deving-1896/fork-sync-all/actions/workflows/mirror-artifacts.yml/dispatches" \
+            -d "{
+              \"ref\": \"main\",
+              \"inputs\": {
+                \"upstream_repo\": \"${{ github.event.repository.name }}\",
+                \"release_tag\": \"${{ github.event.release.tag_name }}\"
+              }
+            }"
+          echo "Dispatched mirror-artifacts for ${{ github.event.repository.name }}@${{ github.event.release.tag_name }}"

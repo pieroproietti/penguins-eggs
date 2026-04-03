@@ -27,6 +27,8 @@
         "ink-progress-bar": "^3.0.0",
         "ink-spinner": "^5.0.0",
         "inquirer": "^13.2.5",
+        "@helia/unixfs": "^4.0.0",
+        "helia": "^5.0.0",
         "js-yaml": "^4.1.1",
         "linux-release-info": "^3.0.0",
         "mustache": "^4.2.0",
@@ -69,6 +71,9 @@
         "ts-node": "10.9.2",
         "ts-prune": "^0.10.3",
         "typescript": "^5.9.3",
+        "typedoc": "^0.28.0",
+        "yamllint-ts": "^0.1.0",
+        "typedoc-plugin-markdown": "^4.0.0",
         "typescript-eslint": "^8.56.0"
     },
     "engines": {
@@ -128,6 +133,8 @@
         "posttest": "pnpm run lint",
         "tarballs": "shx rm -rf dist && tsc -p . && oclif manifest && oclif pack tarballs -t linux-x64 --no-xz -r . && pb tarballs --release $(cat ./release)",
         "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+        "docs": "typedoc",
+        "lint:yaml": "yamllint-ts '.github/workflows/*.yml' '.github/workflows/*.yaml' 'conf/**/*.yaml' 'conf/**/*.yml'",
         "unused": "ts-prune",
         "version": "oclif readme && git add README.md",
         "webui": "sudo ./WebUI/venv/bin/python3 ./WebUI/backend.py"

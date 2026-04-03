@@ -1,0 +1,71 @@
+# .github/workflows/docs.yml
+# Generates API docs from TSDoc comments and publishes them to GitHub Pages.
+# Runs on push to master and on pull requests (build-only, no publish).
+
+name: Docs
+
+on:
+  push:
+    branches:
+      - master
+      - all-features
+  pull_request:
+    branches:
+      - master
+      - all-features
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-docs:
+    name: Build API docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Remove dangling symlinks
+        run: find integrations -xtype l -delete
+
+      - name: Generate docs
+        run: pnpm run docs
+
+      - name: Upload pages artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: DOCS/api
+
+  deploy-docs:
+    name: Deploy to GitHub Pages
+    needs: build-docs
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

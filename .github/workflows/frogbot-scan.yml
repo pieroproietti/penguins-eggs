@@ -14,7 +14,7 @@ on:
   pull_request:
     types: [opened, synchronize]
   push:
-    branches: [master, main]
+    branches: [master, main, all-features]
   schedule:
     # Weekly scan on Monday at 6am UTC
     - cron: '0 6 * * 1'
