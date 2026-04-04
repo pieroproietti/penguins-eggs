@@ -85,3 +85,10 @@ Seven full companion repositories merged into `integrations/` (and some also at 
 | dominiksalvet/gitpack | Git-based package manager (POSIX shell) | Shell | 112 | https://github.com/dominiksalvet/gitpack |
 | RaduAnPlay/Github-paser | Bash script to download GitHub releases | Shell | 1 | https://github.com/RaduAnPlay/Github-paser |
 | Alex313031/github-directory-downloader | Download subdirectories from GitHub repos | TypeScript | 3 | https://github.com/Alex313031/github-directory-downloader |
+
+## Incus Guest Management
+
+| Project | Description | Language | URL |
+|---|---|---|---|
+| penguins-incus-platform | Unified Incus container and VM management — Qt6/QML desktop UI, React web UI, CLI; provisioning plugins for generic Linux, Waydroid, macOS KVM, and Windows VMs | Python, TypeScript, C++/QML | https://github.com/Interested-Deving-1896/penguins-incus-platform |
+| penguins-incus-hub | Integration layer connecting penguins-incus-platform with penguins-eggs: eggs plugin + recovery plugin | Shell | (this repo, `integrations/penguins-incus-hub/`) |

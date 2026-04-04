@@ -483,6 +483,58 @@ eggs wardrobe import https://gist.example.com/abc123
 
 ---
 
+---
+
+## Phase 7: Incus Guest Management
+
+### 7.1 penguins-incus-hub
+
+**What:** Embed the [penguins-incus-platform](https://github.com/Interested-Deving-1896/penguins-incus-platform)
+(PIP) daemon and CLI into produced ISOs so that any penguins-eggs live system
+can manage Incus containers and VMs out of the box.
+
+**Dependencies:** penguins-incus-platform (daemon + CLI installed on the build host), Incus ≥ 6.0
+
+**Interface:**
+```bash
+# /etc/penguins-incus-hub/eggs-hooks.conf
+PIP_ROOT="/usr/lib/penguins-incus-platform"
+EMBED_DAEMON=1
+EMBED_CLI=1
+EMBED_PROFILES=1
+PRE_RESET_SNAPSHOT=1
+POST_HARD_RESET_RESTART=1
+```
+
+**Trigger:** `eggs produce` (post-produce hook via `pip-hook.sh`)
+
+**What gets embedded:**
+
+| Path in ISO | Content |
+|---|---|
+| `/usr/local/bin/penguins-incus-daemon` | PIP daemon binary |
+| `/usr/local/bin/penguins-incus` | PIP CLI binary |
+| `/usr/local/share/penguins-incus-platform/profiles/` | 16 bundled Incus profile presets |
+| `/etc/systemd/system/penguins-incus-daemon.service` | Systemd unit (auto-start in live env) |
+
+**Guest types supported in the live ISO:**
+
+| Guest type | CLI |
+|---|---|
+| Generic Linux containers | `penguins-incus provision generic create <name>` |
+| Waydroid (Android) containers | `penguins-incus provision waydroid create <name>` |
+| macOS KVM VMs | `penguins-incus provision macos create <name>` |
+| Windows VMs | `penguins-incus provision windows create <name>` |
+
+**Acceptance:**
+- [ ] `eggs produce` on a host with PIP installed produces an ISO where `penguins-incus-daemon` starts automatically
+- [ ] `penguins-incus container list` works inside the live ISO without additional setup
+- [ ] Pre-reset hook creates an Incus snapshot for each running container and VM
+- [ ] Post-hard-reset hook restarts the daemon and re-applies default profiles
+- [ ] Hook is a no-op when PIP is not installed on the build host
+
+---
+
 ## Dependency Matrix
 
 | Phase | Hard Dependencies | Optional Dependencies |

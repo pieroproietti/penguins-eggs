@@ -1,0 +1,20 @@
+# penguins-incus-hub eggs hook configuration
+# Copy to /etc/penguins-incus-hub/eggs-hooks.conf and edit as needed.
+
+# Path to the penguins-incus-platform installation root
+PIP_ROOT="/usr/lib/penguins-incus-platform"
+
+# Embed the PIP daemon binary into produced ISOs
+EMBED_DAEMON=1
+
+# Embed the penguins-incus CLI into produced ISOs
+EMBED_CLI=1
+
+# Embed bundled Incus profiles into produced ISOs
+EMBED_PROFILES=1
+
+# Snapshot all running Incus instances before any powerwash reset
+PRE_RESET_SNAPSHOT=1
+
+# Restart the PIP daemon after a hard or sysprep reset
+POST_HARD_RESET_RESTART=1

@@ -25,6 +25,7 @@ This directory contains all projects integrated with
 | [`eggs-ai/`](eggs-ai/) | eggs-ai | TypeScript | AI assistant: diagnostics, build guidance, MCP server, HTTP API |
 | [`penguins-distrobuilder/`](penguins-distrobuilder/) | penguins-distrobuilder | Go + Python | Unified distrobuilder: lxc/distrobuilder (Go) + distrobuilder-menu (Python TUI) |
 | [`incus-image-server/`](incus-image-server/) | incus-image-server | Elixir + Shell + TypeScript | Simplestreams image server for LXC/LXD/Incus; multi-distro manifests; ChromiumOS stage3 |
+| [`penguins-incus-hub/`](penguins-incus-hub/) | penguins-incus-hub | Shell | Integration layer for penguins-incus-platform (PIP): embeds PIP daemon + CLI into ISOs; snapshots Incus guests on reset |
 
 Each tool with lifecycle hooks registers an **eggs plugin** and (where applicable) a **recovery plugin**:
 
@@ -45,6 +46,7 @@ Each tool with lifecycle hooks registers an **eggs plugin** and (where applicabl
 | eggs-ai | `~/.eggs-ai.yaml` | `default_provider`, custom LLM endpoints |
 | penguins-distrobuilder | `/etc/penguins-distrobuilder/eggs-hooks.conf` | `DISTROBUILDER_ENABLED`, `DISTROBUILDER_TEMPLATE`, `DISTROBUILDER_TYPE` |
 | incus-image-server | `/etc/penguins-distrobuilder/eggs-hooks.conf` | `INCUS_SERVER_URL`, `INCUS_SERVER_TOKEN`, `INCUS_SERVER_PRODUCT` |
+| penguins-incus-hub | `/etc/penguins-incus-hub/eggs-hooks.conf` | `EMBED_DAEMON`, `EMBED_CLI`, `PRE_RESET_SNAPSHOT`, `POST_HARD_RESET_RESTART` |
 
 ---
 
@@ -95,6 +97,7 @@ integrations/
 ├── penguins-eggs-audit/           # ecosystem tool (subtree)
 ├── penguins-distrobuilder/        # ecosystem tool (subtree: distrobuilder/ + menu/)
 ├── incus-image-server/            # ecosystem tool (subtree: simplestreams server + manifests)
+├── penguins-incus-hub/            # ecosystem tool (PIP integration layer)
 │
 ├── eggs-ai/                       # eggs AI assistant (subtree)
 ├── eggs-gui/                      # eggs unified GUI (subtree)

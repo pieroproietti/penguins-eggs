@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# bin/penguins-incus-hub — management helper
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HUB_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# shellcheck source=../lib/common.sh
+source "${HUB_ROOT}/lib/common.sh"
+_load_conf
+
+usage() {
+  cat << EOF
+Usage: penguins-incus-hub <command>
+
+Commands:
+  install     Register eggs and recovery plugins
+  uninstall   Remove plugin symlinks
+  status      Show PIP daemon status and registered plugins
+  snapshot    Snapshot all running Incus instances
+  help        Show this help
+
+EOF
+}
+
+cmd_install() {
+  local eggs_plugins="/usr/share/penguins-eggs/plugins"
+  local recovery_plugins="/usr/share/penguins-recovery/plugins"
+
+  if [[ -d "${eggs_plugins}" ]]; then
+    ln -sf "${HUB_ROOT}/integration/eggs-plugin/pip-hook.sh" \
+           "${eggs_plugins}/pip-hook.sh"
+    echo "Registered eggs plugin: ${eggs_plugins}/pip-hook.sh"
+  else
+    echo "penguins-eggs plugin directory not found (${eggs_plugins}); skipping."
+  fi
+
+  if [[ -d "${recovery_plugins}" ]]; then
+    ln -sf "${HUB_ROOT}/integration/recovery-plugin/pip-recovery-plugin.sh" \
+           "${recovery_plugins}/pip-recovery-plugin.sh"
+    echo "Registered recovery plugin: ${recovery_plugins}/pip-recovery-plugin.sh"
+  else
+    echo "penguins-recovery plugin directory not found (${recovery_plugins}); skipping."
+  fi
+
+  if [[ ! -f /etc/penguins-incus-hub/eggs-hooks.conf ]]; then
+    mkdir -p /etc/penguins-incus-hub
+    cp "${HUB_ROOT}/conf/eggs-hooks.conf.default" \
+       /etc/penguins-incus-hub/eggs-hooks.conf
+    echo "Wrote default config: /etc/penguins-incus-hub/eggs-hooks.conf"
+  fi
+}
+
+cmd_uninstall() {
+  rm -f /usr/share/penguins-eggs/plugins/pip-hook.sh
+  rm -f /usr/share/penguins-recovery/plugins/pip-recovery-plugin.sh
+  echo "Removed plugin symlinks."
+}
+
+cmd_status() {
+  echo "=== penguins-incus-hub status ==="
+  echo "PIP daemon:  $(_pip_daemon_bin)"
+  echo "PIP CLI:     $(_pip_cli_bin)"
+  echo "Profiles:    $(_pip_profiles_dir)"
+  echo ""
+  echo "Eggs plugin:     $(ls -la /usr/share/penguins-eggs/plugins/pip-hook.sh 2>/dev/null || echo 'not registered')"
+  echo "Recovery plugin: $(ls -la /usr/share/penguins-recovery/plugins/pip-recovery-plugin.sh 2>/dev/null || echo 'not registered')"
+  echo ""
+  systemctl status penguins-incus-daemon 2>/dev/null || echo "Daemon not running."
+}
+
+case "${1:-help}" in
+  install)   cmd_install ;;
+  uninstall) cmd_uninstall ;;
+  status)    cmd_status ;;
+  snapshot)  snapshot_running_instances "manual" ;;
+  help|--help|-h) usage ;;
+  *) echo "Unknown command: ${1}"; usage; exit 1 ;;
+esac
