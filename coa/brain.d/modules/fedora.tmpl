@@ -1,0 +1,25 @@
+{{ define "initramfs_cmd" }}
+dracut -f --regenerate-all --no-hostonly
+{{ end }}
+
+{{ define "boot_assets_extra" }}
+# Fedora ha bisogno di percorsi specifici? Aggiungili qui.
+{{ end }}
+
+{{ define "squashfs_hooks" }}
+mkdir -p /home/eggs/isodir/LiveOS
+ln -sf ../live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
+{{ end }}
+
+{{ define "install_logic" }}
+# Disabilita BLS e usa i nomi dei binari Fedora (grub2-*)
+if [ -f /etc/default/grub ]; then
+    sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/' /etc/default/grub
+fi
+dracut -f --regenerate-all
+if [ -d /sys/firmware/efi ]; then
+    grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live
+    grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+fi
+grub2-mkconfig -o /boot/grub2/grub.cfg
+{{ end }}

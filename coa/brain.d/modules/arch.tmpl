@@ -1,0 +1,26 @@
+{{ define "initramfs_cmd" }}
+# Arch usa mkinitcpio
+mkinitcpio -P
+{{ end }}
+
+{{ define "squashfs_hooks" }}
+# Link di compatibilità per gli hook di archiso
+mkdir -p /home/eggs/isodir/arch/x86_64
+ln -sf ../../live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/airootfs.sfs
+{{ end }}
+
+{{ define "install_logic" }}
+# 1. Rigenerazione initramfs target
+mkinitcpio -P
+
+# 2. Installazione GRUB (BIOS o UEFI)
+if [ -d /sys/firmware/efi ]; then
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
+else
+    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    grub-install --target=i386-pc --recheck "$TARGET_DISK"
+fi
+
+# 3. Update finale del menu (Arch usa grub-mkconfig)
+grub-mkconfig -o /boot/grub/grub.cfg
+{{ end }}

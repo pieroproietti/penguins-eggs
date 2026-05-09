@@ -1,15 +1,23 @@
 package pilot
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"coa/pkg/distro"
-	"coa/pkg/utils" // Assumendo che i colori siano qui
+	"coa/pkg/utils"
 
 	"gopkg.in/yaml.v3"
 )
+
+// TemplateContext definisce i dati che iniettiamo nei file .tmpl
+type TemplateContext struct {
+	Family   string
+	DistroID string
+}
 
 // Strutture per il mapping dell'indice
 type BrainIndex struct {
@@ -47,7 +55,6 @@ func DetectAndLoad() (*Profile, error) {
 	}
 
 	indexPath := filepath.Join(baseDir, "index.yaml")
-	utils.LogCoala("%s[pilot]%s Utilizzo indice: %s", utils.ColorCyan, utils.ColorReset, indexPath)
 
 	// 3. Lettura e parsing dell'indice
 	indexData, err := os.ReadFile(indexPath)
@@ -60,44 +67,59 @@ func DetectAndLoad() (*Profile, error) {
 		return nil, fmt.Errorf("errore sintassi index.yaml: %v", err)
 	}
 
-	// 4. Logica di Matching: Cerchiamo il profilo adatto alla distro corrente
-	var targetFile string
+	// 4. Logica di Matching
+	var moduleFile string
 	for _, entry := range index.Distributions {
-		// Match diretto sull'ID (es. "debian" == "debian")
 		if entry.ID == myDistro.DistroID {
-			targetFile = entry.File
+			moduleFile = entry.File
 			break
 		}
-
-		// Match sulla lista "Like"
 		for _, l := range entry.Like {
 			if l == myDistro.DistroID {
-				targetFile = entry.File
+				moduleFile = entry.File
 				break
 			}
 		}
-		if targetFile != "" {
+		if moduleFile != "" {
 			break
 		}
 	}
 
-	if targetFile == "" {
-		return nil, fmt.Errorf("nessun profilo trovato nell'indice per %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
+	if moduleFile == "" {
+		return nil, fmt.Errorf("nessun modulo trovato per %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
 	}
 
-	// 5. Caricamento del profilo finale
-	// Usiamo la stessa baseDir dove abbiamo trovato l'index.yaml
-	brainPath := filepath.Join(baseDir, targetFile)
-	utils.LogCoala("%s[pilot]%s Caricamento profilo: %s", utils.ColorCyan, utils.ColorReset, targetFile)
+	// 5. RENDERING DEI TEMPLATE (Composizione Base + Modulo)
+	basePath := filepath.Join(baseDir, "base.yaml.tmpl")
+	// Assumiamo che i moduli siano nella sottocartella 'modules' e abbiano estensione .tmpl
+	// Se l'indice riporta ancora "debian.yaml", lo convertiamo in "debian.tmpl" o puntiamo direttamente
+	modulePath := filepath.Join(baseDir, "modules", moduleFile)
 
-	data, err := os.ReadFile(brainPath)
+	utils.LogCoala("%s[pilot]%s Compilazione: base.yaml.tmpl + %s", utils.ColorCyan, utils.ColorReset, moduleFile)
+
+	// Context da passare al template
+	ctx := TemplateContext{
+		Family:   myDistro.FamilyID,
+		DistroID: myDistro.DistroID,
+	}
+
+	// Carichiamo entrambi i file.
+	// template.ParseFiles associa i nomi dei file ai template interni.
+	tmpl, err := template.ParseFiles(basePath, modulePath)
 	if err != nil {
-		return nil, fmt.Errorf("impossibile leggere il profilo %s: %v", brainPath, err)
+		return nil, fmt.Errorf("errore nel parsing dei template (%s, %s): %v", basePath, modulePath, err)
 	}
 
+	var rendered bytes.Buffer
+	// Eseguiamo il template puntando esplicitamente al file base che farà da telaio
+	if err := tmpl.ExecuteTemplate(&rendered, "base.yaml.tmpl", ctx); err != nil {
+		return nil, fmt.Errorf("errore durante il rendering del profilo: %v", err)
+	}
+
+	// 6. Parsing dello YAML finale renderizzato
 	var profile Profile
-	if err := yaml.Unmarshal(data, &profile); err != nil {
-		return nil, fmt.Errorf("errore sintassi nel profilo %s: %v", brainPath, err)
+	if err := yaml.Unmarshal(rendered.Bytes(), &profile); err != nil {
+		return nil, fmt.Errorf("errore sintassi nello YAML generato: %v", err)
 	}
 
 	return &profile, nil

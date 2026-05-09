@@ -1,0 +1,88 @@
+# ==============================================================================
+# 🧩 TELAIO UNIVERSALE OA (EVOLUTION EDITION)
+# ==============================================================================
+remaster:
+  - name: "coa-fs-setup"
+    action: "oa_mount_logic"
+
+  - name: "coa-bootloaders"
+    action: "oa_shell"
+    run_command: |
+      set -e
+      mkdir -p /home/eggs/isodir/live
+      mkdir -p /home/eggs/isodir/isolinux
+      mkdir -p /home/eggs/isodir/boot/grub
+      mkdir -p /home/eggs/isodir/EFI/BOOT
+      
+      # ISOLINUX
+      cp /tmp/coa/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/
+      cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/
+      cp /tmp/coa/bootloaders/ISOLINUX/isolinux.cfg /home/eggs/isodir/isolinux/ 2>/dev/null || touch /home/eggs/isodir/isolinux/isolinux.cfg
+      
+      # GRUB & UEFI
+      cp /tmp/coa/bootloaders/grub/grub.cfg /home/eggs/isodir/boot/grub/ 2>/dev/null || touch /home/eggs/isodir/boot/grub/grub.cfg
+      cp /tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
+      
+      # Creazione FAT EFI IMG
+      dd if=/dev/zero of=/home/eggs/isodir/EFI/BOOT/efi.img bs=1k count=8192
+      mkfs.vfat /home/eggs/isodir/EFI/BOOT/efi.img
+      mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI
+      mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI/BOOT
+      mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
+      mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /home/eggs/isodir/boot/grub/grub.cfg ::/EFI/BOOT/grub.cfg
+{{ template "boot_assets_extra" . }}
+
+  - name: "coa-live-menus"
+    action: "oa_shell"
+    run_command: |
+{{ template "live_menus_logic" . }}
+
+  - name: "coa-identity"
+    action: "oa_users"
+
+  - name: "coa-initrd"
+    description: "Generazione Initramfs"
+    action: "oa_shell"
+    chroot: true
+    run_command: |
+{{ template "initramfs_cmd" . }}
+
+  - name: "coa-kernel-copy"
+    action: "oa_shell"
+    run_command: |
+{{ template "kernel_copy_logic" . }}
+
+  - name: "coa-enable-live"
+    action: "oa_shell"
+    chroot: true
+    run_command: |
+      echo "live ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/00-live
+      chmod 0440 /etc/sudoers.d/00-live
+
+  - name: "coa-squashfs"
+    action: "oa_shell"
+    run_command: |
+      mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs -comp zstd -Xcompression-level 3 -wildcards -ef /tmp/coa/excludes.list
+{{ template "squashfs_hooks" . }}
+
+  - name: "coa-xorriso"
+    action: "oa_shell"
+    run_command: |
+      xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid 'OA_LIVE' \
+      -eltorito-boot isolinux/isolinux.bin -eltorito-catalog isolinux/boot.cat \
+      -no-emul-boot -boot-load-size 4 -boot-info-table \
+      -isohybrid-mbr /tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin \
+      -eltorito-alt-boot -e EFI/BOOT/efi.img -no-emul-boot -isohybrid-gpt-basdat \
+      -o ${ISO_OUTPUT} /home/eggs/isodir
+
+  - name: "coa-cleanup"
+    action: "oa_umount"
+
+install:
+  - name: "coa-finalize"
+    action: "oa_shell"
+    run_command: |
+      #!/bin/bash
+      set -e
+      rm -f /etc/sudoers.d/00-live
+{{ template "install_logic" . }}
