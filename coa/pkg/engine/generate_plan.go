@@ -36,6 +36,8 @@ func GeneratePlan(steps []pilot.Step, familyID string, isRemaster bool, workPath
 
 		// --- IL PONTE: Sostituzione dinamica del percorso ISO ---
 		currentRunCommand := step.RunCommand
+		// Sanitize
+		currentRunCommand = strings.TrimSpace(currentRunCommand)
 		if strings.Contains(currentRunCommand, "${ISO_OUTPUT}") {
 			currentRunCommand = strings.ReplaceAll(currentRunCommand, "${ISO_OUTPUT}", finalIsoPath)
 		}

@@ -47,6 +47,7 @@ func buildFedoraPackage(projRoot, oaDir, coaDir, baseVer, relNum string) {
 
 	specPath := filepath.Join(buildRoot, "SPECS", "oa-tools.spec")
 
+	// ATTENZIONE: Tutti i % sono raddoppiati in %% per convivere con fmt.Sprintf
 	specContent := fmt.Sprintf(`%%define debug_package %%{nil}
 
 Name:           oa-tools
@@ -56,8 +57,8 @@ Summary:        coa is the mind and oa the arm
 License:        GPLv3
 URL:            https://penguins-eggs.net/blog/eggs-bananas
 
-# Dipendenze aggiornate: inclusi i font per le emoji (✅) e i tool grafici
-Requires:       bash-completion, squashfs-tools, xorriso, dosfstools, mtools, dracut-live, gdisk, git, rsync, sudo, google-noto-emoji-fonts
+# Dipendenze aggiornate: inclusi i font per le emoji e i tool grafici
+Requires:       bash-completion, squashfs-tools, xorriso, dosfstools, mtools, dracut-live, gdisk, git, rsync, sudo, google-noto-emoji-fonts, grub2-efi-x64-modules
 Conflicts:      penguins-eggs
 
 %%description
@@ -68,6 +69,7 @@ Include il supporto completo per shell completions e branding grafico per il boo
 rm -rf %%{buildroot}
 mkdir -p %%{buildroot}/usr/bin
 mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d/assets
+mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d/modules
 mkdir -p %%{buildroot}/usr/share/man/man1
 mkdir -p %%{buildroot}/usr/share/bash-completion/completions
 mkdir -p %%{buildroot}/usr/share/zsh/vendor-completions
@@ -78,10 +80,8 @@ install -m 0755 %s/oa/oa %%{buildroot}/usr/bin/oa
 install -m 0755 %s/coa/coa %%{buildroot}/usr/bin/coa
 ln -s coa %%{buildroot}/usr/bin/eggs
 
-# 2. Configurazione "Brain", YAML e Assets (Splash/Fonts)
-cp %s/coa/brain.d/*.yaml %%{buildroot}/etc/oa-tools.d/brain.d/
-cp %s/coa/brain.d/assets/* %%{buildroot}/etc/oa-tools.d/brain.d/assets/
-
+# 2. Configurazione "Brain", YAML, Moduli e Assets
+cp -a %s/coa/brain.d/* %%{buildroot}/etc/oa-tools.d/brain.d/
 cat <<EOF > %%{buildroot}/etc/oa-tools.d/oa-tools.yaml
 ---
 system:
@@ -95,7 +95,7 @@ remaster:
   work_dir: "/home/eggs"
 EOF
 
-# 3. Man Pages
+# 3. Man Pages (Risolto escape %%{buildroot})
 cp %s/coa/docs/man/*.1 %%{buildroot}/usr/share/man/man1/
 gzip -9 %%{buildroot}/usr/share/man/man1/*.1
 
@@ -119,19 +119,24 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 %%dir /etc/oa-tools.d
 %%dir /etc/oa-tools.d/brain.d
 %%dir /etc/oa-tools.d/brain.d/assets
+%%dir /etc/oa-tools.d/brain.d/modules
 %%config(noreplace) /etc/oa-tools.d/oa-tools.yaml
 /etc/oa-tools.d/brain.d/*.yaml
+/etc/oa-tools.d/brain.d/*.tmpl
 /etc/oa-tools.d/brain.d/assets/*
+/etc/oa-tools.d/brain.d/modules/*.tmpl
 /usr/share/man/man1/*.1.gz
 /usr/share/bash-completion/completions/*
 /usr/share/zsh/vendor-completions/*
 /usr/share/fish/vendor_completions.d/*
 
 %%changelog
-* Fri May 01 2026 Piero Proietti <piero.proietti@gmail.com> - %s-%s
+* Sun May 10 2026 Piero Proietti <piero.proietti@gmail.com> - %s-%s
 - Added full branding assets (splash screen and boot fonts)
 - Added google-noto-emoji-fonts dependency for proper terminal rendering
-`, cleanVer, relNum, projRoot, projRoot, projRoot, projRoot, cleanVer, projRoot, projRoot, projRoot, projRoot, cleanVer, relNum)
+- Refactored brain.d to use Go templates (modules)
+`, cleanVer, relNum, projRoot, projRoot, projRoot, cleanVer, projRoot, projRoot, projRoot, projRoot, cleanVer, relNum)
+	// ^ L'ordine qui sopra ora collima perfettamente con i 12 %s nella stringa.
 
 	os.WriteFile(specPath, []byte(specContent), 0644)
 
