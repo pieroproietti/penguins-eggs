@@ -1,6 +1,7 @@
 {{ define "boot_params" }}boot=live components quiet splash{{ end }}
 
 {{ define "initramfs_cmd" }}
+      echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
       update-initramfs -u -k all
 {{ end }}
 
@@ -12,6 +13,7 @@
 {{ define "squashfs_hooks" }}{{ end }}
 
 {{ define "install_logic" }}
+      echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
       update-initramfs -u
       if [ -d /sys/firmware/efi ]; then
           grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck

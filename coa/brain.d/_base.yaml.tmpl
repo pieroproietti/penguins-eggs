@@ -1,20 +1,11 @@
 # ==============================================================================
-# 🧩 TELAIO UNIVERSALE OA (EVOLUTION EDITION)
+# 🧩 template universale
 # ==============================================================================
 remaster:
-
-  # ----------------------------------------------------------------------------
-  # 1. SETUP INIZIALE E MOUNT
-  # ----------------------------------------------------------------------------
   - name: "coa-fs-setup"
-    description: "Preparazione dell'ambiente di chroot e mount point"
     action: "oa_mount_logic"
 
-  # ----------------------------------------------------------------------------
-  # 2. PREPARAZIONE BOOTLOADERS
-  # ----------------------------------------------------------------------------
   - name: "coa-bootloaders"
-    description: "Staging degli assets per BIOS (ISOLINUX) e UEFI (GRUB/EFI)"
     action: "oa_shell"
     run_command: |
       mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
@@ -28,11 +19,7 @@ remaster:
           mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /tmp/coa/bootloaders/EFI/BOOTX64.EFI ::/EFI/BOOT/
       fi
 
-  # ----------------------------------------------------------------------------
-  # 3. GENERAZIONE MENU DI AVVIO E BRANDING
-  # ----------------------------------------------------------------------------
   - name: "coa-live-menus"
-    description: "Generazione dinamica dei menu di GRUB e ISOLINUX"
     action: "oa_shell"
     run_command: |
       set -e
@@ -132,61 +119,37 @@ remaster:
       configfile $prefix/grub.cfg
       EOF
 
-  # ----------------------------------------------------------------------------
-  # 4. IDENTITÀ UTENTE
-  # ----------------------------------------------------------------------------
   - name: "coa-identity"
-    description: "Iniezione dell'utente live e purificazione password"
     action: "oa_users"
 
-
-  # ----------------------------------------------------------------------------
-  # 5. INITRAMFS LIVE
-  # ----------------------------------------------------------------------------
   - name: "coa-initrd"
-    description: "Generazione dell'Initramfs specifico per l'ambiente live"
+    description: "Generazione Initramfs"
     action: "oa_shell"
     chroot: true
     run_command: |
 {{ template "initramfs_cmd" . }}
 
-  # ----------------------------------------------------------------------------
-  # 6. ESTRAZIONE KERNEL E PRIVILEGI
-  # ----------------------------------------------------------------------------
   - name: "coa-kernel-copy"
-    description: "Copia dinamica di kernel e initrd nella root ISO"
     action: "oa_shell"
     run_command: |
 {{ template "find_kernel_initrd" . }}
       if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
       if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
 
-  # ----------------------------------------------------------------------------
-  # 7. PRIVILEGI USER live
-  # ----------------------------------------------------------------------------
   - name: "coa-enable-live"
-    description: "Abilitazione permessi di amministrazione (sudo) senza password"
     action: "oa_shell"
     chroot: true
     run_command: |
       echo "live ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/00-live
       chmod 0440 /etc/sudoers.d/00-live
 
-  # ----------------------------------------------------------------------------
-  # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
-  # ----------------------------------------------------------------------------
   - name: "coa-squashfs"
-    description: "Compressione del filesystem root in formato SquashFS"
     action: "oa_shell"
     run_command: |
       mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs -comp zstd -Xcompression-level 3 -b 1M -processors 4 -noappend -wildcards -ef /tmp/coa/excludes.list
 {{ template "squashfs_hooks" . }}
 
-  # ----------------------------------------------------------------------------
-  # 9. PACCHETTIZZAZIONE ISO XORRISO
-  # ----------------------------------------------------------------------------
   - name: "coa-xorriso"
-    description: "Generazione finale dell'immagine ISO ibrida (xorriso)"
     action: "oa_shell"
     run_command: |
       xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid 'OA_LIVE' \
@@ -196,19 +159,11 @@ remaster:
       -eltorito-alt-boot -e EFI/BOOT/efi.img -no-emul-boot -isohybrid-gpt-basdat \
       -o ${ISO_OUTPUT} /home/eggs/isodir
 
-  # ----------------------------------------------------------------------------
-  # 10. PULIZIA
-  # ----------------------------------------------------------------------------
   - name: "coa-cleanup"
-    description: "Smontaggio e pulizia dell'ambiente di lavoro"
     action: "oa_umount"
 
-# ==============================================================================
-# 🎯 CALAMARES INSTALLER HOOKS
-# ==============================================================================
 install:
   - name: "coa-finalize"
-    description: "Finalizzazione del target e rigenerazione bootloader host"
     action: "oa_shell"
     run_command: |
       #!/bin/bash
