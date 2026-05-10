@@ -16,13 +16,14 @@ var calamaresSubCmd = &cobra.Command{
 		// Verifichiamo i permessi prima di tutto
 		CheckSudoRequirements("sysinstall calamares", true)
 
-		// Lanciamo la logica di coordinamento
-		RunCalamaresInstaller()
+		// 👈 LA SOLUZIONE È QUI: Passiamo la tua variabile globale!
+		RunCalamaresInstaller(AppVersion)
 	},
 }
 
 // RunCalamaresInstaller coordina la preparazione e il lancio di Calamares
-func RunCalamaresInstaller() {
+// 👈 CORRETTO: rimossa la parentesi di troppo alla fine
+func RunCalamaresInstaller(oaVersion string) {
 	utils.LogCoala("%s[sysinstall]%s Preparazione motori...", utils.ColorCyan, utils.ColorReset)
 
 	// 1. Caricamento del profilo tramite il Pilot
@@ -39,7 +40,6 @@ func RunCalamaresInstaller() {
 	}
 
 	// 3. Fase di setuto (Pulisce /etc, estrae asse)
-	// NOTA: Assicurati che SetupAndLaunch non pialli il file appena creato!
 	if err := calamares.Setup(); err != nil {
 		utils.LogError("Calamares ha riscontrato un problema: %v", err)
 		return
@@ -48,32 +48,35 @@ func RunCalamaresInstaller() {
 	// 4. Configurazione DINAMICA
 	// partition.conf
 	if err := calamares.PreparePartitionConf(); err != nil {
-		utils.LogError("Errore configurazione paritition.conf: %v", err)
-		// Non blocchiamo tutto, proviamo a procedere comunque
+		utils.LogError("Errore configurazione partition.conf: %v", err)
 	}
 
 	// users.conf
+	// 👈 CORRETTO: rimosso oaVersion, non serve a users.conf
 	if err := calamares.PrepareUserConf(); err != nil {
 		utils.LogError("Errore configurazione users.conf: %v", err)
-		// Non blocchiamo tutto, proviamo a procedere comunque
 	}
 
 	// displaymanager.conf
 	if err := calamares.PrepareDisplaymanagerConf(); err != nil {
-		utils.LogError("Errore configurazione users.conf: %v", err)
-		// Non blocchiamo tutto, proviamo a procedere comunque
+		utils.LogError("Errore configurazione displaymanager.conf: %v", err)
 	}
 
+	// removeusers.conf
 	if err := calamares.PrepareRemoveuserConf(); err != nil {
 		utils.LogError("Errore creazione removeuser.conf: %v", err)
-		// Non blocchiamo tutto, proviamo a procedere comunque
+	}
+
+	// branding.desc
+	// 👈 CORRETTO: passato oaVersion al branding!
+	if err := calamares.PrepareBrandingDesc(oaVersion); err != nil {
+		utils.LogError("Errore creazione branding.desc: %v", err)
 	}
 
 	// 5. LAUNCH: Calamares parte e trova la pappa pronta
 	if err := calamares.Launch(); err != nil {
 		utils.LogError("L'installatore si è chiuso con un errore: %v", err)
 	}
-
 }
 
 func init() {
