@@ -1,6 +1,14 @@
 # Changelog - oa-tools
 
-# Changelog - v0.7.5 (Evolution Edition)
+## Release v0.7.6: New Template Architecture** - 2026-05-10
+
+This release marks a fundamental structural shift for `oa-tools`: the transition to a modular build system. 
+
+We have separated the system logic using templates:
+* **Universal framework:** Actions common to all systems are now centralized in `brain.d/base.yaml.tmpl`.
+* **Specific modules:** Code unique to each distribution (Debian, Arch, Fedora, Manjaro) has been isolated within `brain.d/modules/`.
+
+This approach drastically reduces code complexity compared to previous versions and simplifies readability. Beyond stabilizing our current work, this architectural cleanup provides the structural foundation necessary to explore new developments and support scenarios that were previously out of reach.
 
 ## [0.7.5] - 2026-05-03
 
