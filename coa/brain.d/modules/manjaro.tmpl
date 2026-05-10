@@ -1,121 +1,20 @@
-{{ define "boot_assets_extra" }}
-      # Nessun asset extra richiesto per Arch in fase di boot staging
-{{ end }}
-
-{{ define "kernel_copy_logic" }}
-      # Troviamo dinamicamente il primo kernel e il suo initramfs principale (ignorando i fallback)
-      KERNEL=$(ls /home/eggs/liveroot/boot/vmlinuz-* | head -n 1)
-      INITRD=$(ls /home/eggs/liveroot/boot/initramfs-*.img | grep -v fallback | head -n 1)
-      
-      if [ -z "$KERNEL" ] || [ -z "$INITRD" ]; then
-        echo "ERRORE CRITICO: Kernel o Initrd non trovati in /boot!" >&2
-        exit 1
-      fi
-      
-      cp "$KERNEL" /home/eggs/isodir/live/vmlinuz
-      cp "$INITRD" /home/eggs/isodir/live/initrd.img
-{{ end }}
-
-{{ define "live_menus_logic" }}
-      set -e
-      # 1. Variabili di ambiente e branding
-      VOL_ID="OA_LIVE"
-      BOOT_PARAMS="misobasedir=manjaro misolabel=${VOL_ID} cow_spacesize=2G quiet splash"
-      WORK_DIR="/home/eggs/isodir"
-      # Recuperiamo il nome reale della distro
-      PRETTY=$(grep "PRETTY_NAME" /etc/os-release | cut -d'"' -f2 || echo "OA Live")
-
-      # 2. Creazione Directory
-      mkdir -p ${WORK_DIR}/boot/grub
-      mkdir -p ${WORK_DIR}/isolinux
-      mkdir -p ${WORK_DIR}/EFI/BOOT
-
-      # 3. Copia Assets (Font e Splash)
-      # Copia del font Unicode per evitare i quadratini
-      cp /usr/share/grub/unicode.pf2 ${WORK_DIR}/boot/grub/font.pf2 || echo "Font non trovato, ignoro."
-      
-      # Copia dello splash screen dagli asset locali
-      if [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ]; then
-          cp /etc/oa-tools.d/brain.d/assets/splash.png ${WORK_DIR}/boot/grub/splash.png
-          cp /etc/oa-tools.d/brain.d/assets/splash.png ${WORK_DIR}/isolinux/splash.png
-      fi
-
-      # 4. Generazione GRUB.cfg (Main)
-      cat <<EOF > ${WORK_DIR}/boot/grub/grub.cfg
-      set timeout=5
-      set default=0
-
-      insmod all_video
-      insmod gfxterm
-      insmod png
-      insmod part_gpt
-      insmod part_msdos
-      insmod fat
-      insmod iso9660
-
-      # Caricamento Font e Terminale Grafico
-      if loadfont /boot/grub/font.pf2; then
-          set gfxmode=auto
-          terminal_output gfxterm
-      fi
-
-      # Immagine di sfondo e colori (nero su trasparente per contrasto)
-      background_image /boot/grub/splash.png
-      set menu_color_normal=black/black
-      set menu_color_highlight=white/black
-      
-      search --no-floppy --set=root --label ${VOL_ID}
-
-      menuentry "Start $PRETTY" {
-          linux /live/vmlinuz ${BOOT_PARAMS}
-          initrd /live/initrd.img
-      }
-
-      menuentry "Start $PRETTY - RAM mode" {
-          linux /live/vmlinuz ${BOOT_PARAMS} toram
-          initrd /live/initrd.img
-      }
-      EOF
-
-      # 5. Generazione ISOLINUX.cfg (BIOS)
-      cat <<EOF > ${WORK_DIR}/isolinux/isolinux.cfg
-      UI vesamenu.c32
-      TIMEOUT 50
-      DEFAULT live
-
-      MENU BACKGROUND splash.png
-      MENU TITLE Penguins eggs (COA/OA edition)
-
-      LABEL live
-          MENU LABEL Start $PRETTY
-          LINUX /live/vmlinuz
-          APPEND ${BOOT_PARAMS}
-          INITRD /live/initrd.img
-
-      LABEL ram
-          MENU LABEL Start $PRETTY - RAM mode
-          LINUX /live/vmlinuz
-          APPEND ${BOOT_PARAMS} toram
-          INITRD /live/initrd.img
-      EOF
-
-      # 6. Generazione Trampolino EFI
-      cat <<EOF > ${WORK_DIR}/EFI/BOOT/grub.cfg
-      search --set=root --file /live/filesystem.squashfs
-      set prefix=(\$root)/boot/grub
-      configfile \$prefix/grub.cfg
-      EOF
-{{ end }}
+{{ define "boot_params" }}misobasedir=manjaro misolabel=${VOL_ID} cow_spacesize=2G quiet splash{{ end }}
 
 {{ define "initramfs_cmd" }}
       mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
       cat << 'EOF' > /etc/mkinitcpio.conf
       MODULES=(loop dm-snapshot btrfs)
       HOOKS=(base udev microcode modconf kms miso miso_loop_mnt miso_pxe_common miso_pxe_nbd miso_pxe_http miso_pxe_nfs block keyboard keymap consolefont filesystems fsck)
-      COMPRESSION="zstd"      
+      COMPRESSION="zstd" 
+      
       EOF
       mkinitcpio -P
       mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
+{{ end }}
+
+{{ define "find_kernel_initrd" }}
+      KERNEL_PATH=$(ls /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | head -n 1)
+      INITRD_PATH=$(ls /home/eggs/liveroot/boot/initramfs-*.img 2>/dev/null | grep -v fallback | head -n 1)
 {{ end }}
 
 {{ define "squashfs_hooks" }}
@@ -124,17 +23,12 @@
 {{ end }}
 
 {{ define "install_logic" }}
-      # 1. Rigenerazione initramfs target
       mkinitcpio -P
-
-      # 2. Installazione GRUB (BIOS o UEFI)
       if [ -d /sys/firmware/efi ]; then
           grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
       else
           TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
           grub-install --target=i386-pc --recheck "$TARGET_DISK"
       fi
-
-      # 3. Update finale del menu
       grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}

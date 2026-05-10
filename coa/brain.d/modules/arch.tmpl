@@ -1,132 +1,22 @@
-{{ define "initramfs_cmd" }}
-      # 1. Backup della configurazione originale
-      mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
+{{ define "boot_params" }}archisobasedir=arch archisolabel=${VOL_ID} cow_spacesize=2G quiet splash{{ end }}
 
-      # 2. Scrittura "al volo" della configurazione Live
+{{ define "initramfs_cmd" }}
+      mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
       cat << 'EOF' > /etc/mkinitcpio.conf
       MODULES=(loop dm-snapshot btrfs)
       HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs block filesystems keyboard keymap consolefont filesystems fsck)
       COMPRESSION="zstd"      
-      # --- FINE CONFIGURAZIONE LIVE ---
       EOF
-
-      # 3. Compilazione del nuovo initramfs
       mkinitcpio -P
-
-      # 4. Ripristino configurazione standard
       mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 {{ end }}
 
-{{ define "boot_assets_extra" }}
-      # Nessun asset extra richiesto per Arch in fase di boot staging
-{{ end }}
-
-{{ define "live_menus_logic" }}
-      # 1. Variabili di ambiente e branding
-      VOL_ID="OA_LIVE"
-      BOOT_PARAMS="archisobasedir=arch archisolabel=${VOL_ID} cow_spacesize=2G quiet splash"
-      WORK_DIR="/home/eggs/isodir"
-      
-      # Recuperiamo il nome reale della distro dal filesystem clonato
-      PRETTY=$(grep "PRETTY_NAME" /home/eggs/liveroot/etc/os-release | cut -d'"' -f2 || echo "OA Live")
-
-      # 2. Creazione Directory
-      mkdir -p ${WORK_DIR}/boot/grub
-      mkdir -p ${WORK_DIR}/isolinux
-      mkdir -p ${WORK_DIR}/EFI/BOOT
-
-      # 3. Copia Assets (Font e Splash)
-      cp /usr/share/grub/unicode.pf2 ${WORK_DIR}/boot/grub/font.pf2 2>/dev/null || echo "Font non trovato, ignoro."
-      
-      if [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ]; then
-          cp /etc/oa-tools.d/brain.d/assets/splash.png ${WORK_DIR}/boot/grub/splash.png
-          cp /etc/oa-tools.d/brain.d/assets/splash.png ${WORK_DIR}/isolinux/splash.png
-      fi
-
-      # 4. Generazione GRUB.cfg (Main)
-      cat <<EOF > ${WORK_DIR}/boot/grub/grub.cfg
-      set timeout=5
-      set default=2
-
-      insmod all_video
-      insmod gfxterm
-      insmod png
-      insmod part_gpt
-      insmod part_msdos
-      insmod fat
-      insmod iso9660
-
-      if loadfont /boot/grub/font.pf2; then
-          set gfxmode=auto
-          terminal_output gfxterm
-      fi
-
-      background_image /boot/grub/splash.png
-      set menu_color_normal=black/black
-      set menu_color_highlight=white/black
-      
-      search --no-floppy --set=root --label ${VOL_ID}
-
-      menuentry "--- Penguins eggs (COA/OA Edition) ---" {
-          true
-      }
-
-      menuentry "" {
-          true
-      }
-
-      menuentry "Start ${PRETTY}" {
-          linux /live/vmlinuz ${BOOT_PARAMS}
-          initrd /live/initrd.img
-      }
-
-      menuentry "Start ${PRETTY} - RAM mode" {
-          linux /live/vmlinuz ${BOOT_PARAMS} toram
-          initrd /live/initrd.img
-      }
-      EOF
-
-      # 5. Generazione ISOLINUX.cfg (BIOS)
-      cat <<EOF > ${WORK_DIR}/isolinux/isolinux.cfg
-      UI vesamenu.c32
-      TIMEOUT 50
-      DEFAULT live
-
-      MENU BACKGROUND splash.png
-      MENU TITLE Penguins eggs (COA/OA edition)
-
-      LABEL live
-          MENU LABEL Start ${PRETTY}
-          LINUX /live/vmlinuz
-          APPEND ${BOOT_PARAMS}
-          INITRD /live/initrd.img
-
-      LABEL ram
-          MENU LABEL Start ${PRETTY} - RAM mode
-          LINUX /live/vmlinuz
-          APPEND ${BOOT_PARAMS} toram
-          INITRD /live/initrd.img
-      EOF
-
-      # 6. Generazione Trampolino EFI
-      cat << 'EOF' > ${WORK_DIR}/EFI/BOOT/grub.cfg
-      search --set=root --file /live/filesystem.squashfs
-      set prefix=($root)/boot/grub
-      configfile $prefix/grub.cfg
-      EOF
-{{ end }}
-
-{{ define "kernel_copy_logic" }}
-      # Cerca il kernel e l'initramfs escludendo i fallback
+{{ define "find_kernel_initrd" }}
       KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "fallback" | head -n 1)
       INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initramfs* 2>/dev/null | grep -v "fallback" | head -n 1)
-      
-      if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
-      if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
 {{ end }}
 
 {{ define "squashfs_hooks" }}
-      # Link di compatibilità per gli hook di archiso
       mkdir -p /home/eggs/isodir/arch/x86_64
       ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/airootfs.sfs
 {{ end }}
