@@ -1,19 +1,38 @@
+# ==============================================================================
+# 🎩 MODULO FEDORA
+# ==============================================================================
+
+# ----------------------------------------------------------------------------
+# 3. GENERAZIONE MENU DI AVVIO E BRANDING
+# ----------------------------------------------------------------------------
 {{ define "boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image selinux=0 quiet splash{{ end }}
 
+# ----------------------------------------------------------------------------
+# 5. INITRAMFS LIVE
+# ----------------------------------------------------------------------------
 {{ define "initramfs_cmd" }}
       dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-fedora.img
 {{ end }}
 
+# ----------------------------------------------------------------------------
+# 6. ESTRAZIONE KERNEL E PRIVILEGI
+# ----------------------------------------------------------------------------
 {{ define "find_kernel_initrd" }}
       KERNEL_PATH=$(ls -v /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "rescue" | tail -n 1)
       INITRD_PATH="/home/eggs/liveroot/boot/initramfs-fedora.img"
 {{ end }}
 
+# ----------------------------------------------------------------------------
+# 8. COMPRESSIONE FILESYSTEM.SQUASHFS
+# ----------------------------------------------------------------------------
 {{ define "squashfs_hooks" }}
       mkdir -p /home/eggs/isodir/LiveOS
       ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
 {{ end }}
 
+# ==============================================================================
+# 🎯 CALAMARES INSTALLER HOOKS
+# ==============================================================================
 {{ define "install_logic" }}
       sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
       if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then

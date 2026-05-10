@@ -1,27 +1,45 @@
+# ==============================================================================
+# 🟢 MODULO MANJARO/BIGLINUX
+# ==============================================================================
+
+# ----------------------------------------------------------------------------
+# 3. GENERAZIONE MENU DI AVVIO E BRANDING
+# ----------------------------------------------------------------------------
 {{ define "boot_params" }}misobasedir=manjaro misolabel=${VOL_ID} cow_spacesize=2G quiet splash{{ end }}
 
+# ----------------------------------------------------------------------------
+# 5. INITRAMFS LIVE
+# ----------------------------------------------------------------------------
 {{ define "initramfs_cmd" }}
       mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
       cat << 'EOF' > /etc/mkinitcpio.conf
       MODULES=(loop dm-snapshot btrfs)
       HOOKS=(base udev microcode modconf kms miso miso_loop_mnt miso_pxe_common miso_pxe_nbd miso_pxe_http miso_pxe_nfs block keyboard keymap consolefont filesystems fsck)
-      COMPRESSION="zstd" 
-      
+      COMPRESSION="zstd"      
       EOF
       mkinitcpio -P
       mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 {{ end }}
 
+# ----------------------------------------------------------------------------
+# 6. ESTRAZIONE KERNEL E PRIVILEGI
+# ----------------------------------------------------------------------------
 {{ define "find_kernel_initrd" }}
       KERNEL_PATH=$(ls /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | head -n 1)
       INITRD_PATH=$(ls /home/eggs/liveroot/boot/initramfs-*.img 2>/dev/null | grep -v fallback | head -n 1)
 {{ end }}
 
+# ----------------------------------------------------------------------------
+# 8. COMPRESSIONE FILESYSTEM.SQUASHFS
+# ----------------------------------------------------------------------------
 {{ define "squashfs_hooks" }}
       mkdir -p /home/eggs/isodir/manjaro/x86_64
       ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_64/livefs.sfs
 {{ end }}
 
+# ==============================================================================
+# 🎯 CALAMARES INSTALLER HOOKS
+# ==============================================================================
 {{ define "install_logic" }}
       mkinitcpio -P
       if [ -d /sys/firmware/efi ]; then

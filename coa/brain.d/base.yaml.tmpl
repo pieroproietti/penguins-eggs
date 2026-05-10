@@ -10,6 +10,7 @@ remaster:
     description: "Preparazione dell'ambiente di chroot e mount point"
     action: "oa_mount_logic"
 
+
   # ----------------------------------------------------------------------------
   # 2. PREPARAZIONE BOOTLOADERS
   # ----------------------------------------------------------------------------
@@ -18,14 +19,26 @@ remaster:
     action: "oa_shell"
     run_command: |
       mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
+      
+      # Copia assets BIOS
       cp /tmp/coa/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/ 2>/dev/null || true
       cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true
-      dd if=/dev/zero of=/home/eggs/isodir/EFI/BOOT/efi.img bs=1M count=4
+      
+      # Copia del binario EFI (Percorso corretto e unificato!)
+      EFI_SRC="/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi"
+      if [ -f "$EFI_SRC" ]; then
+          cp "$EFI_SRC" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
+      fi
+
+      # Generazione immagine FAT per EFI (12MB)
+      dd if=/dev/zero of=/home/eggs/isodir/EFI/BOOT/efi.img bs=1M count=12
       mkfs.vfat /home/eggs/isodir/EFI/BOOT/efi.img
       mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI
       mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI/BOOT
-      if [ -f /tmp/coa/bootloaders/EFI/BOOTX64.EFI ]; then
-          mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /tmp/coa/bootloaders/EFI/BOOTX64.EFI ::/EFI/BOOT/
+      
+      # Iniezione del binario nella partizione FAT
+      if [ -f /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ]; then
+          mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
       fi
 
   # ----------------------------------------------------------------------------
