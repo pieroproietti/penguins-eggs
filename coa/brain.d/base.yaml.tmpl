@@ -146,7 +146,7 @@ remaster:
   - name: "coa-squashfs"
     action: "oa_shell"
     run_command: |
-      mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs -comp zstd -wildcards -ef /tmp/coa/excludes.list
+      mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs -comp zstd -Xcompression-level 3 -b 1M -processors 4 -noappend -wildcards -ef /tmp/coa/excludes.list
 {{ template "squashfs_hooks" . }}
 
   - name: "coa-xorriso"
