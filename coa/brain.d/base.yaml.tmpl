@@ -178,33 +178,31 @@ remaster:
   # 7. PRIVILEGI USER live, AUTOLOGIN E TRUSTED DESKTOP LAUNCHER
   # ----------------------------------------------------------------------------
   - name: "coa-enable-live"
-    description: "Configurazione privilegi, autologin e bypass sicurezza universale"
+    description: "Configurazione privilegi, launcher fidato e autologin universale"
     action: "oa_shell"
     chroot: true
     run_command: |
       USER="live"
       
-      # 1. Sudoers e Gruppi
+      # 7.1. Sudoers e Gruppi (Usa template per sudo/wheel)
       echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/00-live
       chmod 0440 /etc/sudoers.d/00-live
       groupadd autologin 2>/dev/null || true
       usermod -aG {{ template "admin_group" . }},autologin ${USER} 2>/dev/null || true
 
-      # 2. Creazione Icona Uovo (SVG Solido, Base Corta Y=56, Tensione 1.3)
+      # 7.2. Creazione Icona Uovo (SVG Solido)
       ICON_PATH="/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
       mkdir -p $(dirname $ICON_PATH)
       cat << EOF > $ICON_PATH
       <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 32 4 C 14 4, 6 22, 6 40 C 6 54, 18 56, 32 56 C 46 56, 58 54, 58 40 C 58 22, 50 4, 32 4 Z" 
-              fill="#f0ad4e" />
+        <path d="M 32 4 C 14 4, 6 22, 6 40 C 6 54, 18 56, 32 56 C 46 56, 58 54, 58 40 C 58 22, 50 4, 32 4 Z" fill="#f0ad4e" />
       </svg>
       EOF
       gtk-update-icon-cache /usr/share/icons/hicolor/ 2>/dev/null || true
 
-      # 3. Desktop Launcher (Installazione pulita)
+      # 7.3. Desktop Launcher Certificato
       APP_DIR="/usr/share/applications"
       mkdir -p $APP_DIR /etc/skel/Desktop /home/${USER}/Desktop
-      
       cat << EOF > $APP_DIR/install-system.desktop
       [Desktop Entry]
       Type=Application
@@ -217,53 +215,32 @@ remaster:
       Terminal=false
       Categories=System;
       EOF
-      
       chmod +x $APP_DIR/install-system.desktop
-      
-      # Copia fisica per evitare i link
       cp $APP_DIR/install-system.desktop /etc/skel/Desktop/
       cp $APP_DIR/install-system.desktop /home/${USER}/Desktop/
-      
-      # Forziamo permessi e proprietà (Questo è il "Trust" per KDE Plasma!)
       chown -R ${USER}:${USER} /home/${USER}/Desktop
       chmod +x /home/${USER}/Desktop/install-system.desktop
 
-      # 4. L'AGENTE SEGRETO: Bypass Sicurezza Universale (GTK/Qt)
+      # 7.4. L'AGENTE SEGRETO (Bypass Sicurezza GIO/XFCE)
       mkdir -p /etc/xdg/autostart /usr/local/bin
-      
       cat << 'EOF' > /usr/local/bin/oa-trust-desktop
       #!/bin/bash
-      # Attende il gestore della scrivania: XFCE, GNOME, Cinnamon, MATE, KDE, LXDE, LXQt
       for i in {1..15}; do
-          if pgrep -x xfdesktop > /dev/null || pgrep -x nautilus > /dev/null || \
-             pgrep -x nemo > /dev/null || pgrep -x caja > /dev/null || \
-             pgrep -f ding > /dev/null || pgrep -x plasmashell > /dev/null || \
-             pgrep -x pcmanfm > /dev/null || pgrep -x pcmanfm-qt > /dev/null; then
+          if pgrep -x xfdesktop >/dev/null || pgrep -x nautilus >/dev/null || pgrep -x nemo >/dev/null || pgrep -x caja >/dev/null || pgrep -f ding >/dev/null || pgrep -x plasmashell >/dev/null || pgrep -x pcmanfm >/dev/null || pgrep -x pcmanfm-qt >/dev/null; then
               break
           fi
           sleep 1
       done
       sleep 2
-      
-      # Se siamo su KDE (plasmashell), il chmod +x fatto prima basta e avanza.
-      # Per gli ambienti GTK, applichiamo i metadati GIO.
       if ! pgrep -x plasmashell > /dev/null; then
-          DESKTOP_DIR=$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")
-          LAUNCHER="$DESKTOP_DIR/install-system.desktop"
-          
+          LAUNCHER="$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")/install-system.desktop"
           if [ -f "$LAUNCHER" ]; then
-              # Trust base per GNOME, Cinnamon, MATE
               gio set "$LAUNCHER" metadata::trusted yes 2>/dev/null
-              
-              # Trust paranoico per XFCE 4.18+
-              CHECKSUM=$(sha256sum "$LAUNCHER" | awk '{print $1}')
-              gio set "$LAUNCHER" metadata::xfce-exe-checksum "$CHECKSUM" 2>/dev/null
+              gio set "$LAUNCHER" metadata::xfce-exe-checksum "$(sha256sum "$LAUNCHER" | awk '{print $1}')" 2>/dev/null
           fi
       fi
       EOF
       chmod +x /usr/local/bin/oa-trust-desktop
-
-      # Lanciamo lo script all'avvio
       cat << 'EOF' > /etc/xdg/autostart/trust-installer.desktop
       [Desktop Entry]
       Type=Application
@@ -273,19 +250,23 @@ remaster:
       NoDisplay=true
       EOF
 
-      # 5. Autologin (Sanificazione LightDM)
+      # 7.5. Autologin Universale (Forzato per tutte le distro)
       if [ -d /etc/lightdm ]; then
-          if [ -f /etc/lightdm/lightdm.conf ]; then
-              sed -i '/^autologin-user=/d' /etc/lightdm/lightdm.conf
+          passwd -d $USER 2>/dev/null || true
+          usermod -U $USER 2>/dev/null || true
+          
+          if [ -f /etc/pam.d/lightdm-autologin ]; then
+              sed -i '/pam_succeed_if.so.*user ingroup autologin/d' /etc/pam.d/lightdm-autologin
           fi
-          mkdir -p /etc/lightdm/lightdm.conf.d
-          cat << EOF_LIGHTDM > /etc/lightdm/lightdm.conf.d/99-autologin.conf
-      [Seat:*]
-      autologin-user=$USER
-      autologin-user-timeout=0
-      EOF_LIGHTDM
+          
+          SESSION=$(ls -1 /usr/share/xsessions/ 2>/dev/null | head -n 1 | sed 's/\.desktop//')
+          
+          if [ -f /etc/lightdm/lightdm.conf ]; then
+              sed -i -e '/^[#]*autologin-user=/d' -e '/^[#]*autologin-user-timeout=/d' -e '/^[#]*autologin-session=/d' /etc/lightdm/lightdm.conf
+              sed -i "/^\[Seat:\*\]/a autologin-user=$USER\nautologin-user-timeout=0\nautologin-session=${SESSION:-xfce}" /etc/lightdm/lightdm.conf
+          fi
       fi
-
+      
   # ----------------------------------------------------------------------------
   # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
   # ----------------------------------------------------------------------------
