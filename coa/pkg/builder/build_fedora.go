@@ -58,7 +58,7 @@ License:        GPLv3
 URL:            https://penguins-eggs.net/blog/eggs-bananas
 
 # Dipendenze aggiornate: inclusi i font per le emoji e i tool grafici
-Requires:       bash-completion, squashfs-tools, xorriso, dosfstools, mtools, dracut-live, gdisk, git, rsync, sudo, google-noto-emoji-fonts, grub2-efi-x64-modules
+Requires:       bash-completion, squashfs-tools, xorriso, dosfstools, mtools, dracut-live, gdisk, git, rsync, sudo, google-noto-emoji-fonts, grub2-pc-modules, grub2-efi-x64-modules, efibootmgr, shim-x64
 Conflicts:      penguins-eggs
 
 %%description

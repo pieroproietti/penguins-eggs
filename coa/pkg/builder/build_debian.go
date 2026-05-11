@@ -39,7 +39,7 @@ func buildDebianPackage(projRoot, oaDir, coaDir, pkgVersion string) {
 	// 3. Gestione della Configurazione YAML e Popolamento brain.d
 	confDest := filepath.Join(buildDir, "etc/oa-tools.d")
 	brainDest := filepath.Join(confDest, "brain.d")
-	
+
 	// Generazione del file di configurazione principale oa-tools.yaml
 	oaYamlContent := fmt.Sprintf(`---
 # oa-tools configuration
@@ -98,7 +98,7 @@ remaster:
 Version: %s
 Architecture: amd64
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dosfstools, mtools, rsync, git, sudo
+Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dosfstools, mtools, rsync, git, sudo, grub-pc-bin, grub-efi-amd64-bin
 Conflicts: penguins-eggs
 Description: coa is the mind and oa the arm
 `, pkgVersion)
