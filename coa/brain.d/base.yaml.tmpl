@@ -175,16 +175,106 @@ remaster:
       if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
 
   # ----------------------------------------------------------------------------
-  # 7. PRIVILEGI USER live
+  # 7. PRIVILEGI USER live, AUTOLOGIN E TRUSTED DESKTOP LAUNCHER
   # ----------------------------------------------------------------------------
   - name: "coa-enable-live"
-    description: "Abilitazione permessi di amministrazione (sudo) senza password"
+    description: "Configurazione privilegi, launcher fidato e autologin universale"
     action: "oa_shell"
     chroot: true
     run_command: |
-      echo "live ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/00-live
+      USER="live"
+      
+      # 7.1. Sudoers e Gruppi (Usa template per sudo/wheel)
+      echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/00-live
       chmod 0440 /etc/sudoers.d/00-live
+      groupadd autologin 2>/dev/null || true
+      usermod -aG {{ template "admin_group" . }},autologin ${USER} 2>/dev/null || true
 
+      # 7.2. Creazione Icona Uovo (SVG 3D Golden Edition)
+      ICON_PATH="/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
+      mkdir -p $(dirname $ICON_PATH)
+      cat << 'EOF' > $ICON_PATH
+      <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#ffe066" />
+            <stop offset="50%" stop-color="#f0ad4e" />
+            <stop offset="100%" stop-color="#b87311" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
+        <path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
+      </svg>
+      EOF
+      gtk-update-icon-cache /usr/share/icons/hicolor/ 2>/dev/null || true
+
+      # 7.3. Desktop Launcher Certificato
+      APP_DIR="/usr/share/applications"
+      mkdir -p $APP_DIR /etc/skel/Desktop /home/${USER}/Desktop
+      cat << EOF > $APP_DIR/install-system.desktop
+      [Desktop Entry]
+      Type=Application
+      Version=1.0
+      Name=Install System
+      GenericName=Live Installer
+      Comment=Install this system to your hard disk
+      Exec=sudo eggs sysinstall calamares
+      Icon=penguins-eggs
+      Terminal=false
+      Categories=System;
+      EOF
+      chmod +x $APP_DIR/install-system.desktop
+      cp $APP_DIR/install-system.desktop /etc/skel/Desktop/
+      cp $APP_DIR/install-system.desktop /home/${USER}/Desktop/
+      chown -R ${USER}:${USER} /home/${USER}/Desktop
+      chmod +x /home/${USER}/Desktop/install-system.desktop
+
+      # 7.4. L'AGENTE SEGRETO (Bypass Sicurezza GIO/XFCE)
+      mkdir -p /etc/xdg/autostart /usr/local/bin
+      cat << 'EOF' > /usr/local/bin/oa-trust-desktop
+      #!/bin/bash
+      for i in {1..15}; do
+          if pgrep -x xfdesktop >/dev/null || pgrep -x nautilus >/dev/null || pgrep -x nemo >/dev/null || pgrep -x caja >/dev/null || pgrep -f ding >/dev/null || pgrep -x plasmashell >/dev/null || pgrep -x pcmanfm >/dev/null || pgrep -x pcmanfm-qt >/dev/null; then
+              break
+          fi
+          sleep 1
+      done
+      sleep 2
+      if ! pgrep -x plasmashell > /dev/null; then
+          LAUNCHER="$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")/install-system.desktop"
+          if [ -f "$LAUNCHER" ]; then
+              gio set "$LAUNCHER" metadata::trusted yes 2>/dev/null
+              gio set "$LAUNCHER" metadata::xfce-exe-checksum "$(sha256sum "$LAUNCHER" | awk '{print $1}')" 2>/dev/null
+          fi
+      fi
+      EOF
+      chmod +x /usr/local/bin/oa-trust-desktop
+      cat << 'EOF' > /etc/xdg/autostart/trust-installer.desktop
+      [Desktop Entry]
+      Type=Application
+      Name=Trust Installer
+      Exec=/usr/local/bin/oa-trust-desktop
+      Hidden=false
+      NoDisplay=true
+      EOF
+
+      # 7.5. Autologin Universale (Forzato per tutte le distro)
+      if [ -d /etc/lightdm ]; then
+          passwd -d $USER 2>/dev/null || true
+          usermod -U $USER 2>/dev/null || true
+          
+          if [ -f /etc/pam.d/lightdm-autologin ]; then
+              sed -i '/pam_succeed_if.so.*user ingroup autologin/d' /etc/pam.d/lightdm-autologin
+          fi
+          
+          SESSION=$(ls -1 /usr/share/xsessions/ 2>/dev/null | head -n 1 | sed 's/\.desktop//')
+          
+          if [ -f /etc/lightdm/lightdm.conf ]; then
+              sed -i -e '/^[#]*autologin-user=/d' -e '/^[#]*autologin-user-timeout=/d' -e '/^[#]*autologin-session=/d' /etc/lightdm/lightdm.conf
+              sed -i "/^\[Seat:\*\]/a autologin-user=$USER\nautologin-user-timeout=0\nautologin-session=${SESSION:-xfce}" /etc/lightdm/lightdm.conf
+          fi
+      fi
+      
   # ----------------------------------------------------------------------------
   # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
   # ----------------------------------------------------------------------------
@@ -192,7 +282,16 @@ remaster:
     description: "Compressione del filesystem root in formato SquashFS"
     action: "oa_shell"
     run_command: |
-      mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs -comp zstd -Xcompression-level 3 -b 1M -processors 4 -noappend -wildcards -ef /tmp/coa/excludes.list
+      mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
+        -comp zstd \
+        -Xcompression-level 3 \
+        -b 1M \
+        -processors 4 \
+        -noappend \
+        -wildcards \
+        -ef /tmp/coa/excludes.list \
+        -p "mnt d 0755 root root" \
+        -p "media d 0755 root root"
 {{ template "squashfs_hooks" . }}
 
   # ----------------------------------------------------------------------------

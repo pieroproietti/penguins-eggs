@@ -1,5 +1,19 @@
 # Changelog - oa-tools
 
+## Release v0.7.7
+
+**Core Engine & Remastering**
+* **Fixed SquashFS Exclusions:** Corrected wildcard expansion rules (`.*`) in `mksquashfs` exclude lists that previously caused the unintended removal of vital directories (like `/mnt`, `/media`, and `/root`) during the live filesystem compression.
+
+**Live System & Templates**
+* **Universal Autologin:** Replaced distro-specific workarounds with a unified, robust LightDM autologin bypass. It successfully handles PAM restrictions and locked passwords across Debian, Arch Linux, and Fedora live sessions.
+* **Trusted Desktop Launcher:** Implemented an automated background script ("Secret Agent") that dynamically applies GIO metadata and checksums to authorize the Calamares installer icon across all major Desktop Environments (XFCE, GNOME, KDE, Cinnamon, etc.) without security warnings.
+* **Dynamic 3D SVG Icon:** The live system now dynamically generates a high-quality, 3D-styled SVG egg icon directly from the YAML template.
+
+**Calamares Installer**
+* **Slideshow Redesign:** Overhauled the `show.qml` presentation with a new "Arctic Gold" aesthetic, featuring improved typography and high-contrast text outlines for perfect readability over snow/bright backgrounds.
+* **Responsive Image Scaling:** Introduced a dynamic mathematical container in QML. Slideshow images now scale perfectly to fit the installer window while locking the text inside the image boundaries, eliminating text overflow and blank borders.
+
 ## Release v0.7.6: New Template Architecture** - 2026-05-10
 
 This release marks a fundamental structural shift for `oa-tools`: the transition to a modular build system. 
