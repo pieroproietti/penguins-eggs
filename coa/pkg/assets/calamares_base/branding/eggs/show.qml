@@ -32,7 +32,6 @@ Presentation
 
     // --- SLIDE 1 ---
     Slide {
-        // Il Contenitore Matematico: mantiene la proporzione 810x485
         Item {
             anchors.centerIn: parent
             width: Math.min(parent.width, parent.height * (810.0/485.0))
@@ -42,9 +41,10 @@ Presentation
             Text {
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; 
-                anchors.top: parent.top; anchors.topMargin: 20 // Ancorato all'immagine, non allo schermo!
+                anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h2>eggs: the reproductive system of penguins!</h2><h3>https://penguins-eggs.net</h3>")
+                textFormat: Text.RichText
+                text: qsTr("<h1>oa-tools</h1><br/><h2>eggs: the reproductive system of penguins!</h2>")
             }
         }
     }
@@ -61,7 +61,8 @@ Presentation
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Start the reproduction of your system! Produce yours eggs and simply install them on another computer. You can do it!</h2>")
+                textFormat: Text.RichText
+                text: qsTr("<h1>oa-tools</h1><br/><h2>Reproduce your system: create eggs and install them on any computer. You can do it!</h2>")
             }
         }
     }
@@ -78,7 +79,8 @@ Presentation
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h2>It's your system!<br/>Bring it with you and use/install it elsewhere.</h2>")
+                textFormat: Text.RichText
+                text: qsTr("<h1>oa-tools</h1><br/><h2>It's your system!<br/>Take it anywhere to use live or install on another computer</h2>")
             }
         }
     }
@@ -95,7 +97,8 @@ Presentation
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Eggs is a CLI tool,<br/>but it's simple and nice. Write eggs without else and get the commands list</h2>")
+                textFormat: Text.RichText
+                text: qsTr("<h1>oa-tools</h1><br/><h2>It's a CLI tool, but it's simple and intuitive. Just type eggs to get the command list</h2>")
             }
         }
     }
@@ -112,7 +115,8 @@ Presentation
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Please wait, we are hatching...<br/>Don't disturb the process, in few time You will have a new penguin.</h2>")
+                textFormat: Text.RichText
+                text: qsTr("<h1>oa-tools</h1><br/><h2>Please wait, we're hatching...<br/>Don't interrupt the process,<br/>your new penguin will be ready soon!</h2>")
             }
         }
     }
@@ -129,7 +133,8 @@ Presentation
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h3>Follow oa-tools development, can be funny.</h3><h3>Developers, graphics and testers need feedback and help.</h3><h3>Use this tool, enjoy and if you can collaborate.</h3><br><h2>That's all peoples!</h2>")
+                textFormat: Text.RichText
+                text: qsTr("<h1>oa-tools</h1><br/><h3>Join the oa-tools development, it's fun!</h3><h3>Use the tool, enjoy it, and collaborate if you want.</h3><br><h2>That's all, folks!</h2>")
             }
         }
     }
@@ -146,7 +151,8 @@ Presentation
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Created by Piero Proietti</h2><br/><h4>issues: https://github.com/pieroproietti/oa-tools</h4><h3>email: piero.proietti@gmail.com</h3>")
+                textFormat: Text.RichText
+                text: qsTr("<h1>oa-tools</h1><h2>Created by Piero Proietti</h2><h4>Issues: <a href='https://github.com/pieroproietti/oa-tools/issues'>github.com/pieroproietti/oa-tools/issues</a></h4><h4>Email: <a href='mailto:piero.proietti@gmail.com'>piero.proietti@gmail.com</a></h4><h4>Website: <a href='https://penguins-eggs.net'>penguins-eggs.net</a></h4>")
             }
         }
     }
