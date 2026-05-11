@@ -57,8 +57,22 @@ Summary:        coa is the mind and oa the arm
 License:        GPLv3
 URL:            https://penguins-eggs.net/blog/eggs-bananas
 
-# Dipendenze aggiornate: inclusi i font per le emoji e i tool grafici
-Requires:       bash-completion, squashfs-tools, xorriso, dosfstools, mtools, dracut-live, gdisk, git, rsync, sudo, google-noto-emoji-fonts, grub2-pc-modules, grub2-efi-x64-modules, efibootmgr, shim-x64
+# Dipendenze
+Requires:       bash-completion
+Requires:       squashfs-tools
+Requires:       xorriso
+Requires:       dosfstools
+Requires:       mtools
+Requires:       dracut-live
+Requires:       gdisk
+Requires:       git
+Requires:       rsync
+Requires:       sudo
+Requires:       google-noto-emoji-fonts
+Requires:       grub2-pc-modules
+Requires:       grub2-efi-x64-modules
+Requires:       efibootmgr
+Requires:       shim-x64
 Conflicts:      penguins-eggs
 
 %%description

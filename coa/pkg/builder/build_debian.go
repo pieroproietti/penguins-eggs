@@ -98,7 +98,17 @@ remaster:
 Version: %s
 Architecture: amd64
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dosfstools, mtools, rsync, git, sudo, grub-pc-bin, grub-efi-amd64-bin
+Depends: squashfs-tools,
+ xorriso,
+ live-boot,
+ live-boot-initramfs-tools,
+ dosfstools,
+ mtools,
+ rsync,
+ git,
+ sudo,
+ grub-pc-bin,
+ grub-efi-amd64-bin
 Conflicts: penguins-eggs
 Description: coa is the mind and oa the arm
 `, pkgVersion)
