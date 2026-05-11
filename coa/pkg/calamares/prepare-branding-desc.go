@@ -37,14 +37,12 @@ func PrepareBrandingDesc(oaVersion string) error {
 		prettyName = name
 	}
 
-	// 3. Generiamo il contenuto del branding.desc
-	// Sostituiamo la data con la versione di oa-tools
 	config := fmt.Sprintf(`---
 componentName: eggs
 
 images:
-  productIcon:    "eggs-logo.png"
-  productLogo:    "eggs-logo.png"
+  productIcon:    "eggs.png"
+  productLogo:    "eggs.png"
   productWelcome: "welcome.png"
 
 slideshow:       "show.qml"
@@ -59,8 +57,8 @@ strings:
   shortVersionedName:  "%s %s"
   bootloaderEntryName: "%s"
   productUrl:          "https://penguins-eggs.net/"
-  supportUrl:          "https://github.com/pieroproietti/penguins-eggs/issues/"
-  knownIssuesUrl:      "https://github.com/pieroproietti/penguins-eggs/issues/"
+  supportUrl:          "https://github.com/pieroproietti/oa-tools/issues/"
+  knownIssuesUrl:      "https://github.com/pieroproietti/oa-tools/issues/"
   releaseNotesUrl:     "https://penguins-eggs.net/blog/"
 
 style:
@@ -77,8 +75,8 @@ welcomeStyleCalamares: true
 `,
 		strings.ToUpper(prettyName),            // productName
 		strings.ToLower(prettyName),            // shortProductName
-		oaVersion,                              // version (es. 0.7.6)
-		oaVersion,                              // shortVersion
+		oaVersion,                              // shortVersion (es. 0.7.6)
+		"oa-tools "+oaVersion,                  // version (es. oa-tools v0.7.6)
 		strings.ToLower(prettyName), oaVersion, // versionedName
 		strings.ToUpper(prettyName), oaVersion, // shortVersionedName
 		name, // bootloaderEntryName

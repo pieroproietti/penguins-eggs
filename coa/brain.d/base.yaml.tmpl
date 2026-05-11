@@ -190,12 +190,20 @@ remaster:
       groupadd autologin 2>/dev/null || true
       usermod -aG {{ template "admin_group" . }},autologin ${USER} 2>/dev/null || true
 
-      # 7.2. Creazione Icona Uovo (SVG Solido)
+      # 7.2. Creazione Icona Uovo (SVG 3D Golden Edition)
       ICON_PATH="/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
       mkdir -p $(dirname $ICON_PATH)
-      cat << EOF > $ICON_PATH
+      cat << 'EOF' > $ICON_PATH
       <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 32 4 C 14 4, 6 22, 6 40 C 6 54, 18 56, 32 56 C 46 56, 58 54, 58 40 C 58 22, 50 4, 32 4 Z" fill="#f0ad4e" />
+        <defs>
+          <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#ffe066" />
+            <stop offset="50%" stop-color="#f0ad4e" />
+            <stop offset="100%" stop-color="#b87311" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
+        <path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
       </svg>
       EOF
       gtk-update-icon-cache /usr/share/icons/hicolor/ 2>/dev/null || true

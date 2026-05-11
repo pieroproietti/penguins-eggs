@@ -1,31 +1,37 @@
-# branding.desc on Debian penguins-eggs 26.3.21
+# branding.desc oa-tools 0.7.7
 ---
 componentName: eggs
+
 images:
-  productIcon: eggs-logo.png
-  productLogo: eggs-logo.png
-  productWelcome: welcome.png
-slideshow: show.qml
-slideshowAPI: 1
+  productIcon:    "eggs.png"
+  productLogo:    "eggs.png"
+  productWelcome: "welcome.png"
+
+slideshow:       "show.qml"
+slideshowAPI:    1
+
 strings:
-  bootloaderEntryName: Debian
-  knownIssuesUrl: https://github.com/pieroproietti/penguins-eggs/issues/
-  productName: DEBIAN TRIXIE COLIBRI
-  productUrl: https://www.debian.org/
-  releaseNotesUrl: https://bugs.debian.org/
-  shortProductName: debian trixie colibri
-  shortVersion: 2026.04.23
-  shortVersionedName: DEBIAN TRIXIE COLIBRI 2026-04-23
-  supportUrl: https://www.debian.org/support
-  version: '2026-04-23'
-  versionedName: debian trixie colibri (2026.04.23)
+  productName:         "DEBIAN GNU/LINUX 13 (TRIXIE)"
+  shortProductName:    "debian gnu/linux 13 (trixie)"
+  version:             "v0.7.6-4-g7826d0a"
+  shortVersion:        "v0.7.6-4-g7826d0a"
+  versionedName:       "debian gnu/linux 13 (trixie) (v0.7.6-4-g7826d0a)"
+  shortVersionedName:  "DEBIAN GNU/LINUX 13 (TRIXIE) v0.7.6-4-g7826d0a"
+  bootloaderEntryName: "Debian GNU/Linux"
+  productUrl:          "https://penguins-eggs.net/"
+  supportUrl:          "https://github.com/pieroproietti/penguins-eggs/issues/"
+  knownIssuesUrl:      "https://github.com/pieroproietti/penguins-eggs/issues/"
+  releaseNotesUrl:     "https://penguins-eggs.net/blog/"
+
 style:
-  SidebarBackground: '#292F34'
-  sidebarBackground: '#292F34'
-  SidebarBackgroundCurrent: '#D35400'
-  sidebarBackgroundCurrent: '#D35400'
-  SidebarText: '#FFFFFF'
-  sidebarText: '#FFFFFF'
-  SidebarTextCurrent: '#292F34'
-  sidebarTextCurrent: '#292F34'
+  SidebarBackground:        "#292F34"
+  sidebarBackground:        "#292F34"
+  SidebarBackgroundCurrent: "#D35400"
+  sidebarBackgroundCurrent: "#D35400"
+  SidebarText:              "#FFFFFF"
+  sidebarText:              "#FFFFFF"
+  SidebarTextCurrent:       "#292F34"
+  sidebarTextCurrent:       "#292F34"
+
 welcomeStyleCalamares: true
+
