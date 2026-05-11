@@ -13,23 +13,23 @@ func GenerateExcludeList(mode string) string {
 
 	// ==========================================================
 	// 1. Filesystem Virtuali e Temporanei
-	// Usiamo il "Doppio Colpo": /* per i file visibili e /.* per quelli nascosti!
+	// Usiamo il "Doppio Colpo": /* per i file visibili e /.??* per quelli nascosti!
+	// ==========================================================
+	// ==========================================================
+	// 1. Filesystem Virtuali e Temporanei
 	// ==========================================================
 	excludes = append(excludes,
 		"dev/*",
 		"proc/*",
 		"sys/*",
 		"run/*",
-		"run/.*", // File nascosti in run
 		"tmp/*",
-		"tmp/.*", // File nascosti in tmp
 		"var/tmp/*",
-		"var/tmp/.*", // <-- Il sicario che eliminerà il GB nascosto!
-		"mnt/*",
-		"media/*",
+		"var/tmp/.??*",
 		"lost+found",
 		"home/eggs/.overlay/*",
-		"home/eggs/.overlay/.*", // Sicurezza extra per overlay
+		// Se vuoi svuotare la cartella .overlay, usa un glob più sicuro o non usare .*
+		"home/eggs/.overlay/.??*", // Questo prende i file nascosti ma ignora "." e ".."
 		"home/eggs/isodir/*",
 		"home/eggs/*.iso",
 	)
@@ -53,7 +53,7 @@ func GenerateExcludeList(mode string) string {
 
 		// Rete di Sicurezza Cache: l'asterisco classico è sufficiente
 		"var/cache/apt/archives/*",
-		"var/cache/apt/*.bin", // I killer da 100 MB di apt
+		"var/cache/apt/*.bin", // Il killer da 100 MB di apt
 		"var/cache/pacman/pkg/*",
 		"var/cache/dnf/*",
 	)
@@ -72,7 +72,7 @@ func GenerateExcludeList(mode string) string {
 		// Puliamo completamente root e cancelliamo cronologia e chiavi utente
 		excludes = append(excludes,
 			"root/*",
-			"root/.*",
+			"root/.??*", // <-- FIX QUI!
 		)
 	} else {
 		// Anche in modalità clone, è saggio NON portarsi dietro la cronologia di bash

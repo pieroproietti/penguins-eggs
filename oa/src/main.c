@@ -10,7 +10,6 @@ int oa_umount(OA_Context *ctx);
 int oa_shell(OA_Context *ctx);
 int oa_users(OA_Context *ctx);
 
-// --- FUNZIONE MANCANTE REINSERITA ---
 char *read_file(const char *filename) {
     FILE *f = fopen(filename, "rb");
     if (!f) {

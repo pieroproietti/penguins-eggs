@@ -293,7 +293,16 @@ remaster:
     description: "Compressione del filesystem root in formato SquashFS"
     action: "oa_shell"
     run_command: |
-      mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs -comp zstd -Xcompression-level 3 -b 1M -processors 4 -noappend -wildcards -ef /tmp/coa/excludes.list
+      mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
+        -comp zstd \
+        -Xcompression-level 3 \
+        -b 1M \
+        -processors 4 \
+        -noappend \
+        -wildcards \
+        -ef /tmp/coa/excludes.list \
+        -p "mnt d 0755 root root" \
+        -p "media d 0755 root root"
 {{ template "squashfs_hooks" . }}
 
   # ----------------------------------------------------------------------------

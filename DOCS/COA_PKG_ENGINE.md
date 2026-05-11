@@ -23,7 +23,7 @@ Quando il Pilot incontra l'azione astratta `oa_mount_logic` nello YAML, l'Engine
 
 Questa funzione è il "filtro privacy e performance"[cite: 28]. Genera il file `/tmp/coa/excludes.list` che dirà al compressore `mksquashfs` cosa *non* includere nella ISO finale[cite: 28]:
 
-*   **Il "Doppio Colpo":** Esclude le API virtuali in due passaggi (es. `run/*` e `run/.*`) per assicurarsi che nessun file nascosto dell'host venga inavvertitamente copiato[cite: 28]. Un target primario è `var/tmp/.*` per eliminare pesanti file temporanei nascosti[cite: 28].
+*   **Il "Doppio Colpo":** Esclude le API virtuali in due passaggi (es. `run/*` e `run/.??*`) per assicurarsi che nessun file nascosto dell'host venga inavvertitamente copiato[cite: 28]. Un target primario è `var/tmp/.??*` per eliminare pesanti file temporanei nascosti[cite: 28].
 *   **Cache e Rete:** Rimuove le cache dei package manager (`apt/*.bin`, `pacman/pkg/*`, `dnf/*`) e informazioni di rete sensibili (`NetworkManager/system-connections/*`, chiavi SSH host)[cite: 28].
 *   **Privacy Utente (Mode):** Se il parametro `--mode` è `standard`, rasa al suolo la cartella `root/*`[cite: 28]. Se è `clone`, salva i dati dell'utente ma epura comunque le cronologie (`.bash_history`, `.zsh_history`) e i cestini (`.local/share/Trash/*`)[cite: 28].
 *   **Esclusioni Custom:** Se l'utente ha fornito un file `/etc/oa-tools.d/exclusion.list`, lo legge, pulisce i path e aggiunge le regole personalizzate al file di output[cite: 28].

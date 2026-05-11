@@ -144,6 +144,13 @@ int oa_mount(OA_Context *ctx) {
         }
     }
     
+    // 6. Creazione dei Mountpoint standard vuoti ---
+    const char *empty_dirs[] = {"mnt", "media"};
+    for(int i=0; i<2; i++) {
+        snprintf(p, sizeof(p), "%s/%s", liveroot_path, empty_dirs[i]);
+        mkdir(p, 0755);
+    }
+
     snprintf(p, sizeof(p), "%s/proc", liveroot_path); mount("proc", p, "proc", 0, NULL);
     snprintf(p, sizeof(p), "%s/sys", liveroot_path);  mount("sysfs", p, "sysfs", 0, NULL);
     snprintf(p, sizeof(p), "%s/dev", liveroot_path);  fortified_bind_mount("/dev", p, MS_BIND | MS_REC);
