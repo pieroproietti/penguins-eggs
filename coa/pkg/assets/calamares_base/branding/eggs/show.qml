@@ -129,7 +129,7 @@ Presentation
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
-                text: qsTr("<h1>oa-tools</h1><br/><h3>Follow Penguins' eggs development, can be funny.</h3><h3>Developers, graphics and testers need feedback and help.</h3><h3>Use this tool, enjoy and if you can collaborate.</h3><br><h2>That's all peoples!</h2>")
+                text: qsTr("<h1>oa-tools</h1><br/><h3>Follow oa-tools development, can be funny.</h3><h3>Developers, graphics and testers need feedback and help.</h3><h3>Use this tool, enjoy and if you can collaborate.</h3><br><h2>That's all peoples!</h2>")
             }
         }
     }
