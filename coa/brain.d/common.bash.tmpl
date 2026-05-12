@@ -1,0 +1,288 @@
+# ==============================================================================
+# 🧩 COMMON.TMPL - LIBRERIA OPERAZIONI UNIVERSALI OA-TOOLS
+# ==============================================================================
+
+{{ define "common_bootloaders" }}
+mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
+
+# Copia assets BIOS
+cp /tmp/coa/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/ 2>/dev/null || true
+cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true
+
+# Copia del binario EFI (Percorso corretto e unificato!)
+EFI_SRC="/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi"
+if [ -f "$EFI_SRC" ]; then
+    cp "$EFI_SRC" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
+fi
+
+# Generazione immagine FAT per EFI (12MB)
+dd if=/dev/zero of=/home/eggs/isodir/EFI/BOOT/efi.img bs=1M count=12
+mkfs.vfat /home/eggs/isodir/EFI/BOOT/efi.img
+mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI
+mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI/BOOT
+
+# Iniezione del binario nella partizione FAT
+if [ -f /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ]; then
+    mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
+fi
+{{ end }}
+
+
+{{ define "common_live_menus" }}
+set -e
+# 1. Variabili Universali
+VOL_ID="OA_LIVE"
+BOOT_PARAMS="{{ template "boot_params" . }}"
+WORK_DIR="/home/eggs/isodir"
+ASSETS_DIR="/etc/oa-tools.d/brain.d/assets"
+
+PRETTY=$(grep "PRETTY_NAME" /home/eggs/liveroot/etc/os-release | cut -d'"' -f2 || echo "OA Live")
+
+# 2. Creazione Directory
+mkdir -p ${WORK_DIR}/boot/grub
+mkdir -p ${WORK_DIR}/isolinux
+mkdir -p ${WORK_DIR}/EFI/BOOT
+
+# 3. Copia Assets Universale
+if [ -f "${ASSETS_DIR}/splash.png" ]; then
+    cp "${ASSETS_DIR}/splash.png" ${WORK_DIR}/boot/grub/splash.png
+    cp "${ASSETS_DIR}/splash.png" ${WORK_DIR}/isolinux/splash.png
+fi
+
+if [ -f "/usr/share/grub/unicode.pf2" ]; then
+    cp /usr/share/grub/unicode.pf2 ${WORK_DIR}/boot/grub/font.pf2 2>/dev/null || true
+elif [ -f "${ASSETS_DIR}/unicode.pf2" ]; then
+    cp "${ASSETS_DIR}/unicode.pf2" ${WORK_DIR}/boot/grub/font.pf2 2>/dev/null || true
+fi
+
+# 4. Generazione GRUB.cfg (Main)
+cat <<EOF > ${WORK_DIR}/boot/grub/grub.cfg
+set timeout=5
+set default=2
+
+insmod efi_gop
+insmod efi_uga
+insmod all_video
+insmod gfxterm
+insmod png
+insmod part_gpt
+insmod part_msdos
+insmod fat
+insmod iso9660
+
+search --no-floppy --set=root --label ${VOL_ID}
+
+if loadfont /boot/grub/font.pf2; then
+    set gfxmode=auto
+    terminal_output gfxterm
+fi
+
+background_image /boot/grub/splash.png
+set menu_color_normal=black/black
+set menu_color_highlight=white/black
+
+menuentry "--- oa-tools ---" {
+    true
+}
+menuentry "" {
+    true
+}
+menuentry "Start ${PRETTY}" {
+    linux /live/vmlinuz ${BOOT_PARAMS}
+    initrd /live/initrd.img
+}
+menuentry "Start ${PRETTY} - RAM mode" {
+    linux /live/vmlinuz ${BOOT_PARAMS} toram
+    initrd /live/initrd.img
+}
+EOF
+
+# 5. Generazione ISOLINUX.cfg (BIOS)
+cat <<EOF > ${WORK_DIR}/isolinux/isolinux.cfg
+UI vesamenu.c32
+TIMEOUT 50
+DEFAULT live
+
+MENU BACKGROUND splash.png
+MENU TITLE oa-tools
+
+LABEL live
+    MENU LABEL Start ${PRETTY}
+    LINUX /live/vmlinuz
+    APPEND ${BOOT_PARAMS}
+    INITRD /live/initrd.img
+
+LABEL ram
+    MENU LABEL Start ${PRETTY} - RAM mode
+    LINUX /live/vmlinuz
+    APPEND ${BOOT_PARAMS} toram
+    INITRD /live/initrd.img
+EOF
+
+# 6. Generazione Trampolino EFI
+cat << 'EOF' > ${WORK_DIR}/EFI/BOOT/grub.cfg
+search --set=root --file /live/filesystem.squashfs
+set prefix=($root)/boot/grub
+configfile $prefix/grub.cfg
+EOF
+{{ end }}
+
+
+{{ define "live_sudoers" }}
+# 7.1. Sudoers e Gruppi (Usa template per sudo/wheel)
+USER="live"
+echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/00-live
+chmod 0440 /etc/sudoers.d/00-live
+groupadd autologin 2>/dev/null || true
+usermod -aG {{ template "admin_group" . }},autologin ${USER} 2>/dev/null || true
+{{ end }}
+
+
+{{ define "live_icon" }}
+# 7.2. Creazione Icona Uovo (SVG 3D Golden Edition)
+ICON_PATH="/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
+mkdir -p $(dirname $ICON_PATH)
+cat << 'EOF' > $ICON_PATH
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs>
+    <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
+    <stop offset="0%" stop-color="#ffe066" />
+    <stop offset="50%" stop-color="#f0ad4e" />
+    <stop offset="100%" stop-color="#b87311" />
+    </radialGradient>
+</defs>
+<ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
+<path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
+</svg>
+EOF
+gtk-update-icon-cache /usr/share/icons/hicolor/ 2>/dev/null || true
+{{ end }}
+
+
+{{ define "live_launcher" }}
+# 7.3. Desktop Launcher Certificato (Solo in usr/share)
+APP_DIR="/usr/share/applications"
+mkdir -p $APP_DIR
+cat << EOF > $APP_DIR/install-system.desktop
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Install System
+GenericName=Live Installer
+Comment=Install this system to your hard disk
+Exec=sudo eggs sysinstall calamares
+Icon=penguins-eggs
+Terminal=false
+Categories=System;
+EOF
+chmod +x $APP_DIR/install-system.desktop
+{{ end }}
+
+
+{{ define "live_trust_agent" }}
+# 7.4. L'AGENTE DINAMICO (Crea e bypassa Sicurezza GIO/XFCE)
+mkdir -p /etc/xdg/autostart /usr/local/bin
+cat << 'EOF' > /usr/local/bin/oa-trust-desktop
+#!/bin/bash
+
+# 7.4.1. Trova la cartella Desktop corretta (Scrivania, Desktop, Bureau...)
+DESKTOP_DIR="$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")"
+mkdir -p "$DESKTOP_DIR"
+
+LAUNCHER_SRC="/usr/share/applications/install-system.desktop"
+LAUNCHER_DEST="$DESKTOP_DIR/install-system.desktop"
+
+# 7.4.2. Copia il launcher sulla scrivania al volo
+if [ -f "$LAUNCHER_SRC" ]; then
+    cp "$LAUNCHER_SRC" "$LAUNCHER_DEST"
+    chmod +x "$LAUNCHER_DEST"
+fi
+
+# 7.4.3. Attesa del caricamento dell'ambiente grafico
+for i in {1..15}; do
+    if pgrep -x xfdesktop >/dev/null || pgrep -x nautilus >/dev/null || pgrep -x nemo >/dev/null || pgrep -x caja >/dev/null || pgrep -f ding >/dev/null || pgrep -x plasmashell >/dev/null || pgrep -x pcmanfm >/dev/null || pgrep -x pcmanfm-qt >/dev/null; then
+        break
+    fi
+    sleep 1
+done
+sleep 2
+
+# 7.4.4. Applica il trust
+if ! pgrep -x plasmashell > /dev/null; then
+    if [ -f "$LAUNCHER_DEST" ]; then
+        gio set "$LAUNCHER_DEST" metadata::trusted yes 2>/dev/null
+        gio set "$LAUNCHER_DEST" metadata::xfce-exe-checksum "$(sha256sum "$LAUNCHER_DEST" | awk '{print $1}')" 2>/dev/null
+    fi
+fi
+EOF
+chmod +x /usr/local/bin/oa-trust-desktop
+
+# 7.4.5. Innesco per XDG Autostart
+cat << 'EOF' > /etc/xdg/autostart/trust-installer.desktop
+[Desktop Entry]
+Type=Application
+Name=Trust Installer
+Exec=/usr/local/bin/oa-trust-desktop
+Hidden=false
+NoDisplay=true
+EOF
+{{ end }}
+
+
+{{ define "live_autologin" }}
+# 7.4.6. Autologin Universale (Forzato per tutte le distro)
+USER="live"
+if [ -d /etc/lightdm ]; then
+    passwd -d $USER 2>/dev/null || true
+    usermod -U $USER 2>/dev/null || true
+    
+    if [ -f /etc/pam.d/lightdm-autologin ]; then
+        sed -i '/pam_succeed_if.so.*user ingroup autologin/d' /etc/pam.d/lightdm-autologin
+    fi
+    
+    SESSION=$(ls -1 /usr/share/xsessions/ 2>/dev/null | head -n 1 | sed 's/\.desktop//')
+    
+    if [ -f /etc/lightdm/lightdm.conf ]; then
+        sed -i -e '/^[#]*autologin-user=/d' -e '/^[#]*autologin-user-timeout=/d' -e '/^[#]*autologin-session=/d' /etc/lightdm/lightdm.conf
+        sed -i "/^\[Seat:\*\]/a autologin-user=$USER\nautologin-user-timeout=0\nautologin-session=${SESSION:-xfce}" /etc/lightdm/lightdm.conf
+    fi
+fi
+{{ end }}
+
+
+{{ define "common_squashfs" }}
+mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
+  -comp zstd \
+  -Xcompression-level 3 \
+  -b 1M \
+  -processors 4 \
+  -noappend \
+  -wildcards \
+  -ef /tmp/coa/excludes.list \
+  -p "mnt d 0755 root root" \
+  -p "media d 0755 root root"
+{{ template "squashfs_hooks" . }}
+{{ end }}
+
+
+{{ define "common_xorriso" }}
+xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid 'OA_LIVE' \
+-eltorito-boot isolinux/isolinux.bin -eltorito-catalog isolinux/boot.cat \
+-no-emul-boot -boot-load-size 4 -boot-info-table \
+-isohybrid-mbr /tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin \
+-eltorito-alt-boot -e EFI/BOOT/efi.img -no-emul-boot -isohybrid-gpt-basdat \
+-o ${ISO_OUTPUT} /home/eggs/isodir
+{{ end }}
+
+{{ define "common_kernel_copy" }}
+{{ template "find_kernel_initrd" . }}
+if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
+if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
+{{ end }}
+
+{{ define "common_finalize" }}
+#!/bin/bash
+set -e
+rm -f /etc/sudoers.d/00-live
+{{ template "install_logic" . }}
+{{ end }}
