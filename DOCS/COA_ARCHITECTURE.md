@@ -1,8 +1,8 @@
 # 🧠 L'Architetto Go: `coa` (Orchestratore e CLI)
 
-Se il motore C (`oa`) è il braccio meccanico che esegue fisicamente le syscall sul sistema, il binario Go **`coa`** è l'architetto. Analizza l'ambiente, legge le regole dal Brain (i file YAML), disegna il piano di esecuzione e impartisce gli ordini.
+Se il motore C (`oa`) è il braccio meccanico che esegue fisicamente le syscall sul sistema, il binario Go **`coa`** è la mente. Analizza l'ambiente, legge le regole dal Brain (i file YAML), disegna il piano di esecuzione e impartisce gli ordini.
 
-Tutta l'interfaccia a riga di comando (CLI) è costruita sfruttando il framework **Cobra**[cite: 22]. Questo approccio garantisce modularità, autocompletamento e una gestione rigorosa dei privilegi di sistema (`CheckSudoRequirements`)[cite: 22].
+Tutta l'interfaccia a riga di comando (CLI) è costruita sfruttando il framework **Cobra**. Questo approccio garantisce modularità, autocompletamento e una gestione rigorosa dei privilegi di sistema (`CheckSudoRequirements`).
 
 ---
 

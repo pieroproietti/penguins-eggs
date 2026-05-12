@@ -1,8 +1,8 @@
-# ⚙️ Il Motore C: `oa` (Execution Engine)
+# 🦾 Il braccio C: `oa`
 
-Se `coa` (scritto in Go) è la mente che progetta il "piano di volo" analizzando i file YAML, il binario **`oa`** (scritto in C) è il braccio meccanico che esegue fisicamente il lavoro a basso livello. 
+Se `coa` è la mente che progetta il "piano di volo" analizzando i file YAML, il binario **`oa`** è il braccio che esegue fisicamente il lavoro a basso livello. 
 
-Il motore C riceve il piano sotto forma di un file JSON parsato tramite `cJSON`[cite: 6]. La funzione cuore del sistema è `execute_verb`, che estrae la chiave `action` da ogni task e la instrada verso il modulo C nativo competente[cite: 6]. Se incontra un'azione denominata semplicemente `shell`, la ignora demandandone la competenza al livello Go[cite: 6].
+Il motore C riceve il piano sotto forma di un file JSON parsato tramite `cJSON`. La funzione cuore del sistema è `execute_verb`, che estrae la chiave `action` da ogni task e la instrada verso il modulo C nativo competente.
 
 ---
 
