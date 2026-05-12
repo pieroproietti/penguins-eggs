@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> ### Non gridate più
+> ## Non gridate più
 >
 > Cessate d'uccidere i morti,  
 > Non gridate più, non gridate  
@@ -12,8 +12,8 @@
 > Lieta dove non passa l'uomo.
 >
 > — *Giuseppe Ungaretti*
-Z
-> # STOP ALL WARS
+>
+> ---
 >
 > Millennial civilizations and sovereign nations are being razed to the ground by the same logic of dominance that has stained human history for centuries. From the Middle East to Ukraine, we are witnessing the destruction of our common heritage. No modern ideology or national interest can justify these crimes. 
 > 
