@@ -1,5 +1,17 @@
 # Changelog - oa-tools
 
+## 🐧 oa-tools v0.7.8 - 
+
+- **Smart Desktop Management**: Installation links are now dynamically handled and automatically removed after a successful installation, keeping the target `/etc/skel` clean.
+
+### Evolution Architecture
+- **Modular Template Engine**: Decoupled YAML orchestration from Bash logic using a new "Helm-style" system.
+- **Enhanced Bash Isolation**: Moved all scripts to dedicated `.bash.tmpl` files with zero-margin indentation for better maintainability.
+
+### Technical Improvements
+- **Cross-Distro Stability**: Verified seamless support for Debian, Arch, Fedora, and Manjaro using the new architecture.
+- **Pilot Logic**: Added `include` and `indent` functions to the Go engine for perfect YAML syntax generation.
+
 ## Release v0.7.7
 
 **Core Engine & Remastering**
