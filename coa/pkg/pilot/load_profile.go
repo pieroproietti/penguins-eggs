@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings" // <-- Aggiunto il pacchetto strings per l'indentazione
 	"text/template"
 
 	"coa/pkg/distro"
@@ -89,13 +90,15 @@ func DetectAndLoad() (*Profile, error) {
 		return nil, fmt.Errorf("nessun modulo trovato per %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
 	}
 
-	// 5. RENDERING DEI TEMPLATE (Composizione Base + Modulo)
+	// 5. RENDERING DEI TEMPLATE (Composizione Common + Modulo + Base)
 	basePath := filepath.Join(baseDir, "base.yaml.tmpl")
+	commonPath := filepath.Join(baseDir, "common.bash.tmpl")
+
 	// Assumiamo che i moduli siano nella sottocartella 'modules' e abbiano estensione .tmpl
-	// Se l'indice riporta ancora "debian.yaml", lo convertiamo in "debian.tmpl" o puntiamo direttamente
 	modulePath := filepath.Join(baseDir, "modules", moduleFile)
 
-	utils.LogCoala("%s[pilot]%s Compilazione: base.yaml.tmpl + %s", utils.ColorCyan, utils.ColorReset, moduleFile)
+	// Log aggiornato per mostrare la tripla fusione
+	utils.LogCoala("%s[pilot]%s Compilazione: common.bash.tmpl + %s + base.yaml.tmpl", utils.ColorCyan, utils.ColorReset, moduleFile)
 
 	// Context da passare al template
 	ctx := TemplateContext{
@@ -103,11 +106,28 @@ func DetectAndLoad() (*Profile, error) {
 		DistroID: myDistro.DistroID,
 	}
 
-	// Carichiamo entrambi i file.
-	// template.ParseFiles associa i nomi dei file ai template interni.
-	tmpl, err := template.ParseFiles(basePath, modulePath)
+	// Creiamo un nuovo template base
+	tmpl := template.New(filepath.Base(basePath)) // <-- Corretto: usiamo basePath
+
+	// Aggiungiamo le funzioni magiche "include" e "indent"
+	tmpl.Funcs(template.FuncMap{
+		"indent": func(spaces int, v string) string {
+			pad := strings.Repeat(" ", spaces)
+			// Indenta la prima riga e tutte le successive
+			return pad + strings.ReplaceAll(v, "\n", "\n"+pad)
+		},
+		"include": func(name string, data interface{}) (string, error) {
+			buf := new(bytes.Buffer)
+			err := tmpl.ExecuteTemplate(buf, name, data)
+			return buf.String(), err
+		},
+	})
+
+	// 3. Parsiamo i file
+	// Usiamo _, err per non ridefinire tmpl, dato che ParseFiles agisce sul puntatore
+	_, err = tmpl.ParseFiles(commonPath, modulePath, basePath)
 	if err != nil {
-		return nil, fmt.Errorf("errore nel parsing dei template (%s, %s): %v", basePath, modulePath, err)
+		return nil, fmt.Errorf("errore nel parsing dei template (%s, %s, %s): %v", commonPath, modulePath, basePath, err)
 	}
 
 	var rendered bytes.Buffer

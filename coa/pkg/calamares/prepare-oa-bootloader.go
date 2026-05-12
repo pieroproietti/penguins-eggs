@@ -55,8 +55,11 @@ rm "$TARGET_ROOT/tmp/oa-bootloader.sh"
 		return err
 	}
 
-	// 3. GENERAZIONE di oa-prepare-target
+	// 3. GENERAZIONE di shellprocess@oa_bootloader.conf
 	moduleContent := `---
+i18n:
+     name: "Installing bootloaders..."
+
 dontChroot: true
 timeout: 600
 script:

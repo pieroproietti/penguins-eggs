@@ -2,16 +2,16 @@
 distributions:
   - id: "debian"
     like: ["ubuntu", "linuxmint", "kali", "pop"]
-    file: "debian.tmpl"
+    file: "debian.bash.tmpl"
   
   - id: "arch"
     like: ["endeavouros", "cachyos"]
-    file: "arch.tmpl"
+    file: "arch.bash.tmpl"
 
   - id: "manjaro"
     like: ["manjaro", "bigcommunity"]
-    file: "manjaro.tmpl"
+    file: "manjaro.bash.tmpl"
 
   - id: "fedora"
     like: ["nobara"]
-    file: "fedora.tmpl"
+    file: "fedora.bash.tmpl"

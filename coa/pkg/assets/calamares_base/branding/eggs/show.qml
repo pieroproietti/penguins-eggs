@@ -62,7 +62,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Reproduce your system: create eggs and install them on any computer. You can do it!</h2>")
+                text: qsTr("<h1>oa-tools</h1><br/><h2>Reproduce your system: pack everything into an egg. You can do it!</h2>")
             }
         }
     }
@@ -80,7 +80,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h2>It's your system!<br/>Take it anywhere to use live or install on another computer</h2>")
+                text: qsTr("<h1>oa-tools</h1><br/><h2>Take it anywhere! Boot your environment live or install it on any hardware</h2>")
             }
         }
     }
@@ -116,7 +116,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Please wait, we're hatching...<br/>Don't interrupt the process,<br/>your new penguin will be ready soon!</h2>")
+                text: qsTr("<h1>oa-tools</h1><br/><h3>Please wait, we're hatching...<br/>Don't interrupt the process,<br/>your new penguin will be ready soon!</h3>")
             }
         }
     }
@@ -134,7 +134,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h3>Join the oa-tools development, it's fun!</h3><h3>Use the tool, enjoy it, and collaborate if you want.</h3><br><h2>That's all, folks!</h2>")
+                text: qsTr("<h1>oa-tools</h1><h3>Join the oa-tools development, it's fun!</h3><h3>Use the tool, enjoy it, and collaborate if you want.</h3><br><h3>That's all, folks!</h3>")
             }
         }
     }
