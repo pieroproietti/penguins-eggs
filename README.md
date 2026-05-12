@@ -30,7 +30,7 @@ The project is divided into two distinct entities: **oa** (the workhorse) and **
 
 ## 🏗 Project Architecture
 
-We have transitioned to a monorepo structure to ensure perfect synchronization between the engine (oa) and the orchestrator (coa).
+We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
 ### 🦾 [oa (eggs in my dialect)](./DOCS/README.md) - The Workhorse
 **Language: C**
@@ -41,7 +41,7 @@ We have transitioned to a monorepo structure to ensure perfect synchronization b
 - Interacting directly with the Linux Kernel and system binaries.
 - **Philosophy:** Performance, stability, and zero-dependency execution.
 
-### 🧠 [coa (brooding in my dialect)](./DOCS/README.md) - The brain
+### 🧠 [coa (brooding in my dialect)](./DOCS/README.md) - The Orchestrator
 It manages the full lifecycle: from laying the ISO to the final installation.
 
 The name derives from the dialect word coa, referring to the act of brooding or incubating eggs until they are ready to hatch.
