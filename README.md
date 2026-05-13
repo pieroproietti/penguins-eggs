@@ -86,8 +86,7 @@ Documentation about oa-tools can be found on [DOCS](/DOCS/).
 
 The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosophy can be read on my blog.
 
-![coaoa](./coaoa.jpeg)
-
+[![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
 
 ---
 *Created with passion by Piero Proietti.*
