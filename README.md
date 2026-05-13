@@ -21,12 +21,16 @@
 > 
 > **Silence is complicity, stop the massacre.**
 
-# oa-tools - A Next Generation Remastering Suite 🐧
+# oa-tools: A Next-Generation Linux Remastering Suite 🐧
 
-Welcome to **oa-tools**, the evolution of the [penguins-eggs](https://github.com/pieroproietti/penguins-eggs) experience, from the same author. This monorepo hosts a split-responsibility system designed for high-performance Linux remastering, following the "Universal Strategy" for absolute portability.
+Welcome to **oa-tools**, the next step in the evolution of [penguins-eggs](https://github.com/pieroproietti/penguins-eggs). This monorepo introduces a split-responsibility architecture engineered for high-performance system remastering. By leveraging our "Universal Strategy," *oa-tools* guarantees absolute portability across distributions.
 
-The project is divided into two distinct entities: **oa** (the workhorse) and **coa** (the orchestrator). For maximum flexibility, the system can be used interchangeably with the `coa` command or its `eggs` alias.
+Under the hood, the project is powered by two distinct entities: **oa** (the workhorse handling the heavy lifting) and **coa** (the orchestrator managing the workflow).
 
+**coa** is the only component you interact with directly, while **oa** is used by **coa** to execute its JSON-based remastering plans. To provide maximum flexibility, you can interact with the system interchangeably using the new `coa` command or the legacy `eggs` alias.
+---
+**Support the project:**  
+[![Donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
 ## 🏗 Project Architecture
 
