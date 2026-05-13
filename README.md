@@ -21,7 +21,7 @@
 > 
 > **Silence is complicity, stop the massacre.**
 
-# oa-tools: A Next-Generation Linux Remastering Suite 🐧
+## oa-tools: 🐧A Next-Generation Linux Remastering Suite
 
 Welcome to **oa-tools**, the next step in the evolution of [penguins-eggs](https://github.com/pieroproietti/penguins-eggs). This monorepo introduces a split-responsibility architecture engineered for high-performance system remastering. By leveraging our "Universal Strategy," *oa-tools* guarantees absolute portability across distributions.
 
