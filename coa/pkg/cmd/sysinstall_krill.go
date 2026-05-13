@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"coa/pkg/krill" // <-- Aggiungi l'import del tuo nuovo pacchetto Krill
 	"coa/pkg/utils"
 	"os"
 
@@ -12,17 +13,24 @@ var krillSubCmd = &cobra.Command{
 	Use:   "krill",
 	Short: "Lancia l'installatore testuale Krill (TUI)",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Anche se è un mock, manteniamo la coerenza dei permessi
+		// Manteniamo la coerenza dei permessi, installare un sistema richiede root
 		CheckSudoRequirements("sysinstall krill", true)
 
 		runKrillInstaller()
 	},
 }
 
-// runKrillInstaller è il segnaposto per l'installatore testuale.
-// Per ora non rompe i coglioni e ci permette di compilare tutto.
+// runKrillInstaller ora avvia il vero motore Bubble Tea.
 func runKrillInstaller() {
-	utils.LogCoala("%s[Krill]%s L'installatore TUI non è ancora pronto. Usa Calamares per ora!", utils.ColorYellow, utils.ColorReset)
+	utils.LogCoala("%s[Krill]%s Avvio dell'installatore TUI in corso...", utils.ColorCyan, utils.ColorReset)
+
+	// Invochiamo la vera interfaccia Go!
+	if err := krill.Run(); err != nil {
+		utils.LogCoala("%s[Krill Errore]%s L'installazione è stata interrotta: %v", utils.ColorRed, utils.ColorReset, err)
+		os.Exit(1)
+	}
+
+	utils.LogCoala("%s[Krill]%s Uscita dall'installer.", utils.ColorGreen, utils.ColorReset)
 	os.Exit(0)
 }
 
