@@ -29,9 +29,8 @@ Under the hood, the project is powered by two distinct entities: **oa** (the wor
 
 **coa** is the only component you interact with directly, while **oa** is used by **coa** to execute its JSON-based remastering plans. To provide maximum flexibility, you can interact with the system interchangeably using the new `coa` command or the legacy `eggs` alias.
 
----
-**Support the project:**  
 [![Donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
+---
 
 ## 🏗 oa-tools Architecture
 
