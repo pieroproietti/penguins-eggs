@@ -33,7 +33,7 @@ Under the hood, the project is powered by two distinct entities: **oa** (the wor
 **Support the project:**  
 [![Donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
-## 🏗 Project Architecture
+## 🏗 oa-tools Architecture
 
 We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
