@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -x
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
@@ -11,7 +11,6 @@ make
 rsync -avzP ./coa/coa $CMD_PATH/
 rsync -avzP ./oa/oa $CMD_PATH/
 
-set -eux
 cd $CMD_PATH
 echo "=== Install dependencies ==="
 
