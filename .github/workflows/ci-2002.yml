@@ -1,4 +1,4 @@
-name: 102-vagrant-template
+name: 102-vagrant-debian-13
 
 on:
   push:
@@ -10,11 +10,12 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: run buidl and test
       run: |
-        ./tests/102-vagrant-template/vagrant.install.build.test.sh
+        ./tests/102-vagrant-debian-13/vagrant.install.build.test.sh
 

@@ -1,4 +1,4 @@
-name: 108-vagrant-opensuse-leap-15.6
+name: 112-vagrant-linux-manjaro
 
 on:
   push:
@@ -17,5 +17,5 @@ jobs:
 
     - name: run buidl and test
       run: |
-        ./tests/108-vagrant-opensuse-leap-15.6/vagrant.install.build.test.sh
+        ./tests/112-vagrant-linux-manjaro/vagrant.install.build.test.sh
 
