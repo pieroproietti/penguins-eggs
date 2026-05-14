@@ -18,6 +18,6 @@ oa --help
 coa --help
 cd $CMD_PATH
 cd ../../
-coa build
+./coa/coa build
 ls -al
 sudo coa remaster --mode clone
