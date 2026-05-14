@@ -47,5 +47,5 @@ sleep 10
 vagrant ssh -c "uname -a"
 vagrant ssh -c "/vagrant/oa --help"
 vagrant ssh -c "/vagrant/coa --help"
-vagrant ssh -c "sudo coa remaster --mode clone"
+vagrant ssh -c "sudo /vagrant/coa remaster --mode clone"
 
