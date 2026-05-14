@@ -1,0 +1,20 @@
+name: 104-vagrant-alpine-3.23
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: run buidl and test
+      run: |
+        ./tests/104-vagrant-alpine-3.23/vagrant.install.build.test.sh
+

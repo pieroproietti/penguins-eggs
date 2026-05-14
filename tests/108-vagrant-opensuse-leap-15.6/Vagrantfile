@@ -2,13 +2,13 @@ Vagrant.configure("2") do |config|
 
   # https://portal.cloud.hashicorp.com/vagrant/discover
   # you can add a new vm from vagrant/discover
-  config.vm.box = "cloud-image/debian-13"
+  config.vm.box = "cloud-image/leap-15.6"
 
-  config.vm.hostname = "cloud-image-debian-13"
+  config.vm.hostname = "cloud-image-leap-15.6"
 
   config.vm.provider "virtualbox" do |vb|
 
-    vb.name = "cloud-image-debian-13"
+    vb.name = "cloud-image-leap-15.6"
 
     vb.gui = false
 
@@ -26,7 +26,6 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.synced_folder ".", "/vagrant"
-
   config.vm.provision "shell", inline: <<-SHELL
     set -eux
     # todo
