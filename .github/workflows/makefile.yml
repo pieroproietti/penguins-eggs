@@ -14,5 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: run make
-      run: make
+    - name: run buidl and test
+      run: |
+        ./1001.ubuntu.latest.build.test.sh
