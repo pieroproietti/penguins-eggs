@@ -39,6 +39,8 @@ vagrant --version
 VBoxManage --version
 cd $CMD_PATH
 ls -al
+sudo systemctl stop libvirtd
+sudo systemctl stop virtlogd
 sudo modprobe -r kvm_amd
 sudo modprobe -r kvm
 vagrant up
