@@ -34,7 +34,7 @@ func RunCalamaresInstaller(oaVersion string) {
 	}
 
 	// 2. Fase Preparazione (Scrive gli script in /tmp/coa)
-	if err := calamares.PrepareOABootloader(profile); err != nil {
+	if err := calamares.SetupOABootloader(profile); err != nil {
 		utils.LogError("Errore preparazione script: %v", err)
 		return
 	}
@@ -52,7 +52,6 @@ func RunCalamaresInstaller(oaVersion string) {
 	}
 
 	// users.conf
-	// 👈 CORRETTO: rimosso oaVersion, non serve a users.conf
 	if err := calamares.PrepareUserConf(); err != nil {
 		utils.LogError("Errore configurazione users.conf: %v", err)
 	}
@@ -68,7 +67,6 @@ func RunCalamaresInstaller(oaVersion string) {
 	}
 
 	// branding.desc
-	// 👈 CORRETTO: passato oaVersion al branding!
 	if err := calamares.PrepareBrandingDesc(oaVersion); err != nil {
 		utils.LogError("Errore creazione branding.desc: %v", err)
 	}

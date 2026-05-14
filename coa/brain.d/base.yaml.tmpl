@@ -36,6 +36,14 @@ remaster:
     description: "Iniezione dell'utente live e purificazione password"
     action: "oa_users"
 
+  # ----------------------------------------------------------------------------
+  # 4.1 Sanitize host
+  # ----------------------------------------------------------------------------
+  - name: "Sanitizzazione universale dell'host (fstab e crypttab)"
+    action: "oa_shell"
+    chroot: true
+    run_command: |
+{{ include "sanitize_host" . | indent 6 }}
 
   # ----------------------------------------------------------------------------
   # 5. INITRAMFS LIVE

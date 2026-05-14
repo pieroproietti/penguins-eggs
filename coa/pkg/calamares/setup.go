@@ -20,9 +20,9 @@ func Setup() error {
 	logCalamares("Generazione ambiente Evolution Edition...")
 
 	// Pulizia e preparazione directory
-	os.RemoveAll(coaCalamaresDir)
+	os.RemoveAll(oaInstallerRoot)
 
-	if err := assets.ExtractCalamares(coaCalamaresDir); err != nil {
+	if err := assets.ExtractCalamares(oaInstallerRoot); err != nil {
 		return fmt.Errorf("errore estrazione asset: %v", err)
 	}
 
