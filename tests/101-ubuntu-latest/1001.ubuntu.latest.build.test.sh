@@ -16,4 +16,8 @@ sudo apt update -y
 sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosfstools mtools rsync git sudo -y
 oa --help
 coa --help
+cd $CMD_PATH
+cd ../../
+coa build
+ls -al
 sudo coa remaster --mode clone
