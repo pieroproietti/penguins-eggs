@@ -78,8 +78,16 @@ if loadfont /boot/grub/font.pf2; then
 fi
 
 background_image /boot/grub/splash.png
-set menu_color_normal=black/black
-set menu_color_highlight=white/black
+
+# Colori per il menu principale 
+# (Il ciano o grigio scuro si legge bene sia sulla neve che sul nero se l'immagine fallisce)
+set menu_color_normal=cyan/black
+set menu_color_highlight=white/blue
+
+# Colori per l'editor 'e' e il terminale 'c' 
+# (Testo chiaro su sfondo trasparente/nero, così l'editor è sempre leggibile)
+set color_normal=light-gray/black
+set color_highlight=white/blue
 
 menuentry "--- oa-tools ---" {
     true
