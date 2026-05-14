@@ -39,8 +39,8 @@ vagrant --version
 VBoxManage --version
 cd $CMD_PATH
 ls -al
-vagrant init
 vagrant up
+sleep 10
 vagrant ssh uname -a
 vagrant ssh /vagrant/oa --help
 vagrant ssh /vagrant/coa --help
