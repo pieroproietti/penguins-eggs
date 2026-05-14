@@ -12,7 +12,7 @@ rsync -avzP ./coa/coa $CMD_PATH/
 rsync -avzP ./oa/oa $CMD_PATH/
 
 set -eux
-
+cd $CMD_PATH
 echo "=== Install dependencies ==="
 
 sudo apt-get update
@@ -37,7 +37,9 @@ echo "=== Verify ==="
 
 vagrant --version
 VBoxManage --version
-
+cd $CMD_PATH
+ls -al
+vagrant init
 vagrant up
 vagrant ssh uname -a
 vagrant ssh /vagrant/oa --help
