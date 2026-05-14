@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+export CMD_PATH=$(cd `dirname $0`; pwd)
+export PROJECT_NAME="${CMD_PATH##*/}"
+echo $PROJECT_NAME
+cd $CMD_PATH
+
 set -eux
 
 echo "=== Install dependencies ==="
@@ -15,7 +20,7 @@ sudo apt-get install -y \
 
 echo "=== Install Vagrant ==="
 
-VAGRANT_VERSION="2.4.3"
+VAGRANT_VERSION="2.4.9"
 
 wget -q \
   https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}-1_amd64.deb
