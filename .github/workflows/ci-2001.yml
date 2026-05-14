@@ -16,4 +16,5 @@ jobs:
 
     - name: run buidl and test
       run: |
-        ./1001.ubuntu.latest.build.test.sh
+        ./tests/101-ubuntu-latest/1001.ubuntu.latest.build.test.sh
+
