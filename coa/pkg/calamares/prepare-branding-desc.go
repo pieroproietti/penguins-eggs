@@ -108,7 +108,7 @@ welcomeStyleCalamares: true
 	)
 
 	// 4. Scrittura del file
-	targetDir := "/etc/calamares/branding/eggs"
+	targetDir := oaInstallerRoot + "/branding/eggs"
 	targetPath := filepath.Join(targetDir, "branding.desc")
 
 	if err := os.MkdirAll(targetDir, 0755); err != nil {

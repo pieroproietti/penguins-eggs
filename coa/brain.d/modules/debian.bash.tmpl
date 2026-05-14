@@ -46,13 +46,10 @@ INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "resc
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
-
-# 2. Svuota crypttab per evitare avvisi di cryptsetup/LUKS al boot
-if [ -f /home/eggs/liveroot/etc/crypttab ]; then
-    echo "# UNCONFIGURED CRYPTTAB FOR LIVE SYSTEM" > /home/eggs/liveroot/etc/crypttab
-fi
-
-{{ define "squashfs_hooks" }}{{ end }}
+{{ define "squashfs_hooks" }}
+mkdir -p /home/eggs/isodir/casper
+ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/casper/filesystem.squashfs
+{{ end }}
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

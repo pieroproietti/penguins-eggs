@@ -21,7 +21,7 @@ username: %s
 `, liveUser, liveUser)
 
 	// 3. Definiamo il percorso.
-	targetPath := "/etc/calamares/modules/removeuser.conf"
+	targetPath := oaInstallerRoot + "/modules/removeuser.conf"
 
 	err := os.MkdirAll(filepath.Dir(targetPath), 0755)
 	if err != nil {
