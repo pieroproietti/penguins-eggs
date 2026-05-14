@@ -39,8 +39,10 @@ vagrant --version
 VBoxManage --version
 cd $CMD_PATH
 ls -al
+sudo modprobe -r kvm_amd
+sudo modprobe -r kvm
 vagrant up
 sleep 10
-vagrant ssh uname -a
-vagrant ssh /vagrant/oa --help
-vagrant ssh /vagrant/coa --help
+vagrant ssh -c "uname -a"
+vagrant ssh -c "/vagrant/oa --help"
+vagrant ssh -c "/vagrant/coa --help"
