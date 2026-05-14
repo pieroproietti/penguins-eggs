@@ -4,11 +4,11 @@ Vagrant.configure("2") do |config|
   # you can add a new vm from vagrant/discover
   config.vm.box = "cloud-image/debian-13"
 
-  config.vm.hostname = "debian-desktop"
+  config.vm.hostname = "cloud-image-debian-13"
 
   config.vm.provider "virtualbox" do |vb|
 
-    vb.name = "debian12-xfce"
+    vb.name = "cloud-image-debian-13"
 
     vb.gui = true
 
