@@ -6,7 +6,8 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
-
+cd ../../
+pwd
 make
 
 sudo rsync -avzP ./coa/coa /usr/bin/coa
