@@ -1,4 +1,4 @@
-name: Makefile CI
+name: 101-ubuntu-latest
 
 on:
   push:

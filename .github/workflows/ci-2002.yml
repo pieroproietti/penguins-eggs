@@ -1,4 +1,4 @@
-name: Makefile CI
+name: 102-vagrant-debian-12-xfce
 
 on:
   push:
