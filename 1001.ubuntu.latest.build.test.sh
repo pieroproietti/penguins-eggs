@@ -8,3 +8,9 @@ echo $PROJECT_NAME
 cd $CMD_PATH
 
 make
+
+sudo rsync -avzP ./coa/coa /usr/bin/coa
+sudo rsync -avzP ./oa/oa /usr/bin/oa
+
+oa --help
+coa --help
