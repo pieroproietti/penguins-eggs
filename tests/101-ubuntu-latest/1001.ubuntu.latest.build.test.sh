@@ -15,3 +15,4 @@ sudo rsync -avzP ./oa/oa /usr/bin/oa
 
 oa --help
 coa --help
+sudo coa remaster --mode clone
