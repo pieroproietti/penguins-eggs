@@ -1,4 +1,4 @@
-name: 102-vagrant-debian-12-xfce
+name: 102-vagrant-template
 
 on:
   push:
@@ -16,5 +16,5 @@ jobs:
 
     - name: run buidl and test
       run: |
-        ./tests/102-vagrant-debian-12-xfce/vagrant.install.build.test.sh
+        ./tests/102-vagrant-template/vagrant.install.build.test.sh
 
