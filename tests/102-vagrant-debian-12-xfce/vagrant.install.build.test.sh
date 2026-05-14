@@ -5,6 +5,12 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
+cd ../../
+pwd
+make
+rsync -avzP ./coa/coa $CMD_PATH/
+rsync -avzP ./oa/oa $CMD_PATH/
+
 set -eux
 
 echo "=== Install dependencies ==="
@@ -34,4 +40,5 @@ VBoxManage --version
 
 vagrant up
 vagrant ssh uname -a
-
+vagrant ssh /vagrant/oa --help
+vagrant ssh /vagrant/coa --help
