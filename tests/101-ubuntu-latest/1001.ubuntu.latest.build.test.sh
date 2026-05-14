@@ -12,7 +12,8 @@ make
 
 sudo rsync -avzP ./coa/coa /usr/bin/coa
 sudo rsync -avzP ./oa/oa /usr/bin/oa
-
+sudo apt update -y
+sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosfstools mtools rsync git sudo -y
 oa --help
 coa --help
 sudo coa remaster --mode clone

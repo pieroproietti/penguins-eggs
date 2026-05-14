@@ -29,6 +29,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     set -eux
     # todo
+    sudo apt update -y
+    sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosfstools mtools rsync git sudo -y
     date
   SHELL
 end
