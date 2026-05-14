@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------------
 # 3. GENERAZIONE MENU DI AVVIO E BRANDING
 # ----------------------------------------------------------------------------
-{{ define "boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image selinux=0 quiet splash{{ end }}
+{{ define "boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image selinux=0{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE

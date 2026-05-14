@@ -249,6 +249,17 @@ if [ -d /etc/lightdm ]; then
 fi
 {{ end }}
 
+# ----------------------------------------------------------------------------
+# SANITIZZAZIONE HOST UNIVERSALE
+# Svuota fstab e crypttab per evitare che finiscano nell'initrd della Live
+# ----------------------------------------------------------------------------
+{{ define "sanitize_host" }}
+echo "# UNCONFIGURED FSTAB FOR LIVE SYSTEM" > /etc/fstab
+
+if [ -f /etc/crypttab ]; then
+    echo "# UNCONFIGURED CRYPTTAB FOR LIVE SYSTEM" > /etc/crypttab
+fi
+{{ end }}
 
 {{ define "common_squashfs" }}
 mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \

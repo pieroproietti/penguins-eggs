@@ -10,13 +10,27 @@
 # 3. GENERAZIONE MENU DI AVVIO E BRANDING
 # ATTENZIONE: Questo blocco deve rimanere su una riga singola
 # ----------------------------------------------------------------------------
-{{ define "boot_params" }}boot=live components quiet splash{{ end }}
+{{ define "boot_params" }}boot=live components rootwait{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "initramfs_cmd" }}
-# Forziamo Debian a non cercare dischi di swap fantasma (evita timeout di 30s al boot)
+# 1. Forziamo l'initramfs a includere la maggior parte dei moduli (disabilitiamo 'dep')
+sed -i 's/^MODULES=.*/MODULES=most/' /etc/initramfs-tools/initramfs.conf
+
+# 2. Iniettiamo i moduli assicurandoci della sintassi corretta (col trattino!)
+for mod in fat vfat nls_cp437 nls_iso8859-1 nls_utf8; do
+    if ! grep -q "^${mod}$" /etc/initramfs-tools/modules; then
+        echo "$mod" >> /etc/initramfs-tools/modules
+    fi
+done
+
+# (Opzionale ma consigliato per Ubuntu)
+# Assicuriamoci che initramfs-tools legga le modifiche
+depmod -a $(ls /lib/modules/ | head -n 1) 2>/dev/null || true
+
+# 3. Forziamo Debian a non cercare dischi di swap fantasma (evita timeout di 30s al boot)
 echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
 update-initramfs -u -k all
 {{ end }}
@@ -32,6 +46,12 @@ INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "resc
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
+
+# 2. Svuota crypttab per evitare avvisi di cryptsetup/LUKS al boot
+if [ -f /home/eggs/liveroot/etc/crypttab ]; then
+    echo "# UNCONFIGURED CRYPTTAB FOR LIVE SYSTEM" > /home/eggs/liveroot/etc/crypttab
+fi
+
 {{ define "squashfs_hooks" }}{{ end }}
 
 # ==============================================================================

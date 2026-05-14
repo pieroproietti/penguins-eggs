@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// PrepareOABootloader genera i file necessari alla finalizzazione del sistema in staging (/tmp/coa)
-func PrepareOABootloader(profile *pilot.Profile) error {
+// SetupOABootloader genera i file necessari alla finalizzazione del sistema in staging (/tmp/coa)
+func SetupOABootloader(profile *pilot.Profile) error {
 	// Creiamo la staging area
 	if err := os.MkdirAll(stagingDir, 0755); err != nil {
 		return err
