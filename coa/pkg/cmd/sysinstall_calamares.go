@@ -71,6 +71,11 @@ func RunCalamaresInstaller(oaVersion string) {
 		utils.LogError("Errore creazione branding.desc: %v", err)
 	}
 
+	// qmlSymlink
+	if err := calamares.PrepareQmlSymlink(); err != nil {
+		utils.LogError("Errore creazione link QML: %v", err)
+	}
+
 	// 5. LAUNCH: Calamares parte e trova la pappa pronta
 	if err := calamares.Launch(); err != nil {
 		utils.LogError("L'installatore si è chiuso con un errore: %v", err)

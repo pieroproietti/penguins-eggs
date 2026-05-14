@@ -88,10 +88,10 @@ lvm:
 `, currentDate, dialect, tableType, tableType, fsList[0], fsList[0], availableFSYaml)
 
 	// 3. Scrittura del file nel percorso di Calamares
-	targetPath := "/etc/calamares/modules/partition.conf"
+	targetPath := oaInstallerRoot + "/modules/partition.conf"
 
 	// Assicuriamoci che la directory esista
-	if err := os.MkdirAll("/etc/calamares/modules", 0755); err != nil {
+	if err := os.MkdirAll(oaInstallerRoot+"/modules", 0755); err != nil {
 		return err
 	}
 

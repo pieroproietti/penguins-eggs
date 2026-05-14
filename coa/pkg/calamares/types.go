@@ -2,7 +2,7 @@ package calamares
 
 // Costanti globali del pacchetto calamares
 const (
-	oaInstallerRoot = "/etc/oa-tools/installer.d/"
+	oaInstallerRoot = "/etc/oa-tools.d/installer.d/"
 	modulesDir      = oaInstallerRoot + "/modules"
 	stagingDir      = "/tmp/coa"
 	ColorCyan       = "\033[1;36m"
