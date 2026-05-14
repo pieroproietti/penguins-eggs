@@ -1,0 +1,30 @@
+Vagrant.configure("2") do |config|
+
+  # https://portal.cloud.hashicorp.com/vagrant/discover
+  # you can add a new vm from vagrant/discover
+  config.vm.box = "cloud-image/fedora-43"
+
+  config.vm.hostname = "cloud-image-fedora-43"
+
+  config.vm.provider "virtualbox" do |vb|
+
+    vb.name = "cloud-image-fedora-43"
+
+    vb.gui = false
+
+   
+    vb.memory = 4096
+    vb.cpus = 2
+
+   
+    vb.customize ["modifyvm", :id, "--vram", "128"]
+
+  
+    vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+
+    vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+  end
+
+  config.vm.synced_folder ".", "/vagrant"
+
+end

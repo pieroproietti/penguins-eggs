@@ -1,0 +1,20 @@
+name: 108-vagrant-opensuse-leap-15.6
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: run buidl and test
+      run: |
+        ./tests/108-vagrant-opensuse-leap-15.6/vagrant.install.build.test.sh
+
