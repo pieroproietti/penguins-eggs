@@ -20,4 +20,6 @@ cd $CMD_PATH
 cd ../../
 ./coa/coa build
 ls -al
-sudo coa remaster --mode clone
+sudo coa tools clean
+sudo coa remaster
+
