@@ -18,20 +18,8 @@ oa --help
 coa --help
 cd $CMD_PATH
 cd ../../
-./coa/coa build
+./coa/coa tools build
 ls -al
-sudo coa tools clean
-
-echo "--- CACCIA AL CICCIONE (Conteggio Inode) ---"
-# Usiamo du con --inodes per contare gli oggetti reali, non lo spazio
-sudo du --inodes -d 1 / 2>/dev/null | sort -rn
-
-echo "--- ANALISI SPECIFICA PER /root e /var ---"
-# Se il sospetto è /root o /var, guardiamo un livello più sotto
-sudo du --inodes -d 1 /root /var /home 2>/dev/null | sort -rn
-
-echo "--- FINE ANALISI: USCITA PREVENTIVA ---"
-#exit 0
-
+./coa/coa coa tools clean
 sudo coa remaster
 
