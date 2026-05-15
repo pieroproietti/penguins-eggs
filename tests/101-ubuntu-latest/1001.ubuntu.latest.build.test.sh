@@ -21,15 +21,17 @@ cd ../../
 ./coa/coa build
 ls -al
 sudo coa tools clean
-# Analisi della densità dei file (non lo spazio, ma il numero di oggetti)
-echo "--- ANALISI DENSITÀ FILE ---"
-for d in /$(ls /); do 
-    if [ -d "$d" ]; then
-        echo "$(sudo find "$d" -xdev | wc -l) oggetti in $d"
-    fi
-done | sort -rn
-# Termina immediatamente il workflow con successo per leggere il log
+
+echo "--- CACCIA AL CICCIONE (Conteggio Inode) ---"
+# Usiamo du con --inodes per contare gli oggetti reali, non lo spazio
+sudo du --inodes -d 1 / 2>/dev/null | sort -rn
+
+echo "--- ANALISI SPECIFICA PER /root e /var ---"
+# Se il sospetto è /root o /var, guardiamo un livello più sotto
+sudo du --inodes -d 1 /root /var /home 2>/dev/null | sort -rn
+
 echo "--- FINE ANALISI: USCITA PREVENTIVA ---"
 exit 0
+
 sudo coa remaster
 
