@@ -1,8 +1,12 @@
 name: 101-ubuntu-latest
 
 # only manual, thanks
-on: 
-  workflow_dispatch:
+on:
+  push:
+    branches: [ "main", "devel" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Fondamentale: ti permette di lanciarlo a mano se serve
 
 jobs:
   build:
