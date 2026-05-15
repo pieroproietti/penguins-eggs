@@ -1,0 +1,6 @@
+while gh run list --limit 1000 --json databaseId --jq '.[].databaseId' | grep -q . ; do
+  gh run list --limit 1000 --json databaseId --jq '.[].databaseId' | xargs -I{} gh run delete {}
+  echo "Ancora in corso... sto cancellando il prossimo blocco."
+done
+echo "Tabula rasa completata!"
+
