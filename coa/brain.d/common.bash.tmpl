@@ -286,6 +286,8 @@ mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -processors 4 \
   -noappend \
   -wildcards \
+  --exclude "/opt/hostedtoolcache/*" \
+  --exclude "/home/runner/work/*" \
   -ef /tmp/coa/excludes.list \
   -p "mnt d 0755 root root" \
   -p "media d 0755 root root"

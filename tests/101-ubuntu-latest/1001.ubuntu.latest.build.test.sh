@@ -31,7 +31,7 @@ echo "--- ANALISI SPECIFICA PER /root e /var ---"
 sudo du --inodes -d 1 /root /var /home 2>/dev/null | sort -rn
 
 echo "--- FINE ANALISI: USCITA PREVENTIVA ---"
-exit 0
+#exit 0
 
 sudo coa remaster
 
