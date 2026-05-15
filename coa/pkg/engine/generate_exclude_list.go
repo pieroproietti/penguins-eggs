@@ -31,8 +31,11 @@ func GenerateExcludeList(mode string) string {
 		"home/eggs/.overlay/.??*", // Questo prende i file nascosti ma ignora "." e ".."
 		"home/eggs/isodir/*",
 		"home/eggs/*.iso",
-		"opt/hostedtoolcache/*",
+		// github Action
+		"opt/hostedtoolcache/",
 		"home/runner/work/",
+		"usr/local/lib/android/",
+		"usr/share/dotnet/",
 	)
 
 	// ==========================================================
