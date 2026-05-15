@@ -1,10 +1,8 @@
 name: 104-vagrant-alpine-3.23
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+# only manual, thanks
+on: 
+  workflow_dispatch:
 
 jobs:
   build:

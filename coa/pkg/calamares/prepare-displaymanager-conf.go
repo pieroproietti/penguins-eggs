@@ -47,7 +47,7 @@ executable: "%s"
 showAll: true
 `, dmName, dmName, dmName)
 
-	targetPath := "/etc/calamares/modules/displaymanager.conf"
+	targetPath := oaInstallerRoot + "/modules/displaymanager.conf"
 	os.MkdirAll(filepath.Dir(targetPath), 0755)
 	return os.WriteFile(targetPath, []byte(config), 0644)
 }

@@ -1,10 +1,8 @@
 name: 106-vagrant-centos-10-stream
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+# only manual, thanks
+on: 
+  workflow_dispatch:
 
 jobs:
   build:

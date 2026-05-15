@@ -78,8 +78,23 @@ if loadfont /boot/grub/font.pf2; then
 fi
 
 background_image /boot/grub/splash.png
-set menu_color_normal=black/black
-set menu_color_highlight=white/black
+
+# ==========================================
+# COLORI MENU PRINCIPALE
+# ==========================================
+# Testo bianco puro su sfondo trasparente (perfetto sul cielo azzurro)
+set menu_color_normal=white/black
+# Riga selezionata: Testo bianco su barra blu
+set menu_color_highlight=white/blue
+
+# ==========================================
+# COLORI EDITOR ('e') E TERMINALE ('c')
+# ==========================================
+# Testo bianco su sfondo trasparente! 
+# Niente più blocchi grigi. Il testo galleggerà sul cielo azzurro dei pinguini.
+set color_normal=white/black
+# Colore di selezione nell'editor
+set color_highlight=white/blue
 
 menuentry "--- oa-tools ---" {
     true

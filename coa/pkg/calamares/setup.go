@@ -46,7 +46,8 @@ func Launch() error {
 	}
 	defer logFile.Close()
 
-	cmd := exec.Command("calamares", "-d", "-D", "8")
+	// cmd := exec.Command("calamares", "-d", "-D", "8")
+	cmd := exec.Command("calamares", "-d", "-D", "8", "-c", "/etc/oa-tools.d/installer.d/")
 
 	// Mandiamo l'output sia a video che su file
 	multiWriter := io.MultiWriter(os.Stdout, logFile)
