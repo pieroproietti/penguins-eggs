@@ -28,10 +28,11 @@ func GenerateExcludeList(mode string) string {
 		"var/tmp/.??*",
 		"lost+found",
 		"home/eggs/.overlay/*",
-		// Se vuoi svuotare la cartella .overlay, usa un glob più sicuro o non usare .*
 		"home/eggs/.overlay/.??*", // Questo prende i file nascosti ma ignora "." e ".."
 		"home/eggs/isodir/*",
 		"home/eggs/*.iso",
+		"opt/hostedtoolcache/*",
+		"home/runner/work/",
 	)
 
 	// ==========================================================
