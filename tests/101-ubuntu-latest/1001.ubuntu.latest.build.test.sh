@@ -9,9 +9,16 @@ cd $CMD_PATH
 cd ../../
 pwd
 make
-ls -al
-sudo dpkg -i ./coa/oa-tools*.deb
-sudo apt install -f
-sudo coa tools clean
-sudo coa remaster
 
+sudo rsync -avzP ./coa/coa /usr/bin/coa
+sudo rsync -avzP ./oa/oa /usr/bin/oa
+sudo apt update -y
+sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosfstools mtools rsync git sudo -y
+./oa/oa --help
+./coa/coa --help
+cd $CMD_PATH
+cd ../../
+./coa/coa tools build
+ls -al
+./coa/coa coa tools clean
+sudo coa remaster
