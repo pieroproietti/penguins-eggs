@@ -1,10 +1,8 @@
 name: 108-vagrant-opensuse-leap-15.6
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+# only manual, thanks
+on: 
+  workflow_dispatch:
 
 jobs:
   build:
