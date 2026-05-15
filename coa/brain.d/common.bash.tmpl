@@ -276,13 +276,29 @@ if [ -f /etc/crypttab ]; then
 fi
 {{ end }}
 
+
 {{ define "common_squashfs" }}
+  mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
+  -no-xattrs \
+  -comp zstd \
+  -Xcompression-level 1 \
+  -b 256K \
+  -processors 2 \
+  -noappend \
+  -wildcards \
+  -ef /tmp/coa/excludes.list \
+  -p "mnt d 0755 root root" \
+  -p "media d 0755 root root"
+{{ template "squashfs_hooks" . }}  
+{{ end }}
+
+// escluso
+{{ define "_common_squashfs" }}
 mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -no-xattrs \
   -comp zstd \
   -Xcompression-level 3 \
   -b 1M \
-  -no-xattrs \
   -processors 4 \
   -noappend \
   -wildcards \

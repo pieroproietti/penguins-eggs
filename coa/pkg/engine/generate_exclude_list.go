@@ -31,11 +31,6 @@ func GenerateExcludeList(mode string) string {
 		"home/eggs/.overlay/.??*", // Questo prende i file nascosti ma ignora "." e ".."
 		"home/eggs/isodir/*",
 		"home/eggs/*.iso",
-		// github Action
-		"opt/hostedtoolcache/",
-		"home/runner/work/",
-		"usr/local/lib/android/",
-		"usr/share/dotnet/",
 	)
 
 	// ==========================================================
@@ -70,7 +65,24 @@ func GenerateExcludeList(mode string) string {
 	excludes = append(excludes, "etc/rc*.d/*cryptdisks*")
 
 	// ==========================================================
-	// 4. Sicurezza Root / Home (In base al mode)
+	// 4. Cura Dimagrante Specifica per GitHub Actions
+	// Si attiva solo se l'ambiente è un runner GitHub
+	// ==========================================================
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		excludes = append(excludes,
+			"opt/hostedtoolcache/",
+			"home/runner/work/",
+			"usr/local/lib/android/",
+			"usr/share/dotnet/",
+			"usr/lib/jvm/",                // Java: altri 500MB-1GB che se ne vanno
+			"usr/local/share/powershell/", // Spesso presente e inutile per noi
+			"usr/share/swift/",            // Se c'è, pesa
+			"var/lib/gems/",               // Residui di Ruby
+		)
+	}
+
+	// ==========================================================
+	// 5. Sicurezza Root / Home (In base al mode)
 	// ==========================================================
 	if mode != "clone" && mode != "crypted" {
 		// Puliamo completamente root e cancelliamo cronologia e chiavi utente
