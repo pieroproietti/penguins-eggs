@@ -28,8 +28,11 @@ if [ -z "$DEB_FILE" ]; then
 fi
 
 # Secondo me, questa riga una volta funzione ed uno no
-sudo dpkg -i "$DEB_FILE" || sudo apt-get install -f -y
-echo "=== INSTALLAZIONE COMPLETATA CON SUCCESSO ==="
+sudo apt-get update
+sudo apt-get install -y "$DEB_FILE"
+
+#sudo dpkg -i "$DEB_FILE" || sudo apt-get install -f -y
+#echo "=== INSTALLAZIONE COMPLETATA CON SUCCESSO ==="
 
 echo "=== FASE DI REMASTER ==="
 sudo coa tools clean

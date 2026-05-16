@@ -16,7 +16,7 @@ import (
 
 // DetectAndLoad rileva il sistema e consulta l'index.yaml per trovare lo spartito corretto.
 // Implementa il fallback tra ambiente di sviluppo locale e directory di sistema /etc.
-func DetectAndLoad() (*Profile, error) {
+func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	// 1. Identità: Chi siamo?
 	myDistro := distro.NewDistro()
 
@@ -85,8 +85,9 @@ func DetectAndLoad() (*Profile, error) {
 
 	// Context da passare al template
 	ctx := TemplateContext{
-		Family:   myDistro.FamilyID,
-		DistroID: myDistro.DistroID,
+		Family:         myDistro.FamilyID,
+		DistroID:       myDistro.DistroID,
+		IsGitHubAction: isGitHubAction,
 	}
 
 	// Creiamo un nuovo template base

@@ -9,30 +9,21 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo "Project: $PROJECT_NAME"
 
 # ==========================================
-# 2. BUILD DEL PACCHETTO DEBIAN (Host)
+# 2. BUILD ESEGUIBILI (Host)
 # ==========================================
-cd "$CMD_PATH"
-
-# Questo comando trova IN MODO INFALLIBILE la cartella radice del progetto 
-# (quella dove c'è la cartella .git e il tuo Makefile)
+# Usiamo il trucco infallibile di git per trovare la root del progetto
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
 cd "$PROJECT_ROOT"
 
 echo "=== Root del progetto trovata in: ==="
 pwd
 
-echo "=== Compilazione dell'eseguibile ==="
+echo "=== Compilazione eseguibili ==="
 make
 
-echo "=== Creazione pacchetto nativo Debian ==="
-# Ora siamo sicuri di essere nella cartella giusta dove esiste ./coa/coa
-./coa/coa tools build
-
-# Puliamo vecchi pacchetti nella cartella Vagrant per non confonderci
-rm -f "$CMD_PATH"/*.deb
-
-# Copiamo il nuovo pacchetto .deb appena generato nella cartella di Vagrant
-cp ./*.deb "$CMD_PATH"/
+# Copiamo gli eseguibili compilati nella cartella condivisa di Vagrant
+cp ./coa/coa "$CMD_PATH"/
+cp ./oa/oa "$CMD_PATH"/
 cd "$CMD_PATH"
 
 # ==========================================
@@ -62,31 +53,41 @@ VBoxManage --version
 echo "=== Spegnimento KVM per evitare conflitti con VirtualBox ==="
 sudo systemctl stop libvirtd
 sudo systemctl stop virtlogd
-# Aggiunto || true per evitare che lo script si blocchi se il modulo non è caricato
 sudo modprobe -r kvm_amd || true
 sudo modprobe -r kvm_intel || true 
 sudo modprobe -r kvm || true
 
 # ==========================================
-# 5. ESECUZIONE NELLA BOLLA (Vagrant)
+# 5. ESECUZIONE NELLA BOLLA ARCH (Vagrant)
 # ==========================================
 ls -al
-echo "=== Avvio Macchina Virtuale ==="
+echo "=== Avvio Macchina Virtuale Arch ==="
 vagrant up
 sleep 10
 
-echo "=== Installazione pacchetto dentro Vagrant ==="
-# 1. Aggiorniamo i repo della VM
-vagrant ssh -c "sudo apt-get update"
+echo "=== Creazione e Installazione Pacchetto Arch ==="
+# 1. Aggiorniamo i keyring di Arch (vitale nelle VM Vagrant che spesso hanno chiavi vecchie)
+vagrant ssh -c "sudo pacman -Sy --noconfirm archlinux-keyring"
+# Installiamo base-devel che serve per makepkg
+vagrant ssh -c "sudo pacman -Su --noconfirm base-devel"
 
-# 2. Installiamo il pacchetto .deb usando apt (risolve automaticamente le dipendenze!)
-# Usiamo il wildcard *.deb perché Vagrant lo troverà nella cartella condivisa
-vagrant ssh -c "sudo apt-get install -y /vagrant/*.deb"
+# 2. Creiamo una cartella di build nella home dell'utente vagrant per evitare conflitti con i permessi di /vagrant
+vagrant ssh -c "mkdir -p ~/build-oa && cp /vagrant/coa ~/build-oa/ && cp /vagrant/oa ~/build-oa/"
+
+# 3. Generiamo il PKGBUILD (NOTA: se il comando esatto è 'coa tools build', modificalo qui)
+vagrant ssh -c "cd ~/build-oa && ./coa build"
+
+# 4. Compiliamo il pacchetto Arch (-s risolve e installa le dipendenze in automatico)
+# makepkg viene eseguito come utente 'vagrant', rispettando le regole di Arch
+vagrant ssh -c "cd ~/build-oa && makepkg -s --noconfirm"
+
+# 5. Installiamo il pacchetto generato (*.pkg.tar.zst)
+vagrant ssh -c "cd ~/build-oa && sudo pacman -U --noconfirm *.pkg.tar.zst"
 
 echo "=== Test dei comandi nativi ==="
-# 3. Ora testiamo i comandi veri e propri, installati regolarmente nel sistema guest
+# Ora testiamo i comandi veri e propri, installati regolarmente in /usr/bin dal pacchetto pacman
 vagrant ssh -c "oa --help"
 vagrant ssh -c "coa --help"
 vagrant ssh -c "sudo coa remaster --mode clone"
 
-echo "=== Test completato con successo! ==="
+echo "=== Test completato con successo! Buon pranzo! ==="

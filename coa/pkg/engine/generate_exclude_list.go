@@ -7,7 +7,7 @@ import (
 
 // GenerateExcludeList crea il file .list dinamico per mksquashfs.
 // La 'G' maiuscola permette a remaster.go di chiamarla liberamente.
-func GenerateExcludeList(mode string) string {
+func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	outPath := "/tmp/coa/excludes.list"
 	var excludes []string
 
@@ -68,11 +68,6 @@ func GenerateExcludeList(mode string) string {
 	// 4. Cura Dimagrante Specifica per GitHub Actions
 	// Si attiva solo se l'ambiente è un runner GitHub
 	// ==========================================================
-	isGitHubAction := os.Getenv("GITHUB_ACTIONS") == "true"
-	if _, err := os.Stat("/home/runner/work"); !os.IsNotExist(err) {
-		isGitHubAction = true
-	}
-
 	if isGitHubAction {
 
 		excludes = append(excludes,

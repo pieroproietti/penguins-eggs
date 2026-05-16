@@ -27,7 +27,8 @@ func RunCalamaresInstaller(oaVersion string) {
 	utils.LogCoala("%s[sysinstall]%s Preparazione motori...", utils.ColorCyan, utils.ColorReset)
 
 	// 1. Caricamento del profilo tramite il Pilot
-	profile, err := pilot.DetectAndLoad()
+	IsGitHubAction := false
+	profile, err := pilot.DetectAndLoad(IsGitHubAction)
 	if err != nil {
 		utils.LogError("Impossibile caricare il profilo: %v", err)
 		os.Exit(1)
