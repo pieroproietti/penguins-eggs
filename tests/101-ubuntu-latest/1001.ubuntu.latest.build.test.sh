@@ -26,22 +26,9 @@ if [ -z "$DEB_FILE" ]; then
     echo "ERRORE: Il pacchetto .deb non è stato generato!"
     exit 1
 fi
-
 sudo dpkg -i "$DEB_FILE" || sudo apt-get install -f -y
-
 echo "=== INSTALLAZIONE COMPLETATA CON SUCCESSO ==="
-exit 0
 
-#sudo rsync -avzP ./coa/coa /usr/bin/coa
-#sudo rsync -avzP ./oa/oa /usr/bin/oa
-
-# installazione pachetti
-#sudo apt update -y
-#sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosfstools mtools rsync git sudo -y
-#oa --help
-#coa --help
-#cd $CMD_PATH
-#cd ../../
-#ls -al
+echo "=== FASE DI REMASTER ==="
 sudo coa tools clean
 sudo coa remaster
