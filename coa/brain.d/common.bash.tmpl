@@ -1,6 +1,19 @@
 # ==============================================================================
 # 🧩 COMMON.TMPL - LIBRERIA OPERAZIONI UNIVERSALI OA-TOOLS 
 # ==============================================================================
+{{ define "platform_github" }}
+export SQ_COMP="zstd"
+export SQ_LEVEL="1"
+export SQ_BLOCK="256K"
+export SQ_PROCS="2"
+{{ end }}
+
+{{ define "platform_local" }}
+export SQ_COMP="zstd"
+export SQ_LEVEL="3"
+export SQ_BLOCK="1M"
+export SQ_PROCS=$(nproc)
+{{ end }}
 
 {{ define "common_bootloaders" }}
 mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
@@ -278,39 +291,40 @@ fi
 
 
 {{ define "common_squashfs" }}
-  # activate echo break
-  set -xe
-  cat /tmp/coa/excludes.list 
-  mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
-  -no-xattrs \
-  -comp zstd \
-  -Xcompression-level 1 \
-  -b 256K \
-  -processors 2 \
-  -noappend \
-  -wildcards \
-  -ef /tmp/coa/excludes.list \
-  -p "mnt d 0755 root root" \
-  -p "media d 0755 root root"
-  # disable echo break
-  set +xe
-{{ template "squashfs_hooks" . }}  
-{{ end }}
+# activate echo break
+set -xe
+echo "/tmp/coa/excludes.list"
+cat /tmp/coa/excludes.list 
+echo 
 
-// escluso
-{{ define "_common_squashfs" }}
+# ==========================================================
+# IL RUBINETTO: Qui il Go decide quale profilo iniettare!
+# ==========================================================
+{{ if .IsGitHubAction }}
+{{ template "platform_github" . }}
+{{ else }}
+{{ template "platform_local" . }}
+{{ end }}
+# ==========================================================
+
+echo "========================================================"
+echo "🚀 AVVIO MKSQUASHFS (Profilo: $SQ_COMP L$SQ_LEVEL, $SQ_BLOCK, $SQ_PROCS Cores)"
+echo "========================================================"
+echo "/tmp/coa/excludes.list"
+cat /tmp/coa/excludes.list
+
 mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -no-xattrs \
-  -comp zstd \
-  -Xcompression-level 3 \
-  -b 1M \
-  -processors 4 \
+  -comp $SQ_COMP \
+  -Xcompression-level $SQ_LEVEL \
+  -b $SQ_BLOCK \
+  -processors $SQ_PROCS \
   -noappend \
   -wildcards \
   -ef /tmp/coa/excludes.list \
   -p "mnt d 0755 root root" \
   -p "media d 0755 root root"
-{{ template "squashfs_hooks" . }}
+set +xe
 {{ end }}
 
 {{ define "common_xorriso" }}

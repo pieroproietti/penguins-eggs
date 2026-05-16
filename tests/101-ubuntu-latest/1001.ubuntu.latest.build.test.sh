@@ -27,6 +27,7 @@ if [ -z "$DEB_FILE" ]; then
     exit 1
 fi
 
+# Secondo me, questa riga una volta funzione ed uno no
 sudo dpkg -i "$DEB_FILE" || sudo apt-get install -f -y
 echo "=== INSTALLAZIONE COMPLETATA CON SUCCESSO ==="
 

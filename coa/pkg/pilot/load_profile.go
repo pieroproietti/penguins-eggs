@@ -14,23 +14,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// TemplateContext definisce i dati che iniettiamo nei file .tmpl
-type TemplateContext struct {
-	Family   string
-	DistroID string
-}
-
-// Strutture per il mapping dell'indice
-type BrainIndex struct {
-	Distributions []DistroMap `yaml:"distributions"`
-}
-
-type DistroMap struct {
-	ID   string   `yaml:"id"`
-	Like []string `yaml:"like"`
-	File string   `yaml:"file"`
-}
-
 // DetectAndLoad rileva il sistema e consulta l'index.yaml per trovare lo spartito corretto.
 // Implementa il fallback tra ambiente di sviluppo locale e directory di sistema /etc.
 func DetectAndLoad() (*Profile, error) {
