@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import json
 import os
 import subprocess
@@ -154,15 +155,28 @@ def execute_task(root, task):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: pyoa <plan.json>|cleanup")
+    parser = argparse.ArgumentParser(
+        prog="pyoa",
+        description="Execute oa plan files or cleanup the remaster workspace",
+    )
+    parser.add_argument("plan", nargs="?", help="Path to the plan JSON file, or 'cleanup' to unmount and remove the workspace")
+    parser.add_argument("--version", action="store_true", help="Show version and exit")
+
+    args = parser.parse_args()
+
+    if args.version:
+        print("py-oa-tools oa engine")
+        sys.exit(0)
+
+    if args.plan is None:
+        parser.print_help()
         sys.exit(1)
 
-    if sys.argv[1] == "cleanup":
+    if args.plan == "cleanup":
         root_path = "/home/eggs"
         sys.exit(engine_pkg.cleanup_workspace(root_path))
 
-    plan_path = sys.argv[1]
+    plan_path = args.plan
     if not os.path.isfile(plan_path):
         utils.log_error(f"Plan file not found: {plan_path}")
         sys.exit(1)

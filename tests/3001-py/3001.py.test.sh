@@ -29,6 +29,10 @@ WORK_PATH="/tmp/py_oa_tools_test"
 sudo rm -rf "$WORK_PATH"
 sudo mkdir -p "$WORK_PATH"
 
-"$PYTHON" -m py_oa_tools.coa remaster --mode standard --path "$WORK_PATH" --stop-after coa-initrd
+# Ensure root has the same package/dependency visibility for the sudoed remaster run.
+sudo env PYTHONPATH="$REPO_ROOT/py_oa_tools" PATH="$PATH" "$PYTHON" -m pip install -r py_oa_tools/requirements.txt
+sudo env PYTHONPATH="$REPO_ROOT/py_oa_tools" PATH="$PATH" "$PYTHON" -m pip install -e py_oa_tools
+
+sudo env PYTHONPATH="$REPO_ROOT/py_oa_tools" PATH="$PATH" "$PYTHON" -m py_oa_tools.coa remaster --mode standard --path "$WORK_PATH" --stop-after coa-initrd
 
 echo "[3001-py] Remaster command executed successfully"

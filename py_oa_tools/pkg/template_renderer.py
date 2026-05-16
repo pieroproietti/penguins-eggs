@@ -2,7 +2,7 @@ import re
 
 
 DEFINE_RE = re.compile(r"{{\s*define\s*\"([^\"]+)\"\s*}}(.*?){{\s*end\s*}}", re.S)
-INCLUDE_RE = re.compile(r"{{\s*(?:include|template)\s*\"([^\"]+)\"\s*\.\s*(?:\|\s*indent\s+(\d+))?\s*}}")
+INCLUDE_RE = re.compile(r"(^[ \t]*){{\s*(?:include|template)\s*\"([^\"]+)\"\s*\.\s*(?:\|\s*indent\s+(\d+))?\s*}}", re.S | re.M)
 
 
 class TemplateRenderer:
@@ -27,14 +27,16 @@ class TemplateRenderer:
 
     def _render_once(self, text: str) -> str:
         def replace(match):
-            name = match.group(1)
-            indent = match.group(2)
+            prefix = match.group(1) or ""
+            name = match.group(2)
+            explicit_indent = match.group(3)
             body = self.templates.get(name)
             if body is None:
                 return match.group(0)
             rendered = body
+            indent = int(explicit_indent) if explicit_indent else len(prefix)
             if indent:
-                rendered = self.indent(rendered, int(indent))
+                rendered = self.indent(rendered, indent)
             return rendered
 
         return INCLUDE_RE.sub(replace, text)
