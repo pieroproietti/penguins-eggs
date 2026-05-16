@@ -20,5 +20,6 @@ type OATask struct {
 // OAPlan è l'array di task che il binario oa itererà.
 // Usiamo Task (la nuova versione) al posto di OATask.
 type OAPlan struct {
-	Plan []OATask `json:"plan"`
+	Plan           []OATask `json:"plan"`
+	IsGitHubAction bool
 }

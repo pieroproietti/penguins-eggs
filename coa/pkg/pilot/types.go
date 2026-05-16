@@ -30,3 +30,21 @@ type User struct {
 	UID      int      `yaml:"uid" json:"uid"`
 	GID      int      `yaml:"gid" json:"gid"`
 }
+
+// TemplateContext definisce i dati che iniettiamo nei file .tmpl
+type TemplateContext struct {
+	Family         string
+	DistroID       string
+	IsGitHubAction bool
+}
+
+// Strutture per il mapping dell'indice
+type BrainIndex struct {
+	Distributions []DistroMap `yaml:"distributions"`
+}
+
+type DistroMap struct {
+	ID   string   `yaml:"id"`
+	Like []string `yaml:"like"`
+	File string   `yaml:"file"`
+}
