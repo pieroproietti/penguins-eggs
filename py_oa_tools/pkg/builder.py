@@ -124,7 +124,74 @@ def ensure_documentation(coa_dir: str) -> None:
 
 def build_arch_package(proj_root: str, base_ver: str, rel_num: str) -> None:
     pkgbuild = f"PKGBUILD"
-    content = f"# Maintainer: Piero Proietti <piero.proietti@gmail.com>\n# coa is the mind and oa the arm\npkgname=oa-tools-arch\npkgver={base_ver}\npkgrel={rel_num}\npkgdesc=\"oa-tools universal Linux remastering\"\narch=('x86_64')\nlicense=('GPL3')\ndepends=( 'mkinitcpio-archiso' 'efibootmgr' 'libisoburn' 'squashfs-tools' 'mtools' 'dosfstools' 'arch-install-scripts' 'grub' 'rsync' 'sudo' 'pv' 'git' )\nconflicts=('penguins-eggs' 'oa-tools')\nbackup=('etc/oa-tools.d/oa-tools.yaml')\noptions=(!debug)\n\nbuild() {\n    cd \"${startdir}/oa\"\n    make clean && make\n    cd \"${startdir}/coa\"\n    go build -ldflags \"-X 'coa/pkg/cmd.AppVersion=${pkgver}'\" -o coa main.go\n}\n\npackage() {\n    install -Dm755 \"${startdir}/oa/oa\" \"${pkgdir}/usr/bin/oa\"\n    install -Dm755 \"${startdir}/coa/coa\" \"${pkgdir}/usr/bin/coa\"\n    ln -s coa \"${pkgdir}/usr/bin/eggs\"\n    install -d \"${pkgdir}/etc/oa-tools.d/brain.d\"\n    if [ -d \"${startdir}/coa/brain.d\" ]; then\n        cp -r \"${startdir}/coa/brain.d/\"* \"${pkgdir}/etc/oa-tools.d/brain.d/\"\n    fi\n    cat <<EOF > \"${pkgdir}/etc/oa-tools.d/oa-tools.yaml\"\n---\nsystem:\n  dialect: \"oa\"\n  version: \"${pkgver}\"\n\nwardrobe:\n  root: \"~/.oa-wardrobe\"\n  repo: \"https://github.com/pieroproietti/oa-wardrobe.git\"\n\nremaster:\n  default_user: \"artisan\"\n  work_dir: \"/home/eggs\"\nEOF\n    if [ -d \"${startdir}/conf\" ]; then\n        cp -r \"${startdir}/conf/\"* \"${pkgdir}/etc/oa-tools.d/\"\n    fi\n    mkdir -p \"${pkgdir}/usr/share/man/man1\"\n    mkdir -p \"${pkgdir}/usr/share/bash-completion/completions\"\n    mkdir -p \"${pkgdir}/usr/share/zsh/vendor-completions\"\n    mkdir -p \"${pkgdir}/usr/share/fish/vendor_completions.d\"\n    if [ -d \"${startdir}/coa/docs/man\" ]; then\n        cp \"${startdir}/coa/docs/man/\"*.1 \"${pkgdir}/usr/share/man/man1/\"\n    fi\n    if [ -f \"${startdir}/coa/docs/completion/coa.bash\" ]; then\n        install -Dm644 \"${startdir}/coa/docs/completion/coa.bash\" \"${pkgdir}/usr/share/bash-completion/completions/coa\"\n    fi\n    if [ -f \"${startdir}/coa/docs/completion/coa.zsh\" ]; then\n        install -Dm644 \"${startdir}/coa/docs/completion/coa.zsh\" \"${pkgdir}/usr/share/zsh/vendor-completions/_coa\"\n    fi\n    if [ -f \"${startdir}/coa/docs/completion/coa.fish\" ]; then\n        install -Dm644 \"${startdir}/coa/docs/completion/coa.fish\" \"${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish\"\n    fi\n    ln -s coa \"${pkgdir}/usr/share/bash-completion/completions/eggs\"\n    ln -s _coa \"${pkgdir}/usr/share/zsh/vendor-completions/_eggs\"\n    ln -s coa.fish \"${pkgdir}/usr/share/fish/vendor_completions.d/eggs.fish\"\n    echo \"complete -o default -F __start_coa eggs\" >> \"${pkgdir}/usr/share/bash-completion/completions/coa\"\n}\n"
+    content = """# Maintainer: Piero Proietti <piero.proietti@gmail.com>
+# coa is the mind and oa the arm
+pkgname=oa-tools-arch
+pkgver={{BASE_VER}}
+pkgrel={{REL_NUM}}
+pkgdesc="oa-tools universal Linux remastering"
+arch=('x86_64')
+license=('GPL3')
+depends=( 'mkinitcpio-archiso' 'efibootmgr' 'libisoburn' 'squashfs-tools' 'mtools' 'dosfstools' 'arch-install-scripts' 'grub' 'rsync' 'sudo' 'pv' 'git' )
+conflicts=('penguins-eggs' 'oa-tools')
+backup=('etc/oa-tools.d/oa-tools.yaml')
+options=(!debug)
+
+build() {
+    cd "${startdir}/oa"
+    make clean && make
+    cd "${startdir}/coa"
+    go build -ldflags "-X 'coa/pkg/cmd.AppVersion=${pkgver}'" -o coa main.go
+}
+
+package() {
+    install -Dm755 "${startdir}/oa/oa" "${pkgdir}/usr/bin/oa"
+    install -Dm755 "${startdir}/coa/coa" "${pkgdir}/usr/bin/coa"
+    ln -s coa "${pkgdir}/usr/bin/eggs"
+    install -d "${pkgdir}/etc/oa-tools.d/brain.d"
+    if [ -d "${startdir}/coa/brain.d" ]; then
+        cp -r "${startdir}/coa/brain.d/"* "${pkgdir}/etc/oa-tools.d/brain.d/"
+    fi
+    cat <<EOF > "${pkgdir}/etc/oa-tools.d/oa-tools.yaml"
+---
+system:
+  dialect: "oa"
+  version: "${pkgver}"
+
+wardrobe:
+  root: "~/.oa-wardrobe"
+  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
+
+remaster:
+  default_user: "artisan"
+  work_dir: "/home/eggs"
+EOF
+    if [ -d "${startdir}/conf" ]; then
+        cp -r "${startdir}/conf/"* "${pkgdir}/etc/oa-tools.d/"
+    fi
+    mkdir -p "${pkgdir}/usr/share/man/man1"
+    mkdir -p "${pkgdir}/usr/share/bash-completion/completions"
+    mkdir -p "${pkgdir}/usr/share/zsh/vendor-completions"
+    mkdir -p "${pkgdir}/usr/share/fish/vendor_completions.d"
+    if [ -d "${startdir}/coa/docs/man" ]; then
+        cp "${startdir}/coa/docs/man/"*.1 "${pkgdir}/usr/share/man/man1/"
+    fi
+    if [ -f "${startdir}/coa/docs/completion/coa.bash" ]; then
+        install -Dm644 "${startdir}/coa/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
+    fi
+    if [ -f "${startdir}/coa/docs/completion/coa.zsh" ]; then
+        install -Dm644 "${startdir}/coa/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
+    fi
+    if [ -f "${startdir}/coa/docs/completion/coa.fish" ]; then
+        install -Dm644 "${startdir}/coa/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
+    fi
+    ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
+    ln -s _coa "${pkgdir}/usr/share/zsh/vendor-completions/_eggs"
+    ln -s coa.fish "${pkgdir}/usr/share/fish/vendor_completions.d/eggs.fish"
+    echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
+}
+"""
+    content = content.replace("{{BASE_VER}}", base_ver).replace("{{REL_NUM}}", rel_num)
     with open(os.path.join(proj_root, pkgbuild), "w", encoding="utf-8") as fp:
         fp.write(content)
     print(f"{utils.ColorGreen}[SUCCESS]{utils.ColorReset} PKGBUILD (Arch) created for {base_ver}-{rel_num}")
@@ -132,7 +199,60 @@ def build_arch_package(proj_root: str, base_ver: str, rel_num: str) -> None:
 
 def build_manjaro_package(proj_root: str, base_ver: str, rel_num: str) -> None:
     pkgbuild = "PKGBUILD"
-    content = f"# Maintainer: Piero Proietti <piero.proietti@gmail.com>\n# coa is the mind and oa the arm\npkgname=oa-tools-manjaro\npkgver={base_ver}\npkgrel={rel_num}\npkgdesc=\"oa-tools universal Linux remastering (Manjaro edition)\"\narch=('x86_64')\nlicense=('GPL3')\ndepends=( 'manjaro-tools-iso' 'efibootmgr' 'libisoburn' 'squashfs-tools' 'mtools' 'dosfstools' 'arch-install-scripts' 'grub' 'rsync' 'sudo' 'pv' 'git' )\nconflicts=('penguins-eggs')\nbackup=('etc/oa-tools.d/oa-tools.yaml')\noptions=(!debug)\n\nbuild() {\n    cd \"${startdir}/oa\"\n    make clean && make\n    cd \"${startdir}/coa\"\n    go build -ldflags \"-X 'coa/pkg/cmd.AppVersion=${pkgver}'\" -o coa main.go\n}\n\npackage() {\n    install -Dm755 \"${startdir}/oa/oa\" \"${pkgdir}/usr/bin/oa\"\n    install -Dm755 \"${startdir}/coa/coa\" \"${pkgdir}/usr/bin/coa\"\n    ln -s coa \"${pkgdir}/usr/bin/eggs\"\n    install -d \"${pkgdir}/etc/oa-tools.d/brain.d\"\n    cp -r \"${startdir}/coa/brain.d/\"* \"${pkgdir}/etc/oa-tools.d/brain.d/\"\n    cat <<EOF > \"${pkgdir}/etc/oa-tools.d/oa-tools.yaml\"\n---\nsystem:\n  dialect: \"oa\"\n  version: \"${pkgver}\"\n\nwardrobe:\n  root: \"~/.oa-wardrobe\"\n  repo: \"https://github.com/pieroproietti/oa-wardrobe.git\"\n\nremaster:\n  default_user: \"artisan\"\n  work_dir: \"/home/eggs\"\nEOF\n    if [ -d \"${startdir}/conf\" ]; then\n        cp -r \"${startdir}/conf/\"* \"${pkgdir}/etc/oa-tools.d/\"\n    fi\n    install -Dm644 \"${startdir}/coa/docs/man/\"*.1 -t \"${pkgdir}/usr/share/man/man1/\"\n    install -Dm644 \"${startdir}/coa/docs/completion/coa.bash\" \"${pkgdir}/usr/share/bash-completion/completions/coa\"\n    install -Dm644 \"${startdir}/coa/docs/completion/coa.zsh\" \"${pkgdir}/usr/share/zsh/vendor-completions/_coa\"\n    install -Dm644 \"${startdir}/coa/docs/completion/coa.fish\" \"${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish\"\n    ln -s coa \"${pkgdir}/usr/share/bash-completion/completions/eggs\"\n    ln -s _coa \"${pkgdir}/usr/share/zsh/vendor-completions/_eggs\"\n    ln -s coa.fish \"${pkgdir}/usr/share/fish/vendor_completions.d/eggs.fish\"\n    echo \"complete -o default -F __start_coa eggs\" >> \"${pkgdir}/usr/share/bash-completion/completions/coa\"\n}\n"
+    content = """# Maintainer: Piero Proietti <piero.proietti@gmail.com>
+# coa is the mind and oa the arm
+pkgname=oa-tools-manjaro
+pkgver={{BASE_VER}}
+pkgrel={{REL_NUM}}
+pkgdesc="oa-tools universal Linux remastering (Manjaro edition)"
+arch=('x86_64')
+license=('GPL3')
+depends=( 'manjaro-tools-iso' 'efibootmgr' 'libisoburn' 'squashfs-tools' 'mtools' 'dosfstools' 'arch-install-scripts' 'grub' 'rsync' 'sudo' 'pv' 'git' )
+conflicts=('penguins-eggs')
+backup=('etc/oa-tools.d/oa-tools.yaml')
+options=(!debug)
+
+build() {
+    cd "${startdir}/oa"
+    make clean && make
+    cd "${startdir}/coa"
+    go build -ldflags "-X 'coa/pkg/cmd.AppVersion=${pkgver}'" -o coa main.go
+}
+
+package() {
+    install -Dm755 "${startdir}/oa/oa" "${pkgdir}/usr/bin/oa"
+    install -Dm755 "${startdir}/coa/coa" "${pkgdir}/usr/bin/coa"
+    ln -s coa "${pkgdir}/usr/bin/eggs"
+    install -d "${pkgdir}/etc/oa-tools.d/brain.d"
+    cp -r "${startdir}/coa/brain.d/"* "${pkgdir}/etc/oa-tools.d/brain.d/"
+    cat <<EOF > "${pkgdir}/etc/oa-tools.d/oa-tools.yaml"
+---
+system:
+  dialect: "oa"
+  version: "${pkgver}"
+
+wardrobe:
+  root: "~/.oa-wardrobe"
+  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
+
+remaster:
+  default_user: "artisan"
+  work_dir: "/home/eggs"
+EOF
+    if [ -d "${startdir}/conf" ]; then
+        cp -r "${startdir}/conf/"* "${pkgdir}/etc/oa-tools.d/"
+    fi
+    install -Dm644 "${startdir}/coa/docs/man/"*.1 -t "${pkgdir}/usr/share/man/man1/"
+    install -Dm644 "${startdir}/coa/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
+    install -Dm644 "${startdir}/coa/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
+    install -Dm644 "${startdir}/coa/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
+    ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
+    ln -s _coa "${pkgdir}/usr/share/zsh/vendor-completions/_eggs"
+    ln -s coa.fish "${pkgdir}/usr/share/fish/vendor_completions.d/eggs.fish"
+    echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
+}
+"""
+    content = content.replace("{{BASE_VER}}", base_ver).replace("{{REL_NUM}}", rel_num)
     with open(os.path.join(proj_root, pkgbuild), "w", encoding="utf-8") as fp:
         fp.write(content)
     print(f"{utils.ColorGreen}[SUCCESS]{utils.ColorReset} PKGBUILD (Manjaro) created for {base_ver}-{rel_num}")
