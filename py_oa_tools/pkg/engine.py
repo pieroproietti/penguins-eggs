@@ -377,7 +377,28 @@ def manage_users(path_live_fs, users, users_mode="standard"):
         os.makedirs(home_dir, exist_ok=True)
         skel_dir = os.path.join(liveroot, "etc", "skel")
         if os.path.isdir(skel_dir):
-            shutil.copytree(skel_dir, home_dir, dirs_exist_ok=True)
+            for root_dir, dirs, files in os.walk(skel_dir, followlinks=False):
+                rel_dir = os.path.relpath(root_dir, skel_dir)
+                dest_dir = home_dir if rel_dir == "." else os.path.join(home_dir, rel_dir)
+                os.makedirs(dest_dir, exist_ok=True)
+                for d in dirs:
+                    try:
+                        os.makedirs(os.path.join(dest_dir, d), exist_ok=True)
+                    except OSError:
+                        pass
+                for f in files:
+                    src_file = os.path.join(root_dir, f)
+                    dst_file = os.path.join(dest_dir, f)
+                    try:
+                        if os.path.islink(src_file):
+                            if os.path.lexists(dst_file):
+                                os.remove(dst_file)
+                            target = os.readlink(src_file)
+                            os.symlink(target, dst_file)
+                        else:
+                            shutil.copy2(src_file, dst_file, follow_symlinks=False)
+                    except OSError:
+                        continue
         subprocess.run(["chown", "-R", f"{uid}:{gid}", home_dir])
 
     return 0
