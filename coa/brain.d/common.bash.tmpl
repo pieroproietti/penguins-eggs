@@ -280,6 +280,7 @@ fi
 {{ define "common_squashfs" }}
   # activate echo break
   set -xe
+  cat /tmp/coa/excludes.list 
   mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -no-xattrs \
   -comp zstd \

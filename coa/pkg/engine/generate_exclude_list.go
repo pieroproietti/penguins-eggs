@@ -70,15 +70,14 @@ func GenerateExcludeList(mode string) string {
 	// ==========================================================
 	if os.Getenv("GITHUB_ACTIONS") == "true" {
 		excludes = append(excludes,
-			"opt/hostedtoolcache/",
-			"home/runner/work/",
-			"usr/local/lib/android/",
-			"usr/share/dotnet/",
-			"usr/lib/jvm/",                // Java: altri 500MB-1GB che se ne vanno
-			"usr/local/share/powershell/", // Spesso presente e inutile per noi
-			"usr/share/swift/",            // Se c'è, pesa
-			"var/lib/gems/",               // Residui di Ruby
-		)
+			"opt/hostedtoolcache/*",
+			"home/runner/work/*",
+			"usr/local/lib/android/*",
+			"usr/share/dotnet/*",
+			"usr/lib/jvm/*",                // Java: altri 500MB-1GB che se ne vanno
+			"usr/local/share/powershell/*", // Ciao ciao PowerShell
+			"usr/share/swift/*",            // Swift toolchain
+			"var/lib/gems/*",               // Residui di Ruby		)
 	}
 
 	// ==========================================================
