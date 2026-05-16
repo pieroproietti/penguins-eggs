@@ -118,6 +118,8 @@ Description: coa is the mind and oa the arm
 	// 8. Impacchettamento finale
 	fmt.Printf("%s[build]%s Packing .deb archive (%s)...\n", ColorBlue, ColorReset, pkgVersion)
 	dpkgCmd := exec.Command("dpkg-deb", "--build", buildDir)
+	dpkgCmd.Stdout = os.Stdout
+	dpkgCmd.Stderr = os.Stderr
 	if err := dpkgCmd.Run(); err != nil {
 		fmt.Printf("%s[ERROR]%s Failed to build package: %v\n", ColorRed, ColorReset, err)
 		return
