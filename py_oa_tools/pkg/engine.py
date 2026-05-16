@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
 
 from py_oa_tools.pkg import utils
 
@@ -10,6 +11,22 @@ def _replace_iso_path(text, iso_path):
     if not text:
         return text
     return text.replace("${ISO_OUTPUT}", iso_path)
+
+
+def _replace_path(text, work_path):
+    if not text:
+        return text
+    return text.replace("/home/eggs", work_path)
+
+
+def _replace_paths(obj, work_path):
+    if isinstance(obj, str):
+        return obj.replace("/home/eggs", work_path)
+    if isinstance(obj, dict):
+        return {key: _replace_paths(value, work_path) for key, value in obj.items()}
+    if isinstance(obj, list):
+        return [_replace_paths(item, work_path) for item in obj]
+    return obj
 
 
 def _replace_description(text, final_iso_path):
@@ -141,8 +158,10 @@ def generate_plan(steps, family_id, is_remaster, work_path, final_iso_path, stop
         if hit_breakpoint and step.get("name") != "coa-cleanup":
             continue
 
+        step = _replace_paths(step, work_path)
         step_description = _replace_description(step.get("description", ""), final_iso_path)
         run_command = _replace_iso_path(step.get("run_command", ""), final_iso_path)
+        run_command = _replace_path(run_command, work_path)
         action = step.get("action")
 
         if action == "oa_mount_logic":
@@ -197,9 +216,8 @@ def generate_plan(steps, family_id, is_remaster, work_path, final_iso_path, stop
 
 
 def save_plan(plan):
-    destination = "/tmp/py_oa_tools"
-    os.makedirs(destination, exist_ok=True)
-    plan_path = os.path.join(destination, "oa-plan.json")
+    directory = tempfile.mkdtemp(prefix="py_oa_tools_plan_")
+    plan_path = os.path.join(directory, "oa-plan.json")
     with open(plan_path, "w", encoding="utf-8") as fp:
         json.dump(plan, fp, indent=2)
     return plan_path
