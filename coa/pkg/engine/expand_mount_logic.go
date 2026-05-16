@@ -1,11 +1,10 @@
 package engine
 
 import (
+	"coa/pkg/pilot"
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"coa/pkg/pilot" // Aggiunto per poter usare pilot.Step
 )
 
 // expandMountLogic trasforma la vecchia logica statica del C in una sequenza di task JSON dinamici.

@@ -62,14 +62,21 @@ and generate a precise execution plan for the OA engine.`,
 
 		LogCoala("Avvio procedura di rimasterizzazione...")
 
+		// 1. Il ponte di comando valuta la situazione (Il Sensore)
+		isGitHubAction := false
+		if _, err := os.Stat("/home/runner/work"); !os.IsNotExist(err) {
+			isGitHubAction = true
+		}
+
 		// 1. Identità: Chi siamo?
 		myDistro := distro.NewDistro()
 		isoName := myDistro.GetISOName()
+
 		finalPath := filepath.Join(producePath, isoName)
 		LogCoala("L'uovo verrà generato in: %s", finalPath)
 
 		// 2. PILOT: Carichiamo lo spartito dal Brain
-		profile, err := pilot.DetectAndLoad()
+		profile, err := pilot.DetectAndLoad(isGitHubAction)
 		if err != nil {
 			LogError("Impossibile caricare il Brain Profile: %v", err)
 			os.Exit(1)
@@ -78,8 +85,7 @@ and generate a precise execution plan for the OA engine.`,
 
 		// 3. ENGINE: Generiamo il piano JSON per oa
 		// NOTA: Passiamo stopAfter come 5° parametro al motore!
-		planPath, err := engine.GeneratePlan(profile.Remaster, myDistro.FamilyID, true, producePath, finalPath, stopAfter)
-		// planPath, err := engine.GeneratePlan(profile.Remaster, myDistro.FamilyID, true, producePath, stopAfter)
+		planPath, err := engine.GeneratePlan(profile.Remaster, myDistro.FamilyID, isGitHubAction, true, producePath, finalPath, stopAfter)
 		if err != nil {
 			LogError("Impossibile generare il piano di volo: %v", err)
 			os.Exit(1)
@@ -91,7 +97,7 @@ and generate a precise execution plan for the OA engine.`,
 
 		// GENERAZIONE EXCLUSIONI
 		LogCoala("Generazione lista di esclusione (%s mode)...", produceMode)
-		engine.GenerateExcludeList(produceMode)
+		engine.GenerateExcludeList(produceMode, isGitHubAction)
 
 		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il JSON appena generato
 		LogCoala("Passaggio dei comandi al motore OA...")

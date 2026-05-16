@@ -13,15 +13,18 @@ import (
 
 // GeneratePlan converte lo YAML in JSON.
 // Nota: steps ora è di tipo []pilot.Step
-func GeneratePlan(steps []pilot.Step, familyID string, isRemaster bool, workPath string, finalIsoPath string, stopAfter string) (string, error) {
+func GeneratePlan(
+	steps []pilot.Step,
+	familyID string,
+	isGitHubAction bool,
+	isRemaster bool,
+	workPath string,
+	finalIsoPath string,
+	stopAfter string) (string, error) {
+
 	var plan OAPlan
 
-	plan.IsGitHubAction = false
-
-	// 1. Se troviamo la directory di GitHub, scatta il profilo Turbo
-	if _, err := os.Stat("/home/runner/work"); !os.IsNotExist(err) {
-		plan.IsGitHubAction = true
-	}
+	plan.IsGitHubAction = isGitHubAction
 
 	// Teniamo l'utente di default come "salvagente" nel caso lo YAML non specifichi utenti
 	defaultUser := pilot.User{
