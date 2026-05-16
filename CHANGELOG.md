@@ -1,5 +1,14 @@
 # Changelog - oa-tools
 
+### 🐧 oa-tools v0.7.9 - The CI/CD & Architecture Release
+
+**Evolution Architecture**
+* **Decoupled Engine & Pilot:** Completely refactored the Go architecture to eliminate import cycles. Environmental awareness (like detecting GitHub Actions) is now handled natively by the `cmd` package (Command Bridge), leaving `engine` and `pilot` strictly agnostic and modular.
+* **Dynamic Template Injection:** The `TemplateContext` now dynamically receives environmental flags to adapt script generation on the fly without logic duplication.
+
+**CI/CD & Automation Breakthrough**
+* **GitHub Actions Turbo Mode:** Introduced automatic CI detection. When running on GitHub Actions, the system auto-injects a "Turbo" profile for `mksquashfs`, applying aggressive zstd compression and smart exclusions to slash ISO size (down to 6.4GB) and drastically reduce build times.
+
 ## 🐧 oa-tools v0.7.8 - 
 
 - **Smart Desktop Management**: Installation links are now dynamically handled and automatically removed after a successful installation, keeping the target `/etc/skel` clean.
