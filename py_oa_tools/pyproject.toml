@@ -15,7 +15,7 @@ pycoa = "py_oa_tools.coa:main"
 pyoa = "py_oa_tools.oa:main"
 
 [tool.setuptools]
-packages = [ { include = "py_oa_tools" } ]
+packages = ["py_oa_tools"]
 
 [tool.setuptools.package-data]
-"py_oa_tools" = ["brain.d/**"]
+py_oa_tools = ["brain.d/**"]
