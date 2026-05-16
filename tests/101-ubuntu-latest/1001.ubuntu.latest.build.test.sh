@@ -27,14 +27,10 @@ if [ -z "$DEB_FILE" ]; then
     exit 1
 fi
 
-sudo dpkg -i "$DEB_FILE"
-
-# 4. Risoluzione delle dipendenze (Corretto il refuso -i)
-sudo apt-get install -f -y
+sudo dpkg -i "$DEB_FILE" || sudo apt-get install -f -y
 
 echo "=== INSTALLAZIONE COMPLETATA CON SUCCESSO ==="
 exit 0
-
 
 #sudo rsync -avzP ./coa/coa /usr/bin/coa
 #sudo rsync -avzP ./oa/oa /usr/bin/oa
