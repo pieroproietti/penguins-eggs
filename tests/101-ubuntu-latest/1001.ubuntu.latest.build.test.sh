@@ -26,6 +26,7 @@ if [ -z "$DEB_FILE" ]; then
     echo "ERRORE: Il pacchetto .deb non è stato generato!"
     exit 1
 fi
+
 sudo dpkg -i "$DEB_FILE" || sudo apt-get install -f -y
 echo "=== INSTALLAZIONE COMPLETATA CON SUCCESSO ==="
 
