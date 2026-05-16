@@ -77,7 +77,8 @@ func GenerateExcludeList(mode string) string {
 			"usr/lib/jvm/*",                // Java: altri 500MB-1GB che se ne vanno
 			"usr/local/share/powershell/*", // Ciao ciao PowerShell
 			"usr/share/swift/*",            // Swift toolchain
-			"var/lib/gems/*",               // Residui di Ruby		)
+			"var/lib/gems/*",               // Residui di Ruby
+		)
 	}
 
 	// ==========================================================
