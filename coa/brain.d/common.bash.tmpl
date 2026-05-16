@@ -278,6 +278,8 @@ fi
 
 
 {{ define "common_squashfs" }}
+  # activate echo break
+  set -xe
   mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -no-xattrs \
   -comp zstd \
@@ -289,6 +291,8 @@ fi
   -ef /tmp/coa/excludes.list \
   -p "mnt d 0755 root root" \
   -p "media d 0755 root root"
+  # disable echo break
+  set +xe
 {{ template "squashfs_hooks" . }}  
 {{ end }}
 
