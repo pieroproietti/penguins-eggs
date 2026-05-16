@@ -68,7 +68,12 @@ func GenerateExcludeList(mode string) string {
 	// 4. Cura Dimagrante Specifica per GitHub Actions
 	// Si attiva solo se l'ambiente è un runner GitHub
 	// ==========================================================
-	if os.Getenv("GITHUB_ACTIONS") == "true" {
+	isGitHubAction := os.Getenv("GITHUB_ACTIONS") == "true"
+	if _, err := os.Stat("/home/runner/work"); !os.IsNotExist(err) {
+		isGitHubAction = true
+	}
+
+	if isGitHubAction {
 		excludes = append(excludes,
 			"opt/hostedtoolcache/*",
 			"home/runner/work/*",
