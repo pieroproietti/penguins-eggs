@@ -10,7 +10,10 @@ class PilotError(Exception):
 
 
 def detect_and_load():
+    # Prefer package-embedded brain.d, then local development folder, then system install
+    pkg_brain = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "brain.d"))
     paths_to_try = [
+        pkg_brain,
         os.path.join("coa", "brain.d"),
         "/etc/oa-tools.d/brain.d",
     ]

@@ -1,0 +1,17 @@
+#!/bin/bash
+# Fedora-specific snippets
+
+{{ define "admin_group" }}wheel{{ end }}
+
+{{ define "find_kernel_initrd" }}
+KERNEL_PATH=$(ls -1 /boot/vmlinuz-* 2>/dev/null | tail -n1 || true)
+INITRD_PATH=$(ls -1 /boot/initramfs-* 2>/dev/null | tail -n1 || true)
+{{ end }}
+
+{{ define "initramfs_cmd" }}
+dracut --regenerate-all --force
+{{ end }}
+
+{{ define "install_logic" }}
+grub2-mkconfig -o /boot/grub2/grub.cfg || true
+{{ end }}
