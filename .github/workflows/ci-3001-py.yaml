@@ -1,0 +1,22 @@
+name: 3001-py
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Run Python replacement smoke tests
+      run: |
+        chmod +x ./tests/3001-py/3001.py.test.sh
+        ./tests/3001-py/3001.py.test.sh
