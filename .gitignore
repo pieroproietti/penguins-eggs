@@ -41,3 +41,5 @@ coa/plan_coa_tmp.json
 # --- OS generated files ---
 .DS_Store
 Thumbs.db
+__pycache__
+py_oa_tools.egg-info

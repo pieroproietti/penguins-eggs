@@ -1,0 +1,17 @@
+# Mappatura: a quale file .yaml corrisponde ogni ID o ID_LIKE
+distributions:
+  - id: "debian"
+    like: ["ubuntu", "linuxmint", "kali", "pop"]
+    file: "debian.bash.tmpl"
+  
+  - id: "arch"
+    like: ["endeavouros", "cachyos"]
+    file: "arch.bash.tmpl"
+
+  - id: "manjaro"
+    like: ["manjaro", "bigcommunity"]
+    file: "manjaro.bash.tmpl"
+
+  - id: "fedora"
+    like: ["nobara"]
+    file: "fedora.bash.tmpl"

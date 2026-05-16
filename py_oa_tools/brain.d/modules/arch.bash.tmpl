@@ -1,0 +1,17 @@
+#!/bin/bash
+# Arch/Manjaro style snippets
+
+{{ define "admin_group" }}wheel{{ end }}
+
+{{ define "find_kernel_initrd" }}
+KERNEL_PATH=$(ls -1 /boot/vmlinuz* 2>/dev/null | tail -n1 || true)
+INITRD_PATH=$(ls -1 /boot/initramfs* 2>/dev/null | tail -n1 || true)
+{{ end }}
+
+{{ define "initramfs_cmd" }}
+mkinitcpio -P
+{{ end }}
+
+{{ define "install_logic" }}
+grub-mkconfig -o /boot/grub/grub.cfg || true
+{{ end }}

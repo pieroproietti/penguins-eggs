@@ -1,0 +1,115 @@
+# ==============================================================================
+# 🧩 OA UNIVERSAL FRAMEWORK (EVOLUTION EDITION)
+# ==============================================================================
+remaster:
+
+  # ----------------------------------------------------------------------------
+  # 1. INITIAL SETUP AND MOUNT
+  # ----------------------------------------------------------------------------
+  - name: "coa-fs-setup"
+    description: "Chroot environment and mount point preparation"
+    action: "oa_mount_logic"
+
+
+  # ----------------------------------------------------------------------------
+  # 2. BOOTLOADERS PREPARATION
+  # ----------------------------------------------------------------------------
+  - name: "coa-bootloaders"
+    description: "Staging bootloader assets for BIOS (ISOLINUX) and UEFI (GRUB/EFI)"
+    action: "oa_shell"
+    run_command: |
+{{ include "common_bootloaders" . | indent 6 }}
+
+  # ----------------------------------------------------------------------------
+  # 3. BOOT MENU AND BRANDING GENERATION
+  # ----------------------------------------------------------------------------
+  - name: "coa-live-menus"
+    description: "Dynamic GRUB and ISOLINUX menu generation"
+    action: "oa_shell"
+    run_command: |
+{{ include "common_live_menus" . | indent 6 }}
+
+  # ----------------------------------------------------------------------------
+  # 4. USER IDENTITY
+  # ----------------------------------------------------------------------------
+  - name: "coa-identity"
+    description: "Live user injection and password sanitization"
+    action: "oa_users"
+
+  # ----------------------------------------------------------------------------
+  # 4.1 Sanitize host
+  # ----------------------------------------------------------------------------
+  - name: "coa-sanitize-host"
+    description: "Remove /etc/fstab from live"
+    action: "oa_shell"
+    chroot: true
+    run_command: |
+{{ include "sanitize_host" . | indent 6 }}
+
+  # ----------------------------------------------------------------------------
+  # 5. LIVE INITRAMFS
+  # ----------------------------------------------------------------------------
+  - name: "coa-initrd"
+    description: "Live environment-specific Initramfs generation"
+    action: "oa_shell"
+    chroot: true
+    run_command: |
+{{ include "initramfs_cmd" . | indent 6 }}
+
+  # ----------------------------------------------------------------------------
+  # 6. KERNEL AND PRIVILEGE EXTRACTION
+  # ----------------------------------------------------------------------------
+  - name: "coa-kernel-copy"
+    description: "Dynamic kernel and initrd copy to ISO root"
+    action: "oa_shell"
+    run_command: |
+{{ include "common_kernel_copy" . | indent 6 }}    
+
+  # ----------------------------------------------------------------------------
+  # 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
+  # ----------------------------------------------------------------------------
+  - name: "coa-enable-live"
+    description: "Privilege configuration, trusted launcher, and universal autologin"
+    action: "oa_shell"
+    chroot: true
+    run_command: |
+{{ include "live_sudoers" . | indent 6 }}
+{{ include "live_icon" . | indent 6 }}
+{{ include "live_launcher" . | indent 6 }}
+{{ include "live_trust_agent" . | indent 6 }}
+{{ include "live_autologin" . | indent 6 }}
+
+  # ----------------------------------------------------------------------------
+  # 8. FILESYSTEM.SQUASHFS COMPRESSION
+  # ----------------------------------------------------------------------------
+  - name: "coa-squashfs"
+    description: "Root filesystem compression into SquashFS format"
+    action: "oa_shell"
+    run_command: |
+{{ include "common_squashfs" . | indent 6 }}
+
+  # ----------------------------------------------------------------------------
+  # 9. ISO XORRISO PACKAGING
+  # ----------------------------------------------------------------------------
+  - name: "coa-xorriso"
+    description: "Final hybrid ISO image generation (xorriso)"
+    action: "oa_shell"
+    run_command: |
+{{ include "common_xorriso" . | indent 6 }}
+
+  # ----------------------------------------------------------------------------
+  # 10. CLEANUP
+  # ----------------------------------------------------------------------------
+  - name: "coa-cleanup"
+    description: "Environment unmounting and cleanup"
+    action: "oa_umount"
+
+# ==============================================================================
+# 🎯 CALAMARES INSTALLER HOOKS
+# ==============================================================================
+install:
+  - name: "coa-finalize"
+    description: "Target finalization and host bootloader regeneration"
+    action: "oa_shell"
+    run_command: |
+{{ include "common_finalize" . | indent 6 }}
