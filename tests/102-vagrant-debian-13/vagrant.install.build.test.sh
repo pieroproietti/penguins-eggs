@@ -11,22 +11,29 @@ echo "Project: $PROJECT_NAME"
 # ==========================================
 # 2. BUILD DEL PACCHETTO DEBIAN (Host)
 # ==========================================
-cd ../../
+cd "$CMD_PATH"
+
+# Questo comando trova IN MODO INFALLIBILE la cartella radice del progetto 
+# (quella dove c'è la cartella .git e il tuo Makefile)
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+cd "$PROJECT_ROOT"
+
+echo "=== Root del progetto trovata in: ==="
 pwd
 
-echo "=== Compilazione del pacchetto ==="
+echo "=== Compilazione dell'eseguibile ==="
 make
 
 echo "=== Creazione pacchetto nativo Debian ==="
+# Ora siamo sicuri di essere nella cartella giusta dove esiste ./coa/coa
 ./coa/coa tools build
 
 # Puliamo vecchi pacchetti nella cartella Vagrant per non confonderci
-rm -f $CMD_PATH/*.deb
+rm -f "$CMD_PATH"/*.deb
 
-# Copiamo il nuovo pacchetto appena generato nella cartella condivisa di Vagrant
-# (Se il tuo make deb sputa il file in una cartella diversa, adatta il percorso sorgente)
-cp ./*.deb $CMD_PATH/
-cd $CMD_PATH
+# Copiamo il nuovo pacchetto .deb appena generato nella cartella di Vagrant
+cp ./*.deb "$CMD_PATH"/
+cd "$CMD_PATH"
 
 # ==========================================
 # 3. INSTALLAZIONE DIPENDENZE HOST (VirtualBox & Vagrant)
