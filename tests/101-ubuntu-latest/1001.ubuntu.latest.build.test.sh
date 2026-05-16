@@ -20,6 +20,8 @@ cd $CMD_PATH
 cd ../../
 ./coa/coa tools build
 ls -al
+nproc
+
 ./coa/coa tools clean
 sudo coa remaster
 
