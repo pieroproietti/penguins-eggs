@@ -74,6 +74,7 @@ func GenerateExcludeList(mode string) string {
 	}
 
 	if isGitHubAction {
+
 		excludes = append(excludes,
 			"opt/hostedtoolcache/*",
 			"home/runner/work/*",
