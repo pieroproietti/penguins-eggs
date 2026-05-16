@@ -13,21 +13,24 @@ COA_BIN = $(COA_DIR)/coa
 PACKAGES = *.deb *.rpm *.pkg.tar.zst PKGBUILD
 
 # Target principale
-all: build_oa build_coa
+all: build_py
 	@echo "--------------------------------------"
 	@echo "Hatching completed successfully! 🐣"
 	@echo "Version:           $(VERSION)"
-	@echo "coa Brain (Go):    ./$(COA_BIN)"
-	@echo "oa Workhorse (C):  ./$(OA_BIN)"
+	@echo "coa Brain (Python):    ./$(COA_BIN)"
+	@echo "oa Workhorse (Python): ./$(OA_BIN)"
 	@echo "--------------------------------------"
 
-build_oa:
-	@echo "  MAKING oa..."
-	# Passiamo LIBS="-lcrypt" al Makefile interno di oa
+build_py:
+	@echo "  USING Python OA/COA wrappers..."
+	@chmod +x $(OA_BIN) $(COA_BIN)
+
+build_oa_native:
+	@echo "  MAKING native oa..."
 	@$(MAKE) -C $(OA_DIR) VERSION="$(VERSION)" LIBS="-lcrypt"
 
-build_coa:
-	@echo "  MAKING coa..."
+build_coa_native:
+	@echo "  MAKING native coa..."
 	@cd $(COA_DIR) && go build -ldflags "-X 'coa/pkg/cmd.AppVersion=$(VERSION)'" -o coa main.go
 
 # Target dedicato: da lanciare solo quando vuoi aggiornare i docs su Git
