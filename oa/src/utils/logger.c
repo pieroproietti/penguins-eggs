@@ -44,7 +44,7 @@ void oa_log(const char *level, const char *file, int line, const char *fmt, ...)
     // 2. STAMPA SU FILE (SENZA COLORI, TESTO PULITO)
     if (oa_log_file) {
         // Nel log scriviamo testo normale per non corrompere la lettura
-        fprintf(oa_log_file, "[ao] [%s] %s:%d - %s\n", 
+        fprintf(oa_log_file, "[oa] [%s] %s:%d - %s\n", 
                 level, short_file, line, buffer);
         fflush(oa_log_file); // Forza la scrittura immediata su disco
     }
