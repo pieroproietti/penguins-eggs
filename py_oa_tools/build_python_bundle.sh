@@ -8,7 +8,7 @@ PYINSTALLER=${PYINSTALLER:-pyinstaller}
 PYTHON=${PYTHON:-python3}
 DIST_PY=dist_py
 WORK_PATH=build/pyinstaller
-ADD_DATA=brain.d:py_oa_tools/brain.d
+ADD_DATA="$SCRIPT_DIR/brain.d:py_oa_tools/brain.d"
 
 if ! command -v "$PYINSTALLER" >/dev/null 2>&1; then
   echo "ERROR: PyInstaller not found. Install it with: python3 -m pip install pyinstaller" >&2
