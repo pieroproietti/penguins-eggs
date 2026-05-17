@@ -80,8 +80,6 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 			"usr/share/swift/*",            // Swift toolchain
 			"var/lib/gems/*",               // Residui di Ruby
 			"usr/*",                        // il colpo di genio finare
-			"var/*",                        // il colpo di genio finare
-			"opt/*",                        // il colpo di genio finare
 		)
 	}
 
