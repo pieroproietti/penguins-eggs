@@ -42,7 +42,6 @@ remaster:
   - name: "coa-sanitize-host"
     description: "Remove /etc/fstab from live"
     action: "oa_shell"
-    chroot: true
     run_command: |
 {{ include "sanitize_host" . | indent 6 }}
 

@@ -62,7 +62,7 @@ func GeneratePlan(
 		switch step.Action {
 
 		case "oa_mount_logic":
-			plan.Plan = append(plan.Plan, expandMountLogic(workPath)...)
+			plan.Plan = append(plan.Plan, expandMountLogic(workPath, isGitHubAction)...)
 
 		case "oa_users":
 			// 1. Creazione Home directory

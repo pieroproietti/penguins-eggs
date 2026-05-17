@@ -89,11 +89,20 @@ func HandleBuild(d *distro.Distro, version string) {
 func parseGitVersion(v string) (string, string) {
 	cleanV := strings.TrimPrefix(v, "v")
 	parts := strings.Split(cleanV, "-")
+
 	baseVer := parts[0]
 	relNum := "1"
+
 	if len(parts) > 1 {
 		relNum = parts[1]
 	}
+
+	// Fix per Debian: la versione DEVE iniziare con una cifra.
+	// Se baseVer è un hash (es. "e252cac"), aggiungiamo "0~" all'inizio.
+	if len(baseVer) > 0 && (baseVer[0] < '0' || baseVer[0] > '9') {
+		baseVer = "0~" + baseVer
+	}
+
 	return baseVer, relNum
 }
 

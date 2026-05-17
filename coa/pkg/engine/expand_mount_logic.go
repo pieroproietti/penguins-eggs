@@ -8,7 +8,7 @@ import (
 )
 
 // expandMountLogic trasforma la vecchia logica statica del C in una sequenza di task JSON dinamici.
-func expandMountLogic(basePath string) []OATask {
+func expandMountLogic(basePath string, isGitHubAction bool) []OATask {
 	var tasks []OATask
 	liveroot := filepath.Join(basePath, "liveroot")
 	overlay := filepath.Join(basePath, ".overlay")
@@ -123,13 +123,19 @@ func expandMountLogic(basePath string) []OATask {
 	tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_bind", Src: "/dev", Dst: filepath.Join(liveroot, "dev"), Description: "API FS: dev"}})
 	tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_bind", Src: "/run", Dst: filepath.Join(liveroot, "run"), Description: "API FS: run"}})
 
-	// 6. CHROOT FIX: Creazione di /tmp con Sticky Bit e mount di tmpfs in RAM
+	// 6. tmpfs
 	tmpPath := filepath.Join(liveroot, "tmp")
+	runCmd := "mkdir -p " + tmpPath + " && chmod 1777 " + tmpPath
+
+	if !isGitHubAction {
+		runCmd += " && mount -t tmpfs -o mode=1777 tmpfs " + tmpPath
+	}
+
 	tasks = append(tasks, OATask{
 		Step: pilot.Step{
 			Action:      "oa_shell",
 			Description: "API FS: tmp (Sticky Bit + Tmpfs)",
-			RunCommand:  "mkdir -p " + tmpPath + " && chmod 1777 " + tmpPath + " && mount -t tmpfs -o mode=1777 tmpfs " + tmpPath,
+			RunCommand:  runCmd,
 		},
 	})
 
