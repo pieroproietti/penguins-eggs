@@ -3,6 +3,8 @@
 
 {{ define "admin_group" }}wheel{{ end }}
 
+{{ define "boot_params" }}archisobasedir=arch archisolabel=${VOL_ID} cow_spacesize=2G{{ end }}
+
 {{ define "find_kernel_initrd" }}
 KERNEL_PATH=$(ls -1 /boot/vmlinuz* 2>/dev/null | tail -n1 || true)
 INITRD_PATH=$(ls -1 /boot/initramfs* 2>/dev/null | tail -n1 || true)

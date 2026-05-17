@@ -22,7 +22,22 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Install Python packaging dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pyinstaller PyYAML
+
+    - name: Build standalone oa/coa
+      run: |
+        chmod +x ./py_oa_tools/build_python_bundle.sh
+        ./py_oa_tools/build_python_bundle.sh
+
+    - name: Verify standalone binaries
+      run: |
+        ./py_oa_tools/dist_py/coa --help
+        ./py_oa_tools/dist_py/oa --help
+
     - name: Run Python replacement smoke tests
       run: |
-        chmod +x ./tests/3001-py/3001.py.test.sh
-        ./tests/3001-py/3001.py.test.sh
+        chmod +x ./tests/301-py-ubuntu-latest/3001.py.test.sh
+        ./tests/301-py-ubuntu-latest/3001.py.test.sh

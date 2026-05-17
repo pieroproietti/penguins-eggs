@@ -1,4 +1,5 @@
 import os
+import sys
 import yaml
 
 from py_oa_tools.pkg import distro
@@ -9,9 +10,15 @@ class PilotError(Exception):
     pass
 
 
+def _package_brain_path():
+    if getattr(sys, "_MEIPASS", None):
+        return os.path.join(sys._MEIPASS, "py_oa_tools", "brain.d")
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "brain.d"))
+
+
 def detect_and_load():
     # Prefer package-embedded brain.d, then local development folder, then system install
-    pkg_brain = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "brain.d"))
+    pkg_brain = _package_brain_path()
     paths_to_try = [
         pkg_brain,
         os.path.join("coa", "brain.d"),
@@ -61,5 +68,9 @@ def detect_and_load():
     with open(base_path, "r", encoding="utf-8") as fp:
         base_content = fp.read()
 
-    rendered = renderer.render(base_content)
+    is_github_action = os.getenv("GITHUB_ACTIONS") == "true"
+    if not is_github_action and os.path.exists("/home/runner/work"):
+        is_github_action = True
+
+    rendered = renderer.render(base_content, {"IsGitHubAction": is_github_action})
     return yaml.safe_load(rendered)

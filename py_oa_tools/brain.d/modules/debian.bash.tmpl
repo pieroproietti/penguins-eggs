@@ -3,6 +3,8 @@
 
 {{ define "admin_group" }}sudo{{ end }}
 
+{{ define "boot_params" }}boot=live components rootwait{{ end }}
+
 {{ define "find_kernel_initrd" }}
 # Debian style kernel+initrd discovery
 KERNEL_PATH=$(find /boot -type f -name "vmlinuz*" | sort | tail -n1 || true)
