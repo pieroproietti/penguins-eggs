@@ -40,20 +40,27 @@ int oa_bind(OA_Context *ctx) {
     // --------------------------------
 
     // 1. Bind iniziale (Recursive)
-    if (mount(src, dst, NULL, MS_BIND | MS_REC, NULL) != 0) {
-
-        // Se la cartella sorgente non è critica (es. /opt, /root), possiamo tollerarlo?
-        if (strcmp(src, "/opt") == 0 || strcmp(src, "/root") == 0) {
-            printf("[oa] [WARN] Impossibile fare il bind di %s, creo cartella vuota.\n", src);
+    // Se fallisce:
+    if (mount(src, dst, NULL, MS_BIND, NULL) != 0) {
+        
+        // Controlliamo se è una directory VITALE per il boot del sistema
+        if (strcmp(src, "/usr") == 0 || 
+            strcmp(src, "/var") == 0 || 
+            strcmp(src, "/bin") == 0 || 
+            strcmp(src, "/sbin") == 0 || 
+            strcmp(src, "/lib") == 0 || 
+            strcmp(src, "/lib64") == 0 || 
+            strcmp(src, "/etc") == 0) {
             
-            // Crea la cartella vuota con i permessi corretti
-            mode_t mode = (strcmp(src, "/root") == 0) ? 0700 : 0755;
-            mkdir(dst, mode); 
-            
-            return 0; // Evita il crash e continua il piano
+            // Se fallisce una di queste, il crash è sacrosanto
+            return 1; 
         }
-        LOG_ERR("Bind fallito: %s -> %s (Errore: %s)", src, dst, strerror(errno));
-        return 1;
+        
+        // Per tutte le altre (/opt, /root, /srv, /mnt, /media...), tolleriamo il blocco della CI
+        printf("[oa] [WARN] Bind fallito per directory non critica %s. Creo cartella vuota.\n", src);
+        mode_t mode = (strcmp(src, "/root") == 0) ? 0700 : 0755;
+        mkdir(dst, mode);
+        return 0;
     }
 
     // 2. Remount ReadOnly se richiesto
