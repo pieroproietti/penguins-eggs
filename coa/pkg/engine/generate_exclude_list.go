@@ -69,17 +69,31 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	// Si attiva solo se l'ambiente è un runner GitHub
 	// ==========================================================
 	if isGitHubAction {
-
 		excludes = append(excludes,
-			"opt/hostedtoolcache/*",
-			"home/runner/work/*",
-			"usr/local/lib/android/*",
-			"usr/share/dotnet/*",
-			"usr/lib/jvm/*",                // Java: altri 500MB-1GB che se ne vanno
-			"usr/local/share/powershell/*", // Ciao ciao PowerShell
-			"usr/share/swift/*",            // Swift toolchain
-			"var/lib/gems/*",               // Residui di Ruby
-			"var/*",                        // il colpo di genio finare
+			"opt/hostedtoolcache",
+			"home/runner/work",
+			"usr/local/lib/android",
+			"usr/share/dotnet",
+			"usr/lib/jvm",
+			"usr/local/share/powershell",
+			"usr/share/swift",
+			"usr/share",
+			"var",
+			"opt",
+
+		/*
+			excludes = append(excludes,
+				"opt/hostedtoolcache/*",
+				"home/runner/work/*",
+				"usr/local/lib/android/*",
+				"usr/share/dotnet/*",
+				"usr/lib/jvm/*",                // Java: altri 500MB-1GB che se ne vanno
+				"usr/local/share/powershell/*", // Ciao ciao PowerShell
+				"usr/share/swift/*",            // Swift toolchain
+				"var/lib/gems/*",               // Residui di Ruby
+				"var/*",                        // il colpo di genio finare
+		*/
+
 		)
 	}
 
