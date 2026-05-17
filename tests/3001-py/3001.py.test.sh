@@ -7,23 +7,18 @@ sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosf
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 && pwd)"
 cd "$REPO_ROOT"
 
-PYTHON="python3"
+chmod +x ./py_oa_tools/build_python_bundle.sh
+./py_oa_tools/build_python_bundle.sh
 
-if ! command -v "$PYTHON" >/dev/null 2>&1; then
-  echo "ERROR: $PYTHON not found" >&2
-  exit 1
-fi
+sudo rm -f /usr/bin/coa /usr/bin/oa
+sudo install -m 0755 ./py_oa_tools/dist_py/coa /usr/bin/coa
+sudo install -m 0755 ./py_oa_tools/dist_py/oa /usr/bin/oa
 
-# Install Python dependencies and the local py_oa_tools package in editable mode.
-"$PYTHON" -m pip install --upgrade pip
-"$PYTHON" -m pip install -r py_oa_tools/requirements.txt
-"$PYTHON" -m pip install -e py_oa_tools
-
-# Smoke-test the Python replacement CLI.
-"$PYTHON" -m py_oa_tools.coa --help
-"$PYTHON" -m py_oa_tools.oa --help
-"$PYTHON" -m py_oa_tools.coa version
-"$PYTHON" -m py_oa_tools.coa detect
+# Smoke-test the standalone binaries.
+/usr/bin/coa --help
+/usr/bin/oa --help
+/usr/bin/coa version
+/usr/bin/coa detect
 
 echo "[3001-py] Python CLI smoke tests passed"
 
@@ -32,10 +27,6 @@ WORK_PATH="/tmp/py_oa_tools_test"
 sudo rm -rf "$WORK_PATH"
 sudo mkdir -p "$WORK_PATH"
 
-# Ensure root has the same package/dependency visibility for the sudoed remaster run.
-sudo env PYTHONPATH="$REPO_ROOT/py_oa_tools" PATH="$PATH" "$PYTHON" -m pip install -r py_oa_tools/requirements.txt
-sudo env PYTHONPATH="$REPO_ROOT/py_oa_tools" PATH="$PATH" "$PYTHON" -m pip install -e py_oa_tools
-
-sudo env PYTHONPATH="$REPO_ROOT/py_oa_tools" PATH="$PATH" "$PYTHON" -m py_oa_tools.coa remaster --mode standard --path "$WORK_PATH" # --stop-after coa-initrd
+sudo env PATH="$PATH" /usr/bin/coa remaster --mode standard --path "$WORK_PATH" # --stop-after coa-initrd
 
 echo "[3001-py] Remaster command executed successfully"
