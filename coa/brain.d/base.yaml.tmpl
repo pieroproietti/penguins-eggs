@@ -53,7 +53,11 @@ remaster:
     action: "oa_shell"
     chroot: true
     run_command: |
+{{- if .IsGitHubAction }}
+      echo "[coa] CI rilevata: salto update-initramfs per restrizioni del kernel host"
+{{- else }}
 {{ include "initramfs_cmd" . | indent 6 }}
+{{- end }}
 
   # ----------------------------------------------------------------------------
   # 6. KERNEL AND PRIVILEGE EXTRACTION
