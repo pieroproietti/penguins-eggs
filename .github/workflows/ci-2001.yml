@@ -17,12 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.21' # o la versione di Go che usi per coa (es. '1.22', '>=1.20')    
-
-    - name: run buidl and test
+    - name: run build, package and test
       run: |
         ./tests/101-ubuntu-latest/1001.ubuntu.latest.build.test.sh
 
