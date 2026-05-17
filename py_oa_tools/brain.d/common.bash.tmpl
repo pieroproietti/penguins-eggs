@@ -19,11 +19,11 @@ export SQ_PROCS=$(nproc)
 mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
 
 # Copia assets BIOS
-cp /tmp/coa/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/ 2>/dev/null || true
-cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true
+cp /tmp/py_oa_tools/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/ 2>/dev/null || true
+cp /tmp/py_oa_tools/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true
 
 # Copia del binario EFI (Percorso corretto e unificato!)
-EFI_SRC="/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi"
+EFI_SRC="/tmp/py_oa_tools/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi"
 if [ -f "$EFI_SRC" ]; then
     cp "$EFI_SRC" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
 fi
@@ -291,8 +291,8 @@ fi
 {{ define "common_squashfs" }}
 # activate echo break
 set -xe
-echo "/tmp/coa/excludes.list"
-cat /tmp/coa/excludes.list 
+echo "/tmp/py_oa_tools/excludes.list"
+cat /tmp/py_oa_tools/excludes.list 
 echo 
 
 # ==========================================================
@@ -308,8 +308,8 @@ echo
 echo "========================================================"
 echo "🚀 AVVIO MKSQUASHFS (Profilo: $SQ_COMP L$SQ_LEVEL, $SQ_BLOCK, $SQ_PROCS Cores)"
 echo "========================================================"
-echo "/tmp/coa/excludes.list"
-cat /tmp/coa/excludes.list
+echo "/tmp/py_oa_tools/excludes.list"
+cat /tmp/py_oa_tools/excludes.list
 
 mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -no-xattrs \
@@ -319,7 +319,7 @@ mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -processors $SQ_PROCS \
   -noappend \
   -wildcards \
-  -ef /tmp/coa/excludes.list \
+  -ef /tmp/py_oa_tools/excludes.list \
   -p "mnt d 0755 root root" \
   -p "media d 0755 root root"
 set +xe
@@ -329,7 +329,7 @@ set +xe
 xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid 'OA_LIVE' \
 -eltorito-boot isolinux/isolinux.bin -eltorito-catalog isolinux/boot.cat \
 -no-emul-boot -boot-load-size 4 -boot-info-table \
--isohybrid-mbr /tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin \
+-isohybrid-mbr /tmp/py_oa_tools/bootloaders/ISOLINUX/isohdpfx.bin \
 -eltorito-alt-boot -e EFI/BOOT/efi.img -no-emul-boot -isohybrid-gpt-basdat \
 -o ${ISO_OUTPUT} /home/eggs/isodir
 {{ end }}
