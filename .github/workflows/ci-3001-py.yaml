@@ -39,5 +39,5 @@ jobs:
 
     - name: Run Python replacement smoke tests
       run: |
-        chmod +x ./tests/3001-py/3001.py.test.sh
-        ./tests/3001-py/3001.py.test.sh
+        chmod +x ./tests/301-py-ubuntu-latest/3001.py.test.sh
+        ./tests/301-py-ubuntu-latest/3001.py.test.sh
