@@ -70,9 +70,9 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	// ==========================================================
 	if isGitHubAction {
 		excludes = append(excludes,
-			"home/runner/work",
 			"usr",
 			"var",
+			"opt"
 		)
 	}
 
