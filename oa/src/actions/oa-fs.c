@@ -41,12 +41,16 @@ int oa_bind(OA_Context *ctx) {
 
     // 1. Bind iniziale (Recursive)
     if (mount(src, dst, NULL, MS_BIND | MS_REC, NULL) != 0) {
-        // Se la cartella sorgente non è critica (es. /opt), possiamo tollerarlo?
-        if (strcmp(src, "/opt") == 0) {
-            // Logga il warning invece di uscire con errore
-            printf("[oa] [WARN] Impossibile fare il bind di /opt, creo cartella vuota.\n");
-            mkdir(dst, 0755); 
-            return 0; // Evita il crash
+
+        // Se la cartella sorgente non è critica (es. /opt, /root), possiamo tollerarlo?
+        if (strcmp(src, "/opt") == 0 || strcmp(src, "/root") == 0) {
+            printf("[oa] [WARN] Impossibile fare il bind di %s, creo cartella vuota.\n", src);
+            
+            // Crea la cartella vuota con i permessi corretti
+            mode_t mode = (strcmp(src, "/root") == 0) ? 0700 : 0755;
+            mkdir(dst, mode); 
+            
+            return 0; // Evita il crash e continua il piano
         }
         LOG_ERR("Bind fallito: %s -> %s (Errore: %s)", src, dst, strerror(errno));
         return 1;
