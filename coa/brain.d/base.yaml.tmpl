@@ -51,13 +51,15 @@ remaster:
   - name: "coa-initrd"
     description: "Live environment-specific Initramfs generation"
     action: "oa_shell"
-    chroot: true
+    # Se siamo in CI, disattiviamo il chroot così l'echo gira sull'host di GitHub!
+    chroot: {{ if .IsGitHubAction }}false{{ else }}true{{ end }}
     run_command: |
 {{- if .IsGitHubAction }}
       echo "[coa] CI rilevata: salto update-initramfs per restrizioni del kernel host"
 {{- else }}
 {{ include "initramfs_cmd" . | indent 6 }}
 {{- end }}
+
 
   # ----------------------------------------------------------------------------
   # 6. KERNEL AND PRIVILEGE EXTRACTION
