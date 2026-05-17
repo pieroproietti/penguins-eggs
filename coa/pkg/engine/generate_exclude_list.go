@@ -72,7 +72,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		excludes = append(excludes,
 			"usr",
 			"var",
-			"opt"
+			"opt",
 		)
 	}
 
