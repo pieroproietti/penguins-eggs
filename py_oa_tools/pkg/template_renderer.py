@@ -3,6 +3,7 @@ import re
 
 DEFINE_RE = re.compile(r"{{\s*define\s*\"([^\"]+)\"\s*}}(.*?){{\s*end\s*}}", re.S)
 INCLUDE_RE = re.compile(r"(^[ \t]*){{\s*(?:include|template)\s*\"([^\"]+)\"\s*\.\s*(?:\|\s*indent\s+(\d+))?\s*}}", re.S | re.M)
+IF_RE = re.compile(r"{{\s*if\s+\.([A-Za-z_][A-Za-z0-9_]*)\s*}}(.*?)((?:{{\s*else\s*}})(.*?))?{{\s*end\s*}}", re.S)
 
 
 class TemplateRenderer:
@@ -17,7 +18,10 @@ class TemplateRenderer:
     def strip_definitions(self, content: str) -> str:
         return DEFINE_RE.sub("", content)
 
-    def render(self, content: str) -> str:
+    def render(self, content: str, context: dict | None = None) -> str:
+        if context is None:
+            context = {}
+        self.context = context
         text = self.strip_definitions(content)
         previous = None
         while previous != text:
@@ -26,6 +30,15 @@ class TemplateRenderer:
         return text
 
     def _render_once(self, text: str) -> str:
+        def replace_if(match):
+            variable = match.group(1)
+            true_body = match.group(2)
+            else_body = match.group(4) or ""
+            value = bool(self.context.get(variable))
+            return true_body if value else else_body
+
+        text = IF_RE.sub(replace_if, text)
+
         def replace(match):
             prefix = match.group(1) or ""
             name = match.group(2)
