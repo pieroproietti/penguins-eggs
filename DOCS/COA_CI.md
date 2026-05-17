@@ -28,12 +28,22 @@ Per ovviare a questo problema, la CI di `oa-tools` su GitHub Actions è stata ri
 
 L'obiettivo della CI su GitHub non è validare il boot di una ISO, ma garantire la **salute strutturale e sintattica del codice**.
 
-Il workflow su `ubuntu-latest` si limita a tre passaggi chiave:
+Il workflow su `ubuntu-latest` esegue tutto:
 1. **Compilazione del C (`oa`):** Verifica che la catena di GCC compili il core senza errori di sintassi o linkaggio.
 2. **Compilazione del Go (`coa`):** Verifica che il compilatore Go chiuda il cerchio, risolva le dipendenze e gestisca correttamente i tipi.
-3. **Sanity Check (Il colpo di tosse):** Invocazione dei binari con flag base (`--version` / `--help`) per verificare che rispondano con `exit status 0`.
+3. **Rimasterizzazione complet:** Ma nel plan abbiamo aggiunto:
+```
+	if isGitHubAction {
+		excludes = append(excludes,
+			"home/runner/work",
+			"usr",
+			"var",
+			"opt",
+		)
+	}
+```
 
-Se lo Smoketest è verde, il codice è strutturalmente sano e privo di regressioni macroscopiche.
+E, pur rimanendo uno Smoketest è verde, completa tutto fino alla creazione della ISO - NON FUNZIONANTE - in meno di due minuti, dimostrando che il codice è strutturalmente sano e privo di regressioni macroscopiche.
 
 ## Il Vero Banco di Prova: Vagrant e Virtualizzazione Reale
 
