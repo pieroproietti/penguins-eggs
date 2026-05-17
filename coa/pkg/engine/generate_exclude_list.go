@@ -73,7 +73,6 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 			"home/runner/work",
 			"usr",
 			"var",
-			"opt",
 		)
 	}
 
