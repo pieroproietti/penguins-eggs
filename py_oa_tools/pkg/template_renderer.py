@@ -1,7 +1,8 @@
 import re
 
 
-DEFINE_RE = re.compile(r"{{\s*define\s*\"([^\"]+)\"\s*}}(.*?){{\s*end\s*}}", re.S)
+DEFINE_START_RE = re.compile(r"{{\s*define\s*\"([^\"]+)\"\s*}}", re.S)
+DEFINE_TOKEN_RE = re.compile(r"{{\s*(?:define\s*\"[^\"]+\"|if\s+\.[A-Za-z_][A-Za-z0-9_]*|end\s*)\s*}}", re.S)
 INCLUDE_RE = re.compile(r"(^[ \t]*)?{{\s*(?:include|template)\s*\"([^\"]+)\"\s*\.\s*(?:\|\s*indent\s+(\d+))?\s*}}", re.S | re.M)
 IF_RE = re.compile(r"{{\s*if\s+\.([A-Za-z_][A-Za-z0-9_]*)\s*}}(.*?)((?:{{\s*else\s*}})(.*?))?{{\s*end\s*}}", re.S)
 
@@ -11,12 +12,55 @@ class TemplateRenderer:
         self.templates = {}
 
     def add_definitions(self, content: str) -> None:
-        for match in DEFINE_RE.findall(content):
-            name, body = match
-            self.templates[name] = body.strip("\n")
+        offset = 0
+        while True:
+            match = DEFINE_START_RE.search(content, offset)
+            if not match:
+                break
+            name = match.group(1)
+            body_start = match.end()
+            depth = 1
+            cursor = body_start
+            while depth > 0:
+                token = DEFINE_TOKEN_RE.search(content, cursor)
+                if not token:
+                    raise ValueError(f"Unterminated definition for {name}")
+                token_text = token.group(0)
+                if token_text.startswith("{{") and token_text.endswith("}}"):
+                    if token_text.strip().startswith("{{ if"):
+                        depth += 1
+                    elif token_text.strip().startswith("{{ define"):
+                        depth += 1
+                    elif token_text.strip().startswith("{{ end"):
+                        depth -= 1
+                cursor = token.end()
+            body = content[body_start:token.start()].strip("\n")
+            self.templates[name] = body
+            offset = cursor
 
     def strip_definitions(self, content: str) -> str:
-        return DEFINE_RE.sub("", content)
+        output = []
+        offset = 0
+        while True:
+            match = DEFINE_START_RE.search(content, offset)
+            if not match:
+                output.append(content[offset:])
+                break
+            output.append(content[offset:match.start()])
+            depth = 1
+            cursor = match.end()
+            while depth > 0:
+                token = DEFINE_TOKEN_RE.search(content, cursor)
+                if not token:
+                    raise ValueError("Unterminated template definition")
+                token_text = token.group(0)
+                if token_text.strip().startswith("{{ if") or token_text.strip().startswith("{{ define"):
+                    depth += 1
+                elif token_text.strip().startswith("{{ end"):
+                    depth -= 1
+                cursor = token.end()
+            offset = cursor
+        return "".join(output)
 
     def render(self, content: str, context: dict | None = None) -> str:
         if context is None:
