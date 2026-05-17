@@ -77,7 +77,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 			"usr/lib/jvm",
 			"usr/local/share/powershell",
 			"usr/share/swift",
-			"usr/share",
+			"usr",
 			"var",
 			"opt",
 
