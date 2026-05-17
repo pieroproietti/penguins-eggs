@@ -2,7 +2,7 @@ import re
 
 
 DEFINE_RE = re.compile(r"{{\s*define\s*\"([^\"]+)\"\s*}}(.*?){{\s*end\s*}}", re.S)
-INCLUDE_RE = re.compile(r"(^[ \t]*){{\s*(?:include|template)\s*\"([^\"]+)\"\s*\.\s*(?:\|\s*indent\s+(\d+))?\s*}}", re.S | re.M)
+INCLUDE_RE = re.compile(r"(^[ \t]*)?{{\s*(?:include|template)\s*\"([^\"]+)\"\s*\.\s*(?:\|\s*indent\s+(\d+))?\s*}}", re.S | re.M)
 IF_RE = re.compile(r"{{\s*if\s+\.([A-Za-z_][A-Za-z0-9_]*)\s*}}(.*?)((?:{{\s*else\s*}})(.*?))?{{\s*end\s*}}", re.S)
 
 
