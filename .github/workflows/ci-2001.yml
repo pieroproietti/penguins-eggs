@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: run build, package and test
+    - name: full smoke-test on CI 
       run: |
         ./tests/101-ubuntu-latest/1001.ubuntu.latest.build.test.sh
 
