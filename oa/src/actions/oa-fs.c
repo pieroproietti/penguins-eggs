@@ -65,15 +65,17 @@ int oa_bind(OA_Context *ctx) {
 
     // 2. Remount ReadOnly se richiesto
     if (ro) {
-    if (mount(NULL, dst, NULL, MS_REMOUNT | MS_BIND | MS_RDONLY, NULL) != 0) {
-        // SE FALLISCE IL REMOUNT IN READ-ONLY...
-        printf("[oa] [WARN] Remount RO fallito per %s (fottuta CI!). Tento di lasciarlo RW.\n", src);
-        // Se è /usr, proviamo a tollerarlo e lasciarlo in Read-Write pur di far girare i test!
-        if (strcmp(src, "/usr") == 0 || strcmp(src, "/var") == 0) {
-            return 0; // Non crashare, lascialo andare in RW!
+        if (mount(NULL, dst, NULL, MS_REMOUNT | MS_BIND | MS_RDONLY, NULL) != 0) {
+            // SE FALLISCE IL REMOUNT IN READ-ONLY...
+            printf("[oa] [WARN] Remount RO fallito per %s (fottuta CI!). Tento di lasciarlo RW.\n", src);
+            // Se è /usr, proviamo a tollerarlo e lasciarlo in Read-Write pur di far girare i test!
+            if (strcmp(src, "/usr") == 0 || strcmp(src, "/var") == 0) {
+                return 0; // Non crashare, lascialo andare in RW!
+            }
+            return 1;
         }
-        return 1;
     }
+
 
     // 3. Fortificazione (MS_PRIVATE)
     mount(NULL, dst, NULL, MS_PRIVATE | MS_REC, NULL);
