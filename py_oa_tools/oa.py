@@ -9,6 +9,17 @@ from py_oa_tools.pkg import engine as engine_pkg
 from py_oa_tools.pkg import utils
 
 
+def run_external(cmd):
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"[oa] COMMAND FAILED: {' '.join(cmd)}", file=sys.stderr)
+        if result.stdout:
+            print("[oa] STDOUT:", result.stdout, file=sys.stderr)
+        if result.stderr:
+            print("[oa] STDERR:", result.stderr, file=sys.stderr)
+    return result
+
+
 def format_task(task, root):
     action = task.get("action")
     return f"[{action}] {task.get('description', '')}"
@@ -31,7 +42,7 @@ def run_shell(task, root):
     else:
         cmd = ["/bin/sh", "-c", command]
 
-    result = subprocess.run(cmd)
+    result = run_external(cmd)
     return result.returncode
 
 
@@ -56,7 +67,7 @@ def run_cp(task, root):
     else:
         os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
 
-    result = subprocess.run(["cp", "-a", src, dst])
+    result = run_external(["cp", "-a", src, dst])
     return result.returncode
 
 
@@ -68,12 +79,12 @@ def run_bind(task, root):
         utils.log_error("oa_bind: src or dst missing")
         return 1
     os.makedirs(dst, exist_ok=True)
-    if subprocess.run(["mount", "--bind", src, dst]).returncode != 0:
+    if run_external(["mount", "--bind", src, dst]).returncode != 0:
         return 1
     if readonly:
-        if subprocess.run(["mount", "-o", "remount,bind,ro", dst]).returncode != 0:
+        if run_external(["mount", "-o", "remount,bind,ro", dst]).returncode != 0:
             return 1
-    subprocess.run(["mount", "--make-private", dst])
+    run_external(["mount", "--make-private", dst])
     return 0
 
 
@@ -91,10 +102,10 @@ def run_mount_generic(task, root):
         if not src:
             utils.log_error("oa_mount_generic: bind mount requires src")
             return 1
-        if subprocess.run(["mount", "--bind", src, dst]).returncode != 0:
+        if run_external(["mount", "--bind", src, dst]).returncode != 0:
             return 1
         if opts:
-            return subprocess.run(["mount", "-o", f"remount,bind,{opts}", dst]).returncode
+            return run_external(["mount", "-o", f"remount,bind,{opts}", dst]).returncode
         return 0
 
     if type_ == "overlay":
@@ -102,12 +113,12 @@ def run_mount_generic(task, root):
             utils.log_error("oa_mount_generic: overlay requires opts")
             return 1
         cmd = ["mount", "-t", "overlay", "overlay", dst, "-o", opts]
-        return subprocess.run(cmd).returncode
+        return run_external(cmd).returncode
 
     cmd = ["mount", "-t", type_, src or type_, dst]
     if opts:
         cmd += ["-o", opts]
-    return subprocess.run(cmd).returncode
+    return run_external(cmd).returncode
 
 
 def run_umount(task, root):
@@ -134,7 +145,10 @@ def execute_task(root, task):
         utils.log_error("Task missing action")
         return 1
 
-    print(f"[oa] {task.get('description', action)}")
+    print(f"[oa] ACTION={action} DESCRIPTION={task.get('description', '')}")
+    if task.get("run_command"):
+        print("[oa] DEBUG run_command:")
+        print(task.get("run_command"))
     if action == "oa_shell":
         return run_shell(task, root)
     if action == "oa_mkdir":

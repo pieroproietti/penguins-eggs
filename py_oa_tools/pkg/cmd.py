@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import sys
 
@@ -31,6 +32,22 @@ def _build_version():
     return version
 
 
+def _find_oa_executable() -> str:
+    if getattr(sys, "frozen", False) or getattr(sys, "_MEIPASS", None):
+        exe_dir = os.path.dirname(sys.executable)
+        candidate = os.path.join(exe_dir, "oa")
+        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+        if os.name == "nt":
+            candidate = os.path.join(exe_dir, "oa.exe")
+            if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+                return candidate
+    path_candidate = shutil.which("oa")
+    if path_candidate:
+        return path_candidate
+    return sys.executable
+
+
 def remaster(mode, path, stop_after):
     require_root()
     utils.log_coala("Starting remaster procedure...")
@@ -52,9 +69,20 @@ def remaster(mode, path, stop_after):
     engine.generate_exclude_list(mode)
 
     utils.log_coala("Starting OA engine...")
-    result = subprocess.run([sys.executable, "-m", "py_oa_tools.oa", plan_path])
+    oa_exec = _find_oa_executable()
+    if os.path.basename(oa_exec) == "oa" or os.path.basename(oa_exec) == "oa.exe":
+        cmd = [oa_exec, plan_path]
+    else:
+        cmd = [oa_exec, "-m", "py_oa_tools.oa", plan_path]
+
+    utils.log_coala("OA execution command: %s", " ".join(cmd))
+    result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         utils.log_error("OA execution failed: %s", result.returncode)
+        if result.stdout:
+            sys.stdout.write(result.stdout)
+        if result.stderr:
+            sys.stderr.write(result.stderr)
         sys.exit(result.returncode)
 
     if stop_after:
@@ -84,7 +112,11 @@ def sysinstall(backend):
 def kill():
     require_root()
     utils.log_coala("Freeing the nest...")
-    subprocess.run([sys.executable, "-m", "py_oa_tools.oa", "cleanup"])
+    oa_exec = _find_oa_executable()
+    if os.path.basename(oa_exec) in ("oa", "oa.exe"):
+        subprocess.run([oa_exec, "cleanup"])
+    else:
+        subprocess.run([sys.executable, "-m", "py_oa_tools.oa", "cleanup"])
 
     work_path = "/home/eggs"
     utils.log_coala("Removing workspace: %s", work_path)
