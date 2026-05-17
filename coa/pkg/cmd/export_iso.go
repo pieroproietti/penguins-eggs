@@ -52,7 +52,7 @@ func handleExportIso(clean bool) {
 	}
 
 	targetFileName := filepath.Base(latestFile)
-	LogCoala("Ultima ISO trovata: %s", targetFileName)
+	LogNormal("Ultima ISO trovata: %s", targetFileName)
 
 	// 3. Setup SSH Multiplexing
 	socketPath := "/tmp/coa-ssh-mux"
@@ -64,16 +64,16 @@ func handleExportIso(clean bool) {
 
 	// 4. Logica di Pulizia su Proxmox
 	if clean {
-		LogCoala("Pulizia su Proxmox: rimozione versioni precedenti con prefisso %s", prefixBase)
+		LogNormal("Pulizia su Proxmox: rimozione versioni precedenti con prefisso %s", prefixBase)
 		rmCmdStr := fmt.Sprintf("rm -f %s/%s*.iso", remoteIsoPath, prefixBase)
 		sshCmd := exec.Command("ssh", append(muxArgs, remoteUserHost, rmCmdStr)...)
 		if err := sshCmd.Run(); err != nil {
-			LogCoala("Nessuna vecchia ISO rimossa su Proxmox.")
+			LogNormal("Nessuna vecchia ISO rimossa su Proxmox.")
 		}
 	}
 
 	// 5. Invio effettivo
-	LogCoala("Inviando %s verso Proxmox...", targetFileName)
+	LogNormal("Inviando %s verso Proxmox...", targetFileName)
 	dst := fmt.Sprintf("%s:%s", remoteUserHost, remoteIsoPath)
 	scpCmd := exec.Command("scp", append(muxArgs, latestFile, dst)...)
 	scpCmd.Stdout = os.Stdout

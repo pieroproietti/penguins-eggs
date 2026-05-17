@@ -16,7 +16,7 @@ import (
 
 // logToFile scrive un messaggio sia sul log di sistema che su un file locale
 func logToFile(message string) {
-	utils.LogCoala(message)
+	utils.LogNormal(message)
 
 	logPath := "/var/log/coa-tailor.log"
 	f, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)

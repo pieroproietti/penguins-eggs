@@ -24,7 +24,7 @@ var calamaresSubCmd = &cobra.Command{
 // RunCalamaresInstaller coordina la preparazione e il lancio di Calamares
 // 👈 CORRETTO: rimossa la parentesi di troppo alla fine
 func RunCalamaresInstaller(oaVersion string) {
-	utils.LogCoala("%s[sysinstall]%s Preparazione motori...", utils.ColorCyan, utils.ColorReset)
+	utils.LogNormal("%s[sysinstall]%s Preparazione motori...", utils.ColorCyan, utils.ColorReset)
 
 	// 1. Caricamento del profilo tramite il Pilot
 	IsGitHubAction := false

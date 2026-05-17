@@ -26,10 +26,10 @@ func init() {
 
 func handleExportPkg(clean bool) {
 	myDistro := distro.NewDistro()
-	distro:= myDistro.DistroID
+	distro := myDistro.DistroID
 	family := myDistro.FamilyID
 
-	LogCoala("Famiglia rilevata: %s. Ricerca pacchetti pertinenti...", family)
+	LogNormal("Famiglia rilevata: %s. Ricerca pacchetti pertinenti...", family)
 
 	var pattern string
 	var extension string
@@ -49,7 +49,7 @@ func handleExportPkg(clean bool) {
 		pattern = "oa-tools-manjaro-*.pkg.tar.zst"
 		extension = ".pkg.tar.zst"
 	default:
-		LogCoala("Nessuna regola di esportazione specifica per la distro %s della famiglia: %s", distro,family)
+		LogNormal("Nessuna regola di esportazione specifica per la distro %s della famiglia: %s", distro, family)
 		return
 	}
 
@@ -68,19 +68,19 @@ func handleExportPkg(clean bool) {
 	}()
 
 	if clean {
-		LogCoala("Pulizia remota vecchi pacchetti %s...", extension)
+		LogNormal("Pulizia remota vecchi pacchetti %s...", extension)
 		cleanCmdStr := fmt.Sprintf("rm -f %s%s", remotePkgPath, pattern)
 		sshArgs := append(muxArgs, remoteUserHost, cleanCmdStr)
 
 		if err := exec.Command("ssh", sshArgs...).Run(); err != nil {
-			LogCoala("Pulizia remota non necessaria o fallita (nessun file trovato).")
+			LogNormal("Pulizia remota non necessaria o fallita (nessun file trovato).")
 		} else {
 			LogSuccess("Vecchi pacchetti %s rimossi dal server.", extension)
 		}
 	}
 
 	for _, pkg := range foundFiles {
-		LogCoala("Esportazione: %s", pkg)
+		LogNormal("Esportazione: %s", pkg)
 		dstStr := fmt.Sprintf("%s:%s", remoteUserHost, remotePkgPath)
 		scpArgs := append(muxArgs, pkg, dstStr)
 

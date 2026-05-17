@@ -31,7 +31,7 @@ func init() {
 
 // handleKill gestisce la pulizia profonda invocando prima oa e poi rimuovendo la directory
 func handleKill() {
-	LogCoala("Freeing the nest...")
+	LogNormal("Freeing the nest...")
 
 	// 1. Chiamiamo il motore C per smontare in sicurezza i mountpoint
 	// Nota: assumiamo che 'oa' sia nel PATH, come in remaster.go
@@ -46,7 +46,7 @@ func handleKill() {
 
 	// 2. Rimozione fisica della workspace
 	workPath := "/home/eggs"
-	LogCoala("Removing workspace: %s", workPath)
+	LogNormal("Removing workspace: %s", workPath)
 
 	rmCmd := exec.Command("rm", "-rf", workPath)
 	rmCmd.Stdout = os.Stdout
@@ -60,11 +60,11 @@ func handleKill() {
 
 	// 3. Rimozione del file di log di oa
 	logFile := "/var/log/oa-tools.log"
-	LogCoala("Removing log file: %s", logFile)
+	LogNormal("Removing log file: %s", logFile)
 
 	if err := os.Remove(logFile); err != nil {
 		if os.IsNotExist(err) {
-			LogCoala("Log file '%s' non trovato, nulla da rimuovere.", logFile)
+			LogNormal("Log file '%s' non trovato, nulla da rimuovere.", logFile)
 		} else {
 			LogError("Failed to remove log file: %v", err)
 		}

@@ -81,7 +81,7 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	modulePath := filepath.Join(baseDir, "modules", moduleFile)
 
 	// Log aggiornato per mostrare la tripla fusione
-	utils.LogCoala("%s[pilot]%s Compilazione: common.bash.tmpl + %s + base.yaml.tmpl", utils.ColorCyan, utils.ColorReset, moduleFile)
+	utils.LogNormal("%s[pilot]%s Compilazione: common.bash.tmpl + %s + base.yaml.tmpl", utils.ColorCyan, utils.ColorReset, moduleFile)
 
 	// Context da passare al template
 	ctx := TemplateContext{

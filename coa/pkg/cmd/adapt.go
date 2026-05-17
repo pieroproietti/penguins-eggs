@@ -30,8 +30,8 @@ func init() {
 
 // handleAdapt adatta la risoluzione del monitor per le Virtual Machine
 func handleAdapt() {
-	// Nota: usiamo LogCoala e LogSuccess che abbiamo già definito nel pacchetto cmd (es. in remaster.go)
-	LogCoala("Adapting monitor resolution...")
+	// Nota: usiamo LogNormal e LogSuccess che abbiamo già definito nel pacchetto cmd (es. in remaster.go)
+	LogNormal("Adapting monitor resolution...")
 
 	virtualOutputs := []string{"Virtual-0", "Virtual-1", "Virtual-2", "Virtual-3"}
 

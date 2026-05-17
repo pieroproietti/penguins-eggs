@@ -22,15 +22,15 @@ var krillSubCmd = &cobra.Command{
 
 // runKrillInstaller ora avvia il vero motore Bubble Tea.
 func runKrillInstaller() {
-	utils.LogCoala("%s[Krill]%s Avvio dell'installatore TUI in corso...", utils.ColorCyan, utils.ColorReset)
+	utils.LogNormal("%s[Krill]%s Avvio dell'installatore TUI in corso...", utils.ColorCyan, utils.ColorReset)
 
 	// Invochiamo la vera interfaccia Go!
 	if err := krill.Run(); err != nil {
-		utils.LogCoala("%s[Krill Errore]%s L'installazione è stata interrotta: %v", utils.ColorRed, utils.ColorReset, err)
+		utils.LogNormal("%s[Krill Errore]%s L'installazione è stata interrotta: %v", utils.ColorRed, utils.ColorReset, err)
 		os.Exit(1)
 	}
 
-	utils.LogCoala("%s[Krill]%s Uscita dall'installer.", utils.ColorGreen, utils.ColorReset)
+	utils.LogNormal("%s[Krill]%s Uscita dall'installer.", utils.ColorGreen, utils.ColorReset)
 	os.Exit(0)
 }
 

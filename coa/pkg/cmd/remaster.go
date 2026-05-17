@@ -16,14 +16,14 @@ import (
 
 // --- SISTEMA DI LOGGING CENTRALIZZATO ---
 const (
-	ColorCyan   = "\033[1;36m"
-	ColorRed    = "\033[1;31m"
-	ColorGreen  = "\033[1;32m"
-	ColorYellow = "\033[1;33m" // Aggiunto per i messaggi di debug/breakpoint
-	ColorReset  = "\033[0m"
+	ColorCyan   = "" // "\033[1;36m"
+	ColorRed    = "" // "\033[1;31m"
+	ColorGreen  = "" // "\033[1;32m"
+	ColorYellow = "" // "\033[1;33m" // Aggiunto per i messaggi di debug/breakpoint
+	ColorReset  = "" // "\033[0m"
 )
 
-func LogCoala(format string, a ...interface{}) {
+func LogNormal(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	fmt.Printf("%s[coa]%s %s\n", ColorCyan, ColorReset, msg)
 }
@@ -60,7 +60,7 @@ and generate a precise execution plan for the OA engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 
-		LogCoala("Avvio procedura di rimasterizzazione...")
+		LogNormal("Avvio procedura di rimasterizzazione...")
 
 		// 1. Il ponte di comando valuta la situazione (Il Sensore)
 		isGitHubAction := false
@@ -73,7 +73,7 @@ and generate a precise execution plan for the OA engine.`,
 		isoName := myDistro.GetISOName()
 
 		finalPath := filepath.Join(producePath, isoName)
-		LogCoala("L'uovo verrà generato in: %s", finalPath)
+		LogNormal("L'uovo verrà generato in: %s", finalPath)
 
 		// 2. PILOT: Carichiamo lo spartito dal Brain
 		profile, err := pilot.DetectAndLoad(isGitHubAction)
@@ -92,15 +92,15 @@ and generate a precise execution plan for the OA engine.`,
 		}
 
 		// RECUPERO BOOTLOADERS
-		LogCoala("Recupero bootloaders (penguins-bootloaders)...")
+		LogNormal("Recupero bootloaders (penguins-bootloaders)...")
 		utils.EnsureBootloaders("/tmp/coa/bootloaders")
 
 		// GENERAZIONE EXCLUSIONI
-		LogCoala("Generazione lista di esclusione (%s mode)...", produceMode)
+		LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
 		engine.GenerateExcludeList(produceMode, isGitHubAction)
 
 		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il JSON appena generato
-		LogCoala("Passaggio dei comandi al motore OA...")
+		LogNormal("Passaggio dei comandi al motore OA...")
 		oaCmd := exec.Command("oa", planPath)
 
 		// Colleghiamo l'output di oa direttamente al terminale dell'utente

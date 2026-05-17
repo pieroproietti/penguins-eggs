@@ -9,7 +9,7 @@ import (
 
 // Wear è il punto di ingresso principale
 func Wear(costumeName string, noAcc bool, noFirm bool) error {
-	utils.LogCoala("Inizio procedura di vestizione per: %s", costumeName)
+	utils.LogNormal("Inizio procedura di vestizione per: %s", costumeName)
 
 	root, err := getWardrobeRoot()
 	if err != nil {
@@ -29,19 +29,19 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	}
 
 	// 1. Applicazione del costume principale
-	utils.LogCoala("--- Applicazione Costume: %s ---", suit.Name)
+	utils.LogNormal("--- Applicazione Costume: %s ---", suit.Name)
 	if err := applySuit(costumeDir, suit); err != nil {
 		return err
 	}
 
 	// 2. Applicazione Accessori (se presenti e non disabilitati)
 	if !noAcc && len(suit.Accessories) > 0 {
-		utils.LogCoala("--- Elaborazione %d accessori ---", len(suit.Accessories))
+		utils.LogNormal("--- Elaborazione %d accessori ---", len(suit.Accessories))
 		for _, accName := range suit.Accessories {
 			accDir := filepath.Join(root, "accessories", accName)
 			if accYaml := findYaml(accDir); accYaml != "" {
 				if accSuit, err := loadSuit(accYaml); err == nil {
-					utils.LogCoala("Accessorio: %s", accName)
+					utils.LogNormal("Accessorio: %s", accName)
 					applySuit(accDir, accSuit)
 				}
 			}
@@ -49,10 +49,10 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	}
 
 	// 3. Chiusura: Sincronizzazione home
-	utils.LogCoala("--- Finalizzazione ---")
+	utils.LogNormal("--- Finalizzazione ---")
 	copySkelToUser()
 
-	utils.LogCoala("✅ Vestizione completata con successo!")
+	utils.LogNormal("✅ Vestizione completata con successo!")
 	return nil
 }
 
@@ -60,10 +60,10 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 func applySuit(dir string, suit *Suit) error {
 	// Fase A: Pacchetti
 	if len(suit.Packages) > 0 {
-		utils.LogCoala("[%s] Tentativo installazione pacchetti: %v", suit.Name, suit.Packages)
+		utils.LogNormal("[%s] Tentativo installazione pacchetti: %v", suit.Name, suit.Packages)
 		installWithRetries(suit.Packages, 3)
 	} else {
-		utils.LogCoala("[%s] Nessun pacchetto da installare.", suit.Name)
+		utils.LogNormal("[%s] Nessun pacchetto da installare.", suit.Name)
 	}
 
 	// Fase B: Overlay Sysroot
@@ -73,25 +73,25 @@ func applySuit(dir string, suit *Suit) error {
 	}
 
 	if _, err := os.Stat(sysrootPath); err == nil {
-		utils.LogCoala("[%s] Trovata cartella overlay: %s", suit.Name, sysrootPath)
-		utils.LogCoala("[%s] Esecuzione rsync verso la radice /...", suit.Name)
-		
+		utils.LogNormal("[%s] Trovata cartella overlay: %s", suit.Name, sysrootPath)
+		utils.LogNormal("[%s] Esecuzione rsync verso la radice /...", suit.Name)
+
 		// Usiamo sudo rsync -aAXv per garantire il successo della "cucitura"
 		cmd := fmt.Sprintf("sudo rsync -aAXv %s/ /", sysrootPath)
 		if err := utils.Exec(cmd); err != nil {
-			utils.LogCoala("[%s] Errore durante l'overlay: %v", suit.Name, err)
+			utils.LogNormal("[%s] Errore durante l'overlay: %v", suit.Name, err)
 		} else {
-			utils.LogCoala("[%s] Overlay completato correttamente.", suit.Name)
+			utils.LogNormal("[%s] Overlay completato correttamente.", suit.Name)
 		}
 	} else {
-		utils.LogCoala("[%s] Nessuna cartella sysroot/dirs trovata, salto overlay.", suit.Name)
+		utils.LogNormal("[%s] Nessuna cartella sysroot/dirs trovata, salto overlay.", suit.Name)
 	}
 
 	// Fase C: Comandi Post-Installazione
 	if len(suit.Cmds) > 0 {
-		utils.LogCoala("[%s] Esecuzione %d comandi post-installazione...", suit.Name, len(suit.Cmds))
+		utils.LogNormal("[%s] Esecuzione %d comandi post-installazione...", suit.Name, len(suit.Cmds))
 		for _, command := range suit.Cmds {
-			utils.LogCoala("[%s] Eseguo: %s", suit.Name, command)
+			utils.LogNormal("[%s] Eseguo: %s", suit.Name, command)
 			utils.Exec(command)
 		}
 	}
@@ -102,13 +102,13 @@ func applySuit(dir string, suit *Suit) error {
 // copySkelToUser sincronizza /etc/skel con la home dell'utente
 func copySkelToUser() {
 	userHome, _ := os.UserHomeDir()
-	
+
 	// Recuperiamo la home reale se siamo sotto sudo
 	if sudoUser := os.Getenv("SUDO_USER"); sudoUser != "" {
 		userHome = filepath.Join("/home", sudoUser)
 	}
-	
-	utils.LogCoala("Sincronizzazione /etc/skel -> %s", userHome)
+
+	utils.LogNormal("Sincronizzazione /etc/skel -> %s", userHome)
 	cmd := fmt.Sprintf("sudo rsync -a /etc/skel/ %s/", userHome)
 	utils.Exec(cmd)
 }

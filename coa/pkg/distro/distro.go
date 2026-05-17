@@ -89,7 +89,7 @@ func NewDistro() *Distro {
 	}
 
 	// Fallback agnostico
-	utils.LogCoala("[coa] Distro non mappata specificamente (%s). Modalità Generica.", osInfo["ID"])
+	utils.LogNormal("[coa] Distro non mappata specificamente (%s). Modalità Generica.", osInfo["ID"])
 	d.FamilyID = "generic"
 	d.DistroLike = osInfo["ID"]
 	return d

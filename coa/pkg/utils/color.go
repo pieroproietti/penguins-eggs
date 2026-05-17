@@ -7,19 +7,18 @@ import (
 	"os/exec"
 )
 
-
 // Utilizziamo lo stesso set di colori
 const (
-	ColorBlue   = "\033[1;34m"
-	ColorCyan   = "\033[36m"
-	ColorGreen  = "\033[1;32m"
-	ColorRed    = "\033[1;31m"
-	ColorReset  = "\033[0m"
-	ColorYellow = "\033[33m"
+	ColorBlue   = "" // "\033[1;34m"
+	ColorCyan   = "" // "\033[36m"
+	ColorGreen  = "" // "\033[1;32m"
+	ColorRed    = "" // "\033[1;31m"
+	ColorReset  = "" // "\033[0m"
+	ColorYellow = "" // "\033[33m"
 )
 
 // LogCoala stampa un messaggio informativo con il tag [coa] in ciano
-func LogCoala(format string, a ...interface{}) {
+func LogNormal(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	fmt.Printf("%s[coa]%s %s\n", ColorCyan, ColorReset, msg)
 }
