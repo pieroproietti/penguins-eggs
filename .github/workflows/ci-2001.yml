@@ -1,4 +1,4 @@
-name: 101-ubuntu-latest
+name: 101-ubuntu-slim
 
 # only manual, thanks
 on:
