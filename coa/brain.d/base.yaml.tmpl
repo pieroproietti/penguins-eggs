@@ -86,11 +86,7 @@ remaster:
     description: "Root filesystem compression into SquashFS format"
     action: "oa_shell"
     run_command: |
-{{- if .IsGitHubAction }}
-      echo "[coa] CI rilevata: salto compressione SquashFS (risparmio 15 minuti di CPU)"
-{{- else }}
 {{ include "common_squashfs" . | indent 6 }}
-{{- end }}
 
   # ----------------------------------------------------------------------------
   # 9. ISO XORRISO PACKAGING
@@ -99,11 +95,7 @@ remaster:
     description: "Final hybrid ISO image generation (xorriso)"
     action: "oa_shell"
     run_command: |
-{{- if .IsGitHubAction }}
-      echo "[coa] CI rilevata: salto packaging ISO con xorriso"
-{{- else }}
 {{ include "common_xorriso" . | indent 6 }}
-{{- end }}
 
   # ----------------------------------------------------------------------------
   # 10. CLEANUP
