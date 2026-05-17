@@ -66,12 +66,11 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 
 	// ==========================================================
 	// 4. Cura Dimagrante Specifica per GitHub Actions (Smoketest)
-	// Si attiva solo se l'ambiente è un runner GitHub.
-	// Radendo al suolo usr, var e opt riduciamo il build a uno
-	// smoketest strutturale: verifichiamo che l'intera catena
-	// (mksquashfs, xorriso, oa_umount) funzioni senza crashare,
-	// ma senza subire i gigabyte di bloatware dell'host.
-	// ==========================================================	if isGitHubAction {
+	// Stripping usr, var, and opt bypasses host bloatware to
+	// achieve a lightning-fast structural smoketest.
+	// Verifies the full toolchain (mksquashfs, xorriso, oa_umount)
+	// ==========================================================
+	if isGitHubAction {
 		excludes = append(excludes,
 			"usr",
 			"var",
