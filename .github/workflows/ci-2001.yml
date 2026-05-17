@@ -1,4 +1,4 @@
-name: 101-ubuntu-slim
+name: 101-ubuntu-latest
 
 # only manual, thanks
 on:
@@ -11,7 +11,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 120
 
     steps:

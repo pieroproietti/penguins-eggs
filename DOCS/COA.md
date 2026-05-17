@@ -11,3 +11,5 @@
 * **[Package: Pilot](./COA_PKG_PILOT.md)**: Dettagli e documentazione del pacchetto *pilot*.
 * **[Package: tailor]()**: Il sarto che gestisce il wardrobe per i costumi.
 * **[Package: utils]()**: Utilità generali.
+* **[CI](./COA_CI.md)**: Continuous integration.
+
