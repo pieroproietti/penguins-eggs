@@ -79,7 +79,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 			"usr/local/share/powershell/*", // Ciao ciao PowerShell
 			"usr/share/swift/*",            // Swift toolchain
 			"var/lib/gems/*",               // Residui di Ruby
-			"usr/*",                        // il colpo di genio finare
+			"var/*",                        // il colpo di genio finare
 		)
 	}
 
