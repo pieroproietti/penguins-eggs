@@ -1,15 +1,28 @@
-#!/bin/bash
-# v4kill: Il killer definitivo di VM orfane
+#!/usr/bin/env bash
 
-echo "Invocazione di Vagrant destroy..."
-vagrant destroy -f
+DISTRO=$1
 
-echo "Esecuzione pulizia d'urto su libvirt per sicurezza..."
-sudo virsh destroy oa-tools_default 2>/dev/null
-sudo virsh undefine oa-tools_default 2>/dev/null
-sudo virsh vol-delete --pool default oa-tools_default.qcow2 2>/dev/null
+if [ -z "$DISTRO" ]; then
+    echo "⚠️  ERRORE: Specifica quale distro vuoi disintegrare!"
+    echo "Uso: $0 <debian|arch|fedora|manjaro> (oppure 'all' per fare tabula rasa)"
+    exit 1
+fi
 
-# Pialliamo anche la cartella di stato locale se Vagrant è rimasto confuso
-rm -rf .vagrant/
+if [ "$DISTRO" == "all" ]; then
+    echo "🔥 DISTRUZIONE TOTALE INIZIATA 🔥"
+    vagrant destroy -f
+    rm -rf .vagrant/
+    echo "Tabula rasa completata!"
+    exit 0
+fi
 
-echo "Tabula rasa completata! La pista è pulita."
+echo "💣 Invocazione di Vagrant destroy per: $DISTRO..."
+vagrant destroy -f "$DISTRO"
+
+echo "🧹 Esecuzione pulizia d'urto su libvirt per sicurezza..."
+DOMAIN="oa-tools_$DISTRO"
+sudo virsh destroy "$DOMAIN" 2>/dev/null
+sudo virsh undefine "$DOMAIN" 2>/dev/null
+sudo virsh vol-delete --pool default "${DOMAIN}.qcow2" 2>/dev/null
+
+echo "☠️  $DISTRO è stata piallata definitivamente."

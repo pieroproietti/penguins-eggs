@@ -1,54 +1,59 @@
-#!/usr/bin/env bash
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
 
-set -e # Fondamentale in CI: ferma lo script al primo errore!
-set -x
+# Tabella di configurazione delle distribuzioni supportate
+distros = {
+  'arch' => { 
+    :box => 'generic/arch',
+    :hostname => 'naked',
+    :pkg => 'hostnamectl set-hostname naked && modprobe overlay && echo "overlay" > /etc/modules-load.d/overlay.conf && pacman-key --init && pacman-key --populate archlinux && pacman -Sy archlinux-keyring --noconfirm && pacman -Su --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion' 
+  },
 
-export CMD_PATH=$(cd `dirname $0`; pwd)
-export PROJECT_NAME="${CMD_PATH##*/}"
-echo "Project name: $PROJECT_NAME"
+  'debian' => { 
+    :box => 'generic/debian12', 
+    :hostname => 'naked',
+    :pkg => 'hostnamectl set-hostname naked && rm -rf /etc/apt/sources.list.d/* && echo -e "deb http://deb.debian.org/debian trixie main non-free-firmware\ndeb-src http://deb.debian.org/debian trixie main non-free-firmware" > /etc/apt/sources.list && export DEBIAN_FRONTEND=noninteractive && apt-get purge -y postfix && apt-get update && echo "grub-pc grub-pc/install_devices_empty boolean true" | debconf-set-selections && echo "grub-pc grub-pc/install_devices multiselect" | debconf-set-selections && apt-get dist-upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && apt-get install -y build-essential golang git xorriso squashfs-tools bash-completion' 
+  },
 
-cd "$CMD_PATH"
-cd ../../
-pwd
+  'fedora' => {
+    :box => 'generic/fedora40',
+    :hostname => 'naked',
+    :pkg => 'hostnamectl set-hostname naked && dnf upgrade -y && dnf groupinstall -y "Development Tools" && dnf install -y golang git xorriso squashfs-tools bash-completion rpm-build'
+  },
 
-# 1. Compilazione del binario e generazione asset
-# Se il tuo Makefile è aggiornato, forziamo l'uso dello schema specchio per sicurezza
-make clean BUILD_DIR=/tmp/oa-build || true
-make all BUILD_DIR=/tmp/oa-build
+  'manjaro' => {
+    :box => 'generic/manjaro',
+    :hostname => 'naked',
+    :pkg => 'hostnamectl set-hostname naked && pacman-key --init && pacman-key --populate manjaro && pacman -Syu --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion manjaro-tools-iso'
+  }
+}
 
-# Compiliamo coa nel nuovo schema in RAM prima di fargli fare il build
-cd coa
-go build -o /tmp/oa-build/coa/coa main.go
-cd ..
+Vagrant.configure("2") do |config|
+  
+  # Ciclo magico che definisce ogni macchina come entità indipendente
+  distros.each do |name, settings|
+    
+    # Crea una VM esplicita chiamandola con la chiave del dizionario (arch, debian, fedora, manjaro)
+    config.vm.define name do |subconfig|
+      
+      subconfig.vm.box = settings[:box]
+      subconfig.vm.hostname = settings[:hostname]
 
-# 2. Generazione del pacchetto .deb
-# Usiamo il binario appena forgiato nella RAM per lanciare la procedura
-/tmp/oa-build/coa/coa tools build
+      subconfig.vm.provider "libvirt" do |lv|
+        lv.memory = 4096
+        lv.cpus = 4
+        # Configurazione fondamentale per la Nested Virtualization (KVM dentro KVM)
+        lv.cpu_mode = "host-passthrough"
+      end
 
-# 3. Ricerca chirurgica del pacchetto
-# Il nostro codice Go lo sposta nella root del progetto sull'host locale,
-# ma se fossimo in un ambiente CI particolare potrebbe rimanere in /tmp/oa-build.
-DEB_FILE=$(find . -maxdepth 1 -name "oa-tools*.deb" | head -n 1)
+      # Condivisione con mappatura forzata dell'utente vagrant dentro la VM tramite 9p
+      subconfig.vm.synced_folder ".", "/home/vagrant/oa-tools", 
+        type: "9p", 
+        disabled: false, 
+        mount_options: ["version=9p2000.L", "trans=virtio", "access=any", "uid=1000", "gid=1000"]
 
-if [ -z "$DEB_FILE" ]; then
-    echo "Cerco in /tmp/oa-build come fallback..."
-    DEB_FILE=$(find /tmp/oa-build -maxdepth 1 -name "oa-tools*.deb" | head -n 1)
-fi
-
-if [ -z "$DEB_FILE" ] || [ ! -f "$DEB_FILE" ]; then
-    echo "ERRORE: Il pacchetto .deb non è stato generato!"
-    exit 1
-fi
-
-# Trasformiamo il percorso in assoluto (Il trucco per non far impazzire apt!)
-DEB_ABS_PATH=$(realpath "$DEB_FILE")
-echo "=== Trovato pacchetto: $DEB_ABS_PATH ==="
-
-# 4. Installazione
-sudo apt-get update
-# Ora l'installazione non fallirà MAI, perché apt ha il path assoluto
-sudo apt-get install -y "$DEB_ABS_PATH"
-
-echo "=== FASE DI REMASTER ==="
-sudo coa tools clean
-sudo coa remaster
+      # Provisioning automatico specifico per la distribuzione scelta
+      subconfig.vm.provision "shell", inline: settings[:pkg]
+    end
+  end
+end

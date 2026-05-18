@@ -1,3 +1,13 @@
-# Uso: v4start [arch|debian]
-DISTRO=${1:-arch} vagrant up --provider=libvirt
+#!/usr/bin/env bash
 
+DISTRO=$1
+
+if [ -z "$DISTRO" ]; then
+    echo "⚠️  ERRORE: Specifica quale distro accendere!"
+    echo "Uso: $0 <debian|arch|fedora|manjaro>"
+    exit 1
+fi
+
+echo "🚀 Inizializzazione della fucina KVM per: $DISTRO..."
+vagrant up "$DISTRO"
+echo "✅ $DISTRO è online!"

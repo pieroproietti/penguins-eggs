@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 )
@@ -69,14 +70,10 @@ func HandleBuild(d *distro.Distro, version string) {
 	goCmd.Stdout, goCmd.Stderr = os.Stdout, os.Stderr
 
 	// 3. Generazione Documentazione
-	if buildDir == "" {
-		LogBuild("Generating documentation and completions...")
-		if err := generateDocs(coaDir); err != nil {
-			LogError("Docs generation failed: %v", err)
-			return
-		}
-	} else {
-		fmt.Println("[build] Skip documentation generation (Vagrant/VM mode)")
+	LogBuild("Generating documentation and completions...")
+	if err := generateDocs(coaDir); err != nil {
+		LogError("Docs generation failed: %v", err)
+		return
 	}
 
 	// 4. Routing verso i file specifici con DEBUG
@@ -84,7 +81,7 @@ func HandleBuild(d *distro.Distro, version string) {
 
 	switch d.FamilyID {
 	case "archlinux":
-		buildArchPackage(projRoot, baseVer, relNum)
+		buildArchPackage(projRoot, oaDir, coaDir, baseVer, relNum)
 	case "manjaro":
 		buildManjaroPackage(projRoot, baseVer, relNum)
 	case "fedora", "rhel", "centos", "rocky", "almalinux":
@@ -121,10 +118,31 @@ func parseGitVersion(v string) (string, string) {
 }
 
 func generateDocs(coaDir string) error {
-	docPath := filepath.Join(coaDir, "docs")
-	genCmd := exec.Command("./coa", "_gen_docs", "--target", docPath)
+	// 1. Capiamo dove si trova la fucina per i binari
+	baseBuildDir := os.Getenv("BUILD_DIR")
+	if baseBuildDir == "" {
+		baseBuildDir = "/tmp/oa-build"
+	}
+
+	// 2. Rilevamento intelligente dell'ambiente (Siamo dentro Vagrant?)
+	docPath := filepath.Join(coaDir, "docs") // Di base, target sulla repo (Host)
+
+	currentUser, err := user.Current()
+	if err == nil && currentUser.Username == "vagrant" {
+		// [Vagrant Mode]: Siamo nella VM! Deviamo il target in RAM per evitare il Permission Denied del 9p
+		docPath = filepath.Join(baseBuildDir, "docs")
+		os.MkdirAll(docPath, 0755)
+		fmt.Println("[gen_docs] Rilevato ambiente Vagrant: deviazione documentazione in RAM.")
+	}
+
+	// 3. Puntiamo dritti al binario appena sfornato
+	coaBin := filepath.Join(baseBuildDir, "coa", "coa")
+
+	// 4. Lanciamo il comando usando il percorso assoluto sul target sicuro
+	genCmd := exec.Command(coaBin, "_gen_docs", "--target", docPath)
 	genCmd.Dir = coaDir
 	genCmd.Stdout, genCmd.Stderr = os.Stdout, os.Stderr
+
 	return genCmd.Run()
 }
 

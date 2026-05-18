@@ -1,2 +1,12 @@
-#!/bin/bash
-vagrant ssh
+#!/usr/bin/env bash
+
+DISTRO=$1
+
+if [ -z "$DISTRO" ]; then
+    echo "⚠️  ERRORE: Specifica in quale distro vuoi entrare!"
+    echo "Uso: $0 <debian|arch|fedora|manjaro>"
+    exit 1
+fi
+
+echo "🔌 Connessione SSH a: $DISTRO..."
+vagrant ssh "$DISTRO"
