@@ -89,7 +89,8 @@ func HandleBuild(d *distro.Distro, version string) {
 		buildManjaroPackage(projRoot, baseVer, relNum)
 	case "fedora", "rhel", "centos", "rocky", "almalinux":
 		// Questo ora DEVE attivarsi se d.FamilyID è fedora
-		buildFedoraPackage(projRoot, oaDir, coaDir, baseVer, relNum)
+		buildFedoraPackage(projRoot, baseVer, relNum)
+		// buildFedoraPackage(projRoot, oaDir, coaDir, baseVer, relNum)
 	default:
 		LogBuild("Falling back to Debian/Generic packaging...")
 		pkgVersion := fmt.Sprintf("%s-%s", baseVer, relNum)
