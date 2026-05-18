@@ -42,6 +42,7 @@ depends=(
     'sudo'
     'pv'
     'git'
+    'bash-completion'
 )
 conflicts=('penguins-eggs' 'oa-tools')
 backup=('etc/oa-tools.d/oa-tools.yaml')

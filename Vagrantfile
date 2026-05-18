@@ -7,8 +7,9 @@ distro = ENV['DISTRO'] || 'arch'
 # Tabella di configurazione delle distribuzioni supportate
 distros = {
   'arch' => { 
-    :box => 'generic/arch', 
-    :pkg => 'pacman-key --init && pacman-key --populate archlinux && pacman -Sy archlinux-keyring --noconfirm && pacman -Su --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools' 
+    :box => 'generic/arch',
+    :hostname => 'naked',
+    :pkg => 'hostnamectl set-hostname naked && modprobe overlay && echo "overlay" > /etc/modules-load.d/overlay.conf && pacman-key --init && pacman-key --populate archlinux && pacman -Sy archlinux-keyring --noconfirm && pacman -Su --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion' 
   },
   'debian' => { 
     :box => 'generic/debian12', 
