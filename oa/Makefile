@@ -1,28 +1,25 @@
 # artisan/oa/Makefile
 
-# Fallback se non viene passata dal Makefile principale o da coa
 VERSION ?= 0.0.0-dev
+BUILD_DIR ?= ..
 
 CC = gcc
-# Aggiunto -DOA_VERSION con il valore della variabile VERSION
 CFLAGS = -Wall -Wextra -Iinclude -D_GNU_SOURCE -Wno-format-truncation -DOA_VERSION=\"$(VERSION)\"
-
-# --- MODIFICA QUI: Aggiunto -lcrypt ---
 LDFLAGS = -lm -lcrypt
 
-# Struttura delle cartelle
+# Struttura delle cartelle sorgente
 SRC_DIR = src
-OBJ_DIR = obj
 INC_DIR = include
+
+# La cartella oggetti e il target si spostano nel BUILD_DIR di output
+OBJ_DIR = $(BUILD_DIR)/oa/obj
+TARGET  = $(BUILD_DIR)/oa/oa
 
 # Trova tutti i file .c ricorsivamente in src/
 SOURCES = $(shell find $(SRC_DIR) -name '*.c')
 
-# Mappa i sorgenti agli oggetti
+# Mappa i sorgenti agli oggetti dentro la nuova OBJ_DIR
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-
-# Nome del binario finale
-TARGET = oa
 
 # Target principale
 all: $(TARGET)

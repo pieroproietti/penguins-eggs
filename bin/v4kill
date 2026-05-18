@@ -1,2 +1,15 @@
 #!/bin/bash
+# v4kill: Il killer definitivo di VM orfane
+
+echo "Invocazione di Vagrant destroy..."
 vagrant destroy -f
+
+echo "Esecuzione pulizia d'urto su libvirt per sicurezza..."
+sudo virsh destroy oa-tools_default 2>/dev/null
+sudo virsh undefine oa-tools_default 2>/dev/null
+sudo virsh vol-delete --pool default oa-tools_default.qcow2 2>/dev/null
+
+# Pialliamo anche la cartella di stato locale se Vagrant è rimasto confuso
+rm -rf .vagrant/
+
+echo "Tabula rasa completata! La pista è pulita."
