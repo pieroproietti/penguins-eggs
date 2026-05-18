@@ -32,12 +32,11 @@ Vagrant.configure("2") do |config|
     lv.cpu_mode = "host-passthrough"
   end
 
-  # Condivisione della cartella del monorepo in tempo reale
-  # Condivisione avanzata con mappatura diretta dei permessi (UID/GID)
+  # Condivisione con mappatura forzata dell'utente vagrant dentro la VM
   config.vm.synced_folder ".", "/home/vagrant/oa-tools", 
     type: "9p", 
     disabled: false, 
-    mount_options: ["version=9p2000.L", "trans=virtio", "access=any"]  
+    mount_options: ["version=9p2000.L", "trans=virtio", "access=any", "uid=1000", "gid=1000"]
 
   # Provisioning automatico: installa i pacchetti necessari al boot
   config.vm.provision "shell", inline: distros[distro][:pkg]
