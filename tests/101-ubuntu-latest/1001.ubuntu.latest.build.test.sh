@@ -2,6 +2,8 @@
 
 set -e # Fondamentale in CI: ferma lo script al primo errore!
 set -x
+export BUILD_DIR="/tmp/oa-build"
+mkdir -p "$BUILD_DIR"
 
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
