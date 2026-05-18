@@ -49,21 +49,34 @@ func HandleBuild(d *distro.Distro, version string) {
 	LogBuild("Compiling Orchestrator (coa)...") // Aggiunto log esplicito
 	ldflags := fmt.Sprintf("-X 'coa/pkg/cmd.AppVersion=%s'", AppVersion)
 
-	// Puntiamo al binario finale in modo assoluto per sicurezza
-	outputPath := filepath.Join(coaDir, "coa")
-	goCmd := exec.Command("go", "build", "-ldflags", ldflags, "-o", outputPath, "main.go")
-	goCmd.Dir = coaDir
-	goCmd.Stdout, goCmd.Stderr = os.Stdout, os.Stderr
-	if err := goCmd.Run(); err != nil {
-		LogError("Orchestrator compilation failed: %v", err)
-		return
+	// Leggiamo la variabile d'ambiente impostata dal nostro ./m
+	buildDir := os.Getenv("BUILD_DIR")
+	var outputPath string
+
+	if buildDir != "" {
+		// Se la variabile esiste (es. siamo in Vagrant su /tmp), deviamo l'output lì
+		outputPath = filepath.Join(buildDir, "coa", "coa")
+
+		// Assicuriamoci che la directory di destinazione esista prima di compilarci dentro
+		os.MkdirAll(filepath.Dir(outputPath), 0755)
+	} else {
+		// Fallback locale: il vecchio comportamento "sicuro" per quando compili su Debian host
+		outputPath = filepath.Join(coaDir, "coa")
 	}
 
+	goCmd := exec.Command("go", "build", "-ldflags", ldflags, "-o", outputPath, "main.go")
+	goCmd.Dir = coaDir // Manteniamo la working directory sui sorgenti per leggere main.go
+	goCmd.Stdout, goCmd.Stderr = os.Stdout, os.Stderr
+
 	// 3. Generazione Documentazione
-	LogBuild("Generating documentation and completions...")
-	if err := generateDocs(coaDir); err != nil {
-		LogError("Docs generation failed: %v", err)
-		return
+	if buildDir == "" {
+		LogBuild("Generating documentation and completions...")
+		if err := generateDocs(coaDir); err != nil {
+			LogError("Docs generation failed: %v", err)
+			return
+		}
+	} else {
+		fmt.Println("[build] Skip documentation generation (Vagrant/VM mode)")
 	}
 
 	// 4. Routing verso i file specifici con DEBUG
