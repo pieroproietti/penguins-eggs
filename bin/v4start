@@ -1,0 +1,3 @@
+# Uso: v4start [arch|debian]
+DISTRO=${1:-arch} vagrant up --provider=libvirt
+

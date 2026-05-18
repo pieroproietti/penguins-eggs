@@ -1,0 +1,1 @@
+{"9p":{"/home/vagrant/oa-tools":{"type":"9p","disabled":false,"mount_options":["version=9p2000.L","trans=virtio","access=any"],"guestpath":"/home/vagrant/oa-tools","hostpath":"/home/artisan/oa-tools","__vagrantfile":true,"target":"/home/vagrant/oa-tools","accessmode":"passthrough","mount":true,"readonly":null,"mount_tag":"677eecd202c45dd0500c6e95c068827"}}}
