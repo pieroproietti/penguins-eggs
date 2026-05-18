@@ -9,16 +9,24 @@ import (
 
 func buildDebianPackage(projRoot, oaDir, coaDir, pkgVersion string) {
 	pkgName := fmt.Sprintf("oa-tools_%s_amd64", pkgVersion)
-	buildDir := filepath.Join("/tmp", pkgName)
 
-	// Pulizia preventiva del tavolo da lavoro
+	// 1. Definiamo la baseBuildDir con fallback automatico (Simmetria con Arch)
+	baseBuildDir := os.Getenv("BUILD_DIR")
+	if baseBuildDir == "" {
+		baseBuildDir = "/tmp/oa-build"
+	}
+
+	// Cartella di staging per la struttura dei file del pacchetto
+	buildDir := filepath.Join(baseBuildDir, pkgName)
+
+	// Pulizia preventiva del tavolo da lavoro temporaneo
 	os.RemoveAll(buildDir)
 
-	// 1. Creazione struttura directory standard Debian.
+	// 2. Creazione struttura directory standard Debian
 	dirs := []string{
 		filepath.Join(buildDir, "DEBIAN"),
 		filepath.Join(buildDir, "usr/bin"),
-		filepath.Join(buildDir, "etc/oa-tools.d/brain.d"), // Cartella per i profili delle distribuzioni
+		filepath.Join(buildDir, "etc/oa-tools.d/brain.d"),
 		filepath.Join(buildDir, "usr/share/man/man1"),
 		filepath.Join(buildDir, "usr/share/bash-completion/completions"),
 		filepath.Join(buildDir, "usr/share/zsh/vendor-completions"),
@@ -28,19 +36,18 @@ func buildDebianPackage(projRoot, oaDir, coaDir, pkgVersion string) {
 		os.MkdirAll(dir, 0755)
 	}
 
-	// 2. Installazione binari e creazione alias 'eggs'.
+	// 3. Installazione binari prendendoli direttamente dallo schema specchio in RAM
 	binPath := filepath.Join(buildDir, "usr/bin")
-	copyFile(filepath.Join(oaDir, "oa"), filepath.Join(binPath, "oa"))
-	copyFile(filepath.Join(coaDir, "coa"), filepath.Join(binPath, "coa"))
+	copyFile(filepath.Join(baseBuildDir, "oa", "oa"), filepath.Join(binPath, "oa"))
+	copyFile(filepath.Join(baseBuildDir, "coa", "coa"), filepath.Join(binPath, "coa"))
 	os.Chmod(filepath.Join(binPath, "oa"), 0755)
 	os.Chmod(filepath.Join(binPath, "coa"), 0755)
 	os.Symlink("coa", filepath.Join(binPath, "eggs"))
 
-	// 3. Gestione della Configurazione YAML e Popolamento brain.d
+	// 4. Gestione della Configurazione YAML e Popolamento brain.d
 	confDest := filepath.Join(buildDir, "etc/oa-tools.d")
 	brainDest := filepath.Join(confDest, "brain.d")
 
-	// Generazione del file di configurazione principale oa-tools.yaml
 	oaYamlContent := fmt.Sprintf(`---
 # oa-tools configuration
 # coa is the mind and oa the arm
@@ -61,22 +68,15 @@ remaster:
 
 	os.WriteFile(filepath.Join(confDest, "oa-tools.yaml"), []byte(oaYamlContent), 0644)
 
-	// --- IL FIX: Copia del contenuto di brain.d ---
-	// Prendiamo l'indice e i profili YAML dalla cartella sorgente di sviluppo
+	// Popolamento brain.d dai sorgenti stabili
 	brainSrc := filepath.Join(projRoot, "coa", "brain.d")
-	if _, err := os.Stat(brainSrc); err == nil {
-		fmt.Printf("%s[build]%s Popolamento brain.d con i profili distro...\n", ColorBlue, ColorReset)
-		// Copiamo tutto il contenuto (*.yaml) nella destinazione del pacchetto
-		exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
-	} else {
-		fmt.Printf("%s[warning]%s Sorgente brain.d non trovata in %s\n", ColorYellow, ColorReset, brainSrc)
-	}
+	exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
 
-	// 4. Documentazione (Man pages)
+	// 5. Documentazione (Man pages)
 	manDir := filepath.Join(buildDir, "usr/share/man/man1")
 	exec.Command("sh", "-c", fmt.Sprintf("cp %s/docs/man/*.1 %s/ && gzip -9 %s/*.1", coaDir, manDir, manDir)).Run()
 
-	// 5. Completamenti shell e relativi alias
+	// 6. Completamenti shell e alias
 	bashTarget := filepath.Join(buildDir, "usr/share/bash-completion/completions/coa")
 	copyFile(filepath.Join(coaDir, "docs/completion/coa.bash"), bashTarget)
 	copyFile(filepath.Join(coaDir, "docs/completion/coa.zsh"), filepath.Join(buildDir, "usr/share/zsh/vendor-completions/_coa"))
@@ -86,7 +86,7 @@ remaster:
 	os.Symlink("_coa", filepath.Join(buildDir, "usr/share/zsh/vendor-completions/_eggs"))
 	os.Symlink("coa.fish", filepath.Join(buildDir, "usr/share/fish/vendor_completions.d/eggs.fish"))
 
-	// 6. Patch per l'autocompletamento Bash dell'alias
+	// Patch Bash Completion
 	f, err := os.OpenFile(bashTarget, os.O_APPEND|os.O_WRONLY, 0644)
 	if err == nil {
 		f.WriteString("\n# eggs alias completion support\ncomplete -o default -F __start_coa eggs\n")
@@ -98,42 +98,45 @@ remaster:
 Version: %s
 Architecture: amd64
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Depends: squashfs-tools,
- xorriso,
- live-boot,
- live-boot-initramfs-tools,
- dosfstools,
- mtools,
- rsync,
- git,
- sudo,
- grub-pc-bin,
- grub-efi-amd64-bin
+Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dosfstools, mtools, rsync, git, sudo, grub-pc-bin, grub-efi-amd64-bin
 Conflicts: penguins-eggs
 Description: coa is the mind and oa the arm
 `, pkgVersion)
 
 	os.WriteFile(filepath.Join(buildDir, "DEBIAN", "control"), []byte(controlContent), 0644)
 
-	// 8. Impacchettamento finale
+	// 8. Impacchettamento con dpkg-deb direttamente nella cartella temporanea scelta
 	fmt.Printf("%s[build]%s Packing .deb archive (%s)...\n", ColorBlue, ColorReset, pkgVersion)
-	dpkgCmd := exec.Command("dpkg-deb", "--build", buildDir)
-	dpkgCmd.Stdout = os.Stdout
-	dpkgCmd.Stderr = os.Stderr
+	debFile := pkgName + ".deb"
+	tmpDebLocation := filepath.Join(baseBuildDir, debFile)
+
+	dpkgCmd := exec.Command("dpkg-deb", "--build", buildDir, tmpDebLocation)
+	dpkgCmd.Stdout, dpkgCmd.Stderr = os.Stdout, os.Stderr
 	if err := dpkgCmd.Run(); err != nil {
 		fmt.Printf("%s[ERROR]%s Failed to build package: %v\n", ColorRed, ColorReset, err)
 		return
 	}
 
-	// Spostamento del pacchetto finale nella root del progetto
-	debFile := pkgName + ".deb"
-	finalTarget := filepath.Join(projRoot, debFile)
-	data, _ := os.ReadFile(filepath.Join("/tmp", debFile))
-	os.WriteFile(finalTarget, data, 0644)
+	// 9. Destinazione finale simmetrica basata sulla presenza dell'ambiente Vagrant
+	if os.Getenv("BUILD_DIR") != "" {
+		// Siamo in Vagrant: lasciamo il pacchetto al sicuro in /tmp/oa-build/ evitando il mount 9p
+		fmt.Printf("%s[SUCCESS]%s [Vagrant Mode] Pacchetto Debian protetto in: %s\n", ColorGreen, ColorReset, tmpDebLocation)
+	} else {
+		// Siamo sull'host locale: copiamo il file nella root del progetto e puliamo il temporaneo
+		finalTarget := filepath.Join(projRoot, debFile)
+		data, err := os.ReadFile(tmpDebLocation)
+		if err == nil {
+			if err := os.WriteFile(finalTarget, data, 0644); err == nil {
+				os.Remove(tmpDebLocation)
+				fmt.Printf("%s[SUCCESS]%s Pacchetto creato nella root del progetto: %s\n", ColorGreen, ColorReset, finalTarget)
+				os.RemoveAll(buildDir)
+				return
+			}
+		}
+		// Fallback di sicurezza se la copia fallisce per altri motivi
+		fmt.Printf("%s[SUCCESS]%s Pacchetto Debian disponibile in: %s\n", ColorGreen, ColorReset, tmpDebLocation)
+	}
 
-	// Pulizia finale
+	// Pulizia dello staging scompattato
 	os.RemoveAll(buildDir)
-	os.Remove(filepath.Join("/tmp", debFile))
-
-	fmt.Printf("%s[SUCCESS]%s Package created: %s\n", ColorGreen, ColorReset, finalTarget)
 }

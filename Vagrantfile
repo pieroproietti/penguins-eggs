@@ -6,15 +6,18 @@ distro = ENV['DISTRO'] || 'arch'
 
 # Tabella di configurazione delle distribuzioni supportate
 distros = {
-  'arch' => { 
+'arch' => { 
     :box => 'generic/arch',
     :hostname => 'naked',
     :pkg => 'hostnamectl set-hostname naked && modprobe overlay && echo "overlay" > /etc/modules-load.d/overlay.conf && pacman-key --init && pacman-key --populate archlinux && pacman -Sy archlinux-keyring --noconfirm && pacman -Su --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion' 
   },
+
   'debian' => { 
     :box => 'generic/debian12', 
-    :pkg => 'apt-get update && apt-get install -y build-essential golang git xorriso squashfs-tools' 
+    :hostname => 'naked',
+    :pkg => 'hostnamectl set-hostname naked && rm -rf /etc/apt/sources.list.d/* && echo -e "deb http://deb.debian.org/debian trixie main non-free-firmware\ndeb-src http://deb.debian.org/debian trixie main non-free-firmware" > /etc/apt/sources.list && export DEBIAN_FRONTEND=noninteractive && apt-get purge -y postfix && apt-get update && echo "grub-pc grub-pc/install_devices_empty boolean true" | debconf-set-selections && echo "grub-pc grub-pc/install_devices multiselect" | debconf-set-selections && apt-get dist-upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && apt-get install -y build-essential golang git xorriso squashfs-tools bash-completion' 
   }
+
 }
 
 # Verifica se la distro richiesta è supportata, altrimenti fallisce con eleganza

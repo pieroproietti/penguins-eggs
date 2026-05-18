@@ -32,12 +32,20 @@ func moveFile(src, dst string) error {
 	return os.Remove(src)
 }
 
-func buildFedoraPackage(projRoot, oaDir, coaDir, baseVer, relNum string) {
+func buildFedoraPackage(projRoot, baseVer, relNum string) {
 	cleanVer := strings.TrimPrefix(baseVer, "v")
 	pkgName := fmt.Sprintf("oa-tools-%s-%s", cleanVer, relNum)
-	buildRoot := filepath.Join("/tmp", "rpmbuild_"+pkgName)
 
-	LogBuild("Packing .rpm archive for %s (Evolution Edition)...", pkgName)
+	// 1. Definiamo la baseBuildDir con lo stesso identico schema simmetrico
+	baseBuildDir := os.Getenv("BUILD_DIR")
+	if baseBuildDir == "" {
+		baseBuildDir = "/tmp/oa-build"
+	}
+
+	// Workspace isolato per rpmbuild dentro /tmp (o RAM)
+	buildRoot := filepath.Join(baseBuildDir, "rpmbuild_"+pkgName)
+
+	fmt.Printf("[build] Packing .rpm archive for %s (Evolution Edition)...\n", pkgName)
 
 	os.RemoveAll(buildRoot)
 	dirs := []string{"BUILD", "BUILDROOT", "RPMS", "SOURCES", "SPECS", "SRPMS"}
@@ -47,7 +55,8 @@ func buildFedoraPackage(projRoot, oaDir, coaDir, baseVer, relNum string) {
 
 	specPath := filepath.Join(buildRoot, "SPECS", "oa-tools.spec")
 
-	// ATTENZIONE: Tutti i % sono raddoppiati in %% per convivere con fmt.Sprintf
+	// 2. Definiamo il contenuto dello SPEC.
+	// Puntiamo a baseBuildDir per raccogliere i binari compilati nello schema a specchio!
 	specContent := fmt.Sprintf(`%%define debug_package %%{nil}
 
 Name:           oa-tools
@@ -89,7 +98,7 @@ mkdir -p %%{buildroot}/usr/share/bash-completion/completions
 mkdir -p %%{buildroot}/usr/share/zsh/vendor-completions
 mkdir -p %%{buildroot}/usr/share/fish/vendor_completions.d
 
-# 1. Installazione Binari
+# 1. Installazione Binari (Peschiamo dallo schema specchio in RAM)
 install -m 0755 %s/oa/oa %%{buildroot}/usr/bin/oa
 install -m 0755 %s/coa/coa %%{buildroot}/usr/bin/coa
 ln -s coa %%{buildroot}/usr/bin/eggs
@@ -109,7 +118,7 @@ remaster:
   work_dir: "/home/eggs"
 EOF
 
-# 3. Man Pages (Risolto escape %%{buildroot})
+# 3. Man Pages
 cp %s/coa/docs/man/*.1 %%{buildroot}/usr/share/man/man1/
 gzip -9 %%{buildroot}/usr/share/man/man1/*.1
 
@@ -149,30 +158,44 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 - Added full branding assets (splash screen and boot fonts)
 - Added google-noto-emoji-fonts dependency for proper terminal rendering
 - Refactored brain.d to use Go templates (modules)
-`, cleanVer, relNum, projRoot, projRoot, projRoot, cleanVer, projRoot, projRoot, projRoot, projRoot, cleanVer, relNum)
-	// ^ L'ordine qui sopra ora collima perfettamente con i 12 %s nella stringa.
+`, cleanVer, relNum, baseBuildDir, baseBuildDir, projRoot, cleanVer, projRoot, projRoot, projRoot, projRoot, cleanVer, relNum)
 
 	os.WriteFile(specPath, []byte(specContent), 0644)
 
-	LogBuild("Running rpmbuild...")
+	fmt.Println("[build] Running rpmbuild...")
 	rpmCmd := exec.Command("rpmbuild", "-bb", "--define", fmt.Sprintf("_topdir %s", buildRoot), specPath)
 	rpmCmd.Stdout, rpmCmd.Stderr = os.Stdout, os.Stderr
 
 	if err := rpmCmd.Run(); err != nil {
-		LogError("RPM build failed: %v", err)
+		fmt.Printf("[ERROR] RPM build failed: %v\n", err)
 		return
 	}
 
+	// 3. Gestione e smistamento dell'RPM sfornato
 	rpmPattern := filepath.Join(buildRoot, "RPMS", "x86_64", "*.rpm")
 	matches, _ := filepath.Glob(rpmPattern)
 	if len(matches) > 0 {
-		finalPkg := filepath.Join(projRoot, filepath.Base(matches[0]))
-		if err := moveFile(matches[0], finalPkg); err == nil {
-			LogBuild("✅ RPM Package created with Bash-Completion and Assets: %s", finalPkg)
+		rpmFile := filepath.Base(matches[0])
+
+		if os.Getenv("BUILD_DIR") != "" {
+			// Siamo in Vagrant: salviamo l'RPM direttamente nella radice di /tmp/oa-build/ al sicuro da 9p
+			vagrantTarget := filepath.Join(baseBuildDir, rpmFile)
+			if err := moveFile(matches[0], vagrantTarget); err == nil {
+				fmt.Printf("[SUCCESS] [Vagrant Mode] Pacchetto RPM protetto in: %s\n", vagrantTarget)
+			} else {
+				fmt.Printf("[ERROR] Failed to isolate RPM in Vagrant: %v\n", err)
+			}
 		} else {
-			LogError("Failed to move RPM to root: %v", err)
+			// Siamo sull'host locale: scriviamo direttamente nella root del progetto
+			finalPkg := filepath.Join(projRoot, rpmFile)
+			if err := moveFile(matches[0], finalPkg); err == nil {
+				fmt.Printf("[SUCCESS] Pacchetto creato nella root del progetto: %s\n", finalPkg)
+			} else {
+				fmt.Printf("[ERROR] Failed to move RPM to project root: %v\n", err)
+			}
 		}
 	}
 
+	// Pulizia finale del nido temporaneo di rpmbuild
 	os.RemoveAll(buildRoot)
 }
