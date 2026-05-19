@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"strings"
+
+	sysctx "coa/pkg/context" // <-- Il nostro cervello universale
 )
 
 func LogBuild(format string, a ...interface{}) {
@@ -28,7 +29,9 @@ var AppVersion string
 func HandleBuild(d *distro.Distro, version string) {
 	AppVersion = version
 	baseVer, relNum := parseGitVersion(version)
-	projRoot, oaDir, coaDir := getProjectPaths()
+
+	// 1. RILEVAMENTO AMBIENTE UNIVERSALE E PERCORSI
+	ctx := sysctx.Detect()
 
 	// Header pulito
 	fmt.Printf("%s====================================================%s\n", ColorCyan, ColorReset)
@@ -36,62 +39,63 @@ func HandleBuild(d *distro.Distro, version string) {
 	fmt.Printf("%s====================================================%s\n", ColorCyan, ColorReset)
 
 	LogBuild("Building version: %s", AppVersion)
+	LogBuild("Environment detected: %s (fucina: %s)", ctx.EnvType, ctx.BaseBuildDir)
 
-	// 1. Compilazione motore C (Il Braccio)
-	LogBuild("Compiling Engine (oa)...") // Aggiunto log esplicito
-	makeCmd := exec.Command("make", "-C", oaDir, fmt.Sprintf("VERSION=%s", AppVersion), "clean", "all")
+	// 2. Compilazione motore C (Il Braccio)
+	LogBuild("Compiling Engine (oa)...")
+	// Passiamo BUILD_DIR al make per forzarlo nella fucina calcolata dal contesto
+	makeCmd := exec.Command("make", "-C", ctx.OaDir, fmt.Sprintf("VERSION=%s", AppVersion), fmt.Sprintf("BUILD_DIR=%s", ctx.BaseBuildDir), "clean", "all")
 	makeCmd.Stdout, makeCmd.Stderr = os.Stdout, os.Stderr
 	if err := makeCmd.Run(); err != nil {
 		LogError("Engine compilation failed: %v", err)
 		return
 	}
 
-	// 2. Compilazione orchestratore Go (La Mente)
-	LogBuild("Compiling Orchestrator (coa)...") // Aggiunto log esplicito
+	// 3. Compilazione orchestratore Go (La Mente)
+	LogBuild("Compiling Orchestrator (coa)...")
 	ldflags := fmt.Sprintf("-X 'coa/pkg/cmd.AppVersion=%s'", AppVersion)
 
-	// Leggiamo la variabile d'ambiente impostata dal nostro ./m
-	buildDir := os.Getenv("BUILD_DIR")
 	var outputPath string
-
-	if buildDir != "" {
-		// Se la variabile esiste (es. siamo in Vagrant su /tmp), deviamo l'output lì
-		outputPath = filepath.Join(buildDir, "coa", "coa")
-
-		// Assicuriamoci che la directory di destinazione esista prima di compilarci dentro
-		os.MkdirAll(filepath.Dir(outputPath), 0755)
+	if ctx.EnvType == sysctx.EnvCI {
+		// In CI il binario rimane nella sua cartella d'origine per evitare problemi
+		outputPath = filepath.Join(ctx.CoaDir, "coa")
 	} else {
-		// Fallback locale: il vecchio comportamento "sicuro" per quando compili su Debian host
-		outputPath = filepath.Join(coaDir, "coa")
+		// Sotto Vagrant, VM o Host, deviamo rigorosamente nella fucina in RAM
+		outputPath = filepath.Join(ctx.BaseBuildDir, "coa", "coa")
+		os.MkdirAll(filepath.Dir(outputPath), 0755)
 	}
 
 	goCmd := exec.Command("go", "build", "-ldflags", ldflags, "-o", outputPath, "main.go")
-	goCmd.Dir = coaDir // Manteniamo la working directory sui sorgenti per leggere main.go
+	goCmd.Dir = ctx.CoaDir // Manteniamo la working directory sui sorgenti
 	goCmd.Stdout, goCmd.Stderr = os.Stdout, os.Stderr
+	if err := goCmd.Run(); err != nil { // Aggiunto il controllo errore vitale!
+		LogError("Orchestrator compilation failed: %v", err)
+		return
+	}
 
-	// 3. Generazione Documentazione
+	// 4. Generazione Documentazione
 	LogBuild("Generating documentation and completions...")
-	if err := generateDocs(coaDir); err != nil {
+	if err := generateDocs(ctx); err != nil { // Passiamo solo il contesto!
 		LogError("Docs generation failed: %v", err)
 		return
 	}
 
-	// 4. Routing verso i file specifici con DEBUG
+	// 5. Routing verso i file specifici (I Sarti)
 	LogBuild("Detected Distro Family: %s%s%s", ColorYellow, d.FamilyID, ColorReset)
 
 	switch d.FamilyID {
-	case "archlinux":
-		buildArchPackage(projRoot, oaDir, coaDir, baseVer, relNum)
-	case "manjaro":
-		buildManjaroPackage(projRoot, baseVer, relNum)
-	case "fedora", "rhel", "centos", "rocky", "almalinux":
-		// Questo ora DEVE attivarsi se d.FamilyID è fedora
-		buildFedoraPackage(projRoot, baseVer, relNum)
-		// buildFedoraPackage(projRoot, oaDir, coaDir, baseVer, relNum)
+	/*
+		case "archlinux":
+			packArch(baseVer, relNum, ctx)
+		case "manjaro":
+			packManjaro(baseVer, relNum, ctx)
+		case "fedora", "rhel", "centos", "rocky", "almalinux":
+			packFedora(baseVer, relNum, ctx)
+	*/
 	default:
 		LogBuild("Falling back to Debian/Generic packaging...")
 		pkgVersion := fmt.Sprintf("%s-%s", baseVer, relNum)
-		buildDebianPackage(projRoot, oaDir, coaDir, pkgVersion)
+		packDebian(pkgVersion, ctx)
 	}
 }
 
@@ -108,8 +112,7 @@ func parseGitVersion(v string) (string, string) {
 		relNum = parts[1]
 	}
 
-	// Fix per Debian: la versione DEVE iniziare con una cifra.
-	// Se baseVer è un hash (es. "e252cac"), aggiungiamo "0~" all'inizio.
+	// Fix per Debian
 	if len(baseVer) > 0 && (baseVer[0] < '0' || baseVer[0] > '9') {
 		baseVer = "0~" + baseVer
 	}
@@ -117,42 +120,30 @@ func parseGitVersion(v string) (string, string) {
 	return baseVer, relNum
 }
 
-func generateDocs(coaDir string) error {
-	// 1. Capiamo dove si trova la fucina per i binari
-	baseBuildDir := os.Getenv("BUILD_DIR")
-	if baseBuildDir == "" {
-		baseBuildDir = "/tmp/oa-build"
-	}
+func generateDocs(ctx sysctx.RuntimeContext) error {
+	docPath := filepath.Join(ctx.CoaDir, "docs") // Target base
 
-	// 2. Rilevamento intelligente dell'ambiente (Siamo dentro Vagrant?)
-	docPath := filepath.Join(coaDir, "docs") // Di base, target sulla repo (Host)
-
-	currentUser, err := user.Current()
-	if err == nil && currentUser.Username == "vagrant" {
-		// [Vagrant Mode]: Siamo nella VM! Deviamo il target in RAM per evitare il Permission Denied del 9p
-		docPath = filepath.Join(baseBuildDir, "docs")
+	if ctx.EnvType == sysctx.EnvVagrant {
+		// [Vagrant Mode]: Deviazione RAM per evitare Permission Denied del 9p
+		docPath = filepath.Join(ctx.BaseBuildDir, "docs")
 		os.MkdirAll(docPath, 0755)
 		fmt.Println("[gen_docs] Rilevato ambiente Vagrant: deviazione documentazione in RAM.")
 	}
 
-	// 3. Puntiamo dritti al binario appena sfornato
-	coaBin := filepath.Join(baseBuildDir, "coa", "coa")
+	// Identifichiamo dove si trova il binario appena compilato
+	var coaBin string
+	if ctx.EnvType == sysctx.EnvCI {
+		coaBin = filepath.Join(ctx.CoaDir, "coa")
+	} else {
+		coaBin = filepath.Join(ctx.BaseBuildDir, "coa", "coa")
+	}
 
-	// 4. Lanciamo il comando usando il percorso assoluto sul target sicuro
+	// Lanciamo il comando sul target sicuro
 	genCmd := exec.Command(coaBin, "_gen_docs", "--target", docPath)
-	genCmd.Dir = coaDir
+	genCmd.Dir = ctx.CoaDir
 	genCmd.Stdout, genCmd.Stderr = os.Stdout, os.Stderr
 
 	return genCmd.Run()
-}
-
-func getProjectPaths() (string, string, string) {
-	cwd, _ := os.Getwd()
-	projRoot := cwd
-	if filepath.Base(cwd) == "coa" {
-		projRoot = filepath.Dir(cwd)
-	}
-	return projRoot, filepath.Join(projRoot, "oa"), filepath.Join(projRoot, "coa")
 }
 
 func copyFile(src, dst string) error {

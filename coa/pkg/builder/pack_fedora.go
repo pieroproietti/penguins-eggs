@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	sysctx "coa/pkg/context" // Il nostro scudo contestuale
 )
 
 // moveFile gestisce lo spostamento tra partizioni (es. /tmp -> /home)
@@ -32,17 +34,16 @@ func moveFile(src, dst string) error {
 	return os.Remove(src)
 }
 
-func buildFedoraPackage(projRoot, baseVer, relNum string) {
+// packFedora genera il pacchetto RPM per Fedora e derivate RHEL.
+// RISPETTA IL PATTO: Sfrutta il RuntimeContext per blindare i percorsi e isolare i build.
+func packFedora(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	cleanVer := strings.TrimPrefix(baseVer, "v")
 	pkgName := fmt.Sprintf("oa-tools-%s-%s", cleanVer, relNum)
 
-	// 1. Definiamo la baseBuildDir con lo stesso identico schema simmetrico
-	baseBuildDir := os.Getenv("BUILD_DIR")
-	if baseBuildDir == "" {
-		baseBuildDir = "/tmp/oa-build"
-	}
+	// 1. Definiamo la baseBuildDir interrogando direttamente il campo corretto
+	baseBuildDir := ctx.BaseBuildDir
 
-	// Workspace isolato per rpmbuild dentro /tmp (o RAM)
+	// Workspace isolato per rpmbuild dentro la RAM (/tmp/oa-build/rpmbuild_...)
 	buildRoot := filepath.Join(baseBuildDir, "rpmbuild_"+pkgName)
 
 	fmt.Printf("[build] Packing .rpm archive for %s (Evolution Edition)...\n", pkgName)
@@ -56,7 +57,7 @@ func buildFedoraPackage(projRoot, baseVer, relNum string) {
 	specPath := filepath.Join(buildRoot, "SPECS", "oa-tools.spec")
 
 	// 2. Definiamo il contenuto dello SPEC.
-	// Puntiamo a baseBuildDir per raccogliere i binari compilati nello schema a specchio!
+	// Usiamo l'accesso diretto ai campi strutturati: ctx.ProjRoot, ctx.BaseBuildDir, ecc.
 	specContent := fmt.Sprintf(`%%define debug_package %%{nil}
 
 Name:           oa-tools
@@ -98,7 +99,7 @@ mkdir -p %%{buildroot}/usr/share/bash-completion/completions
 mkdir -p %%{buildroot}/usr/share/zsh/vendor-completions
 mkdir -p %%{buildroot}/usr/share/fish/vendor_completions.d
 
-# 1. Installazione Binari (Peschiamo dallo schema specchio in RAM)
+# 1. Installazione Binari (Peschiamo dallo schema specchio in RAM tramite ctx)
 install -m 0755 %s/oa/oa %%{buildroot}/usr/bin/oa
 install -m 0755 %s/coa/coa %%{buildroot}/usr/bin/coa
 ln -s coa %%{buildroot}/usr/bin/eggs
@@ -158,7 +159,7 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 - Added full branding assets (splash screen and boot fonts)
 - Added google-noto-emoji-fonts dependency for proper terminal rendering
 - Refactored brain.d to use Go templates (modules)
-`, cleanVer, relNum, baseBuildDir, baseBuildDir, projRoot, cleanVer, projRoot, projRoot, projRoot, projRoot, cleanVer, relNum)
+`, cleanVer, relNum, baseBuildDir, baseBuildDir, ctx.ProjRoot, cleanVer, ctx.ProjRoot, ctx.ProjRoot, ctx.ProjRoot, ctx.ProjRoot, cleanVer, relNum)
 
 	os.WriteFile(specPath, []byte(specContent), 0644)
 
@@ -177,7 +178,7 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 	if len(matches) > 0 {
 		rpmFile := filepath.Base(matches[0])
 
-		if os.Getenv("BUILD_DIR") != "" {
+		if ctx.EnvType == sysctx.EnvVagrant {
 			// Siamo in Vagrant: salviamo l'RPM direttamente nella radice di /tmp/oa-build/ al sicuro da 9p
 			vagrantTarget := filepath.Join(baseBuildDir, rpmFile)
 			if err := moveFile(matches[0], vagrantTarget); err == nil {
@@ -187,7 +188,7 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 			}
 		} else {
 			// Siamo sull'host locale: scriviamo direttamente nella root del progetto
-			finalPkg := filepath.Join(projRoot, rpmFile)
+			finalPkg := filepath.Join(ctx.ProjRoot, rpmFile)
 			if err := moveFile(matches[0], finalPkg); err == nil {
 				fmt.Printf("[SUCCESS] Pacchetto creato nella root del progetto: %s\n", finalPkg)
 			} else {

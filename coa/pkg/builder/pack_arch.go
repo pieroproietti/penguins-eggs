@@ -4,22 +4,25 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	sysctx "coa/pkg/context" // Il nostro scudo contestuale
 )
 
-// buildArchPackage genera il file PKGBUILD per Arch Linux.
-// RISPETTA IL PATTO: In locale scrive nella repo, in Vagrant confina tutto in /tmp/oa-build.
-func buildArchPackage(projRoot, oaDir, coaDir, baseVer, relNum string) {
-	// 1. Applichiamo la logica di separazione degli spazi di lavoro
-	outDir := projRoot
-	buildDir := os.Getenv("BUILD_DIR")
+// packArch genera il file PKGBUILD per Arch Linux.
+// RISPETTA IL PATTO: Sfrutta il RuntimeContext per decidere dove scrivere e dove isolare.
+func packArch(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
+	// 1. Applichiamo la logica di separazione degli spazi di lavoro tramite i campi pubblici della struct
+	var outDir string
 
-	if buildDir != "" {
-		outDir = buildDir // [Vagrant Mode]: Il PKGBUILD nasce e muore protetto in /tmp/oa-build
+	if ctx.EnvType == sysctx.EnvVagrant {
+		// [Vagrant Mode]: Il PKGBUILD nasce e muore protetto in /tmp/oa-build
+		outDir = ctx.BaseBuildDir
 	} else {
-		buildDir = "/tmp/oa-build" // [Local Mode]: La compilazione usa la RAM, ma il pacchetto torna a casa
+		// [Local Mode]: La compilazione usa la RAM, ma il pacchetto finale torna nella radice del progetto
+		outDir = ctx.ProjRoot
 	}
 
-	// 2. Definiamo il contenuto del PKGBUILD (Con i puntamenti corretti a oaDir e coaDir)
+	// 2. Definiamo il contenuto del PKGBUILD usando i campi esatti del contesto
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 # coa is the mind and oa the arm
 pkgname=oa-tools-arch
@@ -100,7 +103,7 @@ EOF
         cp -r "${_srcdir}/conf/"* "${pkgdir}/etc/oa-tools.d/"
     fi
 
-    # Documentazione e Completamenti nativi (Pescati da _coadir senza paracadute!)
+    # Documentazione e Completamenti nativi
     install -Dm644 "${_coadir}/docs/man/"*.1 -t "${pkgdir}/usr/share/man/man1/"
     install -Dm644 "${_coadir}/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
     install -Dm644 "${_coadir}/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
@@ -112,7 +115,7 @@ EOF
 
     echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, baseVer, relNum, projRoot, oaDir, coaDir, buildDir)
+`, baseVer, relNum, ctx.ProjRoot, ctx.OaDir, ctx.CoaDir, ctx.BaseBuildDir)
 
 	// 3. Scrittura del file PKGBUILD nella destinazione corretta
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
@@ -122,7 +125,7 @@ EOF
 		return
 	}
 
-	if os.Getenv("BUILD_DIR") != "" {
+	if ctx.EnvType == sysctx.EnvVagrant {
 		fmt.Printf("[SUCCESS] [Vagrant Mode] PKGBUILD (Arch) isolato in: %s\n", pkgbuildPath)
 	} else {
 		fmt.Printf("[SUCCESS] [Local Mode] PKGBUILD (Arch) stampato nella repo: %s\n", pkgbuildPath)

@@ -4,22 +4,25 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	sysctx "coa/pkg/context" // Il nostro scudo contestuale
 )
 
-// buildManjaroPackage genera il file PKGBUILD specifico per Manjaro Linux.
-// Lo scrive nella root del progetto o in /tmp/oa-build se siamo in ambiente Vagrant.
-func buildManjaroPackage(projRoot, baseVer, relNum string) {
-	// 1. Definiamo dove salvare il PKGBUILD: root del progetto o /tmp/oa-build
-	outDir := projRoot
-	buildDir := os.Getenv("BUILD_DIR")
+// packManjaro genera il file PKGBUILD specifico per Manjaro Linux.
+// RISPETTA IL PATTO: Sfrutta il RuntimeContext per decidere se confinare in /tmp/oa-build o scrivere nella repo.
+func packManjaro(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
+	// 1. Definiamo dove salvare il PKGBUILD tramite i campi del contesto
+	var outDir string
 
-	if buildDir != "" {
-		outDir = buildDir // In Vagrant va direttamente nella radice di /tmp/oa-build
+	if ctx.EnvType == sysctx.EnvVagrant {
+		// In Vagrant va direttamente nella radice di /tmp/oa-build al sicuro da 9p
+		outDir = ctx.BaseBuildDir
 	} else {
-		buildDir = "/tmp/oa-build" // Fallback per la compilazione dei binari se lanciato localmente
+		// Local Mode: Scriviamo direttamente nella radice del progetto
+		outDir = ctx.ProjRoot
 	}
 
-	// 2. Definiamo il contenuto del PKGBUILD per Manjaro
+	// 2. Definiamo il contenuto del PKGBUILD per Manjaro usando i campi della struct ctx
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 # coa is the mind and oa the arm
 pkgname=oa-tools-manjaro
@@ -33,16 +36,16 @@ license=('GPL3')
 # Optimized Manjaro dependencies for oa-tools
 depends=(
     'manjaro-tools-iso'      # Hook miso per initramfs (fondamentale su Manjaro)
-    'efibootmgr'             # EFI
-    'libisoburn'             # xorriso
+    'efibootmgr'              # EFI
+    'libisoburn'              # xorriso
     'squashfs-tools'         # mksquashfs
     'mtools'                 # manipolazione EFI img
     'dosfstools'             # mkfs.vfat
     'arch-install-scripts'   # arch-chroot
-    'grub'                   # bootloader
+    'grub'                    # bootloader
     'rsync'                  # copia file
-    'sudo'                   # privilegi
-    'pv'                     # progress meter
+    'sudo'                    # privilegi
+    'pv'                      # progress meter
     'git'                    # gestione wardrobe
     'bash-completion'
 )
@@ -52,7 +55,7 @@ backup=('etc/oa-tools.d/oa-tools.yaml')
 options=(!debug)
 
 build() {
-    # Pulizia preventiva del workspace temporaneo
+    # Pulizia preventiva del workspace temporaneo in RAM
     rm -rf "${_build_dir}/oa" "${_build_dir}/coa"
     mkdir -p "${_build_dir}"
 
@@ -68,7 +71,7 @@ build() {
 }
 
 package() {
-    # 1. Installazione binari dallo schema specchio della repo
+    # 1. Installazione binari dallo schema specchio in RAM
     install -Dm755 "${_build_dir}/oa/oa" "${pkgdir}/usr/bin/oa"
     install -Dm755 "${_build_dir}/coa/coa" "${pkgdir}/usr/bin/coa"
     ln -s coa "${pkgdir}/usr/bin/eggs"
@@ -105,7 +108,7 @@ EOF
         cp -r "${_srcdir}/conf/"* "${pkgdir}/etc/oa-tools.d/"
     fi
 
-    # 3. Documentazione e Completamenti (con || true per flessibilità come in Arch)
+    # 3. Documentazione e Completamenti
     install -Dm644 "${_srcdir}/coa/docs/man/"*.1 -t "${pkgdir}/usr/share/man/man1/" 2>/dev/null || true
     install -Dm644 "${_srcdir}/coa/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa" 2>/dev/null || true
     install -Dm644 "${_srcdir}/coa/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa" 2>/dev/null || true
@@ -117,7 +120,7 @@ EOF
 
     echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, baseVer, relNum, projRoot, buildDir)
+`, baseVer, relNum, ctx.ProjRoot, ctx.BaseBuildDir)
 
 	// Scrittura del file PKGBUILD direttamente nella cartella di output scelta
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
@@ -127,7 +130,7 @@ EOF
 		return
 	}
 
-	if os.Getenv("BUILD_DIR") != "" {
+	if ctx.EnvType == sysctx.EnvVagrant {
 		fmt.Printf("[SUCCESS] [Vagrant Mode] PKGBUILD (Manjaro) protetto direttamente in: %s\n", outDir)
 	} else {
 		fmt.Printf("[SUCCESS] PKGBUILD (Manjaro) generato correttamente in: %s\n", outDir)
