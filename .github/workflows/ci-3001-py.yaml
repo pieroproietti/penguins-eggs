@@ -29,13 +29,13 @@ jobs:
 
     - name: Build standalone oa/coa
       run: |
-        chmod +x ./py_oa_tools/build_python_bundle.sh
-        ./py_oa_tools/build_python_bundle.sh
+        chmod +x ./legacy/py_oa_tools/build_python_bundle.sh
+        ./legacy/py_oa_tools/build_python_bundle.sh
 
     - name: Verify standalone binaries
       run: |
-        ./py_oa_tools/dist_py/coa --help
-        ./py_oa_tools/dist_py/oa --help
+        ./legacy/py_oa_tools/dist_py/coa --help
+        ./legacy/py_oa_tools/dist_py/oa --help
 
     - name: Run Python replacement smoke tests
       run: |
