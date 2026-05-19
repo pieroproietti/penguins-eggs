@@ -119,14 +119,10 @@ func parseGitVersion(v string) (string, string) {
 }
 
 func generateDocs(ctx sysctx.RuntimeContext) error {
-	docPath := filepath.Join(ctx.CoaDir, "docs") // Target base
-
-	if ctx.EnvType == sysctx.EnvVagrant {
-		// [Vagrant Mode]: Deviazione RAM per evitare Permission Denied del 9p
-		docPath = filepath.Join(ctx.BaseBuildDir, "docs")
-		os.MkdirAll(docPath, 0755)
-		fmt.Println("[gen_docs] Rilevato ambiente Vagrant: deviazione documentazione in RAM.")
-	}
+	// 1. REGOLA UNIVERSALE: I documenti nascono SEMPRE nella fucina!
+	// Nessuna distinzione tra Vagrant, Local o CI. Tutto va in BaseBuildDir.
+	docPath := filepath.Join(ctx.BaseBuildDir, "docs")
+	os.MkdirAll(docPath, 0755)
 
 	// Identifichiamo dove si trova il binario appena compilato
 	var coaBin string
