@@ -7,8 +7,8 @@ sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosf
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 && pwd)"
 cd "$REPO_ROOT"
 
-chmod +x ./py_oa_tools/build_python_bundle.sh
-./py_oa_tools/build_python_bundle.sh
+chmod +x ../py_oa_tools/build_python_bundle.sh
+../py_oa_tools/build_python_bundle.sh
 
 sudo rm -f /usr/bin/coa /usr/bin/oa
 sudo install -m 0755 ./py_oa_tools/dist_py/coa /usr/bin/coa
