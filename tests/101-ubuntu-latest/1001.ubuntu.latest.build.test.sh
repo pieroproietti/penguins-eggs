@@ -2,6 +2,8 @@
 
 set -e # Fondamentale in CI: ferma lo script al primo errore!
 set -x
+
+# 1. Mappa geopolitica delle fucine
 export BUILD_DIR="/tmp/oa-build"
 mkdir -p "$BUILD_DIR"
 
@@ -13,34 +15,33 @@ cd "$CMD_PATH"
 cd ../../
 pwd
 
-# 1. Compilazione del binario e generazione asset
-# 1. Compilazione del binario e generazione asset
+# 2. Compilazione del binario e generazione asset (Genera in /tmp/oa-build)
 make
 
-# 2. Generazione del pacchetto .deb
-./coa/coa tools build
+# 3. Generazione del pacchetto .deb usando il binario appena nato in RAM
+$BUILD_DIR/coa/coa tools build
 
-# 3. Installazione chirurgica del .deb
-# Cerchiamo sia nella repo che in /tmp/oa-build per sicurezza geopolitica!
+# 4. Installazione chirurgica del .deb
+# Cerchiamo sia nella repo che in /tmp/oa-build per sicurezza geopolitica
 DEB_FILE=$(find . /tmp/oa-build -maxdepth 3 -name "oa-tools*.deb" 2>/dev/null | head -n 1)
 
 if [ -z "$DEB_FILE" ]; then
-    echo "ERRORE: Il pacchetto .deb non è stato generato in nessun workspace!"
+    echo "ERRORE: Il pacchetto .deb non è stato generato!"
     exit 1
 fi
 
-echo "Trovato pacchetto da installare: $DEB_FILE"
+echo "Pacchetto individuato: $DEB_FILE"
 
-# Aggiorniamo i repository di GitHub Runner
+# Aggiorniamo i repo del Runner
 sudo apt-get update
 
-# TRUCCO SUPREMO: Passiamo il percorso assoluto tramite realpath. 
-# Questo costringe apt a installare il file locale e a tirarsi giù da internet 
-# le dipendenze mancanti (squashfs-tools, xorriso, ecc.) senza fare storie!
+# TRUCCO SUPREMO: realpath costringe apt a capire che si tratta di un file locale.
+# Si tira giù le dipendenze da internet e installa il pacchetto senza fare storie.
 sudo apt-get install -y "$(realpath "$DEB_FILE")"
 
 echo "=== INSTALLAZIONE COMPLETATA CON SUCCESSO ==="
 
+# 5. Fase di Remaster (Chiamando sempre il binario definitivo per evitare conflitti)
 echo "=== FASE DI REMASTER ==="
 sudo coa tools clean
 sudo coa remaster
