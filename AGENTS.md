@@ -1,8 +1,22 @@
 # oa-tools - AI Agents Guidelines
+# oa-tools - AI Agents Guidelines
 
-Welcome, AI Agent. If you are reading this file, you are assisting with the development of `oa-tools`, a high-performance Linux remastering and system installation suite created by Piero Proietti. 
+Welcome, AI Agent. If you are reading this file, you are assisting with the development of `oa-tools`, created by Piero Proietti.
 
 Before generating any code, suggesting refactors, or altering the build logic, you MUST read and strictly adhere to the following architectural rules and constraints.
+
+## 0. Project Context & Purpose (READ FIRST)
+* **Lineage:** `oa-tools` is the direct, high-performance successor to **penguins-eggs** (a well-known, established tool for Linux remastering). 
+* **Purpose:** It is a professional suite designed to remaster running Linux systems, create bootable Live ISOs, and manage system installations. It spans across multiple Linux distributions (Debian, Arch, Fedora, Manjaro, etc.).
+* **Status:** The project is under heavy, active development. 
+* **Domain Knowledge:** You must apply expert-level knowledge of Linux filesystems, `chroot`, `squashfs` (with `zstd` compression), `overlayfs`, Live-boot mechanisms, and native packaging (`dpkg-deb`, `makepkg`).
+
+## 1. Project Architecture (The Brain and The Muscle)
+The project is strictly divided into two distinct entities:
+* **`oa` (The Muscle):** Written in C. It handles low-level system operations, filesystem mounts, chroot, and heavy lifting. Fast and memory-efficient.
+* **`coa` (The Brain):** Written in Go (Golang). It is the orchestrator, CLI interface (via Cobra), and high-level manager that drives `oa`.
+
+**Rule:** Never mix C system logic into the Go orchestrator, and never put high-level CLI routing into the C engine.
 
 ## 1. Project Architecture (The Brain and The Muscle)
 The project is strictly divided into two distinct entities:
