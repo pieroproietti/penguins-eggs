@@ -3,8 +3,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 PYTHON="${PYTHON:-python3}"
-REQ_FILE="$ROOT/py_oa_tools/requirements.txt"
-PACKAGE_DIR="$ROOT/py_oa_tools"
+REQ_FILE="$ROOT/legacy/py_oa_tools/requirements.txt"
+PACKAGE_DIR="$ROOT/legacy/py_oa_tools"
 
 usage() {
   cat <<EOF
