@@ -1,61 +1,142 @@
-# oa-tools - AI Agents Guidelines
-# oa-tools - AI Agents Guidelines
+# AGENTS.md – oa-tools
 
-Welcome, AI Agent. If you are reading this file, you are assisting with the development of `oa-tools`, created by Piero Proietti.
-
-Before generating any code, suggesting refactors, or altering the build logic, you MUST read and strictly adhere to the following architectural rules and constraints.
-
-## 0. Project Context & Purpose (READ FIRST)
-* **Lineage:** `oa-tools` is the direct, high-performance successor to **penguins-eggs** (a well-known, established tool for Linux remastering). 
-* **Purpose:** It is a professional suite designed to remaster running Linux systems, create bootable Live ISOs, and manage system installations. It spans across multiple Linux distributions (Debian, Arch, Fedora, Manjaro, etc.).
-* **Status:** The project is under heavy, active development. 
-* **Domain Knowledge:** You must apply expert-level knowledge of Linux filesystems, `chroot`, `squashfs` (with `zstd` compression), `overlayfs`, Live-boot mechanisms, and native packaging (`dpkg-deb`, `makepkg`).
-
-## 1. Project Architecture (The Brain and The Muscle)
-The project is strictly divided into two distinct entities:
-* **`oa` (The Muscle):** Written in C. It handles low-level system operations, filesystem mounts, chroot, and heavy lifting. Fast and memory-efficient.
-* **`coa` (The Brain):** Written in Go (Golang). It is the orchestrator, CLI interface (via Cobra), and high-level manager that drives `oa`.
-
-**Rule:** Never mix C system logic into the Go orchestrator, and never put high-level CLI routing into the C engine.
-
-## 1. Project Architecture (The Brain and The Muscle)
-The project is strictly divided into two distinct entities:
-* **`oa` (The Muscle):** Written in C. It handles low-level system operations, filesystem mounts, chroot, and heavy lifting. Fast and memory-efficient.
-* **`coa` (The Brain):** Written in Go (Golang). It is the orchestrator, CLI interface (via Cobra), and high-level manager that drives `oa`.
-
-**Rule:** Never mix C system logic into the Go orchestrator, and never put high-level CLI routing into the C engine.
-
-## 2. Universal Context (`pkg/context`)
-The project relies on a single source of truth for environmental awareness: `sysctx.RuntimeContext` located in `coa/pkg/context`.
-There are exactly four supported environments:
-* `ci`: Ephemeral cloud runners (e.g., GitHub Actions Docker).
-* `vagrant`: Virtual machines managed by Vagrant with `9p` shared folder mounts.
-* `vm`: Standard virtual machines (KVM/QEMU) without shared mounts.
-* `host`: Bare metal hardware (the developer's main machine).
-
-**Rule:** NEVER use `os.Getenv`, `os.User`, or virtualization checks manually in random files. Always inject or pass `sysctx.RuntimeContext` to modules that need to know where they are running, where the source code is (`ctx.ProjRoot`, `ctx.CoaDir`), and where to build (`ctx.BaseBuildDir`).
-
-## 3. The Vagrant / 9p Mount Constraint (CRITICAL)
-When `ctx.EnvType == "vagrant"`, the project is running inside a VM with a shared host folder via the `9p` filesystem driver.
-**Rule:** Under NO circumstances should the build system (`go build`, `make`, or Cobra doc generation) write artifacts directly to the repository folder while in `vagrant`. The `9p` driver will crash with `Permission denied` errors. All artifacts, binaries, and generated documents must be strictly routed to RAM (`/tmp/oa-build` -> `ctx.BaseBuildDir`).
-
-## 4. Build and Packaging Lexicon (`pkg/builder`)
-The build process is cleanly separated into compilation and packaging. Use the correct terminology:
-* **The Forge (`build.go`):** Responsible ONLY for compiling the C engine, the Go orchestrator, and generating CLI docs. It outputs binaries to `ctx.BaseBuildDir`.
-* **The Tailors (`pack_*.go`):** Responsible for taking the compiled binaries and crafting native Linux packages (e.g., `pack_arch.go` for `.pkg.tar.zst`, `pack_debian.go` for `.deb`).
-
-**Rule:** When adding support for a new Linux distribution, create a new `pack_<distro>.go` file. Do not clutter `build.go` with distro-specific packaging logic.
-
-## 5. Coding Style
-* **Go:** Strictly idiomatic. Handle all errors explicitly. Use `fmt.Printf` with color codes for CLI outputs. Keep signatures clean (leverage structs like `RuntimeContext` instead of passing 6 different string parameters).
-* **C:** POSIX-compliant, secure, and minimal. Always check return values for memory allocations and system calls.
-
-## 6. Compression (mksquashfs)
-Compression levels (`zstd`) are dynamic based on the environment to save CPU cycles or maximize density. Always read `ctx.ZstdLevel` when configuring squashfs operations.
+> **For AI Agent:** You are assisting with the development of `oa-tools` by Piero Proietti. Read and obey these rules before generating code or suggesting changes.
 
 ---
-*Failure to follow these guidelines will result in broken builds across CI and local Vagrant environments. Act as a senior systems engineer.*
 
-## 7. Legacy Code (DO NOT READ)
-The `legacy/` directory contains old experiments and deprecated scripts (e.g., Python, Ruby). 
-**Rule:** You MUST completely ignore the `legacy/` directory. Do not read its contents, and do not suggest using any code from it. The project is strictly C and Go.
+## 0. Project Context (READ FIRST)
+
+**Lineage:** `oa-tools` is the direct, high-performance successor to **penguins-eggs** (500⭐, production-ready TypeScript tool). This is the future architecture.
+
+**Purpose:** Professional suite to remaster running Linux systems, create bootable Live ISOs, and manage system installations across multiple distributions.
+
+**Status:** Heavy, active development. Not yet production-ready.
+
+**Required domain knowledge:** Linux filesystems, `chroot`, `squashfs` (zstd), `overlayfs`, Live-boot mechanisms, native packaging (`dpkg-deb`, `makepkg`).
+
+---
+
+## 0.1 Relationship with penguins-eggs
+
+| Aspect | penguins-eggs | oa-tools |
+|--------|---------------|----------|
+| Language | TypeScript (Node.js) | **C + Go** |
+| Architecture | Monolithic | Split: oa (C) + coa (Go) |
+| Dependencies | npm packages | `oa` = **zero dependencies** |
+| Maturity | ✅ Production-ready (500⭐) | ⚠️ Active dev (8⭐) |
+
+**Rule:** If user wants stable production tool → suggest `penguins-eggs`. If they want to experiment/contribute → point to `oa-tools`.
+
+---
+
+## 0.2 Supported Distributions (Tested via Vagrant)
+
+| Distribution | Status | Notes |
+|--------------|--------|-------|
+| Debian (Bookworm, Bullseye) | ✅ Full | Primary dev target |
+| Arch Linux | ✅ Full | Requires `base-devel` |
+| Fedora (40+) | ✅ Full | |
+| Manjaro | ✅ Full | |
+| Ubuntu | ⚠️ Should work | Inherits Debian support |
+| RHEL/Rocky/Alma | ❌ Untested | Planned |
+
+**Rule:** Update this table and `Vagrantfile` when adding distros.
+
+---
+
+## 1. Project Architecture (The Brain and The Muscle)
+
+**NEVER** mix C system logic into Go. **NEVER** put CLI routing into C.
+
+| Component | Language | Location | Role |
+|-----------|----------|----------|------|
+| **`oa` (The Muscle)** | C | `/oa` | Low-level: mounts, chroot, squashfs, users. Zero dependencies. |
+| **`coa` (The Brain)** | Go | `/coa` | Orchestrator, CLI (Cobra), drives `oa`. |
+
+---
+
+## 2. Universal Context (`sysctx.RuntimeContext`) – CRITICAL
+
+Source of truth for environment awareness. Located in `coa/pkg/context`.
+
+**Four supported environments:**
+
+| Env | Description |
+|-----|-------------|
+| `ci` | Ephemeral cloud runners (GitHub Actions Docker) |
+| `vagrant` | VMs with 9p shared folders |
+| `vm` | Standard VMs (KVM/QEMU) without shared mounts |
+| `host` | Bare metal (developer machine) |
+
+**Rule:** **NEVER** use `os.Getenv`, `os.User`, or manual virtualization checks. Always inject `sysctx.RuntimeContext`. Use `ctx.ProjRoot`, `ctx.CoaDir`, `ctx.BaseBuildDir`.
+
+---
+
+## 3. Vagrant / 9p Mount Constraint – **CRITICAL**
+
+When `ctx.EnvType == "vagrant"`, the project runs inside a VM with host folder shared via **9p filesystem**.
+
+**Rule:** **NEVER** write build artifacts directly to repository folder in `vagrant` – 9p crashes with `Permission denied`.
+
+**ALWAYS** route artifacts, binaries, generated docs to RAM: `ctx.BaseBuildDir` (`/tmp/oa-build`).
+
+---
+
+## 4. Build and Packaging Lexicon (`pkg/builder`)
+
+| Component | Responsibility | Location |
+|-----------|----------------|----------|
+| **The Forge (`build.go`)** | Compiles C engine, Go orchestrator, generates CLI docs → outputs to `ctx.BaseBuildDir` | `coa/cmd/forge/` |
+| **The Tailors (`pack_*.go`)** | Crafts native packages (.deb, .pkg.tar.zst, .rpm) from compiled binaries | `coa/pkg/builder/` |
+
+**Rule:** New distribution = new `pack_<distro>.go`. Do **NOT** clutter `build.go` with packaging logic.
+
+---
+
+## 5. Compression (`mksquashfs`)
+
+Compression levels (`zstd`) are dynamic. **ALWAYS** read `ctx.ZstdLevel` when configuring squashfs operations.
+
+---
+
+## 6. Coding Style
+
+| Language | Rules |
+|----------|-------|
+| **Go** | Idiomatic. Explicit error handling. Use colored `fmt.Printf` for CLI. Keep signatures clean (pass structs like `RuntimeContext`, not 6 strings). |
+| **C** | POSIX-compliant, secure, minimal. **ALWAYS** check return values of malloc and syscalls. |
+
+---
+
+## 7. Common Pitfalls for AI Agents (DO NOT DO)
+
+**NEVER:**
+
+1. Add dependencies to `oa` – must stay **zero-dependency**
+2. Hardcode paths – always use `ctx.*` variables
+3. Assume `go build` works in `/vagrant` – use `ctx.BaseBuildDir` (RAM)
+4. Mix C and Go logic – cross the streams = broken build
+5. Suggest removing C – performance gain is non-negotiable
+
+**ALWAYS:**
+
+- Check `ctx.EnvType` before filesystem-heavy ops
+- Use `ctx.ZstdLevel` for squashfs
+- Add new packers in `coa/pkg/builder/pack_*.go`
+- Write tests that run in Vagrant (not just host)
+
+---
+
+## 8. Testing with Vagrant
+
+```bash
+vagrant up debian      # or: arch, fedora, manjaro
+vagrant ssh -c "make && ./coa/coa remaster"
+vagrant destroy -f
+```
+
+**Rule:** All features must pass `vagrant up` on all four supported distros before merging.
+
+---
+
+*Failure to follow these guidelines will break builds across CI and local Vagrant environments. Act as a senior systems engineer.*
