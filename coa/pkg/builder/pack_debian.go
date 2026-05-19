@@ -73,13 +73,10 @@ remaster:
 	brainSrc := filepath.Join(ctx.CoaDir, "brain.d")
 	exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
 
+	// --------------------------------------------------------	-
+	// ORIGINE DOCUMENTI (La Regola della Fucina Universale)
 	// ---------------------------------------------------------
-	// RISOLUZIONE ORIGINE DOCUMENTI (Logica Ambientale)
-	// ---------------------------------------------------------
-	docSourceDir := filepath.Join(ctx.CoaDir, "docs")
-	if ctx.EnvType == sysctx.EnvVagrant {
-		docSourceDir = filepath.Join(ctx.BaseBuildDir, "docs")
-	}
+	docSourceDir := filepath.Join(ctx.BaseBuildDir, "docs")
 
 	// 5. Documentazione (Man pages)
 	manDir := filepath.Join(buildDir, "usr/share/man/man1")
