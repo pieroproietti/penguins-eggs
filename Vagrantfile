@@ -22,9 +22,9 @@ distros = {
   },
 
   'manjaro' => {
-    :box => 'generic/manjaro',
+    :box => 'adnuntius/manjaro',
     :hostname => 'naked',
-    :pkg => 'hostnamectl set-hostname naked && pacman-key --init && pacman-key --populate manjaro && pacman -Syu --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion manjaro-tools-iso'
+    :pkg => 'hostnamectl set-hostname naked && pacman-key --init && pacman-key --populate manjaro && pacman -Syu --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion'
   }
 }
 
