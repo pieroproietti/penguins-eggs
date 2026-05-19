@@ -5,31 +5,27 @@ import (
 	"os"
 	"path/filepath"
 
-	sysctx "coa/pkg/context" // Il nostro scudo contestuale
+	sysctx "coa/pkg/context"
 )
 
 // packArch genera il file PKGBUILD per Arch Linux.
-// RISPETTA IL PATTO: Sfrutta il RuntimeContext per decidere dove scrivere e dove isolare.
 func packArch(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
-	// 1. Applichiamo la logica di separazione degli spazi di lavoro tramite i campi pubblici della struct
 	var outDir string
 
 	if ctx.EnvType == sysctx.EnvVagrant {
-		// [Vagrant Mode]: Il PKGBUILD nasce e muore protetto in /tmp/oa-build
 		outDir = ctx.BaseBuildDir
 	} else {
-		// [Local Mode]: La compilazione usa la RAM, ma il pacchetto finale torna nella radice del progetto
 		outDir = ctx.ProjRoot
 	}
 
-	// 2. Definiamo il contenuto del PKGBUILD usando i campi esatti del contesto
+	// IL PKGBUILD SEMPLICE: L'orchestratore ha già fatto tutto.
+	// makepkg salterà la fase di build (non essendoci) e andrà dritto al package!
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 # coa is the mind and oa the arm
 pkgname=oa-tools-arch
 pkgver=%s
 pkgrel=%s
 _srcdir="%s"
-_oadir="%s"
 _coadir="%s"
 _build_dir="%s"
 pkgdesc="oa-tools universal Linux remastering"
@@ -54,28 +50,13 @@ conflicts=('penguins-eggs' 'oa-tools')
 backup=('etc/oa-tools.d/oa-tools.yaml')
 options=(!debug)
 
-build() {
-    rm -rf "${_build_dir}/oa" "${_build_dir}/coa"
-    mkdir -p "${_build_dir}"
-
-    msg2 "Compilazione del motore C (oa) nello schema ${_build_dir}..."
-    cd "${_oadir}"
-    make clean BUILD_DIR="${_build_dir}"
-    make all BUILD_DIR="${_build_dir}"
-
-    msg2 "Compilazione del motore Go (coa) nello schema ${_build_dir}..."
-    cd "${_coadir}"
-    mkdir -p "${_build_dir}/coa"
-    go build -ldflags "-X 'coa/pkg/cmd.AppVersion=${pkgver}'" -o "${_build_dir}/coa/coa" main.go
-}
-
 package() {
-    # Installazione binari dalla RAM
+    # 1. Installazione binari GIA' COMPILATI dall'orchestratore in RAM
     install -Dm755 "${_build_dir}/oa/oa" "${pkgdir}/usr/bin/oa"
     install -Dm755 "${_build_dir}/coa/coa" "${pkgdir}/usr/bin/coa"
     ln -s coa "${pkgdir}/usr/bin/eggs"
 
-    # Configurazione e logica agnostica dalla repo stanziale
+    # 2. Configurazione e logica agnostica
     install -d "${pkgdir}/etc/oa-tools.d/brain.d"
     if [ -d "${_coadir}/brain.d" ]; then
         cp -r "${_coadir}/brain.d/"* "${pkgdir}/etc/oa-tools.d/brain.d/"
@@ -103,11 +84,20 @@ EOF
         cp -r "${_srcdir}/conf/"* "${pkgdir}/etc/oa-tools.d/"
     fi
 
-    # Documentazione e Completamenti nativi
-    install -Dm644 "${_coadir}/docs/man/"*.1 -t "${pkgdir}/usr/share/man/man1/"
-    install -Dm644 "${_coadir}/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
-    install -Dm644 "${_coadir}/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
-    install -Dm644 "${_coadir}/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
+    # 3. Documentazione GIA' GENERATA in RAM dall'orchestratore
+    if [ -d "${_build_dir}/docs/man" ]; then
+        install -d "${pkgdir}/usr/share/man/man1"
+        for manfile in "${_build_dir}/docs/man/"*.1; do
+            if [ -f "$manfile" ]; then
+                cp "$manfile" "${pkgdir}/usr/share/man/man1/"
+                chmod 644 "${pkgdir}/usr/share/man/man1/"$(basename "$manfile")
+            fi
+        done
+    fi
+
+    install -Dm644 "${_build_dir}/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
+    install -Dm644 "${_build_dir}/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
+    install -Dm644 "${_build_dir}/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
 
     ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
     ln -s _coa "${pkgdir}/usr/share/zsh/vendor-completions/_eggs"
@@ -115,9 +105,8 @@ EOF
 
     echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, baseVer, relNum, ctx.ProjRoot, ctx.OaDir, ctx.CoaDir, ctx.BaseBuildDir)
+`, baseVer, relNum, ctx.ProjRoot, ctx.CoaDir, ctx.BaseBuildDir)
 
-	// 3. Scrittura del file PKGBUILD nella destinazione corretta
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
 	err := os.WriteFile(pkgbuildPath, []byte(pkgbuildContent), 0644)
 	if err != nil {

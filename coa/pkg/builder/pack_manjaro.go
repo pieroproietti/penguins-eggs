@@ -108,11 +108,15 @@ EOF
         cp -r "${_srcdir}/conf/"* "${pkgdir}/etc/oa-tools.d/"
     fi
 
-    # 3. Documentazione e Completamenti
-    install -Dm644 "${_srcdir}/coa/docs/man/"*.1 -t "${pkgdir}/usr/share/man/man1/" 2>/dev/null || true
-    install -Dm644 "${_srcdir}/coa/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa" 2>/dev/null || true
-    install -Dm644 "${_srcdir}/coa/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa" 2>/dev/null || true
-    install -Dm644 "${_srcdir}/coa/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish" 2>/dev/null || true
+    // Documentazione e Completamenti nativi
+    if [ -d "${_coadir}/docs/man" ]; then
+        cp "${_coadir}/docs/man/"*.1 "${pkgdir}/usr/share/man/man1/"
+        chmod 644 "${pkgdir}/usr/share/man/man1/"*.1
+    fi
+
+    install -Dm644 "${_coadir}/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
+    install -Dm644 "${_coadir}/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
+    install -Dm644 "${_coadir}/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
 
     ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
     ln -s _coa "${pkgdir}/usr/share/zsh/vendor-completions/_eggs"

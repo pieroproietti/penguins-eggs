@@ -84,14 +84,12 @@ func HandleBuild(d *distro.Distro, version string) {
 	LogBuild("Detected Distro Family: %s%s%s", ColorYellow, d.FamilyID, ColorReset)
 
 	switch d.FamilyID {
-	/*
-		case "archlinux":
-			packArch(baseVer, relNum, ctx)
-		case "manjaro":
-			packManjaro(baseVer, relNum, ctx)
-		case "fedora", "rhel", "centos", "rocky", "almalinux":
-			packFedora(baseVer, relNum, ctx)
-	*/
+	case "archlinux":
+		packArch(baseVer, relNum, ctx)
+	case "manjaro":
+		packManjaro(baseVer, relNum, ctx)
+	case "fedora", "rhel", "centos", "rocky", "almalinux":
+		packFedora(baseVer, relNum, ctx)
 	default:
 		LogBuild("Falling back to Debian/Generic packaging...")
 		pkgVersion := fmt.Sprintf("%s-%s", baseVer, relNum)
