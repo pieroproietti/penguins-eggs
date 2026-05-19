@@ -11,8 +11,8 @@ chmod +x ./legacy/py_oa_tools/build_python_bundle.sh
 ./legacy/py_oa_tools/build_python_bundle.sh
 
 sudo rm -f /usr/bin/coa /usr/bin/oa
-sudo install -m 0755 ./py_oa_tools/dist_py/coa /usr/bin/coa
-sudo install -m 0755 ./py_oa_tools/dist_py/oa /usr/bin/oa
+sudo install -m 0755 ./legacy/py_oa_tools/dist_py/coa /usr/bin/coa
+sudo install -m 0755 ./legacy/py_oa_tools/dist_py/oa /usr/bin/oa
 
 # Smoke-test the standalone binaries.
 /usr/bin/coa --help
