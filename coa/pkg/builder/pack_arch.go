@@ -20,16 +20,12 @@ func packArch(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 		outDir = ctx.ProjRoot
 	}
 
-	// PULIZIA PER ARCH LINUX:
-	// Rimuoviamo l'eventuale 'v' iniziale (es. "v0.7.2" -> "0.7.2")
-	// Trasformiamo i trattini in punti (es. "0.7.2-4-g123" -> "0.7.2.4.g123")
-	// per evitare che makepkg vada in errore per formato non valido.
+// PULIZIA PER ARCH LINUX (pkgver):
 	cleanVer := strings.TrimPrefix(baseVer, "v")
 	cleanVer = strings.ReplaceAll(cleanVer, "-", ".")
 	cleanVer = strings.ReplaceAll(cleanVer, "_", ".")
 
 	// IL PKGBUILD SEMPLICE: L'orchestratore ha già fatto tutto.
-	// makepkg salterà la fase di build (non essendoci) e andrà dritto al package!
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 # coa is the mind and oa the arm
 pkgname=oa-tools-arch

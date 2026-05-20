@@ -22,8 +22,14 @@ fi
 # Il tarball atterra temporaneamente nella cartella delle mandracate sul padre
 PADRE_TAR="/eggs/shared/oa-tools-$VMID.tar.gz"
 
-echo "📦 Impacchetto oa-tools su colibri..."
-tar -czf /tmp/oa-tools-$VMID.tar.gz -C "$HOME" --exclude='.git' oa-tools
+echo "📦 Impacchetto oa-tools su colibri (includendo la storia di Git!)..."
+# ATTENZIONE: Abbiamo RIMOSSO --exclude='.git'
+# Inseriamo esclusioni mirate per non copiare binari o file oggetto compilati localmente
+tar -czf /tmp/oa-tools-$VMID.tar.gz -C "$HOME" \
+    --exclude='oa-tools/oa/oa' \
+    --exclude='oa-tools/coa/coa' \
+    --exclude='*.o' \
+    oa-tools
 
 echo "🚚 Sposto l'archivio su father in /eggs/shared/..."
 scp /tmp/oa-tools-$VMID.tar.gz "${PVE_TARGET}:${PADRE_TAR}"
@@ -44,4 +50,4 @@ ssh "$PVE_TARGET" "
     rm $PADRE_TAR
 "
 
-echo "✅ Sincronizzazione completata con successo nella home di artisan!"
+echo "✅ Sincronizzazione speculare completata con successo nella home di artisan!"
