@@ -1,32 +1,32 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Tabella di configurazione delle distribuzioni supportate
-distros = {
-  'arch' => { 
-    :box => 'generic/arch',
-    :hostname => 'naked',
-    :pkg => 'hostnamectl set-hostname naked && modprobe overlay && echo "overlay" > /etc/modules-load.d/overlay.conf && pacman-key --init && pacman-key --populate archlinux && pacman -Sy archlinux-keyring --noconfirm && pacman -Su --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion' 
-  },
+BOX_STORE = File.expand_path('~/Vagrant-boxes')
 
-  'debian' => { 
-    :box => 'generic/debian12', 
-    :hostname => 'naked',
-    :pkg => 'hostnamectl set-hostname naked && rm -rf /etc/apt/sources.list.d/* && echo -e "deb http://deb.debian.org/debian trixie main non-free-firmware\ndeb-src http://deb.debian.org/debian trixie main non-free-firmware" > /etc/apt/sources.list && export DEBIAN_FRONTEND=noninteractive && apt-get purge -y postfix && apt-get update && echo "grub-pc grub-pc/install_devices_empty boolean true" | debconf-set-selections && echo "grub-pc grub-pc/install_devices multiselect" | debconf-set-selections && apt-get dist-upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && apt-get install -y build-essential golang git xorriso squashfs-tools bash-completion' 
-  },
-
-  'fedora' => {
-    :box => './Fedora-Cloud-Base-Vagrant-libvirt-43-1.6.x86_64.vagrant.libvirt.box',
-    :hostname => 'naked-fedora',
-    :disk => 8, # <--- Assicurati che ci sia questo!
-    :pkg => 'sudo dnf install -y make gcc fakeroot golang git xorriso squashfs-tools bash-completion rpm-build rpm-devel'
-  },
-
-  'manjaro' => {
-    :box => 'adnuntius/manjaro',
+vms = {
+  'debian' => {
+    :box => "#{BOX_STORE}/debian.box",
     :hostname => 'naked',
     :disk => 8,
-    :pkg => 'hostnamectl set-hostname naked && pacman-key --init && pacman-key --populate manjaro && pacman -Syu --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion'
+    :pkg => '...' 
+  },
+  'arch' => {
+    :box => "#{BOX_STORE}/arch.box",
+    :hostname => 'naked',
+    :disk => 8,
+    :pkg => '...'
+  },
+  'manjaro' => {
+    :box => "#{BOX_STORE}/manjaro.box",
+    :hostname => 'naked',
+    :disk => 8,
+    :pkg => '...'
+  },
+  'fedora' => {
+    :box => "#{BOX_STORE}/fedora.box",
+    :hostname => 'naked',
+    :disk => 25,
+    :pkg => '...'
   }
 }
 
