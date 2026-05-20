@@ -1,0 +1,47 @@
+#!/bin/bash
+# Uso: p4push [debian|arch|fedora]
+
+# 1. Carica la configurazione globale di oa-tools
+CONFIG_FILE="$HOME/oa-tools/bin/p4config"
+if [ ! -f "$CONFIG_FILE" ]; then 
+    echo "❌ Errore: File p4config non trovato in $CONFIG_FILE"
+    exit 1
+fi
+source "$CONFIG_FILE"
+
+DISTRO=$1
+VAR_NAME="VM_ID_${DISTRO}"
+VMID=${!VAR_NAME}
+
+# Verifica che la distro sia configurata
+if [ -z "$VMID" ]; then 
+    echo "❌ Errore: Distro '$DISTRO' non configurata in p4config!"
+    exit 1
+fi
+
+# Il tarball atterra temporaneamente nella cartella delle mandracate sul padre
+PADRE_TAR="/eggs/shared/oa-tools-$VMID.tar.gz"
+
+echo "📦 Impacchetto oa-tools su colibri..."
+tar -czf /tmp/oa-tools-$VMID.tar.gz -C "$HOME" --exclude='.git' oa-tools
+
+echo "🚚 Sposto l'archivio su father in /eggs/shared/..."
+scp /tmp/oa-tools-$VMID.tar.gz "${PVE_TARGET}:${PADRE_TAR}"
+rm /tmp/oa-tools-$VMID.tar.gz
+
+echo "🚀 Inietto il codice in /home/artisan/ senza rompere i permessi..."
+ssh "$PVE_TARGET" "
+    # 1. Crea la cartella oa-tools nella home di artisan (se non esiste)
+    qm guest exec $VMID -- mkdir -p /home/artisan/oa-tools
+
+    # 2. Scompatta l'archivio direttamente partendo da /home/artisan/
+    qm guest exec $VMID -- tar -xzf /shared/oa-tools-$VMID.tar.gz -C /home/artisan/
+
+    # 3. Mossa maestra: riallinea la proprietà dei file all'utente artisan
+    qm guest exec $VMID -- chown -R artisan:artisan /home/artisan/oa-tools
+
+    # Pulizia sul padre
+    rm $PADRE_TAR
+"
+
+echo "✅ Sincronizzazione completata con successo nella home di artisan!"
