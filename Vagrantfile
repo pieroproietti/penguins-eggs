@@ -3,7 +3,7 @@
 
 BOX_STORE = File.expand_path('~/Vagrant-boxes')
 
-vms = {
+distros = {
   'debian' => {
     :box => "#{BOX_STORE}/debian.box",
     :hostname => 'naked',

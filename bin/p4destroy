@@ -1,0 +1,14 @@
+#!/bin/bash
+# Uso: p4destroy [debian|arch|manjaro|fedora]
+
+if [ ! -f ~/oa-tools/bin/p4config ]; then echo "Errore: p4config non trovato in ~/bin/!"; exit 1; fi
+source ~/oa-tools/bin/p4config
+
+DISTRO=$1
+VAR_NAME="VM_ID_${DISTRO}"
+VMID=${!VAR_NAME}
+
+if [ -z "$VMID" ]; then echo "Errore: Distro '$DISTRO' non configurata!"; exit 1; fi
+
+echo "🔄 Piallatura fucina $DISTRO... Ripristino snapshot '$SNAPSHOT_NAME' (VMID: $VMID)"
+ssh "$PVE_TARGET" "qm rollback $VMID $SNAPSHOT_NAME"
