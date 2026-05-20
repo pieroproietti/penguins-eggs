@@ -16,15 +16,17 @@ distros = {
   },
 
   'fedora' => {
-    :box => 'generic/fedora40',
-    :hostname => 'naked',
-    :pkg => 'hostnamectl set-hostname naked && dnf upgrade -y && dnf groupinstall -y "Development Tools" && dnf install -y golang git xorriso squashfs-tools bash-completion rpm-build'
+    :box => './Fedora-Cloud-Base-Vagrant-libvirt-43-1.6.x86_64.vagrant.libvirt.box',
+    :hostname => 'naked-fedora',
+    :disk => 8, # <--- Assicurati che ci sia questo!
+    :pkg => 'sudo dnf install -y make gcc fakeroot golang git xorriso squashfs-tools bash-completion rpm-build rpm-devel'
   },
 
   'manjaro' => {
-    :box => 'generic/manjaro',
+    :box => 'adnuntius/manjaro',
     :hostname => 'naked',
-    :pkg => 'hostnamectl set-hostname naked && pacman-key --init && pacman-key --populate manjaro && pacman -Syu --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion manjaro-tools-iso'
+    :disk => 8,
+    :pkg => 'hostnamectl set-hostname naked && pacman-key --init && pacman-key --populate manjaro && pacman -Syu --noconfirm && pacman -S --noconfirm base-devel go git xorriso squashfs-tools bash-completion'
   }
 }
 
