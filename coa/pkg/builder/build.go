@@ -90,6 +90,8 @@ func HandleBuild(d *distro.Distro, version string) {
 		packManjaro(baseVer, relNum, ctx)
 	case "fedora", "rhel", "centos", "rocky", "almalinux":
 		packFedora(baseVer, relNum, ctx)
+	case "opensuse":
+		packOpenSUSE(baseVer, relNum, ctx)
 	default:
 		LogBuild("Falling back to Debian/Generic packaging...")
 		pkgVersion := fmt.Sprintf("%s-%s", baseVer, relNum)

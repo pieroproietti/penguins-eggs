@@ -1,0 +1,58 @@
+# ==============================================================================
+# 🦎 MODULO OPENSUSE SLOWROLL
+# ==============================================================================
+# ----------------------------------------------------------------------------
+# 0. GRUPPO AMMINISTRATORE (SUSE usa wheel esattamente come Fedora)
+# ----------------------------------------------------------------------------
+{{ define "admin_group" }}wheel{{ end }}
+
+# ----------------------------------------------------------------------------
+# 3. GENERAZIONE MENU DI AVVIO E BRANDING (Logica Dracut standard per Live)
+# ----------------------------------------------------------------------------
+{{ define "boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image selinux=0{{ end }}
+
+# ----------------------------------------------------------------------------
+# 5. INITRAMFS LIVE (Cambia il nome dell'immagine finale)
+# ----------------------------------------------------------------------------
+{{ define "initramfs_cmd" }}
+dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensuse.img
+{{ end }}
+
+# ----------------------------------------------------------------------------
+# 6. ESTRAZIONE KERNEL E PRIVILEGI
+# ----------------------------------------------------------------------------
+{{ define "find_kernel_initrd" }}
+KERNEL_PATH=$(ls -v /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "rescue" | tail -n 1)
+INITRD_PATH="/home/eggs/liveroot/boot/initramfs-opensuse.img"
+{{ end }}
+
+# ----------------------------------------------------------------------------
+# 8. COMPRESSIONE FILESYSTEM.SQUASHFS (Struttura LiveOS dracut identica)
+# ----------------------------------------------------------------------------
+{{ define "squashfs_hooks" }}
+mkdir -p /home/eggs/isodir/LiveOS
+ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
+{{ end }}
+
+# ==============================================================================
+# 🎯 CALAMARES INSTALLER HOOKS (La vera nuova strategia)
+# ==============================================================================
+{{ define "install_logic" }}
+# SUSE non usa BLSCFG di default come Fedora, ma rigeneriamo dracut sul ferro
+dracut -f --regenerate-all
+
+if [ -d /sys/firmware/efi ]; then
+      # openSUSE vuole il bootloader-id specifico per non sovrascrivere altri sistemi
+      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=opensuse --recheck --force
+      
+      # ATTENZIONE: Su SUSE il grub.cfg standard sta in /boot/grub2/grub.cfg 
+      # e quello EFI punta lì tramite un piccolo stub in /boot/efi/EFI/opensuse/grub.cfg
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+      mkdir -p /boot/efi/EFI/opensuse
+      grub2-mkconfig -o /boot/efi/EFI/opensuse/grub.cfg
+else
+      TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
+      grub2-install --target=i386-pc --recheck "$TARGET_DISK"
+      grub2-makeconfig -o /boot/grub2/grub.cfg
+fi
+{{ end }}

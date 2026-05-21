@@ -15,3 +15,7 @@ distributions:
   - id: "fedora"
     like: ["nobara"]
     file: "fedora.bash.tmpl"
+
+- id: "opensuse"
+    like: ["suse"]
+    file: "opensuse.bash.tmpl"

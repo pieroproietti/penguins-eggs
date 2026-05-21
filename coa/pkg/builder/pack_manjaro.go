@@ -1,50 +1,51 @@
 package builder
 
+/* nuova versione nativa specifica per Manjaro Linux */
+
 import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	sysctx "coa/pkg/context"
 )
 
 // packManjaro genera il file PKGBUILD specifico per Manjaro Linux.
+// NUOVA ARCHITETTURA: Percorsi relativi via srcdir, ripulito dai residui di Vagrant.
 func packManjaro(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
-	var outDir string
+	// Il PKGBUILD viene sputato sempre e comunque nella radice del progetto
+	outDir := ctx.ProjRoot
 
-	if ctx.EnvType == sysctx.EnvVagrant {
-		outDir = ctx.BaseBuildDir
-	} else {
-		outDir = ctx.ProjRoot
-	}
+	// PULIZIA PER PACMAN (pkgver senza caratteri estranei):
+	cleanVer := strings.TrimPrefix(baseVer, "v")
+	cleanVer = strings.ReplaceAll(cleanVer, "-", ".")
+	cleanVer = strings.ReplaceAll(cleanVer, "_", ".")
 
-	// IL PKGBUILD SEMPLICE: L'orchestratore ha già fatto tutto.
+	// IL PKGBUILD NATIVO: Sfrutta "${srcdir}/../" per agganciare la Home del progetto.
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 # coa is the mind and oa the arm
 pkgname=oa-tools-manjaro
 pkgver=%s
 pkgrel=%s
-_srcdir="%s"
-_coadir="%s"
-_build_dir="%s"
-pkgdesc="oa-tools universal Linux remastering (Manjaro edition)"
+pkgdesc="oa-tools universal Linux remastering (Manjaro edition secondo la filosofia eggs-bananas)"
 arch=('x86_64')
 license=('GPL3')
 # Optimized Manjaro dependencies for oa-tools
 depends=(
-    'manjaro-tools-iso'      # Hook miso per initramfs (fondamentale su Manjaro)
-    'efibootmgr'
-    'libisoburn'
-    'squashfs-tools'
-    'mtools'
-    'dosfstools'
-    'arch-install-scripts'
-    'grub'
-    'rsync'
-    'sudo'
-    'pv'
-    'git'
-    'bash-completion'
+	'manjaro-tools-iso'      # Hook miso per initramfs (fondamentale su Manjaro)
+	'efibootmgr'
+	'libisoburn'
+	'squashfs-tools'
+	'mtools'
+	'dosfstools'
+	'arch-install-scripts'
+	'grub'
+	'rsync'
+	'sudo'
+	'pv'
+	'git'
+	'bash-completion'
 )
 
 conflicts=('penguins-eggs' 'oa-tools')
@@ -52,18 +53,21 @@ backup=('etc/oa-tools.d/oa-tools.yaml')
 options=(!debug)
 
 package() {
-    # 1. Installazione binari GIA' COMPILATI dall'orchestratore in RAM
-    install -Dm755 "${_build_dir}/oa/oa" "${pkgdir}/usr/bin/oa"
-    install -Dm755 "${_build_dir}/coa/coa" "${pkgdir}/usr/bin/coa"
-    ln -s coa "${pkgdir}/usr/bin/eggs"
+	# Nota: makepkg ci sposta dentro 'src/'. Usiamo "${srcdir}/../" per ritornare
+	# stabilmente nella radice dei sorgenti reali appena compilati localmente.
 
-    # 2. Configurazione e logica agnostica
-    install -d "${pkgdir}/etc/oa-tools.d/brain.d"
-    if [ -d "${_coadir}/brain.d" ]; then
-        cp -r "${_coadir}/brain.d/"* "${pkgdir}/etc/oa-tools.d/brain.d/"
-    fi
+	# 1. Installazione binari GIA' COMPILATI localmente da 'make'
+	install -Dm755 "${srcdir}/../oa/oa" "${pkgdir}/usr/bin/oa"
+	install -Dm755 "${srcdir}/../coa/coa" "${pkgdir}/usr/bin/coa"
+	ln -s coa "${pkgdir}/usr/bin/eggs"
 
-    cat <<EOF > "${pkgdir}/etc/oa-tools.d/oa-tools.yaml"
+	# 2. Configurazione e logica 'Brain'
+	install -d "${pkgdir}/etc/oa-tools.d/brain.d"
+	if [ -d "${srcdir}/../coa/brain.d" ]; then
+		cp -r "${srcdir}/../coa/brain.d/"* "${pkgdir}/etc/oa-tools.d/brain.d/"
+	fi
+
+	cat <<EOF > "${pkgdir}/etc/oa-tools.d/oa-tools.yaml"
 ---
 # oa-tools configuration (Manjaro)
 # Philosophy: https://penguins-eggs.net/blog/eggs-bananas
@@ -81,32 +85,29 @@ remaster:
   work_dir: "/home/eggs"
 EOF
 
-    if [ -d "${_srcdir}/conf" ]; then
-        cp -r "${_srcdir}/conf/"* "${pkgdir}/etc/oa-tools.d/"
-    fi
+	# 3. Documentazione (Man Pages) riallineata alla struttura coa/docs/man
+	if [ -d "${srcdir}/../coa/docs/man" ]; then
+		install -d "${pkgdir}/usr/share/man/man1"
+		for manfile in "${srcdir}/../coa/docs/man/"*.1; do
+			if [ -f "$manfile" ]; then
+				cp "$manfile" "${pkgdir}/usr/share/man/man1/"
+				chmod 644 "${pkgdir}/usr/share/man/man1/"$(basename "$manfile")
+			fi
+		done
+	fi
 
-    # 3. Documentazione GIA' GENERATA in RAM dall'orchestratore
-    if [ -d "${_build_dir}/docs/man" ]; then
-        install -d "${pkgdir}/usr/share/man/man1"
-        for manfile in "${_build_dir}/docs/man/"*.1; do
-            if [ -f "$manfile" ]; then
-                cp "$manfile" "${pkgdir}/usr/share/man/man1/"
-                chmod 644 "${pkgdir}/usr/share/man/man1/"$(basename "$manfile")
-            fi
-        done
-    fi
+	# 4. Shell Completions riallineate a coa/docs/completion/
+	install -Dm644 "${srcdir}/../coa/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
+	install -Dm644 "${srcdir}/../coa/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
+	install -Dm644 "${srcdir}/../coa/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
 
-    install -Dm644 "${_build_dir}/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
-    install -Dm644 "${_build_dir}/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
-    install -Dm644 "${_build_dir}/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
+	ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
+	ln -s _coa "${pkgdir}/usr/share/zsh/vendor-completions/_eggs"
+	ln -s coa.fish "${pkgdir}/usr/share/fish/vendor_completions.d/eggs.fish"
 
-    ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
-    ln -s _coa "${pkgdir}/usr/share/zsh/vendor-completions/_eggs"
-    ln -s coa.fish "${pkgdir}/usr/share/fish/vendor_completions.d/eggs.fish"
-
-    echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
+	echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, baseVer, relNum, ctx.ProjRoot, ctx.CoaDir, ctx.BaseBuildDir)
+`, cleanVer, relNum)
 
 	// Scrittura del file PKGBUILD direttamente nella cartella di output
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
@@ -116,9 +117,5 @@ EOF
 		return
 	}
 
-	if ctx.EnvType == sysctx.EnvVagrant {
-		fmt.Printf("[SUCCESS] [Vagrant Mode] PKGBUILD (Manjaro) protetto direttamente in: %s\n", outDir)
-	} else {
-		fmt.Printf("[SUCCESS] [Local Mode] PKGBUILD (Manjaro) generato correttamente in: %s\n", outDir)
-	}
+	fmt.Printf("[SUCCESS] [Native Mode] PKGBUILD (Manjaro) generato nella root: %s\n", pkgbuildPath)
 }
