@@ -85,6 +85,12 @@ func NewDistro() *Distro {
 			d.FamilyID = "fedora"
 			d.DistroLike = "Fedora"
 			return d
+
+		case "opensuse":
+			d.FamilyID = "opensuse"
+			d.DistroLike = "Opensuse"
+			return d
+
 		}
 	}
 

@@ -24,7 +24,7 @@ _p4_suite_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     
     # Le nostre fucine (bersagli)
-    local fucine="arch debian fedora manjaro"
+    local fucine="arch debian fedora manjaro opensuse"
     
     # Genera i suggerimenti filtrando le fucine in base a cosa è stato digitato finora
     COMPREPLY=( $(compgen -W "$fucine" -- "$cur") )

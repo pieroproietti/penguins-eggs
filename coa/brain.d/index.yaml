@@ -16,6 +16,6 @@ distributions:
     like: ["nobara"]
     file: "fedora.bash.tmpl"
 
-- id: "opensuse"
-    like: ["suse"]
+  - id: "opensuse"
+    like: ["suse", "opensuse-tumbleweed", "opensuse-slowroll"]
     file: "opensuse.bash.tmpl"

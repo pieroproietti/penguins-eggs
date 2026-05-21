@@ -8,6 +8,7 @@ VM_ID_debian="201"
 VM_ID_arch="202"
 VM_ID_manjaro="203"
 VM_ID_fedora="204"
+VM_ID_opensuse="205"
 
 # Nome dello snapshot "vergine" per i rollback
 SNAPSHOT_NAME="virgin"
