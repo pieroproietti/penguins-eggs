@@ -37,7 +37,7 @@ remaster:
     action: "oa_users"
 
   # ----------------------------------------------------------------------------
-  # 4.1 Sanitize host
+  # 4.1 SANITIZE HOST
   # ----------------------------------------------------------------------------
   - name: "coa-sanitize-host"
     description: "Remove /etc/fstab from live"
@@ -87,6 +87,7 @@ remaster:
     action: "oa_shell"
     run_command: |
 {{ include "common_squashfs" . | indent 6 }}
+{{ include "squashfs_hooks" . | indent 6 }}
 
   # ----------------------------------------------------------------------------
   # 9. ISO XORRISO PACKAGING
