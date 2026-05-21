@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# 1. Esportiamo la variabile in modo che anche il binario 'coa' la erediti 
-#    quando lancerà le sue compilazioni interne
-export BUILD_DIR="/tmp/oa-build"
+# 1. Pulizia e compilazione nativa dei binari direttamente qui
+make clean
+make all
 
-# 2. Esegui la pulizia e la build forzando la variabile direttamente per sicurezza
-make clean BUILD_DIR="$BUILD_DIR"
-make all BUILD_DIR="$BUILD_DIR"
+# 2. Generazione dei documenti (Man Pages) prima di impacchettare
+# L'asterisco funzionerà sempre perché i file nascono un istante prima
+./coa/coa tools doc
 
-# 3. Lancia il coa builder usando il percorso assoluto corretto
-$BUILD_DIR/coa/coa tools build
+# 3. Lancio del builder per creare i pacchetti (RPM/DEB) 
+./coa/coa tools build

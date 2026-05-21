@@ -35,18 +35,15 @@ func moveFile(src, dst string) error {
 }
 
 // packFedora genera il pacchetto RPM per Fedora e derivate RHEL.
-// RISPETTA IL PATTO: Sfrutta il RuntimeContext per blindare i percorsi e isolare i build.
+// NUOVA ARCHITETTURA: Tutto nella Home, percorsi agganciati tramite _topdir, zero confusione.
 func packFedora(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	cleanVer := strings.TrimPrefix(baseVer, "v")
 	pkgName := fmt.Sprintf("oa-tools-%s-%s", cleanVer, relNum)
 
-	// 1. Definiamo la baseBuildDir interrogando direttamente il campo corretto
-	baseBuildDir := ctx.BaseBuildDir
+	// Il nido di rpmbuild lo teniamo in un angolo isolato della home del progetto per pulizia
+	buildRoot := filepath.Join(ctx.ProjRoot, ".rpmbuild_tmp")
 
-	// Workspace isolato per rpmbuild dentro la RAM (/tmp/oa-build/rpmbuild_...)
-	buildRoot := filepath.Join(baseBuildDir, "rpmbuild_"+pkgName)
-
-	fmt.Printf("[build] Packing .rpm archive for %s (Evolution Edition)...\n", pkgName)
+	fmt.Printf("[build] Packing .rpm archive for %s (Native Proxmox Edition)...\n", pkgName)
 
 	os.RemoveAll(buildRoot)
 	dirs := []string{"BUILD", "BUILDROOT", "RPMS", "SOURCES", "SPECS", "SRPMS"}
@@ -56,8 +53,7 @@ func packFedora(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 
 	specPath := filepath.Join(buildRoot, "SPECS", "oa-tools.spec")
 
-	// 2. Definiamo il contenuto dello SPEC.
-	// Usiamo l'accesso diretto ai campi strutturati: ctx.ProjRoot, ctx.BaseBuildDir, ecc.
+	// Generiamo lo SPEC. Usiamo %%{_topdir}/../ per risalire alla radice reale dei sorgenti.
 	specContent := fmt.Sprintf(`%%define debug_package %%{nil}
 
 Name:           oa-tools
@@ -68,26 +64,13 @@ License:        GPLv3
 URL:            https://penguins-eggs.net/blog/eggs-bananas
 
 # Dipendenze
-Requires:       bash-completion
-Requires:       squashfs-tools
-Requires:       xorriso
-Requires:       dosfstools
-Requires:       mtools
-Requires:       dracut-live
-Requires:       gdisk
-Requires:       git
-Requires:       rsync
-Requires:       sudo
-Requires:       google-noto-emoji-fonts
-Requires:       grub2-pc-modules
-Requires:       grub2-efi-x64-modules
-Requires:       efibootmgr
-Requires:       shim-x64
+Requires:       bash-completion squashfs-tools xorriso dosfstools mtools
+Requires:       dracut-live gdisk git rsync sudo google-noto-emoji-fonts
+Requires:       grub2-pc-modules grub2-efi-x64-modules efibootmgr shim-x64
 Conflicts:      penguins-eggs
 
 %%description
 oa-tools: la rimasterizzazione universale secondo la filosofia eggs-bananas.
-Include il supporto completo per shell completions e branding grafico per il boot.
 
 %%install
 rm -rf %%{buildroot}
@@ -99,13 +82,13 @@ mkdir -p %%{buildroot}/usr/share/bash-completion/completions
 mkdir -p %%{buildroot}/usr/share/zsh/vendor-completions
 mkdir -p %%{buildroot}/usr/share/fish/vendor_completions.d
 
-# 1. Installazione Binari (Peschiamo dallo schema specchio in RAM tramite ctx)
-install -m 0755 %s/oa/oa %%{buildroot}/usr/bin/oa
-install -m 0755 %s/coa/coa %%{buildroot}/usr/bin/coa
+# 1. Installazione Binari (Risaliamo rispetto a _topdir per pescare i binari pronti nella home)
+install -m 0755 %%{_topdir}/../oa/oa %%{buildroot}/usr/bin/oa
+install -m 0755 %%{_topdir}/../coa/coa %%{buildroot}/usr/bin/coa
 ln -s coa %%{buildroot}/usr/bin/eggs
 
 # 2. Configurazione "Brain", YAML, Moduli e Assets
-cp -a %s/coa/brain.d/* %%{buildroot}/etc/oa-tools.d/brain.d/
+cp -a %%{_topdir}/../coa/brain.d/* %%{buildroot}/etc/oa-tools.d/brain.d/
 cat <<EOF > %%{buildroot}/etc/oa-tools.d/oa-tools.yaml
 ---
 system:
@@ -119,19 +102,16 @@ remaster:
   work_dir: "/home/eggs"
 EOF
 
-# 3. Man Pages
-cp %s/coa/docs/man/*.1 %%{buildroot}/usr/share/man/man1/
+# 3. Man Pages (Generate un istante prima dal Makefile)
+cp %%{_topdir}/../coa/docs/man/*.1 %%{buildroot}/usr/share/man/man1/
 gzip -9 %%{buildroot}/usr/share/man/man1/*.1
 
-# 4. Shell Completions (Bash, Zsh, Fish)
-install -m 0644 %s/coa/docs/completion/coa.bash %%{buildroot}/usr/share/bash-completion/completions/coa
-install -m 0644 %s/coa/docs/completion/coa.zsh %%{buildroot}/usr/share/zsh/vendor-completions/_coa
-install -m 0644 %s/coa/docs/completion/coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/coa.fish
+# 4. Shell Completions
+install -m 0644 %%{_topdir}/../coa/docs/completion/coa.bash %%{buildroot}/usr/share/bash-completion/completions/coa
+install -m 0644 %%{_topdir}/../coa/docs/completion/coa.zsh %%{buildroot}/usr/share/zsh/vendor-completions/_coa
+install -m 0644 %%{_topdir}/../coa/docs/completion/coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/coa.fish
 
-# Patch Bash: registra l'alias 'eggs'
 echo "complete -o default -F __start_coa eggs" >> %%{buildroot}/usr/share/bash-completion/completions/coa
-
-# Symlink per gli alias dei completamenti
 ln -s coa %%{buildroot}/usr/share/bash-completion/completions/eggs
 ln -s _coa %%{buildroot}/usr/share/zsh/vendor-completions/_eggs
 ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
@@ -156,15 +136,15 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 
 %%changelog
 * Sun May 10 2026 Piero Proietti <piero.proietti@gmail.com> - %s-%s
-- Added full branding assets (splash screen and boot fonts)
-- Added google-noto-emoji-fonts dependency for proper terminal rendering
-- Refactored brain.d to use Go templates (modules)
-`, cleanVer, relNum, baseBuildDir, baseBuildDir, ctx.ProjRoot, cleanVer, ctx.ProjRoot, ctx.ProjRoot, ctx.ProjRoot, ctx.ProjRoot, cleanVer, relNum)
+- Native Proxmox build pipeline adaptation
+`, cleanVer, relNum, cleanVer, cleanVer, relNum)
 
 	os.WriteFile(specPath, []byte(specContent), 0644)
 
 	fmt.Println("[build] Running rpmbuild...")
+	// Lanciamo rpmbuild impostando la directory di lavoro (Dir) nella radice del progetto
 	rpmCmd := exec.Command("rpmbuild", "-bb", "--define", fmt.Sprintf("_topdir %s", buildRoot), specPath)
+	rpmCmd.Dir = ctx.ProjRoot
 	rpmCmd.Stdout, rpmCmd.Stderr = os.Stdout, os.Stderr
 
 	if err := rpmCmd.Run(); err != nil {
@@ -172,31 +152,19 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 		return
 	}
 
-	// 3. Gestione e smistamento dell'RPM sfornato
+	// 3. Spostamento dell'RPM sfornato direttamente nella root del progetto
 	rpmPattern := filepath.Join(buildRoot, "RPMS", "x86_64", "*.rpm")
 	matches, _ := filepath.Glob(rpmPattern)
 	if len(matches) > 0 {
 		rpmFile := filepath.Base(matches[0])
-
-		if ctx.EnvType == sysctx.EnvVagrant {
-			// Siamo in Vagrant: salviamo l'RPM direttamente nella radice di /tmp/oa-build/ al sicuro da 9p
-			vagrantTarget := filepath.Join(baseBuildDir, rpmFile)
-			if err := moveFile(matches[0], vagrantTarget); err == nil {
-				fmt.Printf("[SUCCESS] [Vagrant Mode] Pacchetto RPM protetto in: %s\n", vagrantTarget)
-			} else {
-				fmt.Printf("[ERROR] Failed to isolate RPM in Vagrant: %v\n", err)
-			}
+		finalPkg := filepath.Join(ctx.ProjRoot, rpmFile)
+		if err := moveFile(matches[0], finalPkg); err == nil {
+			fmt.Printf("[SUCCESS] Pacchetto RPM creato nella root: %s\n", finalPkg)
 		} else {
-			// Siamo sull'host locale: scriviamo direttamente nella root del progetto
-			finalPkg := filepath.Join(ctx.ProjRoot, rpmFile)
-			if err := moveFile(matches[0], finalPkg); err == nil {
-				fmt.Printf("[SUCCESS] Pacchetto creato nella root del progetto: %s\n", finalPkg)
-			} else {
-				fmt.Printf("[ERROR] Failed to move RPM to project root: %v\n", err)
-			}
+			fmt.Printf("[ERROR] Failed to move RPM: %v\n", err)
 		}
 	}
 
-	// Pulizia finale del nido temporaneo di rpmbuild
+	// Pulizia finale
 	os.RemoveAll(buildRoot)
 }
