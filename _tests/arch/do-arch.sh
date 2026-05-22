@@ -63,6 +63,11 @@ vagrant ssh -c "sudo cp -r ~/build_oa/coa/brain.d /etc/oa-tools.d/"
 echo "=== Test Finale e Remastering ==="
 vagrant ssh -c "oa --help"
 vagrant ssh -c "coa --help"
+
+# Diciamo al kernel di Arch di prepararsi a usare OverlayFS!
+vagrant ssh -c "sudo modprobe overlay"
+
+echo "=== Remaster! ==="
 vagrant ssh -c "sudo coa remaster"
 
 echo "=== Estrazione dell'uovo ==="
