@@ -13,21 +13,22 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: Prepara ambiente (Vagrant & Libvirt)
+    - name: Prepara ambiente (Installazione Forza)
       run: |
+        # 1. Aggiorna e installa dipendenze base
         sudo apt-get update
         sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils libvirt-dev build-essential ruby-dev
+
+        # 2. Scarica e installa Vagrant pulito
+        wget -q https://releases.hashicorp.com/vagrant/2.4.9/vagrant_2.4.9-1_amd64.deb
+        sudo dpkg -i vagrant_2.4.9-1_amd64.deb
         
-        # 1. Installiamo il plugin (ormai lo sai fare)
-        vagrant plugin install vagrant-libvirt
+        # 3. Verifica immediata: deve rispondere la versione, altrimenti falliamo subito
+        /usr/bin/vagrant --version
         
-        # 2. SE IL RUNNER DICE "command not found", FORZIAMO IL PATH
-        # Troviamo dove è nascosto vagrant
-        which vagrant || echo "Vagrant non trovato nel path standard"
+        # 4. Installa il plugin
+        /usr/bin/vagrant plugin install vagrant-libvirt
         
-        # Se è in /usr/local/bin/vagrant, assicuriamoci che sia nel path
-        export PATH=$PATH:/usr/local/bin
-        vagrant --version
 
     - name: Build e Test
       run: |
