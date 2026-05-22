@@ -88,5 +88,7 @@ echo "=== Test dei comandi nativi ==="
 vagrant ssh -c "oa --help"
 vagrant ssh -c "coa --help"
 vagrant ssh -c "sudo coa remaster"
+echo "=== Estrazione dell'uovo per il download ==="
+vagrant ssh -c "sudo cp /home/eggs/*.iso /vagrant/"
 
 echo "=== Test completato con successo! ==="

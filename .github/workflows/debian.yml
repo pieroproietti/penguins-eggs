@@ -18,3 +18,12 @@ jobs:
       run: |
         ./tests/debian/vagrant.install.build.test.sh
 
+    - name: Salva la ISO generata come artefatto
+      uses: actions/upload-artifact@v4
+      with:
+        name: debian-13-egg
+        # Il percorso host dove lo script Bash ha depositato la ISO
+        path: ./tests/debian/*.iso
+        # Mantieni il file sui server per 5 giorni per evitare di sprecare spazio inutile
+        retention-days: 5
+
