@@ -31,10 +31,10 @@ jobs:
         echo "Scarico il codice sulla VM ${{ matrix.ip }}..."
         ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "rm -rf /home/artisan/oa-tools && git clone https://github.com/${{ github.repository }}.git /home/artisan/oa-tools && cd /home/artisan/oa-tools && git checkout ${{ github.sha }}"
 
-    - name: Build & Remaster
+    - name: Build, Kill & Remaster
       run: |
         echo "Lancio la build nativa e remasterizzo..."
-        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "cd /home/artisan/oa-tools && make && echo 'evolution' | sudo -S ./coa/coa remaster"
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "cd /home/artisan/oa-tools && make && echo 'evolution' | sudo -S ./coa/coa kill | sudo -S ./coa/coa remaster"
 
     - name: Estrazione ISO
       if: always()
