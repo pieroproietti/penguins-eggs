@@ -1,5 +1,5 @@
 Vagrant.configure("2") do |config|
-  # Usiamo 'arch' come nome interno univoco
+  # Nome macchina univoco per la matrice
   config.vm.define "arch" do |node|
     node.vm.box = "generic/arch"
     node.vm.hostname = "naked-arch"
@@ -10,22 +10,32 @@ Vagrant.configure("2") do |config|
       lv.cpu_mode = "host-passthrough"
     end
 
-    # Montiamo l'intera root del progetto
+    # Mount 9p per la condivisione del workspace
     node.vm.synced_folder "../..", "/vagrant", 
       type: "9p", 
       disabled: false, 
       mount_options: ["version=9p2000.L", "trans=virtio", "access=any", "uid=1000", "gid=1000"]
 
-    # Provisioning
+    # Provisioning blindato
     node.vm.provision "shell", inline: <<-SHELL
       set -eux
+      
+      # Abilita sudo senza password
+      echo "vagrant ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/vagrant
+      chmod 0440 /etc/sudoers.d/vagrant
+
+      # Moduli necessari
       modprobe overlay
       modprobe loop
       modprobe squashfs
+      
+      # Inizializzazione pacman
       pacman-key --init
       pacman-key --populate archlinux
       pacman -Sy archlinux-keyring --noconfirm
       pacman -Su --noconfirm
+      
+      # Installazione dipendenze
       pacman -S --noconfirm base-devel go git make xorriso squashfs-tools bash-completion dosfstools mtools
     SHELL
   end
