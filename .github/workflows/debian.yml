@@ -16,5 +16,5 @@ jobs:
 
     - name: run buidl and test
       run: |
-        ./tests/debia/vagrant.install.build.test.sh
+        ./tests/debian/vagrant.install.build.test.sh
 
