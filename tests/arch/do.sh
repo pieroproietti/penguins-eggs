@@ -26,6 +26,15 @@ sudo usermod -a -G kvm $(whoami)
 # Scardiniamo i permessi del socket visto che siamo su una macchina usa-e-getta
 sudo chmod 666 /var/run/libvirt/libvirt-sock
 
+echo "=== Fix Permessi Libvirt per GitHub Actions ==="
+sudo usermod -a -G libvirt $(whoami)
+sudo usermod -a -G kvm $(whoami)
+sudo chmod 666 /var/run/libvirt/libvirt-sock
+
+echo "=== Fix permessi directory per KVM/9p ==="
+sudo chmod a+rx /home/runner
+sudo chmod -R a+rx /home/runner/work
+
 echo "=== Avvio Macchina Virtuale Arch ==="
 vagrant up --provider=libvirt
 sleep 10
