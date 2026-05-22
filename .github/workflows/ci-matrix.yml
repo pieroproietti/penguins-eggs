@@ -5,40 +5,49 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04 # Fondamentale: qui vagrant è ancora nei repository ufficiali APT
     strategy:
-      fail-fast: false
+      fail-fast: false    # Se Arch fallisce, Debian continua (e viceversa), così leggi i log di entrambi
       matrix:
         distro: [arch, debian]
     
     steps:
     - uses: actions/checkout@v6
 
-    - name: Prepara ambiente (Metodo Nativo)
+    - name: Prepara ambiente (Metodo Nativo e Silenziato)
       run: |
         sudo apt-get update
         
-        # 1. LA MAGIA: Installiamo tutto dai repo di Ubuntu.
-        # vagrant e vagrant-libvirt sono già precompilati qui. Niente attese e niente timeout!
-        sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils vagrant vagrant-libvirt
+        # 1. Installazione silenziosa e velocissima (--no-install-recommends e DEBIAN_FRONTEND)
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+          qemu-kvm \
+          libvirt-daemon-system \
+          libvirt-clients \
+          bridge-utils \
+          vagrant \
+          vagrant-libvirt
         
-        # 2. Avviamo il motore KVM (ora funzionerà senza problemi)
-        sudo systemctl start libvirtd
+        # 2. Sblocco permessi QEMU per evitare il "Permission denied" sulle cartelle condivise (9p)
+        echo 'user = "root"' | sudo tee -a /etc/libvirt/qemu.conf
+        echo 'group = "root"' | sudo tee -a /etc/libvirt/qemu.conf
+        echo 'security_driver = "none"' | sudo tee -a /etc/libvirt/qemu.conf
+        
+        # 3. Riavvio dei servizi per applicare le modifiche a qemu.conf
+        sudo systemctl restart libvirtd
         sudo systemctl enable libvirtd
         
-        # 3. Diamo al runner (GitHub) le chiavi per guidare la macchina
+        # 4. Aggiunta dell'utente runner al gruppo libvirt
         sudo usermod -a -G libvirt $USER
 
     - name: Build e Test
       run: |
-        # Usiamo 'sg' per lanciare lo script senza incappare in problemi di permessi
+        # Esecuzione nel gruppo libvirt per evitare problemi di socket
         sg libvirt -c "./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh"
 
     - name: Estrazione ISO
-      if: always()
+      if: always() # Salva l'uovo anche se lo step precedente fallisce
       run: |
-        # Recuperiamo l'uovo con lo stesso metodo
-        sg libvirt -c "vagrant ssh ${{ matrix.distro }} -c 'cat ~/egg.iso' > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso"
+        sg libvirt -c "/usr/bin/vagrant ssh ${{ matrix.distro }} -c 'cat ~/egg.iso' > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso"
 
     - name: Salva artefatto
       uses: actions/upload-artifact@v4
@@ -46,3 +55,4 @@ jobs:
         name: ${{ matrix.distro }}-egg
         path: ./github-ci-roots/${{ matrix.distro }}/*.iso
         retention-days: 5
+        
