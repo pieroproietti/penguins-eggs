@@ -13,25 +13,25 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: Prepara ambiente (Veloce)
+    - name: Prepara ambiente (Vagrant & Libvirt)
       run: |
+        # 1. Installa i pacchetti
         sudo apt-get update
-        # Installiamo TUTTO il necessario per la compilazione in un colpo solo
-        sudo apt-get install -y \
-          build-essential \
-          libvirt-dev \
-          ruby-dev \
-          libxml2-dev \
-          libxslt1-dev \
-          pkg-config
-        
-        # Installiamo vagrant
+        sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils libvirt-dev build-essential ruby-dev
+
+        # 2. AVVIA IL SERVIZIO PRIMA DI TUTTO (Questo crea il gruppo libvirt)
+        sudo systemctl start libvirtd
+        sudo systemctl enable libvirtd
+
+        # 3. Aggiungi l'utente al gruppo libvirt
+        sudo usermod -a -G libvirt $USER
+
+        # 4. Installa Vagrant e plugin
         wget -q https://releases.hashicorp.com/vagrant/2.4.9/vagrant_2.4.9-1_amd64.deb
         sudo dpkg -i vagrant_2.4.9-1_amd64.deb
         
-        # E ora il trucco: usiamo --local per vedere se riusciamo ad accelerare 
-        # o se riusciamo a far sì che il processo finisca in tempo
-        /usr/bin/vagrant plugin install vagrant-libvirt    
+        # Usa sudo per installare il plugin, così è disponibile a livello di sistema
+        sudo vagrant plugin install vagrant-libvirt
 
     - name: Build e Test
       run: |
