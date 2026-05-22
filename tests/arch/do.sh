@@ -29,7 +29,7 @@ sudo chmod 666 /var/run/libvirt/libvirt-sock
 echo "=== Fix permessi directory per KVM/9p ==="
 # Diamo il permesso di attraversamento (execute) e lettura a tutti sulle cartelle padre
 sudo chmod a+rx /home/runner
-sudo chmod -R a+rX /home/runner/work
+sudo chmod -R a+rwX /home/runner/work
 
 echo "=== Avvio Macchina Virtuale Arch ==="
 vagrant up --provider=libvirt
