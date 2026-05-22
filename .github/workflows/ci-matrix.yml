@@ -22,7 +22,7 @@ jobs:
     - name: Start Proxmox VM (${{ matrix.distro }})
       run: |
         echo "Ordino al nodo Proxmox di accendere la VM ${{ matrix.vmid }}..."
-        ssh -o StrictHostKeyChecking=no artisan@192.168.1.2 "echo 'live' | sudo -S qm start ${{ matrix.vmid }}"
+        ssh -o StrictHostKeyChecking=no artisan@192.168.1.2 "echo 'evolution' | sudo -S qm start ${{ matrix.vmid }}"
         echo "Attendo 25 secondi per il boot e l'avvio della rete..."
         sleep 25
 
@@ -34,13 +34,13 @@ jobs:
     - name: Build & Remaster
       run: |
         echo "Lancio la build nativa e remasterizzo..."
-        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "cd /home/artisan/oa-tools && make && echo 'live' | sudo -S ./coa/coa remaster"
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "cd /home/artisan/oa-tools && make && echo 'evolution' | sudo -S ./coa/coa remaster"
 
     - name: Estrazione ISO
       if: always()
       run: |
         echo "Recupero l'uovo appena deposto..."
-        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "echo 'live' | sudo -S cat /home/eggs/egg*.iso" > ./egg-of-${{ matrix.distro }}.iso
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "echo 'evolution' | sudo -S cat /home/eggs/egg*.iso" > ./egg-of-${{ matrix.distro }}.iso
 
     - name: Upload Artefatto
       uses: actions/upload-artifact@v4
@@ -53,5 +53,5 @@ jobs:
       if: always()
       run: |
         echo "Ordino lo spegnimento della macchina..."
-        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "echo 'live' | sudo -S poweroff" || true
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "echo 'evolution' | sudo -S poweroff" || true
         
