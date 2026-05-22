@@ -1,6 +1,6 @@
-name: 105-vagrant-arch-linux
+name: debian
 
-on:
+on: 
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -16,5 +16,5 @@ jobs:
 
     - name: run buidl and test
       run: |
-        ./tests/105-vagrant-arch-linux/vagrant.install.build.test.sh
+        ./tests/debia/vagrant.install.build.test.sh
 
