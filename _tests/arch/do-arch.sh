@@ -76,6 +76,6 @@ vagrant ssh -c "sudo coa remaster"
 
 echo "=== Estrazione dell'uovo ==="
 # Portiamo fuori la ISO per GitHub Artifacts
-vagrant ssh -c "sudo cp /home/eggs/*.iso /vagrant/_tests/arch/"
+vagrant ssh -c "sudo cp /home/eggs/*.iso /vagrant/"
 
 echo "=== VITTORIA SU ARCH! ==="
