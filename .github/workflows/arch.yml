@@ -1,0 +1,26 @@
+name: Arch Linux Remaster Test
+
+on: 
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Esegui Build e Test su Arch Linux
+      run: |
+        ./tests/arch/do.sh
+
+    - name: Salva la ISO generata come artefatto
+      uses: actions/upload-artifact@v4
+      with:
+        name: arch-linux-egg
+        path: ./tests/arch/*.iso
+        retention-days: 5
+        
