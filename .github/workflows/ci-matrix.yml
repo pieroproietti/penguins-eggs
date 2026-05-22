@@ -15,14 +15,19 @@ jobs:
 
     - name: Prepara ambiente (Vagrant & Libvirt)
       run: |
-        # 1. Aggiorna i repository
         sudo apt-get update
-        # 2. Installa solo le dipendenze di compilazione (niente installazione manuale di vagrant)
         sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils libvirt-dev build-essential ruby-dev
         
-        # 3. Usa il vagrant già presente nel runner (è più stabile)
-        # 4. Installa il plugin (questo scarica i binari se disponibili, risparmiando tempo)
+        # 1. Installiamo il plugin (ormai lo sai fare)
         vagrant plugin install vagrant-libvirt
+        
+        # 2. SE IL RUNNER DICE "command not found", FORZIAMO IL PATH
+        # Troviamo dove è nascosto vagrant
+        which vagrant || echo "Vagrant non trovato nel path standard"
+        
+        # Se è in /usr/local/bin/vagrant, assicuriamoci che sia nel path
+        export PATH=$PATH:/usr/local/bin
+        vagrant --version
 
     - name: Build e Test
       run: |
