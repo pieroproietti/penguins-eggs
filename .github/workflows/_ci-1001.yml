@@ -15,5 +15,5 @@ jobs:
 
     - name: full smoke-test on CI 
       run: |
-        ./tests/101-ubuntu-latest/1001.ubuntu.latest.build.test.sh
+        ./tests/101-ubuntu-latest/ubuntu.latest.build.test.sh
 

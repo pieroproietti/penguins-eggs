@@ -1,8 +1,8 @@
 name: 107-vagrant-fedora-43
 
 on: 
-  push:
-    branches: [ main ]
+  #push:
+  #  branches: [ main ]
   workflow_dispatch:
   
 jobs:
