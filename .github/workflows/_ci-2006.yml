@@ -1,4 +1,4 @@
-name: 106-vagrant-centos-10-stream
+name: _106-vagrant-centos-10-stream
 
 # only manual, thanks
 on: 

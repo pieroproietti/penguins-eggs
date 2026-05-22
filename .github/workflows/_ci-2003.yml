@@ -1,4 +1,4 @@
-name: 103-vagrant-almalinux-10
+name: _103-vagrant-almalinux-10
 
 # only manual, thanks
 on: 

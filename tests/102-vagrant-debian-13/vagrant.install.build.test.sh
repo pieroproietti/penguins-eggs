@@ -87,6 +87,6 @@ echo "=== Test dei comandi nativi ==="
 # 3. Ora testiamo i comandi veri e propri, installati regolarmente nel sistema guest
 vagrant ssh -c "oa --help"
 vagrant ssh -c "coa --help"
-vagrant ssh -c "sudo coa remaster --mode clone"
+vagrant ssh -c "sudo coa remaster"
 
 echo "=== Test completato con successo! ==="

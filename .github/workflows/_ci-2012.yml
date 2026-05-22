@@ -1,8 +1,6 @@
-name: 112-vagrant-linux-manjaro
+name: _112-vagrant-linux-manjaro
 
 on: 
-  push:
-    branches: [ main ]
   workflow_dispatch:
   
 jobs:

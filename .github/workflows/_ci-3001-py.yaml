@@ -1,4 +1,4 @@
-name: 3001-ubuntu-latest-py
+name: _3001-ubuntu-latest-py
 
 # only manual, thanks
 on:

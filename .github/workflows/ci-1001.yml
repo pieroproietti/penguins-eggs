@@ -2,10 +2,6 @@ name: 101-ubuntu-latest
 
 # only manual, thanks
 on:
-  push:
-    branches: [ "main", "devel" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
