@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         distro: [arch, debian]
@@ -45,4 +45,3 @@ jobs:
         name: ${{ matrix.distro }}-egg
         path: ./github-ci-roots/${{ matrix.distro }}/*.iso
         retention-days: 5
-        
