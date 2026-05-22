@@ -1,34 +1,31 @@
 Vagrant.configure("2") do |config|
+  # Usiamo una box generica perfetta per KVM/libvirt
+  config.vm.box = "generic/arch"
+  config.vm.hostname = "naked-arch"
 
-  # https://portal.cloud.hashicorp.com/vagrant/discover
-  # you can add a new vm from vagrant/discover
-  config.vm.box = "cloud-image/arch-linux"
-
-  config.vm.hostname = "cloud-image-arch-linux"
-
-  config.vm.provider "virtualbox" do |vb|
-
-    vb.name = "cloud-image-arch-linux"
-
-    vb.gui = false
-
-   
-    vb.memory = 4096
-    vb.cpus = 2
-
-   
-    vb.customize ["modifyvm", :id, "--vram", "128"]
-
-  
-    vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
-
-    vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+  # MOTORE CLOUD: Niente VirtualBox, andiamo alla velocità della luce con libvirt
+  config.vm.provider "libvirt" do |lv|
+    lv.memory = 4096
+    lv.cpus = 4
+    lv.cpu_mode = "host-passthrough"
   end
 
-  config.vm.synced_folder ".", "/vagrant"
+  # IL PONTE MAGICO: Montiamo l'intera root del tuo progetto (che sta due livelli più su)
+  config.vm.synced_folder "../..", "/vagrant", 
+    type: "9p", 
+    disabled: false, 
+    mount_options: ["version=9p2000.L", "trans=virtio", "access=any", "uid=1000", "gid=1000"]
+
+  # LA PALESTRA: Diamo ad Arch gli strumenti per compilare il tuo codice
   config.vm.provision "shell", inline: <<-SHELL
     set -eux
-    # todo
-    date
+    # Inizializzazione chiavi pacman
+    pacman-key --init
+    pacman-key --populate archlinux
+    pacman -Sy archlinux-keyring --noconfirm
+    pacman -Su --noconfirm
+    
+    # Installiamo i ferri del mestiere!
+    pacman -S --noconfirm base-devel go git make xorriso squashfs-tools bash-completion
   SHELL
 end
