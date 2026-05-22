@@ -13,26 +13,15 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-
     - name: Prepara ambiente (Vagrant & Libvirt)
       run: |
+        # 1. Aggiorna i repository
         sudo apt-get update
-        # Aggiungiamo esplicitamente libvirt-dev, build-essential e ruby-dev
-        # Ruby-dev è fondamentale perché il plugin di Vagrant è scritto in Ruby
-        sudo apt-get install -y \
-          qemu-kvm \
-          libvirt-daemon-system \
-          libvirt-clients \
-          bridge-utils \
-          libvirt-dev \
-          build-essential \
-          ruby-dev \
-          wget
+        # 2. Installa solo le dipendenze di compilazione (niente installazione manuale di vagrant)
+        sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils libvirt-dev build-essential ruby-dev
         
-        wget -q https://releases.hashicorp.com/vagrant/2.4.9/vagrant_2.4.9-1_amd64.deb
-        sudo dpkg -i vagrant_2.4.9-1_amd64.deb
-        
-        # Ora che abbiamo gli header, il plugin si compilerà felicemente
+        # 3. Usa il vagrant già presente nel runner (è più stabile)
+        # 4. Installa il plugin (questo scarica i binari se disponibili, risparmiando tempo)
         vagrant plugin install vagrant-libvirt
 
     - name: Build e Test
