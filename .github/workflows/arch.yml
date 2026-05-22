@@ -21,6 +21,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: arch-linux-egg
-        path: ./tests/arch/*.iso
+        path: ./_tests/arch/*.iso
         retention-days: 5
         

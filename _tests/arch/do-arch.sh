@@ -35,6 +35,10 @@ echo "=== Fix permessi directory per KVM/9p ==="
 sudo chmod a+rx /home/runner
 sudo chmod -R a+rx /home/runner/work
 
+# Cartella di destinazione
+mkdir -p _tests/arch/
+sudo chmod 777 _tests/arch/
+
 echo "=== Avvio Macchina Virtuale Arch ==="
 vagrant up --provider=libvirt
 sleep 10

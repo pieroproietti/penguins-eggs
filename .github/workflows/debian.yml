@@ -23,7 +23,7 @@ jobs:
       with:
         name: debian-13-egg
         # Il percorso host dove lo script Bash ha depositato la ISO
-        path: ./tests/debian/*.iso
+        path: ./_tests/debian/*.iso
         # Mantieni il file sui server per 5 giorni per evitare di sprecare spazio inutile
         retention-days: 5
 
