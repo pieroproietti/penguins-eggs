@@ -6,6 +6,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Usiamo un'immagine che ha già vagrant e libvirt pronti
+    container:
+      image: ghcr.io/vagrant-libvirt/vagrant-libvirt:latest
+      options: --privileged # Necessario per KVM/Libvirt
+    
     strategy:
       matrix:
         distro: [arch, debian]
@@ -13,41 +18,20 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: Prepara ambiente (Vagrant & Libvirt)
-      run: |
-        # 1. Installa i pacchetti
-        sudo apt-get update
-        sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils libvirt-dev build-essential ruby-dev
-
-        # 2. AVVIA IL SERVIZIO PRIMA DI TUTTO (Questo crea il gruppo libvirt)
-        sudo systemctl start libvirtd
-        sudo systemctl enable libvirtd
-
-        # 3. Aggiungi l'utente al gruppo libvirt
-        sudo usermod -a -G libvirt $USER
-
-        # 4. Installa Vagrant e plugin
-        wget -q https://releases.hashicorp.com/vagrant/2.4.9/vagrant_2.4.9-1_amd64.deb
-        sudo dpkg -i vagrant_2.4.9-1_amd64.deb
-        
-        # Usa sudo per installare il plugin, così è disponibile a livello di sistema
-        sudo vagrant plugin install vagrant-libvirt
-
     - name: Build e Test
       run: |
-        newgrp libvirt <<EOF
-          ./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh
-        EOF
+        /usr/bin/vagrant up ${{ matrix.distro }} --provider=libvirt
+        ./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh
 
-    - name: Recupera uovo
+    - name: Estrazione ISO
+      if: always() # Esegue anche se lo step precedente avesse fallito
       run: |
-        newgrp libvirt <<EOF
-          vagrant ssh ${{ matrix.distro }} -c "cat ~/*.iso" > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso
-        EOF
+        # Usiamo il cat per bypassare i permessi 9p
+        /usr/bin/vagrant ssh ${{ matrix.distro }} -c "cat ~/egg.iso" > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso
 
     - name: Salva artefatto
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.distro }}-egg
         path: ./github-ci-roots/${{ matrix.distro }}/*.iso
-        retention-days: 5
+        retention-days: 5        
