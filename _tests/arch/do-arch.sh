@@ -65,7 +65,7 @@ vagrant ssh -c "oa --help"
 vagrant ssh -c "coa --help"
 
 # Diciamo al kernel di Arch di prepararsi a usare OverlayFS!
-vagrant ssh -c "sudo modprobe overlay"
+# vagrant ssh -c "sudo modprobe overlay"
 
 echo "=== Remaster! ==="
 vagrant ssh -c "sudo coa remaster"
