@@ -31,7 +31,7 @@ jobs:
     - name: Start Proxmox VM (${{ matrix.distro }})
       run: |
         echo "Accendo la macchina ${{ matrix.vmid }}..."
-        p4start ${{ matrix.vmid }}
+        p4start ${{ matrix.distro }}
         sleep 15 # Diamo il tempo al sistema operativo di fare il boot e avviare SSH
 
     # 3. Inviamo il codice fresco alla VM
@@ -39,7 +39,7 @@ jobs:
       run: |
         echo "Invio i sorgenti alla macchina ${{ matrix.vmid }}..."
         # Adatta questo comando se p4push ha una sintassi diversa
-        p4push ${{ matrix.vmid }} 
+        p4push ${{ matrix.distro }} 
 
     # 4. Compilazione e Remastering NATIVO
     - name: Build & Remaster
@@ -47,7 +47,7 @@ jobs:
         echo "Lancio la build nativa..."
         # Eseguiamo i comandi direttamente dentro la VM usando il tuo p4ssh
         # (Modifica i percorsi se il tuo p4push carica i file in una cartella specifica)
-        p4ssh ${{ matrix.vmid }} "cd /root/oa-tools && make && sudo ./coa/coa remaster"
+        p4ssh ${{ matrix.distro }} "cd /root/oa-tools && make && sudo ./coa/coa remaster"
 
     # 5. Recupero della ISO (Il "cat" via SSH)
     - name: Estrazione ISO
@@ -71,4 +71,3 @@ jobs:
         echo "Spengo la macchina ${{ matrix.vmid }}..."
         # Se hai un comando p4stop, usalo. Altrimenti spegniamo via SSH:
         p4ssh ${{ matrix.vmid }} "sudo poweroff" || true
-        
