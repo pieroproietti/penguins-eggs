@@ -1,62 +1,46 @@
-name: Proxmox Native CI
+name: Proxmox Native CI (Debian & Arch)
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    # LA CHIAVE DI TUTTO: Questo dice a GitHub di girare sulla tua Dev VM
-    runs-on: self-hosted 
+    runs-on: self-hosted
     
     strategy:
       fail-fast: false
       matrix:
-        # Associamo il nome della distro al tuo ID Proxmox
         include:
           - distro: debian
             vmid: 201
+            ip: 192.168.1.201
           - distro: arch
             vmid: 202
-          - distro: manjaro
-            vmid: 203
-          - distro: fedora
-            vmid: 204
-          # Aggiungi opensuse (205) quando vuoi
+            ip: 192.168.1.202
     
     steps:
-    # 1. GitHub scarica l'ultimo commit nella cartella di lavoro della tua Dev VM
-    - uses: actions/checkout@v6
-
-    # 2. Accendiamo la macchina Proxmox specifica
     - name: Start Proxmox VM (${{ matrix.distro }})
       run: |
         echo "Accendo la macchina ${{ matrix.vmid }}..."
-        p4start ${{ matrix.distro }}
-        sleep 15 # Diamo il tempo al sistema operativo di fare il boot e avviare SSH
+        p4start ${{ matrix.vmid }}
+        sleep 20 # Diamo tempo alla rete e a SSH di svegliarsi
 
-    # 3. Inviamo il codice fresco alla VM
-    - name: Push Codice
+    - name: Fetch da GitHub
       run: |
-        echo "Invio i sorgenti alla macchina ${{ matrix.vmid }}..."
-        # Adatta questo comando se p4push ha una sintassi diversa
-        p4push ${{ matrix.distro }} 
+        echo "Scarico il codice sulla VM ${{ matrix.vmid }}..."
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "rm -rf /home/artisan/oa-tools && git clone https://github.com/${{ github.repository }}.git /home/artisan/oa-tools && cd /home/artisan/oa-tools && git checkout ${{ github.sha }}"
 
-    # 4. Compilazione e Remastering NATIVO
     - name: Build & Remaster
       run: |
-        echo "Lancio la build nativa..."
-        # Eseguiamo i comandi direttamente dentro la VM usando il tuo p4ssh
-        # (Modifica i percorsi se il tuo p4push carica i file in una cartella specifica)
-        p4ssh ${{ matrix.distro }} "cd /root/oa-tools && make && sudo ./coa/coa remaster"
+        echo "Lancio la build nativa e remasterizzo..."
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "cd /home/artisan/oa-tools && make && echo 'live' | sudo -S ./coa/coa remaster"
 
-    # 5. Recupero della ISO (Il "cat" via SSH)
     - name: Estrazione ISO
       if: always()
       run: |
-        # Recuperiamo l'uovo via SSH standard o p4ssh
-        p4ssh ${{ matrix.vmid }} "cat /root/egg.iso" > ./egg-of-${{ matrix.distro }}.iso
+        echo "Recupero l'uovo appena deposto..."
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "echo 'live' | sudo -S cat /home/eggs/egg*.iso" > ./egg-of-${{ matrix.distro }}.iso
 
-    # 6. Salvataggio su GitHub
     - name: Upload Artefatto
       uses: actions/upload-artifact@v4
       with:
@@ -64,10 +48,8 @@ jobs:
         path: ./egg-of-${{ matrix.distro }}.iso
         retention-days: 5
 
-    # 7. Spegnimento macchina (eseguito SEMPRE, anche se la build fallisce)
     - name: Stop Proxmox VM
       if: always()
       run: |
         echo "Spengo la macchina ${{ matrix.vmid }}..."
-        # Se hai un comando p4stop, usalo. Altrimenti spegniamo via SSH:
-        p4ssh ${{ matrix.vmid }} "sudo poweroff" || true
+        ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "echo 'live' | sudo -S poweroff" || true
