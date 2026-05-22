@@ -6,11 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Usiamo un'immagine che ha già vagrant e libvirt pronti
-    container:
-      image: ghcr.io/vagrant-libvirt/vagrant-libvirt:latest
-      options: --privileged # Necessario per KVM/Libvirt
-    
     strategy:
       matrix:
         distro: [arch, debian]
@@ -18,20 +13,36 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
+    - name: Prepara ambiente (Metodo Nativo)
+      run: |
+        sudo apt-get update
+        
+        # 1. LA MAGIA: Installiamo tutto dai repo di Ubuntu.
+        # vagrant e vagrant-libvirt sono già precompilati qui. Niente attese e niente timeout!
+        sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils vagrant vagrant-libvirt
+        
+        # 2. Avviamo il motore KVM (ora funzionerà senza problemi)
+        sudo systemctl start libvirtd
+        sudo systemctl enable libvirtd
+        
+        # 3. Diamo al runner (GitHub) le chiavi per guidare la macchina
+        sudo usermod -a -G libvirt $USER
+
     - name: Build e Test
       run: |
-        /usr/bin/vagrant up ${{ matrix.distro }} --provider=libvirt
-        ./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh
+        # Usiamo 'sg' per lanciare lo script senza incappare in problemi di permessi
+        sg libvirt -c "./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh"
 
     - name: Estrazione ISO
-      if: always() # Esegue anche se lo step precedente avesse fallito
+      if: always()
       run: |
-        # Usiamo il cat per bypassare i permessi 9p
-        /usr/bin/vagrant ssh ${{ matrix.distro }} -c "cat ~/egg.iso" > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso
+        # Recuperiamo l'uovo con lo stesso metodo
+        sg libvirt -c "vagrant ssh ${{ matrix.distro }} -c 'cat ~/egg.iso' > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso"
 
     - name: Salva artefatto
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.distro }}-egg
         path: ./github-ci-roots/${{ matrix.distro }}/*.iso
-        retention-days: 5        
+        retention-days: 5
+        
