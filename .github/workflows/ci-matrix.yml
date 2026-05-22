@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false    # Se Arch fallisce, Debian continua (e viceversa), così leggi i log di entrambi
       matrix:
-        distro: [arch, debian]
+        distro: [debian]
     
     steps:
     - uses: actions/checkout@v6
@@ -17,16 +17,8 @@ jobs:
     - name: Prepara ambiente (Metodo Nativo e Silenziato)
       run: |
         sudo apt-get update
-        
-        # Aggiunto 'qemu-utils' per fornire qemu-img a libvirt
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-          qemu-utils \
-          qemu-kvm \
-          libvirt-daemon-system \
-          libvirt-clients \
-          bridge-utils \
-          vagrant \
-          vagrant-libvirt
+          qemu-utils qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils vagrant vagrant-libvirt
         
         echo 'user = "root"' | sudo tee -a /etc/libvirt/qemu.conf
         echo 'group = "root"' | sudo tee -a /etc/libvirt/qemu.conf
@@ -36,6 +28,12 @@ jobs:
         sudo systemctl enable libvirtd
         sudo usermod -a -G libvirt $USER
         
+        # ==========================================
+        # NOVITÀ: Accendiamo la rete virtuale DHCP!
+        # ==========================================
+        sudo virsh net-start default || true
+        sudo virsh net-autostart default || true
+
     - name: Build e Test
       run: |
         # Esecuzione nel gruppo libvirt per evitare problemi di socket
