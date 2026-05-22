@@ -1,29 +1,28 @@
 name: debian
 
 on: 
-  #push:
-  #  branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     timeout-minutes: 120
 
     steps:
     - uses: actions/checkout@v6
 
-    - name: run buidl and test
+    - name: Esegui Build e Test su Debian
       run: |
-        ./_tests/debian/do-debian.sh
+        ./github-ci-roots/debian/do-debian.sh
+
+    - name: Recupera la ISO dalla VM
+      run: |
+        # Usiamo il metodo cat per bypassare i permessi di 9p
+        vagrant ssh default -c "cat ~/*.iso" > ./github-ci-roots/debian/egg-of-debian.iso
 
     - name: Salva la ISO generata come artefatto
       uses: actions/upload-artifact@v4
       with:
         name: debian-13-egg
-        # Il percorso host dove lo script Bash ha depositato la ISO
-        path: ./_tests/debian/*.iso
-        # Mantieni il file sui server per 5 giorni per evitare di sprecare spazio inutile
+        path: ./github-ci-roots/debian/*.iso
         retention-days: 5
-
