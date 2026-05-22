@@ -74,8 +74,10 @@ vagrant ssh -c "coa --help"
 echo "=== Remaster! ==="
 vagrant ssh -c "sudo coa remaster"
 
+# ... dopo che la ISO è stata creata ...
 echo "=== Estrazione dell'uovo ==="
-# Portiamo fuori la ISO per GitHub Artifacts
-vagrant ssh -c "sudo cp /home/eggs/*.iso /vagrant/"
+
+# Sposta la ISO nella home dell'utente vagrant dentro la VM
+vagrant ssh -c "sudo mv /home/eggs/*.iso ~/"
 
 echo "=== VITTORIA SU ARCH! ==="

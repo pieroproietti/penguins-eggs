@@ -17,10 +17,14 @@ jobs:
       run: |
         ./_tests/arch/do-arch.sh
 
+    - name: Recupera la ISO dalla VM
+      run: |
+        # Il runner di GitHub entra nella VM, legge lo stream del file e lo scrive sul suo disco locale
+        vagrant ssh -c "cat ~/*.iso" > ./_tests/arch/egg-of-arch.iso
+
     - name: Salva la ISO generata come artefatto
       uses: actions/upload-artifact@v4
       with:
         name: arch-linux-egg
         path: ./_tests/arch/*.iso
         retention-days: 5
-        
