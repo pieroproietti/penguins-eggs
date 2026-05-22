@@ -34,6 +34,6 @@ Vagrant.configure("2") do |config|
     
     # Aggiornamento e installazione dipendenze di build e remastering
     pacman -Su --noconfirm
-    pacman -S --noconfirm base-devel go git make xorriso squashfs-tools bash-completion
+    pacman -S --noconfirm base-devel go git make xorriso squashfs-tools bash-completion dosfstools mtools
   SHELL
 end
