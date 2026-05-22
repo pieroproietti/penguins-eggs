@@ -29,11 +29,16 @@ jobs:
         sudo usermod -a -G libvirt $USER
         
         # ==========================================
-        # NOVITÀ: Accendiamo la rete virtuale DHCP!
+        # SBLOCCO FIREWALL PER IL DHCP DI LIBVIRT
         # ==========================================
+        # Permettiamo al traffico di passare sull'interfaccia virbr0 (il ponte di libvirt)
+        sudo iptables -I INPUT -i virbr0 -j ACCEPT
+        sudo iptables -I FORWARD -i virbr0 -j ACCEPT
+        
+        # Accendiamo la rete virtuale
         sudo virsh net-start default || true
         sudo virsh net-autostart default || true
-
+        
     - name: Build e Test
       run: |
         # Esecuzione nel gruppo libvirt per evitare problemi di socket
