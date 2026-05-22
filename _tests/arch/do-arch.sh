@@ -51,14 +51,14 @@ vagrant ssh -c "sudo rm -f /etc/resolv.conf && echo 'nameserver 8.8.8.8' | sudo 
 vagrant ssh -c "cd ~/build_oa && make"
 
 echo "=== Installazione Binari e Cervello ==="
-# 3. Peschiamo i binari finiti dalla cartella temporanea
 vagrant ssh -c "sudo cp ~/build_oa/coa/coa /usr/bin/coa"
 vagrant ssh -c "sudo cp ~/build_oa/oa/oa /usr/bin/oa"
 vagrant ssh -c "sudo chmod +x /usr/bin/coa /usr/bin/oa"
 
+# Ricreiamo l'ambiente di PRODUZIONE perfetto:
 vagrant ssh -c "sudo mkdir -p /etc/oa-tools.d/"
-# (Ricorda: se la tua cartella si chiama 'brain_profiles', cambia 'conf' qui sotto!)
-vagrant ssh -c "sudo cp -r ~/build_oa/conf/* /etc/oa-tools.d/"
+# Copiamo la cartella esatta del tuo repo nel percorso di sistema
+vagrant ssh -c "sudo cp -r ~/build_oa/coa/brain.d /etc/oa-tools.d/"
 
 echo "=== Test Finale e Remastering ==="
 vagrant ssh -c "oa --help"
