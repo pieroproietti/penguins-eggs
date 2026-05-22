@@ -18,8 +18,9 @@ jobs:
       run: |
         sudo apt-get update
         
-        # 1. Installazione silenziosa e velocissima (--no-install-recommends e DEBIAN_FRONTEND)
+        # Aggiunto 'qemu-utils' per fornire qemu-img a libvirt
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+          qemu-utils \
           qemu-kvm \
           libvirt-daemon-system \
           libvirt-clients \
@@ -27,18 +28,14 @@ jobs:
           vagrant \
           vagrant-libvirt
         
-        # 2. Sblocco permessi QEMU per evitare il "Permission denied" sulle cartelle condivise (9p)
         echo 'user = "root"' | sudo tee -a /etc/libvirt/qemu.conf
         echo 'group = "root"' | sudo tee -a /etc/libvirt/qemu.conf
         echo 'security_driver = "none"' | sudo tee -a /etc/libvirt/qemu.conf
         
-        # 3. Riavvio dei servizi per applicare le modifiche a qemu.conf
         sudo systemctl restart libvirtd
         sudo systemctl enable libvirtd
-        
-        # 4. Aggiunta dell'utente runner al gruppo libvirt
         sudo usermod -a -G libvirt $USER
-
+        
     - name: Build e Test
       run: |
         # Esecuzione nel gruppo libvirt per evitare problemi di socket
@@ -55,4 +52,3 @@ jobs:
         name: ${{ matrix.distro }}-egg
         path: ./github-ci-roots/${{ matrix.distro }}/*.iso
         retention-days: 5
-        
