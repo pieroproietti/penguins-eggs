@@ -1,51 +1,74 @@
-name: CI Matrix
+name: Proxmox Native CI
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Torniamo a latest, VirtualBox non ha problemi qui
+    # LA CHIAVE DI TUTTO: Questo dice a GitHub di girare sulla tua Dev VM
+    runs-on: self-hosted 
+    
     strategy:
       fail-fast: false
       matrix:
-        distro: [arch, debian]
+        # Associamo il nome della distro al tuo ID Proxmox
+        include:
+          - distro: debian
+            vmid: 201
+          - distro: arch
+            vmid: 202
+          - distro: manjaro
+            vmid: 203
+          - distro: fedora
+            vmid: 204
+          # Aggiungi opensuse (205) quando vuoi
     
     steps:
+    # 1. GitHub scarica l'ultimo commit nella cartella di lavoro della tua Dev VM
     - uses: actions/checkout@v6
 
-    - name: Prepara ambiente (Il Carro Armato VirtualBox)
+    # 2. Accendiamo la macchina Proxmox specifica
+    - name: Start Proxmox VM (${{ matrix.distro }})
       run: |
-        # 1. Installiamo VirtualBox
-        sudo apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y virtualbox wget curl
+        echo "Accendo la macchina ${{ matrix.vmid }}..."
+        p4start ${{ matrix.vmid }}
+        sleep 15 # Diamo il tempo al sistema operativo di fare il boot e avviare SSH
 
-        # 2. Spegnimento KVM (La mossa di gnuhub per evitare conflitti)
-        echo "=== Spegnimento KVM per evitare conflitti con VirtualBox ==="
-        sudo systemctl stop libvirtd || true
-        sudo systemctl stop virtlogd || true
-        sudo modprobe -r kvm_amd || true
-        sudo modprobe -r kvm_intel || true
-        sudo modprobe -r kvm || true
-
-        # 3. Installiamo Vagrant pulito da HashiCorp (niente plugin strani)
-        VAGRANT_VERSION="2.4.9"
-        wget -q https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}-1_amd64.deb
-        sudo dpkg -i vagrant_${VAGRANT_VERSION}-1_amd64.deb
-
-    - name: Build e Test
+    # 3. Inviamo il codice fresco alla VM
+    - name: Push Codice
       run: |
-        vagrant up ${{ matrix.distro }} --provider=virtualbox
-        ./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh
+        echo "Invio i sorgenti alla macchina ${{ matrix.vmid }}..."
+        # Adatta questo comando se p4push ha una sintassi diversa
+        p4push ${{ matrix.vmid }} 
 
+    # 4. Compilazione e Remastering NATIVO
+    - name: Build & Remaster
+      run: |
+        echo "Lancio la build nativa..."
+        # Eseguiamo i comandi direttamente dentro la VM usando il tuo p4ssh
+        # (Modifica i percorsi se il tuo p4push carica i file in una cartella specifica)
+        p4ssh ${{ matrix.vmid }} "cd /root/oa-tools && make && sudo ./coa/coa remaster"
+
+    # 5. Recupero della ISO (Il "cat" via SSH)
     - name: Estrazione ISO
       if: always()
       run: |
-        vagrant ssh ${{ matrix.distro }} -c "cat ~/egg.iso" > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso
+        # Recuperiamo l'uovo via SSH standard o p4ssh
+        p4ssh ${{ matrix.vmid }} "cat /root/egg.iso" > ./egg-of-${{ matrix.distro }}.iso
 
-    - name: Salva artefatto
+    # 6. Salvataggio su GitHub
+    - name: Upload Artefatto
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.distro }}-egg
-        path: ./github-ci-roots/${{ matrix.distro }}/*.iso
+        path: ./egg-of-${{ matrix.distro }}.iso
         retention-days: 5
+
+    # 7. Spegnimento macchina (eseguito SEMPRE, anche se la build fallisce)
+    - name: Stop Proxmox VM
+      if: always()
+      run: |
+        echo "Spengo la macchina ${{ matrix.vmid }}..."
+        # Se hai un comando p4stop, usalo. Altrimenti spegniamo via SSH:
+        p4ssh ${{ matrix.vmid }} "sudo poweroff" || true
+        
