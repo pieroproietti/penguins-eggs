@@ -20,6 +20,12 @@ vagrant plugin install vagrant-libvirt
 
 sudo systemctl start libvirtd
 
+echo "=== Fix Permessi Libvirt per GitHub Actions ==="
+sudo usermod -a -G libvirt $(whoami)
+sudo usermod -a -G kvm $(whoami)
+# Scardiniamo i permessi del socket visto che siamo su una macchina usa-e-getta
+sudo chmod 666 /var/run/libvirt/libvirt-sock
+
 echo "=== Avvio Macchina Virtuale Arch ==="
 vagrant up --provider=libvirt
 sleep 10
