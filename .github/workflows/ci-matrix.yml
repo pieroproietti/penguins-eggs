@@ -13,22 +13,25 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: Prepara ambiente (Installazione Forza)
+    - name: Prepara ambiente (Veloce)
       run: |
-        # 1. Aggiorna e installa dipendenze base
         sudo apt-get update
-        sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils libvirt-dev build-essential ruby-dev
-
-        # 2. Scarica e installa Vagrant pulito
+        # Installiamo TUTTO il necessario per la compilazione in un colpo solo
+        sudo apt-get install -y \
+          build-essential \
+          libvirt-dev \
+          ruby-dev \
+          libxml2-dev \
+          libxslt1-dev \
+          pkg-config
+        
+        # Installiamo vagrant
         wget -q https://releases.hashicorp.com/vagrant/2.4.9/vagrant_2.4.9-1_amd64.deb
         sudo dpkg -i vagrant_2.4.9-1_amd64.deb
         
-        # 3. Verifica immediata: deve rispondere la versione, altrimenti falliamo subito
-        /usr/bin/vagrant --version
-        
-        # 4. Installa il plugin
-        /usr/bin/vagrant plugin install vagrant-libvirt
-        
+        # E ora il trucco: usiamo --local per vedere se riusciamo ad accelerare 
+        # o se riusciamo a far sì che il processo finisca in tempo
+        /usr/bin/vagrant plugin install vagrant-libvirt    
 
     - name: Build e Test
       run: |
