@@ -1,9 +1,10 @@
 name: 112-vagrant-linux-manjaro
 
-# only manual, thanks
 on: 
+  push:
+    branches: [ main ]
   workflow_dispatch:
-
+  
 jobs:
   build:
 

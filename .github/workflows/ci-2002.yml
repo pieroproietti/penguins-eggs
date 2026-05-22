@@ -1,7 +1,8 @@
 name: 102-vagrant-debian-13
 
-# only manual, thanks
 on: 
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
