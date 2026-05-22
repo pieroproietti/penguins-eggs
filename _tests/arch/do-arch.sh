@@ -40,8 +40,13 @@ vagrant up --provider=libvirt
 sleep 10
 
 echo "=== Compilazione nativa (Metodo Copia Locale in Home) ==="
-# 1. Isoliamo la build copiando i sorgenti nella home della VM (Niente conflitti con 9p!)
+# 1. Isoliamo la build copiando i sorgenti nella home della VM
 vagrant ssh -c "mkdir -p ~/build_oa && cp -r /vagrant/* ~/build_oa/"
+
+echo "=== Fix brutale del DNS di Arch per Go ==="
+# Pialliamo il DNS IPv6 rotto e forziamo IPv4 (Google DNS)
+vagrant ssh -c "sudo rm -f /etc/resolv.conf && echo 'nameserver 8.8.8.8' | sudo tee /etc/resolv.conf"
+
 # 2. Compiliamo sul disco nativo di Arch in totale sicurezza
 vagrant ssh -c "cd ~/build_oa && make"
 

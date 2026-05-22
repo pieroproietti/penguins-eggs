@@ -16,7 +16,7 @@ jobs:
 
     - name: run buidl and test
       run: |
-        ./tests/debian/vagrant.install.build.test.sh
+        ./_tests/debian/do-debian.sh
 
     - name: Salva la ISO generata come artefatto
       uses: actions/upload-artifact@v4
