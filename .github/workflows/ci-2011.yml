@@ -1,7 +1,8 @@
 name: 111-vagrant-ubuntu-26.04
 
-# only manual, thanks
 on: 
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:

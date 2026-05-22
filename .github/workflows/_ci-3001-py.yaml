@@ -2,7 +2,7 @@ name: 3001-ubuntu-latest-py
 
 # only manual, thanks
 on:
-  workflow_dispatch: # Fondamentale: ti permette di lanciarlo a mano se serve
+  workflow_dispatch:
 
 
 jobs:

@@ -1,7 +1,8 @@
 name: 105-vagrant-arch-linux
 
-# only manual, thanks
-on: 
+on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
