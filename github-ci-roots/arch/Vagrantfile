@@ -1,39 +1,32 @@
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/arch"
-  config.vm.hostname = "naked-arch"
+  # Usiamo 'arch' come nome interno univoco
+  config.vm.define "arch" do |node|
+    node.vm.box = "generic/arch"
+    node.vm.hostname = "naked-arch"
 
-  # Niente VirtualBox, andiamo di KVM/libvirt
-  config.vm.provider "libvirt" do |lv|
-    lv.memory = 4096
-    lv.cpus = 4
-    lv.cpu_mode = "host-passthrough"
+    node.vm.provider "libvirt" do |lv|
+      lv.memory = 4096
+      lv.cpus = 4
+      lv.cpu_mode = "host-passthrough"
+    end
+
+    # Montiamo l'intera root del progetto
+    node.vm.synced_folder "../..", "/vagrant", 
+      type: "9p", 
+      disabled: false, 
+      mount_options: ["version=9p2000.L", "trans=virtio", "access=any", "uid=1000", "gid=1000"]
+
+    # Provisioning
+    node.vm.provision "shell", inline: <<-SHELL
+      set -eux
+      modprobe overlay
+      modprobe loop
+      modprobe squashfs
+      pacman-key --init
+      pacman-key --populate archlinux
+      pacman -Sy archlinux-keyring --noconfirm
+      pacman -Su --noconfirm
+      pacman -S --noconfirm base-devel go git make xorriso squashfs-tools bash-completion dosfstools mtools
+    SHELL
   end
-
-  # Montiamo l'intera root del progetto (due livelli più su)
-  config.vm.synced_folder "../..", "/vagrant", 
-    type: "9p", 
-    disabled: false, 
-    mount_options: ["version=9p2000.L", "trans=virtio", "access=any", "uid=1000", "gid=1000"]
-
-  # Arch si installa i suoi ferri del mestiere (Nativi!)
-  config.vm.provision "shell", inline: <<-SHELL
-    set -eux
-    
-    # --- TRUCCO ANTI-ROLLING RELEASE ---
-    # Carichiamo i moduli critici in RAM prima che pacman aggiorni il kernel 
-    # e cancelli la cartella /lib/modules/ del kernel in esecuzione!
-    modprobe overlay
-    modprobe loop
-    modprobe squashfs
-    # -----------------------------------
-    
-    # Inizializziamo le chiavi di pacman per evitare errori di firme vecchie
-    pacman-key --init
-    pacman-key --populate archlinux
-    pacman -Sy archlinux-keyring --noconfirm
-    
-    # Aggiornamento e installazione dipendenze di build e remastering
-    pacman -Su --noconfirm
-    pacman -S --noconfirm base-devel go git make xorriso squashfs-tools bash-completion dosfstools mtools
-  SHELL
 end

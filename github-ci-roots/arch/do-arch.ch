@@ -4,7 +4,7 @@ set -x
 # 1. SETUP
 CMD_PATH=$(cd `dirname $0`; pwd)
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
-VM_NAME=$(basename "$CMD_PATH") # Sarà 'debian'
+VM_NAME=$(basename "$CMD_PATH") # Sarà 'arch'
 cd "$PROJECT_ROOT"
 
 # 2. BUILD
@@ -21,8 +21,8 @@ sleep 10
 # Pulizia home VM
 vagrant ssh "$VM_NAME" -c "rm -f ~/*.iso"
 
-# Installazione (Ricetta Debian)
-vagrant ssh "$VM_NAME" -c "sudo apt-get update && sudo apt-get install -y /vagrant/*.deb"
+# Installazione (Ricetta Arch)
+vagrant ssh "$VM_NAME" -c "sudo pacman -U --noconfirm /vagrant/*.deb"
 vagrant ssh "$VM_NAME" -c "sudo coa remaster"
 
 # 4. PREPARAZIONE ESTRAZIONE

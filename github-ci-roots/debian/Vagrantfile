@@ -1,37 +1,23 @@
 Vagrant.configure("2") do |config|
+  # Usiamo 'debian' come nome interno univoco
+  config.vm.define "debian" do |node|
+    node.vm.box = "cloud-image/debian-13"
+    node.vm.hostname = "debian-egg"
 
-  # https://portal.cloud.hashicorp.com/vagrant/discover
-  # you can add a new vm from vagrant/discover
-  config.vm.box = "cloud-image/debian-13"
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "debian-egg"
+      vb.gui = false
+      vb.memory = 4096
+      vb.cpus = 2
+      # ... restano i tuoi customize ...
+    end
 
-  config.vm.hostname = "cloud-image-debian-13"
+    node.vm.synced_folder ".", "/vagrant"
 
-  config.vm.provider "virtualbox" do |vb|
-
-    vb.name = "cloud-image-debian-13"
-
-    vb.gui = false
-
-   
-    vb.memory = 4096
-    vb.cpus = 2
-
-   
-    vb.customize ["modifyvm", :id, "--vram", "128"]
-
-  
-    vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
-
-    vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+    node.vm.provision "shell", inline: <<-SHELL
+      set -eux
+      sudo apt update -y
+      sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosfstools mtools rsync git sudo -y
+    SHELL
   end
-
-  config.vm.synced_folder ".", "/vagrant"
-
-  config.vm.provision "shell", inline: <<-SHELL
-    set -eux
-    # todo
-    sudo apt update -y
-    sudo apt install squashfs-tools xorriso live-boot live-boot-initramfs-tools dosfstools mtools rsync git sudo -y
-    date
-  SHELL
 end
