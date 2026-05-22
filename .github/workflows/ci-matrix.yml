@@ -5,49 +5,43 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # Fondamentale: qui vagrant è ancora nei repository ufficiali APT
+    runs-on: ubuntu-latest # Torniamo a latest, VirtualBox non ha problemi qui
     strategy:
-      fail-fast: false    # Se Arch fallisce, Debian continua (e viceversa), così leggi i log di entrambi
+      fail-fast: false
       matrix:
-        distro: [debian]
+        distro: [arch, debian]
     
     steps:
     - uses: actions/checkout@v6
 
-    - name: Prepara ambiente (Metodo Nativo e Silenziato)
+    - name: Prepara ambiente (Il Carro Armato VirtualBox)
       run: |
+        # 1. Installiamo VirtualBox
         sudo apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-          qemu-utils qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils vagrant vagrant-libvirt
-        
-        echo 'user = "root"' | sudo tee -a /etc/libvirt/qemu.conf
-        echo 'group = "root"' | sudo tee -a /etc/libvirt/qemu.conf
-        echo 'security_driver = "none"' | sudo tee -a /etc/libvirt/qemu.conf
-        
-        sudo systemctl restart libvirtd
-        sudo systemctl enable libvirtd
-        sudo usermod -a -G libvirt $USER
-        
-        # ==========================================
-        # SBLOCCO FIREWALL PER IL DHCP DI LIBVIRT
-        # ==========================================
-        # Permettiamo al traffico di passare sull'interfaccia virbr0 (il ponte di libvirt)
-        sudo iptables -I INPUT -i virbr0 -j ACCEPT
-        sudo iptables -I FORWARD -i virbr0 -j ACCEPT
-        
-        # Accendiamo la rete virtuale
-        sudo virsh net-start default || true
-        sudo virsh net-autostart default || true
-        
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y virtualbox wget curl
+
+        # 2. Spegnimento KVM (La mossa di gnuhub per evitare conflitti)
+        echo "=== Spegnimento KVM per evitare conflitti con VirtualBox ==="
+        sudo systemctl stop libvirtd || true
+        sudo systemctl stop virtlogd || true
+        sudo modprobe -r kvm_amd || true
+        sudo modprobe -r kvm_intel || true
+        sudo modprobe -r kvm || true
+
+        # 3. Installiamo Vagrant pulito da HashiCorp (niente plugin strani)
+        VAGRANT_VERSION="2.4.9"
+        wget -q https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}-1_amd64.deb
+        sudo dpkg -i vagrant_${VAGRANT_VERSION}-1_amd64.deb
+
     - name: Build e Test
       run: |
-        # Esecuzione nel gruppo libvirt per evitare problemi di socket
-        sg libvirt -c "./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh"
+        vagrant up ${{ matrix.distro }} --provider=virtualbox
+        ./github-ci-roots/${{ matrix.distro }}/do-${{ matrix.distro }}.sh
 
     - name: Estrazione ISO
-      if: always() # Salva l'uovo anche se lo step precedente fallisce
+      if: always()
       run: |
-        sg libvirt -c "/usr/bin/vagrant ssh ${{ matrix.distro }} -c 'cat ~/egg.iso' > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso"
+        vagrant ssh ${{ matrix.distro }} -c "cat ~/egg.iso" > ./github-ci-roots/${{ matrix.distro }}/egg-of-${{ matrix.distro }}.iso
 
     - name: Salva artefatto
       uses: actions/upload-artifact@v4
