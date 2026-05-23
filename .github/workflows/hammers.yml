@@ -15,14 +15,13 @@ jobs:
       matrix:
         include:
           # ==========================================
-          # ⛰️ ALPINE (Il Buttafuori)
+          # 🏔️ ALPINE LINUX (La Vetta di Ghiaccio)
           # ==========================================
           - distro: alpine
             image: alpine:latest
             prep_cmd: |
               apk update
               apk add go gcc musl-dev make git abuild sudo
-              # Alpine usa BusyBox, quindi la sintassi per gli utenti è diversa
               adduser -D artisan
               adduser artisan abuild
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -30,15 +29,26 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
+                # Generazione chiavi nella Home di artisan (niente sudo qui!)
                 abuild-keygen -a -i -n
+                
                 cd $GITHUB_WORKSPACE
+                # Lasciapassare per far leggere a Git la cronologia dei tag
+                git config --global --add safe.directory '*'
+                
+                # ⚔️ LA CURA: Ricompiliamo il motore nativamente su Alpine (musl)
+                make clean
+                make
+                
+                # 🧠 La Mente prepara il tavolo da lavoro in /tmp/oa-alpine-build
                 ./coa/coa tools build alpine
+                
+                # 🔨 Il Martello chiude il pacchetto
                 cd /tmp/oa-alpine-build
                 abuild -r
               "
-            
-            # abuild non lascia il pacchetto qui, ma nella home di artisan!
-            install_cmd: apk add --allow-untrusted /home/artisan/packages/*/*/*.apk
+            # Andiamo a pescare il pacchetto nella cartella 'tmp' creata da abuild
+            install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
 
           # # ==========================================
           # # 🏹 ARCH LINUX (Il Banco di Prova)

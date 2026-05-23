@@ -13,7 +13,14 @@ import (
 func packAlpine(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	LogBuild("Iniziando la preparazione dei sorgenti Alpine (APKBUILD)...")
 
-	// 1. Il tavolo da lavoro nella cartella temporanea di sistema (/tmp)
+	// 1. Il tavolo da lavoro ISOLATO nella cartella temporanea di sistema (/tmp)
+	//
+	// ATTENZIONE: Il nome della cartella DEVE essere "oa-alpine-build" e NON "oa-build".
+	// "oa-build" è il quartier generale (ctx.BaseBuildDir) dove coa genera manuali e completamenti.
+	// Alpine (tramite abuild) ha dinamiche distruttive: se usassimo lo stesso nome,
+	// il comando os.RemoveAll() qui sotto raderebbe al suolo tutti gli asset comuni
+	// appena creati, e il pacchetto finale verrebbe generato monco e senza eseguibile.
+	// Questo recinto separato salva la vita ai nostri sorgenti!
 	buildDir := filepath.Join(os.TempDir(), "oa-alpine-build")
 
 	// Pialliamo all'inizio per sicurezza, nel caso ci fosse una vecchia build
@@ -36,10 +43,30 @@ func packAlpine(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 
 	// 3. Binari
 	binPath := filepath.Join(stagingDir, "usr/bin")
-	copyFile(filepath.Join(ctx.BaseBuildDir, "oa", "oa"), filepath.Join(binPath, "oa"))
-	copyFile(filepath.Join(ctx.BaseBuildDir, "coa", "coa"), filepath.Join(binPath, "coa"))
-	os.Chmod(filepath.Join(binPath, "oa"), 0755)
-	os.Chmod(filepath.Join(binPath, "coa"), 0755)
+
+	// Puntiamo alla root del progetto (dove make ha compilato) e NON alla temp dir
+	srcOa := filepath.Join(ctx.ProjRoot, "oa", "oa")
+	srcCoa := filepath.Join(ctx.ProjRoot, "coa", "coa")
+
+	destOa := filepath.Join(binPath, "oa")
+	destCoa := filepath.Join(binPath, "coa")
+
+	// Controllo rigoroso: oa esiste davvero prima di copiarlo?
+	if _, err := os.Stat(srcOa); os.IsNotExist(err) {
+		LogError("❌ FALLIMENTO CRITICO: Il binario '%s' non esiste!", srcOa)
+		os.Exit(1)
+	}
+	// Stesso controllo di sicurezza per coa
+	if _, err := os.Stat(srcCoa); os.IsNotExist(err) {
+		LogError("❌ FALLIMENTO CRITICO: Il binario '%s' non esiste!", srcCoa)
+		os.Exit(1)
+	}
+
+	copyFile(srcOa, destOa)
+	copyFile(srcCoa, destCoa)
+
+	os.Chmod(destOa, 0755)
+	os.Chmod(destCoa, 0755)
 	os.Symlink("coa", filepath.Join(binPath, "eggs"))
 
 	// 4. Configurazione YAML e Brain
@@ -96,7 +123,7 @@ arch="x86_64"
 license="MIT"
 maintainer="Piero Proietti <piero.proietti@gmail.com>"
 depends="squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi"
-options="!check" # Saltiamo i test automatici di Alpine per ora
+options="!check !strip" # Vietiamo categoricamente ad Alpine di alterare i nostri binari
 
 # La funzione package si limita a travasare la nostra cartella staging
 package() {
@@ -110,4 +137,7 @@ package() {
 	// 6. Consegna dell'ambiente di build
 	LogBuild("✅ Ambiente sorgente Alpine pronto in: %s", buildDir)
 	LogBuild("👉 Per compilare: cd %s && abuild -r", buildDir)
+	// Salvaguardia mentale: pialliamo il quartier generale generico
+	// visto che abbiamo già trasferito tutto nell'ambiente Alpine.
+	os.RemoveAll(ctx.BaseBuildDir)
 }

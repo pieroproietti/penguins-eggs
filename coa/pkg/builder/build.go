@@ -109,33 +109,26 @@ func parseGitVersion(v string) (string, string) {
 	baseVer := parts[0]
 	relNum := "1"
 
-	// 2. Isoliamo la release o un'eventuale appendice (es. dev)
+	// 2. Isoliamo la release
 	if len(parts) > 1 {
 		if _, err := strconv.Atoi(parts[1]); err == nil {
 			// Se è un numero puro (es. 195), è il nostro pkgrel
 			relNum = parts[1]
-		} else {
-			// Se non è un numero (es. "dev" o "beta"), la release torna 1
-			// e accodiamo la stringa alla versione base
-			relNum = "1"
-			baseVer = baseVer + "." + parts[1]
 		}
+		// Se NON è un numero (es. "dev"), lo ignoriamo brutalmente.
 	}
 
 	// 3. PULIZIA UNIVERSALE (Per Arch, Fedora, Alpine)
-	// Via i trattini e gli underscore, sostituiti con il punto.
 	baseVer = strings.ReplaceAll(baseVer, "-", ".")
 	baseVer = strings.ReplaceAll(baseVer, "_", ".")
 
-	// 4. Fix storico per Debian (che preferisce la tilde per le pre-release)
-	// Se la versione inizia con una lettera invece che con un numero
+	// 4. Fix storico per Debian
 	if len(baseVer) > 0 && (baseVer[0] < '0' || baseVer[0] > '9') {
 		baseVer = "0~" + baseVer
 	}
 
 	return baseVer, relNum
 }
-
 func generateDocs(ctx sysctx.RuntimeContext) error {
 	// 1. REGOLA UNIVERSALE: I documenti nascono SEMPRE nella fucina!
 	// Nessuna distinzione tra Vagrant, Local o CI. Tutto va in BaseBuildDir.
