@@ -20,6 +20,9 @@ jobs:
           - distro: fedora
             vmid: 204
             ip: 192.168.1.204
+          - distro: opensuse
+            vmid: 205
+            ip: 192.168.1.205
     
     steps:
     - name: Start Proxmox VM (${{ matrix.distro }})

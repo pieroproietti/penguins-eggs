@@ -84,6 +84,8 @@ func HandleBuild(d *distro.Distro, version string) {
 	LogBuild("Detected Distro Family: %s%s%s", ColorYellow, d.FamilyID, ColorReset)
 
 	switch d.FamilyID {
+	case "alpine":
+		packAlpine(baseVer, relNum, ctx)
 	case "archlinux":
 		packArch(baseVer, relNum, ctx)
 	case "manjaro":
