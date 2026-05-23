@@ -14,118 +14,118 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # # ==========================================
-          # # 🏔️ ALPINE LINUX (La Vetta di Ghiaccio)
-          # # ==========================================
-          # - distro: alpine
-          #   image: alpine:latest
-          #   prep_cmd: |
-          #     apk update
-          #     apk add go gcc musl-dev make git abuild sudo
-          #     adduser -D artisan
-          #     adduser artisan abuild
-          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-          #   pack_cmd: |
-          #     chown -R artisan:artisan .
-          #     su - artisan -c "
-          #       set -e
-          #       # Generazione chiavi nella Home di artisan (niente sudo qui!)
-          #       abuild-keygen -a -i -n
+          # ==========================================
+          # 🏔️ ALPINE LINUX (La Vetta di Ghiaccio)
+          # ==========================================
+          - distro: alpine
+            image: alpine:latest
+            prep_cmd: |
+              apk update
+              apk add go gcc musl-dev make git abuild sudo
+              adduser -D artisan
+              adduser artisan abuild
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+            pack_cmd: |
+              chown -R artisan:artisan .
+              su - artisan -c "
+                set -e
+                # Generazione chiavi nella Home di artisan (niente sudo qui!)
+                abuild-keygen -a -i -n
                 
-          #       cd $GITHUB_WORKSPACE
-          #       # Lasciapassare per far leggere a Git la cronologia dei tag
-          #       git config --global --add safe.directory '*'
+                cd $GITHUB_WORKSPACE
+                # Lasciapassare per far leggere a Git la cronologia dei tag
+                git config --global --add safe.directory '*'
                 
-          #       # ⚔️ LA CURA: Ricompiliamo il motore nativamente su Alpine (musl)
-          #       make clean
-          #       make
+                # ⚔️ LA CURA: Ricompiliamo il motore nativamente su Alpine (musl)
+                make clean
+                make
                 
-          #       # 🧠 La Mente prepara il tavolo da lavoro in /tmp/oa-alpine-build
-          #       ./coa/coa tools build alpine
+                # 🧠 La Mente prepara il tavolo da lavoro in /tmp/oa-alpine-build
+                ./coa/coa tools build alpine
                 
-          #       # 🔨 Il Martello chiude il pacchetto
-          #       cd /tmp/oa-alpine-build
-          #       abuild -r
-          #     "
-          #   # Andiamo a pescare il pacchetto nella cartella 'tmp' creata da abuild
-          #   install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
+                # 🔨 Il Martello chiude il pacchetto
+                cd /tmp/oa-alpine-build
+                abuild -r
+              "
+            # Andiamo a pescare il pacchetto nella cartella 'tmp' creata da abuild
+            install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
 
-          # # ==========================================
-          # # 🏹 ARCH LINUX (Il Banco di Prova)
-          # # ==========================================
-          # - distro: arch
-          #   image: archlinux:latest
-          #   prep_cmd: |
-          #     pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
-          #     useradd -m artisan
-          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-          #   pack_cmd: |
-          #     chown -R artisan:artisan .
-          #     su - artisan -c "
-          #       set -e
-          #       cd $GITHUB_WORKSPACE
-          #       ./coa/coa tools build arch
-          #       makepkg -s --noconfirm
-          #     "
-          #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
+          # ==========================================
+          # 🏹 ARCH LINUX (Il Banco di Prova)
+          # ==========================================
+          - distro: arch
+            image: archlinux:latest
+            prep_cmd: |
+              pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
+              useradd -m artisan
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+            pack_cmd: |
+              chown -R artisan:artisan .
+              su - artisan -c "
+                set -e
+                cd $GITHUB_WORKSPACE
+                ./coa/coa tools build arch
+                makepkg -s --noconfirm
+              "
+            install_cmd: pacman -U --noconfirm *.pkg.tar.zst
 
-          # # ==========================================
-          # # 🏹 MANJARO
-          # # ==========================================
-          # - distro: manjaro
-          #   image: manjarolinux/base:latest
-          #   prep_cmd: |
-          #     pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
-          #     useradd -m artisan
-          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-          #   pack_cmd: |
-          #     chown -R artisan:artisan .
-          #     su - artisan -c "
-          #       set -e
-          #       cd $GITHUB_WORKSPACE
-          #       ./coa/coa tools build manjaro
-          #       makepkg -s --noconfirm
-          #     "
-          #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
+          # ==========================================
+          # 🏹 MANJARO
+          # ==========================================
+          - distro: manjaro
+            image: manjarolinux/base:latest
+            prep_cmd: |
+              pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
+              useradd -m artisan
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+            pack_cmd: |
+              chown -R artisan:artisan .
+              su - artisan -c "
+                set -e
+                cd $GITHUB_WORKSPACE
+                ./coa/coa tools build manjaro
+                makepkg -s --noconfirm
+              "
+            install_cmd: pacman -U --noconfirm *.pkg.tar.zst
 
-          # # ==========================================
-          # # 🌀 DEBIAN (Il Vecchio Saggio)
-          # # ==========================================
-          # - distro: debian
-          #   image: debian:bookworm
-          #   prep_cmd: |
-          #     apt-get update
-          #     apt-get install -y wget build-essential git sudo dpkg-dev
+          # ==========================================
+          # 🌀 DEBIAN (Il Vecchio Saggio)
+          # ==========================================
+          - distro: debian
+            image: debian:bookworm
+            prep_cmd: |
+              apt-get update
+              apt-get install -y wget build-essential git sudo dpkg-dev
               
-          #     # 💉 Iniezione di un Go moderno
-          #     wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
-          #     tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
-          #     ln -s /usr/local/go/bin/go /usr/bin/go
+              # 💉 Iniezione di un Go moderno
+              wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
+              tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
+              ln -s /usr/local/go/bin/go /usr/bin/go
               
-          #     # 🧑‍🔧 Assumiamo il nostro apprendista non-root
-          #     useradd -m -s /bin/bash artisan
-          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+              # 🧑‍🔧 Assumiamo il nostro apprendista non-root
+              useradd -m -s /bin/bash artisan
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
             
-          #   pack_cmd: |
-          #     # Diamo la proprietà del cantiere ad artisan
-          #     chown -R artisan:artisan .
+            pack_cmd: |
+              # Diamo la proprietà del cantiere ad artisan
+              chown -R artisan:artisan .
               
-          #     su - artisan -c "
-          #       set -e
-          #       cd $GITHUB_WORKSPACE
+              su - artisan -c "
+                set -e
+                cd $GITHUB_WORKSPACE
                 
-          #       # Lasciapassare per Git
-          #       git config --global --add safe.directory '*'
+                # Lasciapassare per Git
+                git config --global --add safe.directory '*'
                 
-          #       # ⚔️ Forgiamo le armi
-          #       make clean
-          #       make
+                # ⚔️ Forgiamo le armi
+                make clean
+                make
                 
-          #       # 🧠 Ora coa sarà felice perché viene eseguito da artisan, non da root!
-          #       ./coa/coa tools build debian
-          #     "
+                # 🧠 Ora coa sarà felice perché viene eseguito da artisan, non da root!
+                ./coa/coa tools build debian
+              "
               
-          #   install_cmd: apt-get install -y ./*.deb
+            install_cmd: apt-get install -y ./*.deb
 
 
           # ==========================================
@@ -161,7 +161,7 @@ jobs:
             
             # NOTA: Assicurati che coa sposti il .rpm nella root o adatta il percorso.
             # Di default rpmbuild lavora in ~/rpmbuild/RPMS/x86_64/
-            install_cmd: sh -c "dnf install -y /home/artisan/oa-tools*.rpm"
+            install_cmd: sh -c "dnf install -y /home/artisan/oa-tools/oa-tools*.rpm"
 
 
           # ==========================================
