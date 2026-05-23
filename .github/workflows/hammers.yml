@@ -26,9 +26,6 @@ jobs:
           #   install_cmd: apk add --allow-untrusted ~/packages/oa-tools/x86_64/oa-tools-*.apk
 
           # ==========================================
-          # 🏹 ARCH
-          # ==========================================
-# ==========================================
           # 🏹 ARCH LINUX (Il Banco di Prova)
           # ==========================================
           - distro: arch
@@ -42,12 +39,11 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                ./coa/coa tools build arch
-                cd arch-build
+                ./coa tools build arch
                 makepkg -s --noconfirm
               "
-            install_cmd: pacman -U --noconfirm arch-build/*.pkg.tar.zst
-
+            install_cmd: pacman -U --noconfirm *.pkg.tar.zst
+            
           # # ==========================================
           # # 🏹 MANJARO
           # # ==========================================
