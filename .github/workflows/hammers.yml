@@ -161,7 +161,7 @@ jobs:
             
             # NOTA: Assicurati che coa sposti il .rpm nella root o adatta il percorso.
             # Di default rpmbuild lavora in ~/rpmbuild/RPMS/x86_64/
-            install_cmd: dnf install -y ./*.rpm ~/rpmbuild/RPMS/*/*.rpm
+            install_cmd: sh -c "dnf install -y /home/artisan/rpmbuild/RPMS/*/*.rpm"
 
 
           # # ==========================================
