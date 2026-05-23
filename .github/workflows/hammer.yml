@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  fucine-build:
+  hammer-build:
     runs-on: ubuntu-latest
     
     strategy:
@@ -86,15 +86,14 @@ jobs:
       - name: 📥 Prelievo codice (Checkout)
         uses: actions/checkout@v4
 
-      - name: 🧰 Allestimento attrezzi nella fucina
+      - name: 🧰 Allestimento attrezzi nella officina
         run: ${{ matrix.prep_cmd }}
 
       - name: ⚙️ Compilazione e Preparazione Sorgenti (oa & coa)
         run: |
           echo "🔨 Compilo e preparo le cartelle di staging (es. alpine-build)..."
           make
-          # Inserisci qui il comando per far generare a 'coa' le cartelle di build
-          # Esempio: ./coa build-package --distro=${{ matrix.distro }}
+          ./coa/coa tools build
 
       - name: 📦 Generazione Pacchetto Nativo (${{ matrix.distro }})
         run: ${{ matrix.pack_cmd }}
