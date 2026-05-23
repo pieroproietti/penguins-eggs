@@ -17,6 +17,9 @@ jobs:
           - distro: arch
             vmid: 202
             ip: 192.168.1.202
+          - distro: fedora
+            vmid: 204
+            ip: 192.168.1.204
     
     steps:
     - name: Start Proxmox VM (${{ matrix.distro }})
