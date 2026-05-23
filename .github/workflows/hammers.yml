@@ -39,11 +39,11 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                ./coa tools build arch
+                ./coa/coa tools build arch
                 makepkg -s --noconfirm
               "
             install_cmd: pacman -U --noconfirm *.pkg.tar.zst
-            
+
           # # ==========================================
           # # 🏹 MANJARO
           # # ==========================================
