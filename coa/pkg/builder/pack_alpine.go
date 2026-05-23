@@ -5,93 +5,75 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"time"
 
 	sysctx "coa/pkg/context" // Il nostro scudo contestuale
 )
 
-// packAlpine costruisce il pacchetto per Alpine Linux (.apk)
+// packAlpine costruisce il pacchetto per Alpine Linux (.apk) usando l'ufficiale abuild
 // RISPETTA IL PATTO: Sfrutta il RuntimeContext per non usurare i dischi e isolare i build.
 func packAlpine(pkgVersion string, ctx sysctx.RuntimeContext) {
-	// Convenzione Alpine: nome-versione-revisione
-	pkgName := fmt.Sprintf("oa-tools-%s-r0", pkgVersion)
-	apkFile := fmt.Sprintf("%s.apk", pkgName)
+	pkgName := "oa-tools"
+	fullPkgName := fmt.Sprintf("%s-%s-r0.apk", pkgName, pkgVersion)
 
-	LogBuild("Iniziando il pacchettizzamento per Alpine Linux (musl/apk)...")
+	LogBuild("Iniziando il pacchettizzamento per Alpine Linux tramite abuild...")
 
-	// 1. Il tavolo da lavoro è la fucina sicura definita dal Contesto
-	buildDir := filepath.Join(ctx.BaseBuildDir, pkgName)
+	// 1. Il tavolo da lavoro
+	buildDir := filepath.Join(ctx.BaseBuildDir, "alpine-build")
+	stagingDir := filepath.Join(buildDir, "staging") // Qui prepariamo i file
+	outDir := filepath.Join(buildDir, "out")         // Qui abuild sputerà l'apk
 	os.RemoveAll(buildDir)
 
-	// 2. Creazione struttura directory standard (Niente cartella DEBIAN per Alpine)
+	// 2. Creazione struttura in 'staging'
 	dirs := []string{
-		filepath.Join(buildDir, "usr/bin"),
-		filepath.Join(buildDir, "etc/oa-tools.d/brain.d"),
-		filepath.Join(buildDir, "usr/share/man/man1"),
-		filepath.Join(buildDir, "usr/share/bash-completion/completions"),
-		filepath.Join(buildDir, "usr/share/zsh/vendor-completions"),
-		filepath.Join(buildDir, "usr/share/fish/vendor_completions.d"),
+		filepath.Join(stagingDir, "usr/bin"),
+		filepath.Join(stagingDir, "etc/oa-tools.d/brain.d"),
+		filepath.Join(stagingDir, "usr/share/man/man1"),
+		filepath.Join(stagingDir, "usr/share/bash-completion/completions"),
+		filepath.Join(stagingDir, "usr/share/zsh/vendor-completions"),
+		filepath.Join(stagingDir, "usr/share/fish/vendor_completions.d"),
 	}
 	for _, dir := range dirs {
 		os.MkdirAll(dir, 0755)
 	}
 
-	// 3. Installazione binari prendendoli direttamente dalla fucina
-	binPath := filepath.Join(buildDir, "usr/bin")
+	// 3. Binari
+	binPath := filepath.Join(stagingDir, "usr/bin")
 	copyFile(filepath.Join(ctx.BaseBuildDir, "oa", "oa"), filepath.Join(binPath, "oa"))
 	copyFile(filepath.Join(ctx.BaseBuildDir, "coa", "coa"), filepath.Join(binPath, "coa"))
 	os.Chmod(filepath.Join(binPath, "oa"), 0755)
 	os.Chmod(filepath.Join(binPath, "coa"), 0755)
-
-	// Creazione del symlink di legacy/compatibilità per 'eggs'
 	os.Symlink("coa", filepath.Join(binPath, "eggs"))
 
-	// 4. Gestione della Configurazione YAML
-	confDest := filepath.Join(buildDir, "etc/oa-tools.d")
+	// 4. Configurazione YAML e Brain
+	confDest := filepath.Join(stagingDir, "etc/oa-tools.d")
 	brainDest := filepath.Join(confDest, "brain.d")
-
 	oaYamlContent := fmt.Sprintf(`---
-# oa-tools configuration
-# coa is the mind and oa the arm
-# Philosophy: https://penguins-eggs.net/blog/eggs-bananas
-
 system:
   dialect: "oa"
   version: "%s"
-
 wardrobe:
   root: "~/.oa-wardrobe"
   repo: "https://github.com/pieroproietti/oa-wardrobe.git"
-
 remaster:
   default_user: "artisan"
   work_dir: "/home/eggs"
 `, pkgVersion)
-
 	os.WriteFile(filepath.Join(confDest, "oa-tools.yaml"), []byte(oaYamlContent), 0644)
-
-	// Popolamento brain.d dai sorgenti stabili
 	brainSrc := filepath.Join(ctx.CoaDir, "brain.d")
 	exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
 
-	// ---------------------------------------------------------
-	// ORIGINE DOCUMENTI
-	// ---------------------------------------------------------
+	// 5. Documentazione e Completamenti
 	docSourceDir := filepath.Join(ctx.BaseBuildDir, "docs")
-
-	// 5. Documentazione (Man pages)
-	manDir := filepath.Join(buildDir, "usr/share/man/man1")
+	manDir := filepath.Join(stagingDir, "usr/share/man/man1")
 	exec.Command("sh", "-c", fmt.Sprintf("cp %s/man/*.1 %s/ && gzip -9 %s/*.1", docSourceDir, manDir, manDir)).Run()
 
-	// 6. Completamenti shell e alias
-	bashTarget := filepath.Join(buildDir, "usr/share/bash-completion/completions/coa")
+	bashTarget := filepath.Join(stagingDir, "usr/share/bash-completion/completions/coa")
 	copyFile(filepath.Join(docSourceDir, "completion/coa.bash"), bashTarget)
-	copyFile(filepath.Join(docSourceDir, "completion/coa.zsh"), filepath.Join(buildDir, "usr/share/zsh/vendor-completions/_coa"))
-	copyFile(filepath.Join(docSourceDir, "completion/coa.fish"), filepath.Join(buildDir, "usr/share/fish/vendor_completions.d/coa.fish"))
-
-	os.Symlink("coa", filepath.Join(buildDir, "usr/share/bash-completion/completions/eggs"))
-	os.Symlink("_coa", filepath.Join(buildDir, "usr/share/zsh/vendor-completions/_eggs"))
-	os.Symlink("coa.fish", filepath.Join(buildDir, "usr/share/fish/vendor_completions.d/eggs.fish"))
+	copyFile(filepath.Join(docSourceDir, "completion/coa.zsh"), filepath.Join(stagingDir, "usr/share/zsh/vendor-completions/_coa"))
+	copyFile(filepath.Join(docSourceDir, "completion/coa.fish"), filepath.Join(stagingDir, "usr/share/fish/vendor_completions.d/coa.fish"))
+	os.Symlink("coa", filepath.Join(stagingDir, "usr/share/bash-completion/completions/eggs"))
+	os.Symlink("_coa", filepath.Join(stagingDir, "usr/share/zsh/vendor-completions/_eggs"))
+	os.Symlink("coa.fish", filepath.Join(stagingDir, "usr/share/fish/vendor_completions.d/eggs.fish"))
 
 	f, err := os.OpenFile(bashTarget, os.O_APPEND|os.O_WRONLY, 0644)
 	if err == nil {
@@ -99,56 +81,59 @@ remaster:
 		f.Close()
 	}
 
-	// 7. Generazione file .PKGINFO (La carta d'identità di Alpine)
-	// Alpine richiede questo file esattamente nella radice dell'archivio tar.
-	timestamp := time.Now().Unix()
-	pkgInfoContent := fmt.Sprintf(`# Generated by oa-tools builder
-pkgname = oa-tools
-pkgver = %s-r0
-pkgdesc = coa is the mind and oa the arm
-url = https://penguins-eggs.net
-builddate = %d
-packager = Piero Proietti <piero.proietti@gmail.com>
-arch = x86_64
-depend = squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi
-`, pkgVersion, timestamp)
+	// ---------------------------------------------------------
+	// IL MAGICO APKBUILD (Stile Arch PKGBUILD)
+	// ---------------------------------------------------------
+	apkbuildContent := fmt.Sprintf(`# Generated by oa-tools builder
+pkgname=oa-tools
+pkgver=%s
+pkgrel=0
+pkgdesc="coa is the mind and oa the arm"
+url="https://penguins-eggs.net"
+arch="x86_64"
+license="MIT"
+depends="squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi"
+options="!check" # Saltiamo i test automatici di Alpine per ora
 
-	os.WriteFile(filepath.Join(buildDir, ".PKGINFO"), []byte(pkgInfoContent), 0644)
+# La funzione package si limita a travasare la nostra cartella staging
+package() {
+	mkdir -p "$pkgdir"
+	cp -a "$startdir/staging/"* "$pkgdir/"
+}
+`, pkgVersion)
 
-	// 8. Impacchettamento nativo: Il segreto di Alpine
-	// Un pacchetto non firmato è un singolo tar.gz, ma .PKGINFO
-	// DEVE essere fisicamente il primo file nello stream.
-	tmpApkLocation := filepath.Join(ctx.BaseBuildDir, apkFile)
+	os.WriteFile(filepath.Join(buildDir, "APKBUILD"), []byte(apkbuildContent), 0644)
 
-	LogBuild("Forgiatura formato APK (Singolo stream con intestazione forzata)...")
-
-	// Passando esplicitamente ".PKGINFO" come primo argomento dopo -C,
-	// garantiamo che si trovi in testa all'archivio.
-	tarCmd := exec.Command("tar", "-czf", tmpApkLocation, "-C", buildDir, ".PKGINFO", "usr", "etc")
-	tarCmd.Stdout, tarCmd.Stderr = os.Stdout, os.Stderr
-	if err := tarCmd.Run(); err != nil {
-		LogError("Impossibile creare il pacchetto Alpine (tar): %v", err)
+	// 6. Esecuzione di abuild
+	LogBuild("Avvio compilazione nativa con abuild...")
+	// -P definisce la cartella di output personalizzata per non inquinare ~/packages
+	// -R salta il controllo delle dipendenze per l'ambiente di build stesso
+	abuildCmd := exec.Command("abuild", "-R", "-P", outDir)
+	abuildCmd.Dir = buildDir
+	abuildCmd.Stdout, abuildCmd.Stderr = os.Stdout, os.Stderr
+	if err := abuildCmd.Run(); err != nil {
+		LogError("Fallita la creazione del pacchetto con abuild: %v", err)
 		return
 	}
 
-	// 9. Destinazione finale simmetrica guidata dal Contesto
+	// abuild crea la struttura: outDir / <arch> / nomepacchetto.apk
+	generatedApk := filepath.Join(outDir, "x86_64", fullPkgName)
+
+	// 7. Destinazione finale simmetrica
 	switch ctx.EnvType {
 	case sysctx.EnvVagrant:
-		LogBuild("[Vagrant Mode] Pacchetto Alpine protetto in RAM: %s", tmpApkLocation)
+		LogBuild("[Vagrant Mode] Pacchetto Alpine protetto in RAM: %s", generatedApk)
 	case sysctx.EnvCI:
-		LogBuild("[CI Mode] Pacchetto Alpine rilasciato nel workspace: %s", tmpApkLocation)
+		LogBuild("[CI Mode] Pacchetto Alpine rilasciato nel workspace: %s", generatedApk)
 	default:
-		// Host o VM nativa
-		finalTarget := filepath.Join(ctx.ProjRoot, apkFile)
-
-		if err := copyFile(tmpApkLocation, finalTarget); err == nil {
-			os.Remove(tmpApkLocation)
-			LogBuild("Pacchetto Alpine sfornato nella root del progetto: %s", finalTarget)
+		finalTarget := filepath.Join(ctx.ProjRoot, fullPkgName)
+		if err := copyFile(generatedApk, finalTarget); err == nil {
+			LogBuild("Pacchetto Alpine (firmato e perfetto) sfornato: %s", finalTarget)
 		} else {
 			LogError("Impossibile copiare il pacchetto nella repo: %v", err)
 		}
 	}
 
-	// Pulizia dello staging scompattato
+	// Pulizia
 	os.RemoveAll(buildDir)
 }
