@@ -88,28 +88,62 @@ jobs:
           #     "
           #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
 
+          # # ==========================================
+          # # 🌀 DEBIAN (Il Vecchio Saggio)
+          # # ==========================================
+          # - distro: debian
+          #   image: debian:bookworm
+          #   prep_cmd: |
+          #     apt-get update
+          #     apt-get install -y wget build-essential git sudo dpkg-dev
+              
+          #     # 💉 Iniezione di un Go moderno
+          #     wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
+          #     tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
+          #     ln -s /usr/local/go/bin/go /usr/bin/go
+              
+          #     # 🧑‍🔧 Assumiamo il nostro apprendista non-root
+          #     useradd -m -s /bin/bash artisan
+          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+            
+          #   pack_cmd: |
+          #     # Diamo la proprietà del cantiere ad artisan
+          #     chown -R artisan:artisan .
+              
+          #     su - artisan -c "
+          #       set -e
+          #       cd $GITHUB_WORKSPACE
+                
+          #       # Lasciapassare per Git
+          #       git config --global --add safe.directory '*'
+                
+          #       # ⚔️ Forgiamo le armi
+          #       make clean
+          #       make
+                
+          #       # 🧠 Ora coa sarà felice perché viene eseguito da artisan, non da root!
+          #       ./coa/coa tools build debian
+          #     "
+              
+          #   install_cmd: apt-get install -y ./*.deb
+
+
           # ==========================================
-          # 🌀 DEBIAN (Il Vecchio Saggio)
+          # 🎩 FEDORA
           # ==========================================
-          - distro: debian
-            image: debian:bookworm
+          - distro: fedora
+            image: fedora:latest
             prep_cmd: |
-              apt-get update
-              apt-get install -y wget build-essential git sudo dpkg-dev
+              dnf update -y
+              # Installiamo il necessario. Su Fedora 'golang' è già super aggiornato.
+              dnf install -y gcc make git rpm-build golang sudo
               
-              # 💉 Iniezione di un Go moderno
-              wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
-              tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
-              ln -s /usr/local/go/bin/go /usr/bin/go
-              
-              # 🧑‍🔧 Assumiamo il nostro apprendista non-root
+              # 🧑‍🔧 Reclutiamo l'artigiano
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
             
             pack_cmd: |
-              # Diamo la proprietà del cantiere ad artisan
               chown -R artisan:artisan .
-              
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
@@ -121,21 +155,18 @@ jobs:
                 make clean
                 make
                 
-                # 🧠 Ora coa sarà felice perché viene eseguito da artisan, non da root!
-                ./coa/coa tools build debian
+                # 🧠 Generiamo l'RPM per Fedora
+                ./coa/coa tools build fedora
               "
-              
-            install_cmd: apt-get install -y ./*.deb
+            
+            # NOTA: Assicurati che coa sposti il .rpm nella root o adatta il percorso.
+            # Di default rpmbuild lavora in ~/rpmbuild/RPMS/x86_64/
+            install_cmd: dnf install -y ./*.rpm ~/rpmbuild/RPMS/*/*.rpm
+
+
           # # ==========================================
           # # 🎩 FEDORA & OPENSUSE (I RedHat-like)
           # # ==========================================
-          # - distro: fedora
-          #   image: fedora:latest
-          #   prep_cmd: dnf install -y golang gcc make git rpm-build
-          #   # Presumo che coa crei una cartella fedora-build con dentro il .spec
-          #   pack_cmd: cd fedora-build && rpmbuild -ba oa-tools.spec --define "_topdir $PWD"
-          #   install_cmd: dnf install -y RPMS/x86_64/*.rpm
-
           # - distro: opensuse
           #   image: opensuse/tumbleweed:latest
           #   prep_cmd: zypper --non-interactive install go gcc make git rpmbuild
