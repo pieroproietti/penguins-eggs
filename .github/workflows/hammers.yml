@@ -17,13 +17,28 @@ jobs:
           # ==========================================
           # ⛰️ ALPINE (Il Buttafuori)
           # ==========================================
-          # - distro: alpine
-          #   image: alpine:latest
-          #   # Generiamo le chiavi abuild (-a -i -n) al volo durante l'allestimento
-          #   prep_cmd: apk update && apk add go gcc musl-dev make git abuild sudo && abuild-keygen -a -i -n
-          #   # abuild -F permette l'esecuzione come root all'interno del container
-          #   pack_cmd: cd alpine-build && abuild -F -r
-          #   install_cmd: apk add --allow-untrusted ~/packages/oa-tools/x86_64/oa-tools-*.apk
+          - distro: alpine
+            image: alpine:latest
+            prep_cmd: |
+              apk update
+              apk add go gcc musl-dev make git abuild sudo
+              # Alpine usa BusyBox, quindi la sintassi per gli utenti è diversa
+              adduser -D artisan
+              adduser artisan abuild
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+            pack_cmd: |
+              chown -R artisan:artisan .
+              su - artisan -c "
+                set -e
+                # Generiamo e installiamo la chiave RSA di artisan nel sistema
+                sudo abuild-keygen -a -i -n
+                cd $GITHUB_WORKSPACE
+                ./coa/coa tools build alpine
+                # -r risolve e installa le dipendenze in automatico
+                abuild -r
+              "
+            # abuild non lascia il pacchetto qui, ma nella home di artisan!
+            install_cmd: apk add --allow-untrusted /home/artisan/packages/*/*/*.apk
 
           # # ==========================================
           # # 🏹 ARCH LINUX (Il Banco di Prova)
@@ -44,25 +59,25 @@ jobs:
           #     "
           #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
 
-          # ==========================================
-          # 🏹 MANJARO
-          # ==========================================
-          - distro: manjaro
-            image: manjarolinux/base:latest
-            prep_cmd: |
-              pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
-              useradd -m artisan
-              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-            pack_cmd: |
-              chown -R artisan:artisan .
-              su - artisan -c "
-                set -e
-                cd $GITHUB_WORKSPACE
-                ./coa/coa tools build manjaro
-                makepkg -s --noconfirm
-              "
-            install_cmd: pacman -U --noconfirm *.pkg.tar.zst
-            
+          # # ==========================================
+          # # 🏹 MANJARO
+          # # ==========================================
+          # - distro: manjaro
+          #   image: manjarolinux/base:latest
+          #   prep_cmd: |
+          #     pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
+          #     useradd -m artisan
+          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          #   pack_cmd: |
+          #     chown -R artisan:artisan .
+          #     su - artisan -c "
+          #       set -e
+          #       cd $GITHUB_WORKSPACE
+          #       ./coa/coa tools build manjaro
+          #       makepkg -s --noconfirm
+          #     "
+          #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
+
           # # ==========================================
           # # 🌀 DEBIAN (Il Classico)
           # # ==========================================
