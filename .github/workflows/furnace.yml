@@ -17,12 +17,12 @@ jobs:
           - distro: arch
             vmid: 202
             ip: 192.168.1.202
-          - distro: manjaro
-            vmid: 203
-            ip: 192.168.1.203
-          #- distro: fedora
-          #  vmid: 204
-          #  ip: 192.168.1.204
+          #- distro: manjaro
+          #  vmid: 203
+          #  ip: 192.168.1.203
+          - distro: fedora
+            vmid: 204
+            ip: 192.168.1.204
           #- distro: opensuse
           #  vmid: 205
           #  ip: 192.168.1.205
