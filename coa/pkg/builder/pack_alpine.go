@@ -15,7 +15,7 @@ func packAlpine(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	LogBuild("Iniziando la preparazione dei sorgenti Alpine (APKBUILD)...")
 
 	// 1. Il tavolo da lavoro
-	buildDir := filepath.Join(ctx.BaseBuildDir, "alpine-build")
+	buildDir := filepath.Join(ctx.BaseBuildDir)
 	stagingDir := filepath.Join(buildDir, "staging")
 	os.RemoveAll(buildDir)
 
@@ -119,7 +119,7 @@ package() {
 		cmd := exec.Command("cp", "-a", buildDir, finalTargetDir)
 		if err := cmd.Run(); err == nil {
 			LogBuild("✅ Ambiente sorgente Alpine pronto in: %s", finalTargetDir)
-			LogBuild("👉 Per compilare manualmente: cd alpine-build && abuild -r")
+			LogBuild("👉 Per compilare manualmente: abuild -r")
 		} else {
 			LogError("Impossibile copiare l'ambiente nella repo: %v", err)
 		}
