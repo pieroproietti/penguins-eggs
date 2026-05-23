@@ -89,6 +89,8 @@ jobs:
     steps:
       - name: 📥 Prelievo codice (Checkout)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 🧰 Allestimento attrezzi nella officina
         run: ${{ matrix.prep_cmd }}
