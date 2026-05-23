@@ -19,3 +19,7 @@ distributions:
   - id: "opensuse"
     like: ["suse", "opensuse-tumbleweed", "opensuse-slowroll"]
     file: "opensuse.bash.tmpl"
+
+  - id: "alpine"
+    like: []
+    file: "alpine.bash.tmpl"
