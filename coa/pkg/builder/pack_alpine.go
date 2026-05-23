@@ -44,8 +44,8 @@ func packAlpine(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	confDest := filepath.Join(stagingDir, "etc/oa-tools.d")
 	brainDest := filepath.Join(confDest, "brain.d")
 
-	// Uniamo cleanVer e relNum per la versione tracciata nello yaml
-	fullVersion := fmt.Sprintf("%s-%s", cleanVer, relNum)
+	// Uniamo baseVer e relNum per la versione tracciata nello yaml
+	fullVersion := fmt.Sprintf("%s-%s", baseVer, relNum)
 
 	oaYamlContent := fmt.Sprintf(`---
 system:
