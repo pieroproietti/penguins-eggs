@@ -47,7 +47,7 @@ jobs:
                 makepkg -s --noconfirm
               "
             install_cmd: pacman -U --noconfirm arch-build/*.pkg.tar.zst
-            
+
           # # ==========================================
           # # 🏹 MANJARO
           # # ==========================================
@@ -101,7 +101,7 @@ jobs:
         run: |
           echo "🔨 Compilo e preparo le cartelle di staging (es. alpine-build)..."
           make
-          ./coa/coa tools build
+          # non serve piu
 
       - name: 📦 Generazione Pacchetto Nativo (${{ matrix.distro }})
         run: ${{ matrix.pack_cmd }}
