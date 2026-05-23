@@ -85,7 +85,7 @@ func HandleBuild(d *distro.Distro, version string) {
 
 	switch d.FamilyID {
 	case "alpine":
-		packAlpine(baseVer, ctx)
+		packAlpine(baseVer, relNum, ctx)
 	case "archlinux":
 		packArch(baseVer, relNum, ctx)
 	case "manjaro":
