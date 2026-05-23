@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	sysctx "coa/pkg/context" // <-- Il nostro cervello universale
@@ -100,20 +101,34 @@ func HandleBuild(d *distro.Distro, version string) {
 	}
 }
 
-// Utility condivise
-
 func parseGitVersion(v string) (string, string) {
+	// 1. Togliamo la 'v' iniziale se presente
 	cleanV := strings.TrimPrefix(v, "v")
 	parts := strings.Split(cleanV, "-")
 
 	baseVer := parts[0]
 	relNum := "1"
 
+	// 2. Isoliamo la release o un'eventuale appendice (es. dev)
 	if len(parts) > 1 {
-		relNum = parts[1]
+		if _, err := strconv.Atoi(parts[1]); err == nil {
+			// Se è un numero puro (es. 195), è il nostro pkgrel
+			relNum = parts[1]
+		} else {
+			// Se non è un numero (es. "dev" o "beta"), la release torna 1
+			// e accodiamo la stringa alla versione base
+			relNum = "1"
+			baseVer = baseVer + "." + parts[1]
+		}
 	}
 
-	// Fix per Debian
+	// 3. PULIZIA UNIVERSALE (Per Arch, Fedora, Alpine)
+	// Via i trattini e gli underscore, sostituiti con il punto.
+	baseVer = strings.ReplaceAll(baseVer, "-", ".")
+	baseVer = strings.ReplaceAll(baseVer, "_", ".")
+
+	// 4. Fix storico per Debian (che preferisce la tilde per le pre-release)
+	// Se la versione inizia con una lettera invece che con un numero
 	if len(baseVer) > 0 && (baseVer[0] < '0' || baseVer[0] > '9') {
 		baseVer = "0~" + baseVer
 	}

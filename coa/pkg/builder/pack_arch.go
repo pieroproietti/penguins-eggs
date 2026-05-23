@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	sysctx "coa/pkg/context"
 )
@@ -16,11 +15,6 @@ import (
 func packArch(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	// Il PKGBUILD viene sputato sempre e comunque nella radice del progetto
 	outDir := ctx.ProjRoot
-
-	// PULIZIA PER ARCH LINUX (pkgver conformi alle direttive Pacman):
-	cleanVer := strings.TrimPrefix(baseVer, "v")
-	cleanVer = strings.ReplaceAll(cleanVer, "-", ".")
-	cleanVer = strings.ReplaceAll(cleanVer, "_", ".")
 
 	// IL PKGBUILD NATIVO: Risaliamo di un livello rispetto a srcdir (../)
 	// per pescare l'albero dei sorgenti reali nella Home dell'utente.
@@ -106,7 +100,7 @@ EOF
 
 	echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, cleanVer, relNum)
+`, baseVer, relNum)
 
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
 	err := os.WriteFile(pkgbuildPath, []byte(pkgbuildContent), 0644)
