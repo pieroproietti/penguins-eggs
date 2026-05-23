@@ -25,11 +25,30 @@ jobs:
           #   pack_cmd: cd alpine-build && abuild -F -r
           #   install_cmd: apk add --allow-untrusted ~/packages/oa-tools/x86_64/oa-tools-*.apk
 
+          # # ==========================================
+          # # 🏹 ARCH LINUX (Il Banco di Prova)
+          # # ==========================================
+          # - distro: arch
+          #   image: archlinux:latest
+          #   prep_cmd: |
+          #     pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
+          #     useradd -m artisan
+          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          #   pack_cmd: |
+          #     chown -R artisan:artisan .
+          #     su - artisan -c "
+          #       set -e
+          #       cd $GITHUB_WORKSPACE
+          #       ./coa/coa tools build arch
+          #       makepkg -s --noconfirm
+          #     "
+          #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
+
           # ==========================================
-          # 🏹 ARCH LINUX (Il Banco di Prova)
+          # 🏹 MANJARO
           # ==========================================
-          - distro: arch
-            image: archlinux:latest
+          - distro: manjaro
+            image: manjarolinux/base:latest
             prep_cmd: |
               pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
               useradd -m artisan
@@ -39,24 +58,11 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                ./coa/coa tools build arch
+                ./coa/coa tools build manjaro
                 makepkg -s --noconfirm
               "
             install_cmd: pacman -U --noconfirm *.pkg.tar.zst
-
-          # # ==========================================
-          # # 🏹 MANJARO
-          # # ==========================================
-          # - distro: manjaro
-          #   image: manjarolinux/base:latest
-          #   prep_cmd: >
-          #     pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils && 
-          #     useradd -m artisan && echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-          #   pack_cmd: >
-          #     chown -R artisan:artisan . && 
-          #     su - artisan -c "cd $GITHUB_WORKSPACE/manjaro-build && makepkg -s --noconfirm"
-          #   install_cmd: pacman -U --noconfirm manjaro-build/*.pkg.tar.zst
-
+            
           # # ==========================================
           # # 🌀 DEBIAN (Il Classico)
           # # ==========================================

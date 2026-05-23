@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	sysctx "coa/pkg/context"
 )
@@ -16,11 +15,6 @@ import (
 func packManjaro(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	// Il PKGBUILD viene sputato sempre e comunque nella radice del progetto
 	outDir := ctx.ProjRoot
-
-	// PULIZIA PER PACMAN (pkgver senza caratteri estranei):
-	cleanVer := strings.TrimPrefix(baseVer, "v")
-	cleanVer = strings.ReplaceAll(cleanVer, "-", ".")
-	cleanVer = strings.ReplaceAll(cleanVer, "_", ".")
 
 	// IL PKGBUILD NATIVO: Sfrutta "${srcdir}/../" per agganciare la Home del progetto.
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
@@ -107,7 +101,7 @@ EOF
 
 	echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, cleanVer, relNum)
+`, baseVer, relNum)
 
 	// Scrittura del file PKGBUILD direttamente nella cartella di output
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
