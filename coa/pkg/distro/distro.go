@@ -71,6 +71,11 @@ func NewDistro() *Distro {
 			d.DistroLike = "Debian"
 			return d
 
+		case "alpine":
+			d.FamilyID = "alpine"
+			d.DistroLike = "Alpine"
+			return d
+
 		case "arch", "endeavouros", "garuda":
 			d.FamilyID = "archlinux"
 			d.DistroLike = "Arch"
