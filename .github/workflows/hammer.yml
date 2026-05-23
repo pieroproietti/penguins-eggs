@@ -1,4 +1,4 @@
-name: 🔨 Hammer Matrix (Compile & Pack)
+name: "🔨 Hammer Matrix (Compile & Pack)"
 
 on:
   push:

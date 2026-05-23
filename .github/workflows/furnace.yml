@@ -1,4 +1,4 @@
-name: 🌋 The Furnace: Proxmox ISO Casting
+name: "🌋 The Furnace: Proxmox ISO Casting"
 
 on:
   workflow_dispatch:
