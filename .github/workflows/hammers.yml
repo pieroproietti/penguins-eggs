@@ -30,14 +30,14 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                # Generiamo e installiamo la chiave RSA di artisan nel sistema
                 sudo abuild-keygen -a -i -n
                 cd $GITHUB_WORKSPACE
                 ./coa/coa tools build alpine
-                # -r risolve e installa le dipendenze in automatico
+                # Andiamo nel cantiere temporaneo in /tmp
+                cd /tmp/oa-alpine-build
                 abuild -r
               "
-            # abuild non lascia il pacchetto qui, ma nella home di artisan!
+                          # abuild non lascia il pacchetto qui, ma nella home di artisan!
             install_cmd: apk add --allow-untrusted /home/artisan/packages/*/*/*.apk
 
           # # ==========================================

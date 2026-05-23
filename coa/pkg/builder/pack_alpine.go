@@ -10,15 +10,17 @@ import (
 )
 
 // packAlpine prepara l'ambiente sorgente e l'APKBUILD per Alpine Linux
-// RISPETTA IL PATTO: Sfrutta il RuntimeContext per non usurare i dischi.
 func packAlpine(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	LogBuild("Iniziando la preparazione dei sorgenti Alpine (APKBUILD)...")
 
-	// 1. Il tavolo da lavoro
-	buildDir := filepath.Join(ctx.BaseBuildDir)
-	stagingDir := filepath.Join(buildDir, "staging")
+	// 1. Il tavolo da lavoro nella cartella temporanea di sistema (/tmp)
+	buildDir := filepath.Join(os.TempDir(), "oa-alpine-build")
+
+	// Pialliamo all'inizio per sicurezza, nel caso ci fosse una vecchia build
 	os.RemoveAll(buildDir)
 
+	stagingDir := filepath.Join(buildDir, "staging")
+	os.MkdirAll(stagingDir, 0755)
 	// 2. Creazione struttura in 'staging'
 	dirs := []string{
 		filepath.Join(stagingDir, "usr/bin"),
@@ -105,28 +107,7 @@ package() {
 
 	os.WriteFile(filepath.Join(buildDir, "APKBUILD"), []byte(apkbuildContent), 0644)
 
-	// 6. Consegna dell'ambiente di build (Nessuna esecuzione di abuild)
-	switch ctx.EnvType {
-	case sysctx.EnvVagrant:
-		LogBuild("[Vagrant Mode] Ambiente Alpine protetto in RAM: %s", buildDir)
-	case sysctx.EnvCI:
-		LogBuild("[CI Mode] Ambiente Alpine rilasciato nel workspace: %s", buildDir)
-	default:
-		finalTargetDir := filepath.Join(ctx.ProjRoot)
-		os.RemoveAll(finalTargetDir) // Puliamo eventuali build precedenti
-
-		// Copiamo l'intera cartella pronta per abuild nella root
-		cmd := exec.Command("cp", "-a", buildDir, finalTargetDir)
-		if err := cmd.Run(); err == nil {
-			LogBuild("✅ Ambiente sorgente Alpine pronto in: %s", finalTargetDir)
-			LogBuild("👉 Per compilare manualmente: abuild -r")
-		} else {
-			LogError("Impossibile copiare l'ambiente nella repo: %v", err)
-		}
-	}
-
-	// Pulizia del temp originale se siamo in modalità standard
-	if ctx.EnvType != sysctx.EnvVagrant && ctx.EnvType != sysctx.EnvCI {
-		os.RemoveAll(buildDir)
-	}
+	// 6. Consegna dell'ambiente di build
+	LogBuild("✅ Ambiente sorgente Alpine pronto in: %s", buildDir)
+	LogBuild("👉 Per compilare: cd %s && abuild -r", buildDir)
 }
