@@ -89,16 +89,33 @@ jobs:
           #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
 
           # ==========================================
-          # 🌀 DEBIAN (Il Classico)
+          # 🌀 DEBIAN (Il Vecchio Saggio)
           # ==========================================
           - distro: debian
             image: debian:bookworm
-            prep_cmd: apt-get update && apt-get install -y golang build-essential git sudo dpkg-dev
-            # Il tuo builder Go richiama già dpkg-deb nativamente e sputa il .deb nella root
-            pack_cmd: echo "Pacchetto .deb già generato da coa nella root"
-            install_cmd: |
-              apt-get install -y ./*.deb
-
+            prep_cmd: |
+              apt-get update
+              apt-get install -y wget build-essential git sudo dpkg-dev
+              
+              # 💉 Iniezione di un Go moderno aggirando i pacchetti vecchi di Debian
+              wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
+              tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
+              ln -s /usr/local/go/bin/go /usr/bin/go
+            
+            pack_cmd: |
+              set -e
+              # Lasciapassare per Git (come abbiamo fatto su Alpine)
+              git config --global --add safe.directory '*'
+              
+              # ⚔️ Forgiamo le armi nativamente su Debian
+              make clean
+              make
+              
+              # 🧠 Scateniamo la mente per creare il pacchetto
+              ./coa/coa tools build debian
+            
+            # coa (presumibilmente) sputa il .deb direttamente nella root del progetto
+            install_cmd: apt-get install -y ./*.deb
 
           # # ==========================================
           # # 🎩 FEDORA & OPENSUSE (I RedHat-like)
