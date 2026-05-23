@@ -20,8 +20,8 @@ jobs:
           - distro: fedora
             vmid: 204
             ip: 192.168.1.204
-          - distro: opensuse
-            vmid: 205
+          - distro: alpine
+            vmid: 206
             ip: 192.168.1.205
     
     steps:
