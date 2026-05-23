@@ -1,4 +1,4 @@
-name: "🔨 Hammer Matrix (Compile & Pack)"
+name: "🔨 Hammers Matrix (Compile & Pack)"
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                ./coa tools build arch
+                ./coa/coa tools build arch
                 cd arch-build
                 makepkg -s --noconfirm
               "
