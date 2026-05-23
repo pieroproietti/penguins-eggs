@@ -97,26 +97,35 @@ jobs:
               apt-get update
               apt-get install -y wget build-essential git sudo dpkg-dev
               
-              # 💉 Iniezione di un Go moderno aggirando i pacchetti vecchi di Debian
+              # 💉 Iniezione di un Go moderno
               wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
               ln -s /usr/local/go/bin/go /usr/bin/go
+              
+              # 🧑‍🔧 Assumiamo il nostro apprendista non-root
+              useradd -m -s /bin/bash artisan
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
             
             pack_cmd: |
-              set -e
-              # Lasciapassare per Git (come abbiamo fatto su Alpine)
-              git config --global --add safe.directory '*'
+              # Diamo la proprietà del cantiere ad artisan
+              chown -R artisan:artisan .
               
-              # ⚔️ Forgiamo le armi nativamente su Debian
-              make clean
-              make
+              su - artisan -c "
+                set -e
+                cd $GITHUB_WORKSPACE
+                
+                # Lasciapassare per Git
+                git config --global --add safe.directory '*'
+                
+                # ⚔️ Forgiamo le armi
+                make clean
+                make
+                
+                # 🧠 Ora coa sarà felice perché viene eseguito da artisan, non da root!
+                ./coa/coa tools build debian
+              "
               
-              # 🧠 Scateniamo la mente per creare il pacchetto
-              ./coa/coa tools build debian
-            
-            # coa (presumibilmente) sputa il .deb direttamente nella root del progetto
             install_cmd: apt-get install -y ./*.deb
-
           # # ==========================================
           # # 🎩 FEDORA & OPENSUSE (I RedHat-like)
           # # ==========================================
