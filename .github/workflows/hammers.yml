@@ -159,10 +159,8 @@ jobs:
                 ./coa/coa tools build fedora
               "
             
-            # NOTA: Assicurati che coa sposti il .rpm nella root o adatta il percorso.
-            # Di default rpmbuild lavora in ~/rpmbuild/RPMS/x86_64/
-            install_cmd: sh -c "dnf install -y /home/artisan/oa-tools/oa-tools*.rpm"
-
+            # Il pacchetto è già atterrato nella root, lo installiamo direttamente da qui
+            install_cmd: dnf install -y ./*.rpm
 
           # ==========================================
           # 🦎 openSUSE (Tumbleweed)
