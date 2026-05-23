@@ -28,18 +28,26 @@ jobs:
           # ==========================================
           # 🏹 ARCH
           # ==========================================
+# ==========================================
+          # 🏹 ARCH LINUX (Il Banco di Prova)
+          # ==========================================
           - distro: arch
             image: archlinux:latest
-            # makepkg odia root. Creiamo l'utente artisan e gli diamo i poteri sudo
-            prep_cmd: >
-              pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils && 
-              useradd -m artisan && echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-            # Cambiamo i permessi della repo ad artisan e lanciamo makepkg nei suoi panni
-            pack_cmd: >
-              chown -R artisan:artisan . && 
-              su - artisan -c "cd $GITHUB_WORKSPACE/arch-build && makepkg -s --noconfirm"
+            prep_cmd: |
+              pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
+              useradd -m artisan
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+            pack_cmd: |
+              chown -R artisan:artisan .
+              su - artisan -c "
+                set -e
+                cd $GITHUB_WORKSPACE
+                ./coa tools build arch
+                cd arch-build
+                makepkg -s --noconfirm
+              "
             install_cmd: pacman -U --noconfirm arch-build/*.pkg.tar.zst
-
+            
           # # ==========================================
           # # 🏹 MANJARO
           # # ==========================================
