@@ -1,7 +1,7 @@
 #!/bin/bash
-# Uso: p4push [debian|arch|fedora]
+# Uso: p4push [debian|arch|manjaro|fedora|opensuse|alpine|all]
 
-# 1. Carica la configurazione globale di oa-tools
+# 1. Carica la configurazione globale
 CONFIG_FILE="$HOME/oa-tools/bin/p4config"
 if [ ! -f "$CONFIG_FILE" ]; then 
     echo "❌ Errore: File p4config non trovato in $CONFIG_FILE"
@@ -10,44 +10,47 @@ fi
 source "$CONFIG_FILE"
 
 DISTRO=$1
-VAR_NAME="VM_ID_${DISTRO}"
-VMID=${!VAR_NAME}
-
-# Verifica che la distro sia configurata
-if [ -z "$VMID" ]; then 
-    echo "❌ Errore: Distro '$DISTRO' non configurata in p4config!"
+if [ -z "$DISTRO" ]; then
+    echo "Uso: $0 [distro|all]"
     exit 1
 fi
 
-# Il tarball atterra temporaneamente nella cartella delle mandracate sul padre
-PADRE_TAR="/eggs/shared/oa-tools-$VMID.tar.gz"
+push_to_vm() {
+    local target_name=$1
+    local var_name="VM_ID_${target_name}"
+    local vmid=${!var_name}
 
-echo "📦 Impacchetto oa-tools su colibri (includendo la storia di Git!)..."
-# ATTENZIONE: Abbiamo RIMOSSO --exclude='.git'
-# Inseriamo esclusioni mirate per non copiare binari o file oggetto compilati localmente
-tar -czf /tmp/oa-tools-$VMID.tar.gz -C "$HOME" \
-    --exclude='oa-tools/oa/oa' \
-    --exclude='oa-tools/coa/coa' \
-    --exclude='*.o' \
-    oa-tools
+    if [ -z "$vmid" ]; then 
+        echo "❌ Distro '$target_name' non configurata in p4config!"
+        return
+    fi
 
-echo "🚚 Sposto l'archivio su father in /eggs/shared/..."
-scp /tmp/oa-tools-$VMID.tar.gz "${PVE_TARGET}:${PADRE_TAR}"
-rm /tmp/oa-tools-$VMID.tar.gz
+    # 2. Calcoliamo l'IP al volo usando il VMID (es. 201 -> 192.168.1.201)
+    local target_ip="192.168.1.${vmid}"
 
-echo "🚀 Inietto il codice in /home/artisan/ senza rompere i permessi..."
-ssh "$PVE_TARGET" "
-    # 1. Crea la cartella oa-tools nella home di artisan (se non esiste)
-    qm guest exec $VMID -- mkdir -p /home/artisan/oa-tools
+    echo "🚀 Sincronizzo oa-tools su $target_name ($target_ip)..."
+    
+    # 3. Trasferimento incrementale e speculare
+    rsync -avz --delete \
+        --exclude='oa/oa' \
+        --exclude='coa/coa' \
+        --exclude='*.o' \
+        --exclude='*.a' \
+        --exclude='alpine-build/' \
+        "$HOME/oa-tools/" "artisan@${target_ip}:/home/artisan/oa-tools/"
+        
+    echo "✅ Sincronizzazione completata su $target_name!"
+}
 
-    # 2. Scompatta l'archivio direttamente partendo da /home/artisan/
-    qm guest exec $VMID -- tar -xzf /shared/oa-tools-$VMID.tar.gz -C /home/artisan/
-
-    # 3. Mossa maestra: riallinea la proprietà dei file all'utente artisan
-    qm guest exec $VMID -- chown -R artisan:artisan /home/artisan/oa-tools
-
-    # Pulizia sul padre
-    rm $PADRE_TAR
-"
-
-echo "✅ Sincronizzazione speculare completata con successo nella home di artisan!"
+# 4. Magia nera per il comando "all": troviamo le distro direttamente dal file
+if [ "$DISTRO" == "all" ]; then
+    # Estrae tutte le parole che seguono "VM_ID_" nel file p4config
+    DISTROS=$(grep -oP '(?<=^VM_ID_)[^=]+' "$CONFIG_FILE")
+    
+    for d in $DISTROS; do
+        push_to_vm "$d"
+        echo "----------------------------------------"
+    done
+else
+    push_to_vm "$DISTRO"
+fi
