@@ -115,40 +115,21 @@ depend = squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi
 
 	os.WriteFile(filepath.Join(buildDir, ".PKGINFO"), []byte(pkgInfoContent), 0644)
 
-	// 8. Impacchettamento nativo: il rigoroso formato "v2" di Alpine!
-	// Un file .apk è formato da DUE stream gzip concatenati l'uno all'altro.
+	// 8. Impacchettamento nativo: Il segreto di Alpine
+	// Un pacchetto non firmato è un singolo tar.gz, ma .PKGINFO
+	// DEVE essere fisicamente il primo file nello stream.
 	tmpApkLocation := filepath.Join(ctx.BaseBuildDir, apkFile)
-	controlTar := filepath.Join(ctx.BaseBuildDir, "control.tar.gz")
-	dataTar := filepath.Join(ctx.BaseBuildDir, "data.tar.gz")
 
-	LogBuild("Forgiatura formato APK v2 (Control Stream + Data Stream)...")
+	LogBuild("Forgiatura formato APK (Singolo stream con intestazione forzata)...")
 
-	// Stream 1 (Controllo): Contiene ESCLUSIVAMENTE .PKGINFO
-	cmdControl := exec.Command("tar", "-czf", controlTar, "-C", buildDir, ".PKGINFO")
-	cmdControl.Stdout, cmdControl.Stderr = os.Stdout, os.Stderr
-	if err := cmdControl.Run(); err != nil {
-		LogError("Impossibile creare lo stream di controllo: %v", err)
+	// Passando esplicitamente ".PKGINFO" come primo argomento dopo -C,
+	// garantiamo che si trovi in testa all'archivio.
+	tarCmd := exec.Command("tar", "-czf", tmpApkLocation, "-C", buildDir, ".PKGINFO", "usr", "etc")
+	tarCmd.Stdout, tarCmd.Stderr = os.Stdout, os.Stderr
+	if err := tarCmd.Run(); err != nil {
+		LogError("Impossibile creare il pacchetto Alpine (tar): %v", err)
 		return
 	}
-
-	// Stream 2 (Dati): Contiene le cartelle di sistema (usr, etc)
-	cmdData := exec.Command("tar", "-czf", dataTar, "-C", buildDir, "usr", "etc")
-	cmdData.Stdout, cmdData.Stderr = os.Stdout, os.Stderr
-	if err := cmdData.Run(); err != nil {
-		LogError("Impossibile creare lo stream dei dati: %v", err)
-		return
-	}
-
-	// Saldiamo i due stream insieme per formare il pacchetto definitivo
-	cmdConcat := exec.Command("sh", "-c", fmt.Sprintf("cat %s %s > %s", controlTar, dataTar, tmpApkLocation))
-	if err := cmdConcat.Run(); err != nil {
-		LogError("Impossibile concatenare gli stream apk: %v", err)
-		return
-	}
-
-	// Ripuliamo gli scarti di lavorazione
-	os.Remove(controlTar)
-	os.Remove(dataTar)
 
 	// 9. Destinazione finale simmetrica guidata dal Contesto
 	switch ctx.EnvType {
