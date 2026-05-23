@@ -14,41 +14,41 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # ==========================================
-          # 🏔️ ALPINE LINUX (La Vetta di Ghiaccio)
-          # ==========================================
-          - distro: alpine
-            image: alpine:latest
-            prep_cmd: |
-              apk update
-              apk add go gcc musl-dev make git abuild sudo
-              adduser -D artisan
-              adduser artisan abuild
-              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-            pack_cmd: |
-              chown -R artisan:artisan .
-              su - artisan -c "
-                set -e
-                # Generazione chiavi nella Home di artisan (niente sudo qui!)
-                abuild-keygen -a -i -n
+          # # ==========================================
+          # # 🏔️ ALPINE LINUX (La Vetta di Ghiaccio)
+          # # ==========================================
+          # - distro: alpine
+          #   image: alpine:latest
+          #   prep_cmd: |
+          #     apk update
+          #     apk add go gcc musl-dev make git abuild sudo
+          #     adduser -D artisan
+          #     adduser artisan abuild
+          #     echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          #   pack_cmd: |
+          #     chown -R artisan:artisan .
+          #     su - artisan -c "
+          #       set -e
+          #       # Generazione chiavi nella Home di artisan (niente sudo qui!)
+          #       abuild-keygen -a -i -n
                 
-                cd $GITHUB_WORKSPACE
-                # Lasciapassare per far leggere a Git la cronologia dei tag
-                git config --global --add safe.directory '*'
+          #       cd $GITHUB_WORKSPACE
+          #       # Lasciapassare per far leggere a Git la cronologia dei tag
+          #       git config --global --add safe.directory '*'
                 
-                # ⚔️ LA CURA: Ricompiliamo il motore nativamente su Alpine (musl)
-                make clean
-                make
+          #       # ⚔️ LA CURA: Ricompiliamo il motore nativamente su Alpine (musl)
+          #       make clean
+          #       make
                 
-                # 🧠 La Mente prepara il tavolo da lavoro in /tmp/oa-alpine-build
-                ./coa/coa tools build alpine
+          #       # 🧠 La Mente prepara il tavolo da lavoro in /tmp/oa-alpine-build
+          #       ./coa/coa tools build alpine
                 
-                # 🔨 Il Martello chiude il pacchetto
-                cd /tmp/oa-alpine-build
-                abuild -r
-              "
-            # Andiamo a pescare il pacchetto nella cartella 'tmp' creata da abuild
-            install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
+          #       # 🔨 Il Martello chiude il pacchetto
+          #       cd /tmp/oa-alpine-build
+          #       abuild -r
+          #     "
+          #   # Andiamo a pescare il pacchetto nella cartella 'tmp' creata da abuild
+          #   install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
 
           # # ==========================================
           # # 🏹 ARCH LINUX (Il Banco di Prova)
@@ -88,15 +88,17 @@ jobs:
           #     "
           #   install_cmd: pacman -U --noconfirm *.pkg.tar.zst
 
-          # # ==========================================
-          # # 🌀 DEBIAN (Il Classico)
-          # # ==========================================
-          # - distro: debian
-          #   image: debian:bookworm
-          #   prep_cmd: apt-get update && apt-get install -y golang build-essential git sudo dpkg-dev
-          #   # Il tuo builder Go richiama già dpkg-deb nativamente e sputa il .deb nella root
-          #   pack_cmd: echo "Pacchetto .deb già generato da coa nella root"
-          #   install_cmd: apt-get install -y ./*.deb
+          # ==========================================
+          # 🌀 DEBIAN (Il Classico)
+          # ==========================================
+          - distro: debian
+            image: debian:bookworm
+            prep_cmd: apt-get update && apt-get install -y golang build-essential git sudo dpkg-dev
+            # Il tuo builder Go richiama già dpkg-deb nativamente e sputa il .deb nella root
+            pack_cmd: echo "Pacchetto .deb già generato da coa nella root"
+            install_cmd: |
+              apt-get install -y ./*.deb
+
 
           # # ==========================================
           # # 🎩 FEDORA & OPENSUSE (I RedHat-like)
