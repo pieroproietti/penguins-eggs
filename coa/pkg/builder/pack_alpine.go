@@ -9,18 +9,14 @@ import (
 	sysctx "coa/pkg/context" // Il nostro scudo contestuale
 )
 
-// packAlpine costruisce il pacchetto per Alpine Linux (.apk) usando l'ufficiale abuild
-// RISPETTA IL PATTO: Sfrutta il RuntimeContext per non usurare i dischi e isolare i build.
+// packAlpine prepara l'ambiente sorgente e l'APKBUILD per Alpine Linux
+// RISPETTA IL PATTO: Sfrutta il RuntimeContext per non usurare i dischi.
 func packAlpine(pkgVersion string, ctx sysctx.RuntimeContext) {
-	pkgName := "oa-tools"
-	fullPkgName := fmt.Sprintf("%s-%s-r0.apk", pkgName, pkgVersion)
-
-	LogBuild("Iniziando il pacchettizzamento per Alpine Linux tramite abuild...")
+	LogBuild("Iniziando la preparazione dei sorgenti Alpine (APKBUILD)...")
 
 	// 1. Il tavolo da lavoro
 	buildDir := filepath.Join(ctx.BaseBuildDir, "alpine-build")
-	stagingDir := filepath.Join(buildDir, "staging") // Qui prepariamo i file
-	outDir := filepath.Join(buildDir, "out")         // Qui abuild sputerà l'apk
+	stagingDir := filepath.Join(buildDir, "staging")
 	os.RemoveAll(buildDir)
 
 	// 2. Creazione struttura in 'staging'
@@ -92,6 +88,7 @@ pkgdesc="coa is the mind and oa the arm"
 url="https://penguins-eggs.net"
 arch="x86_64"
 license="MIT"
+maintainer="Piero Proietti <piero.proietti@gmail.com>"
 depends="squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi"
 options="!check" # Saltiamo i test automatici di Alpine per ora
 
@@ -104,48 +101,28 @@ package() {
 
 	os.WriteFile(filepath.Join(buildDir, "APKBUILD"), []byte(apkbuildContent), 0644)
 
-	// 6. Esecuzione di abuild (MODIFICATA)
-	LogBuild("Avvio compilazione nativa con abuild...")
-
-	// Niente flag controversi. Usiamo PKGDEST come variabile d'ambiente
-	// per forzare abuild a depositare l'apk nella nostra cartella outDir.
-	abuildCmd := exec.Command("abuild")
-	abuildCmd.Dir = buildDir
-	abuildCmd.Env = append(os.Environ(), "PKGDEST="+outDir)
-	abuildCmd.Stdout, abuildCmd.Stderr = os.Stdout, os.Stderr
-
-	if err := abuildCmd.Run(); err != nil {
-		LogError("Fallita la creazione del pacchetto con abuild: %v", err)
-		return
-	}
-
-	// abuild con PKGDEST salva tipicamente l'output in: outDir/x86_64/nomepacchetto.apk
-	// oppure direttamente in outDir/nomepacchetto.apk. Gestiamo la cosa in sicurezza.
-	generatedApkArch := filepath.Join(outDir, "x86_64", fullPkgName)
-	generatedApkRoot := filepath.Join(outDir, fullPkgName)
-
-	var generatedApk string
-	if _, err := os.Stat(generatedApkArch); err == nil {
-		generatedApk = generatedApkArch
-	} else {
-		generatedApk = generatedApkRoot
-	}
-
-	// 7. Destinazione finale simmetrica (MODIFICATA)
+	// 6. Consegna dell'ambiente di build (Nessuna esecuzione di abuild)
 	switch ctx.EnvType {
 	case sysctx.EnvVagrant:
-		LogBuild("[Vagrant Mode] Pacchetto Alpine protetto in RAM: %s", generatedApk)
+		LogBuild("[Vagrant Mode] Ambiente Alpine protetto in RAM: %s", buildDir)
 	case sysctx.EnvCI:
-		LogBuild("[CI Mode] Pacchetto Alpine rilasciato nel workspace: %s", generatedApk)
+		LogBuild("[CI Mode] Ambiente Alpine rilasciato nel workspace: %s", buildDir)
 	default:
-		finalTarget := filepath.Join(ctx.ProjRoot, fullPkgName)
-		if err := copyFile(generatedApk, finalTarget); err == nil {
-			LogBuild("Pacchetto Alpine (firmato e perfetto) sfornato: %s", finalTarget)
+		finalTargetDir := filepath.Join(ctx.ProjRoot, "alpine-build")
+		os.RemoveAll(finalTargetDir) // Puliamo eventuali build precedenti
+
+		// Copiamo l'intera cartella pronta per abuild nella root
+		cmd := exec.Command("cp", "-a", buildDir, finalTargetDir)
+		if err := cmd.Run(); err == nil {
+			LogBuild("✅ Ambiente sorgente Alpine pronto in: %s", finalTargetDir)
+			LogBuild("👉 Per compilare manualmente: cd alpine-build && abuild -r")
 		} else {
-			LogError("Impossibile copiare il pacchetto nella repo: %v", err)
+			LogError("Impossibile copiare l'ambiente nella repo: %v", err)
 		}
 	}
 
-	// Pulizia
-	os.RemoveAll(buildDir)
+	// Pulizia del temp originale se siamo in modalità standard
+	if ctx.EnvType != sysctx.EnvVagrant && ctx.EnvType != sysctx.EnvCI {
+		os.RemoveAll(buildDir)
+	}
 }
