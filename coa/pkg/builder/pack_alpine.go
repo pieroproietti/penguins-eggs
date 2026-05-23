@@ -104,22 +104,34 @@ package() {
 
 	os.WriteFile(filepath.Join(buildDir, "APKBUILD"), []byte(apkbuildContent), 0644)
 
-	// 6. Esecuzione di abuild
+	// 6. Esecuzione di abuild (MODIFICATA)
 	LogBuild("Avvio compilazione nativa con abuild...")
-	// -P definisce la cartella di output personalizzata per non inquinare ~/packages
-	// -R salta il controllo delle dipendenze per l'ambiente di build stesso
-	abuildCmd := exec.Command("abuild", "-R", "-P", outDir)
+
+	// Niente flag controversi. Usiamo PKGDEST come variabile d'ambiente
+	// per forzare abuild a depositare l'apk nella nostra cartella outDir.
+	abuildCmd := exec.Command("abuild")
 	abuildCmd.Dir = buildDir
+	abuildCmd.Env = append(os.Environ(), "PKGDEST="+outDir)
 	abuildCmd.Stdout, abuildCmd.Stderr = os.Stdout, os.Stderr
+
 	if err := abuildCmd.Run(); err != nil {
 		LogError("Fallita la creazione del pacchetto con abuild: %v", err)
 		return
 	}
 
-	// abuild crea la struttura: outDir / <arch> / nomepacchetto.apk
-	generatedApk := filepath.Join(outDir, "x86_64", fullPkgName)
+	// abuild con PKGDEST salva tipicamente l'output in: outDir/x86_64/nomepacchetto.apk
+	// oppure direttamente in outDir/nomepacchetto.apk. Gestiamo la cosa in sicurezza.
+	generatedApkArch := filepath.Join(outDir, "x86_64", fullPkgName)
+	generatedApkRoot := filepath.Join(outDir, fullPkgName)
 
-	// 7. Destinazione finale simmetrica
+	var generatedApk string
+	if _, err := os.Stat(generatedApkArch); err == nil {
+		generatedApk = generatedApkArch
+	} else {
+		generatedApk = generatedApkRoot
+	}
+
+	// 7. Destinazione finale simmetrica (MODIFICATA)
 	switch ctx.EnvType {
 	case sysctx.EnvVagrant:
 		LogBuild("[Vagrant Mode] Pacchetto Alpine protetto in RAM: %s", generatedApk)
