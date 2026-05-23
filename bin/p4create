@@ -39,7 +39,7 @@ create_vm() {
     # 2. Invocazione remota tramite SSH a Proxmox
     # Abbiamo integrato qxl, seriale, firewall e il mount di virtfs
     ssh "$PVE_TARGET" "qm create $vmid \
-      --name fucin-$target_name \
+      --name furnace-$target_name \
       --memory 4096 \
       --sockets 1 --cores 4 \
       --cpu host \
