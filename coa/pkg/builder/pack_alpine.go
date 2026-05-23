@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	sysctx "coa/pkg/context" // Il nostro scudo contestuale
 )
@@ -14,11 +13,6 @@ import (
 // RISPETTA IL PATTO: Sfrutta il RuntimeContext per non usurare i dischi.
 func packAlpine(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	LogBuild("Iniziando la preparazione dei sorgenti Alpine (APKBUILD)...")
-
-	// PULIZIA PER ALPINE LINUX (pkgver conformi alle direttive):
-	cleanVer := strings.TrimPrefix(baseVer, "v")
-	cleanVer = strings.ReplaceAll(cleanVer, "-", ".")
-	cleanVer = strings.ReplaceAll(cleanVer, "_", ".")
 
 	// 1. Il tavolo da lavoro
 	buildDir := filepath.Join(ctx.BaseBuildDir, "alpine-build")
@@ -107,7 +101,7 @@ package() {
 	mkdir -p "$pkgdir"
 	cp -a "$startdir/staging/"* "$pkgdir/"
 }
-`, cleanVer, relNum)
+`, baseVer, relNum)
 
 	os.WriteFile(filepath.Join(buildDir, "APKBUILD"), []byte(apkbuildContent), 0644)
 
@@ -118,7 +112,7 @@ package() {
 	case sysctx.EnvCI:
 		LogBuild("[CI Mode] Ambiente Alpine rilasciato nel workspace: %s", buildDir)
 	default:
-		finalTargetDir := filepath.Join(ctx.ProjRoot, "alpine-build")
+		finalTargetDir := filepath.Join(ctx.ProjRoot)
 		os.RemoveAll(finalTargetDir) // Puliamo eventuali build precedenti
 
 		// Copiamo l'intera cartella pronta per abuild nella root
