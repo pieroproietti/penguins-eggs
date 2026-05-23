@@ -1,4 +1,4 @@
-name: Proxmox Native CI (Debian & Arch)
+name: 🌋 The Furnace: Proxmox ISO Casting
 
 on:
   workflow_dispatch:
