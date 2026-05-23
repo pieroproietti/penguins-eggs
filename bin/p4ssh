@@ -11,5 +11,6 @@ VMID=${!VAR_NAME}
 if [ -z "$VMID" ]; then echo "Errore: Distro '$DISTRO' non configurata!"; exit 1; fi
 
 echo "🔌 Connessione a $DISTRO (VMID: $VMID)... [CTRL+O per uscire]"
-sleep 0.5
-ssh -t "$PVE_TARGET" "qm terminal $VMID"
+#sleep 0.5
+#ssh -t "$PVE_TARGET" "qm terminal $VMID"
+ssh artisan@192.168.1.${VMID}
