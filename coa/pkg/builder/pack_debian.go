@@ -5,14 +5,19 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	sysctx "coa/pkg/context"
 )
 
 // packDebian costruisce il pacchetto per sistemi basati su Debian (.deb)
 // RISPETTA IL PATTO: Sfrutta il RuntimeContext per non usurare i dischi e isolare i build.
-func packDebian(pkgVersion string, ctx sysctx.RuntimeContext) {
-	pkgName := fmt.Sprintf("oa-tools_%s_amd64", pkgVersion)
+func packDebian(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
+	// Pulizia della versione e creazione del formato Debian (es. 0.7.9-1)
+	cleanVer := strings.TrimPrefix(baseVer, "v")
+	fullVersion := fmt.Sprintf("%s-%s", cleanVer, relNum)
+
+	pkgName := fmt.Sprintf("oa-tools_%s_amd64", fullVersion)
 
 	LogBuild("Iniziando il pacchettizzamento per Debian/Ubuntu...")
 
@@ -65,7 +70,7 @@ wardrobe:
 remaster:
   default_user: "artisan"
   work_dir: "/home/eggs"
-`, pkgVersion)
+`, fullVersion)
 
 	os.WriteFile(filepath.Join(confDest, "oa-tools.yaml"), []byte(oaYamlContent), 0644)
 
@@ -73,7 +78,7 @@ remaster:
 	brainSrc := filepath.Join(ctx.CoaDir, "brain.d")
 	exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
 
-	// --------------------------------------------------------	-
+	// ---------------------------------------------------------
 	// ORIGINE DOCUMENTI (La Regola della Fucina Universale)
 	// ---------------------------------------------------------
 	docSourceDir := filepath.Join(ctx.BaseBuildDir, "docs")
@@ -107,7 +112,7 @@ Maintainer: Piero Proietti <piero.proietti@gmail.com>
 Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dosfstools, mtools, rsync, git, sudo, grub-pc-bin, grub-efi-amd64-bin
 Conflicts: penguins-eggs
 Description: coa is the mind and oa the arm
-`, pkgVersion)
+`, fullVersion)
 
 	os.WriteFile(filepath.Join(buildDir, "DEBIAN", "control"), []byte(controlContent), 0644)
 
@@ -142,6 +147,5 @@ Description: coa is the mind and oa the arm
 	}
 
 	// Pulizia dello staging scompattato (manteniamo pulita la RAM)
-	// os.RemoveAll(buildRoot) // Nota: assicurati che buildRoot o buildDir sia coerente con la pulizia dello staging
 	os.RemoveAll(buildDir)
 }

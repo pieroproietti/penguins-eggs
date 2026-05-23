@@ -96,8 +96,7 @@ func HandleBuild(d *distro.Distro, version string) {
 		packOpenSUSE(baseVer, relNum, ctx)
 	default:
 		LogBuild("Falling back to Debian/Generic packaging...")
-		pkgVersion := fmt.Sprintf("%s-%s", baseVer, relNum)
-		packDebian(pkgVersion, ctx)
+		packDebian(baseVer, relNum, ctx)
 	}
 }
 
