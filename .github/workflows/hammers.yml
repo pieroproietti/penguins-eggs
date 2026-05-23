@@ -161,18 +161,41 @@ jobs:
             
             # NOTA: Assicurati che coa sposti il .rpm nella root o adatta il percorso.
             # Di default rpmbuild lavora in ~/rpmbuild/RPMS/x86_64/
-            install_cmd: sh -c "dnf install -y /home/artisan/rpmbuild/RPMS/*/*.rpm"
+            install_cmd: sh -c "dnf install -y /home/artisan/oa-tools*.rpm"
 
 
-          # # ==========================================
-          # # 🎩 FEDORA & OPENSUSE (I RedHat-like)
-          # # ==========================================
-          # - distro: opensuse
-          #   image: opensuse/tumbleweed:latest
-          #   prep_cmd: zypper --non-interactive install go gcc make git rpmbuild
-          #   pack_cmd: cd opensuse-build && rpmbuild -ba oa-tools.spec --define "_topdir $PWD"
-          #   install_cmd: zypper --non-interactive install RPMS/x86_64/*.rpm
-
+          # ==========================================
+          # 🦎 openSUSE (Tumbleweed)
+          # ==========================================
+          - distro: opensuse
+            image: opensuse/tumbleweed
+            prep_cmd: |
+              # zypper usa -n per la modalità non interattiva
+              zypper -n refresh
+              # Su openSUSE il pacchetto si chiama 'go', shadow serve per useradd
+              zypper -n install gcc make git rpm-build go sudo shadow
+              
+              # 🧑‍🔧 Reclutiamo l'artigiano
+              useradd -m -s /bin/bash artisan
+              echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+            
+            pack_cmd: |
+              chown -R artisan:artisan .
+              su - artisan -c "
+                set -e
+                cd $GITHUB_WORKSPACE
+                
+                git config --global --add safe.directory '*'
+                
+                make clean
+                make
+                
+                # 🧠 Generiamo l'RPM per openSUSE (verifica se il tuo comando è 'opensuse' o 'suse')
+                ./coa/coa tools build opensuse
+              "
+            
+            # Disabilitiamo i check GPG per l'installazione di pacchetti locali
+            install_cmd: zypper -n --no-gpg-checks install ./*.rpm /home/artisan/oa-tools/oa-tools*.rpm
     container:
       image: ${{ matrix.image }}
 
