@@ -59,6 +59,7 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
+                git config --global --add safe.directory '*'
                 ./coa/coa tools build
                 makepkg -s --noconfirm
               "
@@ -79,6 +80,7 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
+                git config --global --add safe.directory '*'
                 ./coa/coa tools build
                 makepkg -s --noconfirm
               "
@@ -98,37 +100,17 @@ jobs:
               ln -s /usr/local/go/bin/go /usr/bin/go
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
             pack_cmd: |
-              # 1. Creiamo un cantiere sicuro nella Home dell'artigiano
-              mkdir -p /home/artisan/workspace
-              
-              # 2. Copiamo tutto il codice (il punto include le cartelle nascoste come .git)
-              cp -a . /home/artisan/workspace/
-              
-              # 3. Intestiamo la casa all'artigiano
-              chown -R artisan:artisan /home/artisan/workspace
-              
+              chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                # Lavoriamo da casa sua, lontano dalle trappole di Docker
-                cd /home/artisan/workspace
-                
+                cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                
-                echo '=========================================='
-                echo '🔍 LA VERITÀ: Leggiamo i tag dal nuovo cantiere!'
-                git describe --tags --always
-                echo '=========================================='
-                
                 make clean
                 make
                 ./coa/coa tools build
               "
-              
-              # 4. Riportiamo il pacchetto sfornato nel workspace di GitHub
-              cp /home/artisan/workspace/*.deb .
-
+            install_cmd: apt-get install -y ./*.deb
 
           # ==========================================
           # 🎩 FEDORA
@@ -180,26 +162,30 @@ jobs:
       image: ${{ matrix.image }}
 
     steps:
+      # 1. PRIMA installiamo gli attrezzi (Git verrà installato qui)
+      - name: 🧰 Allestimento attrezzi nella officina
+        run: ${{ matrix.prep_cmd }}
+
+      # 2. DOPO scarichiamo il codice (Così Checkout usa il vero Git!)
       - name: 📥 Prelievo codice (Checkout)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          fetch-tags: true   # necessario per la versione da tags
+          fetch-tags: true
 
-      - name: 🧰 Allestimento attrezzi nella officina
-        run: ${{ matrix.prep_cmd }}
-
+      # 3. Compilazione
       - name: ⚙️ Compilazione e Preparazione Sorgenti (oa & coa)
         run: |
-          echo "🔓 Sblocco la repository per permettere la lettura dei tag Git..."
+          echo "🔓 Sblocco la repository per root..."
           git config --global --add safe.directory '*'
-
           echo "🔨 Compilo..."
           make
 
+      # 4. Creazione pacchetto
       - name: 📦 Generazione Pacchetto Nativo (${{ matrix.distro }})
         run: ${{ matrix.pack_cmd }}
 
+      # 5. Verifica installazione
       - name: 🚀 Installazione nel sistema vivo
         run: ${{ matrix.install_cmd }}
 
@@ -209,7 +195,6 @@ jobs:
       - name: 🗄️ Prepara il pacchetto per l'esportazione
         run: |
           mkdir -p export
-          # Spostiamo il pacchetto generato nella cartella pulita 'export'
           sh -c "cp ${{ matrix.pkg_pattern }} export/" || echo "⚠️ Nessun pacchetto trovato per questa esecuzione"
 
       - name: 📤 Pubblica il pacchetto ${{ matrix.distro }}
