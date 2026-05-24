@@ -11,7 +11,6 @@ import (
 )
 
 // packDebian costruisce il pacchetto per sistemi basati su Debian (.deb)
-// RISPETTA IL PATTO: Sfrutta il RuntimeContext per non usurare i dischi e isolare i build.
 func packDebian(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	// Pulizia della versione e creazione del formato Debian (es. 0.7.9-1)
 	cleanVer := strings.TrimPrefix(baseVer, "v")
@@ -39,10 +38,19 @@ func packDebian(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 		os.MkdirAll(dir, 0755)
 	}
 
-	// 3. Installazione binari prendendoli direttamente dalla fucina
+	// 3. Installazione binari prendendoli direttamente dal Progetto (dove 'make' li ha appena forgiati)
 	binPath := filepath.Join(buildDir, "usr/bin")
-	copyFile(filepath.Join(ctx.BaseBuildDir, "oa", "oa"), filepath.Join(binPath, "oa"))
-	copyFile(filepath.Join(ctx.BaseBuildDir, "coa", "coa"), filepath.Join(binPath, "coa"))
+
+	errOa := copyFile(filepath.Join(ctx.ProjRoot, "oa", "oa"), filepath.Join(binPath, "oa"))
+	if errOa != nil {
+		LogError("⚠️ ERRORE: Impossibile copiare il binario 'oa': %v", errOa)
+	}
+
+	errCoa := copyFile(filepath.Join(ctx.ProjRoot, "coa", "coa"), filepath.Join(binPath, "coa"))
+	if errCoa != nil {
+		LogError("⚠️ ERRORE: Impossibile copiare il binario 'coa': %v", errCoa)
+	}
+
 	os.Chmod(filepath.Join(binPath, "oa"), 0755)
 	os.Chmod(filepath.Join(binPath, "coa"), 0755)
 
@@ -79,9 +87,9 @@ remaster:
 	exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
 
 	// ---------------------------------------------------------
-	// ORIGINE DOCUMENTI (La Regola della Fucina Universale)
+	// ORIGINE DOCUMENTI (Prendiamo dalla Root del progetto, non dalla fucina!)
 	// ---------------------------------------------------------
-	docSourceDir := filepath.Join(ctx.BaseBuildDir, "docs")
+	docSourceDir := filepath.Join(ctx.ProjRoot, "docs")
 
 	// 5. Documentazione (Man pages)
 	manDir := filepath.Join(buildDir, "usr/share/man/man1")
