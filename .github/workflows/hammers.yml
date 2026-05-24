@@ -100,19 +100,24 @@ jobs:
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
             pack_cmd: |
-              # Usiamo la variabile di GitHub per prendere tutto, cartelle nascoste incluse
-              chown -R artisan:artisan "$GITHUB_WORKSPACE"
+              # 1. Creiamo un cantiere sicuro nella Home dell'artigiano
+              mkdir -p /home/artisan/workspace
+              
+              # 2. Copiamo tutto il codice (il punto include le cartelle nascoste come .git)
+              cp -a . /home/artisan/workspace/
+              
+              # 3. Intestiamo la casa all'artigiano
+              chown -R artisan:artisan /home/artisan/workspace
               
               su - artisan -c "
                 set -e
-                cd \"$(pwd)\"
+                # Lavoriamo da casa sua, lontano dalle trappole di Docker
+                cd /home/artisan/workspace
                 
-                # 🛡️ LO SCUDO ANTI-DOCKER: Diciamo a Git di fidarsi del mount point!
-                export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
                 git config --global --add safe.directory '*'
                 
                 echo '=========================================='
-                echo '🔍 LA VERITÀ: Dimmi che numero vedi!'
+                echo '🔍 LA VERITÀ: Leggiamo i tag dal nuovo cantiere!'
                 git describe --tags --always
                 echo '=========================================='
                 
@@ -120,6 +125,10 @@ jobs:
                 make
                 ./coa/coa tools build debian
               "
+              
+              # 4. Riportiamo il pacchetto sfornato nel workspace di GitHub
+              cp /home/artisan/workspace/*.deb .
+              
 
           # ==========================================
           # 🎩 FEDORA
