@@ -16,18 +16,106 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "initramfs_cmd" }}
-# 1. Modifichiamo mkinitfs.conf per includere moduli fondamentali per il boot live.
-# Alpine usa la variabile 'features' invece di un file 'modules' come Debian.
+# 1. Modifichiamo mkinitfs.conf per includere moduli fondamentali
 if ! grep -q "squashfs" /etc/mkinitfs/mkinitfs.conf; then
     sed -i 's/features="/features="squashfs loop ext4 /' /etc/mkinitfs/mkinitfs.conf
 fi
 
-# 2. Alpine può avere kernel 'lts', 'virt', 'edge'. Troviamo la versione dinamicamente.
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 
-# 3. Generiamo l'initramfs specifico per il boot live
-# Usiamo -F per iniettare le feature al volo in caso il sed fallisca
+# ==============================================================================
+# 💉 INIEZIONE CHIRURGICA DEL SIDECAR LIVE
+# ==============================================================================
+INIT_FILE="/usr/share/mkinitfs/initramfs-init"
+BACKUP_FILE="${INIT_FILE}.original"
+
+echo "💉 Avvio backup e iniezione sidecar in $INIT_FILE..."
+cp "$INIT_FILE" "$BACKUP_FILE"
+
+# Modifichiamo la variabile myopts
+sed -i 's/myopts="/myopts="alpinelivesquashfs alpinelivelabel cow_spacesize /' "$INIT_FILE"
+
+# Creiamo il Payload del Sidecar temporaneo (usiamo 'EOF' tra apici per evitare espansioni shell errate)
+cat << 'EOF' > /tmp/sidecar.in
+# =========================================================
+# OA-TOOLS SIDECAR START
+# =========================================================
+if [ -z "$KOPT_root" ]; then
+    if [ -n "${KOPT_alpinelivelabel}" ] && [ -n "${KOPT_alpinelivesquashfs}" ]; then
+        ebegin "Attempting boot from live media (sidecar method)"
+        nlplug-findfs -p /sbin/mdev ${KOPT_usbdelay:+-t $(( $KOPT_usbdelay * 1000 ))}
+        eend 0
+        
+        devicelive=$(findfs "LABEL=${KOPT_alpinelivelabel}")
+        if [ -z "$devicelive" ]; then
+            eend 1 "Live media not found!" && /bin/busybox sh
+        fi
+        
+        if [ -n "$devicelive" ]; then
+            fstype=$(blkid | grep -m 1 "${KOPT_alpinelivelabel}" | sed -n 's/.*TYPE="\([^"]*\)".*/\1/p/p')
+            echo "Live media found: $devicelive (type: $fstype)" > "$ROOT"/dev/kmsg
+
+            mkdir -p /mnt 
+            if mount -t "$fstype" -o ro "$devicelive" /mnt/ && \
+                mkdir -p /media/root-ro && \
+                mount -t squashfs -o ro "${KOPT_alpinelivesquashfs}" /media/root-ro; then
+                
+                mkdir -p /media/root-rw 
+                mount -t tmpfs root-tmpfs /media/root-rw
+                mkdir -p /media/root-rw/work 
+                mkdir -p /media/root-rw/root
+                mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work $sysroot
+                
+                echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
+
+                if [ -x "$sysroot/$KOPT_init" ]; then
+                    eend 0 "Live media boot successful"
+                    ! [ -f "$sysroot"/etc/resolv.conf ] && [ -f /etc/resolv.conf ] && \
+                        cp /etc/resolv.conf "$sysroot"/etc
+
+                    cat "$ROOT"/proc/mounts 2>/dev/null | while read DEV DIR TYPE OPTS ; do
+                        if [ "$DIR" != "/" -a "$DIR" != "$sysroot" -a -d "$DIR" ]; then
+                            mkdir -p "$sysroot/$DIR"
+                            mount -o move "$DIR" "$sysroot/$DIR"
+                        fi
+                    done
+                    sync
+                    echo "Switching to live system..." > "$ROOT"/dev/kmsg
+                    exec switch_root $switch_root_opts "$sysroot" $chart_init "$KOPT_init" $KOPT_init_args
+                else 
+                    eend 1 "Live media boot problems"
+                fi
+            fi
+        fi
+        eend 1 "Sidecar boot failed. Falling back to default method."
+    fi
+fi
+# =========================================================
+# OA-TOOLS SIDECAR END
+# =========================================================
+EOF
+
+# Usiamo awk (pienamente supportato da Alpine) per inserire il sidecar esattamente PRIMA di resume_from_disk
+awk '
+/^resume_from_disk/ {
+    system("cat /tmp/sidecar.in")
+}
+{ print }
+' "$BACKUP_FILE" > "$INIT_FILE"
+chmod 755 "$INIT_FILE"
+
+# ==============================================================================
+# 🔨 ESECUZIONE E PULIZIA
+# ==============================================================================
+
+# Generiamo l'initramfs specifico con il nostro cuore live
+echo "🔨 Generazione mkinitfs..."
 mkinitfs -F "base squashfs loop ext4" -o /boot/initramfs-$KVER $KVER
+
+# Pulizia: Ripristiniamo l'ordine riportando tutto come prima
+echo "🧹 Ripristino sistema originale..."
+mv "$BACKUP_FILE" "$INIT_FILE"
+rm -f /tmp/sidecar.in
 {{ end }}
 
 # ----------------------------------------------------------------------------
