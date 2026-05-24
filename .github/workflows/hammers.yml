@@ -98,21 +98,21 @@ jobs:
               ln -s /usr/local/go/bin/go /usr/bin/go
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-              
+
             pack_cmd: |
-              chown -R artisan:artisan .
+              # Usiamo la variabile di GitHub per prendere tutto, cartelle nascoste incluse
+              chown -R artisan:artisan "$GITHUB_WORKSPACE"
               
-              # Usiamo $(pwd) tra doppi apici, così la shell principale di GitHub 
-              # scrive il percorso assoluto reale PRIMA di passare la palla ad artisan
               su - artisan -c "
                 set -e
                 cd \"$(pwd)\"
                 
+                # 🛡️ LO SCUDO ANTI-DOCKER: Diciamo a Git di fidarsi del mount point!
+                export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
                 git config --global --add safe.directory '*'
                 
                 echo '=========================================='
-                echo '🔍 SPIA: Dove mi trovo e cosa vedo?'
-                pwd
+                echo '🔍 LA VERITÀ: Dimmi che numero vedi!'
                 git describe --tags --always
                 echo '=========================================='
                 
@@ -120,7 +120,6 @@ jobs:
                 make
                 ./coa/coa tools build debian
               "
-              install_cmd: apt-get install -y ./*.deb
 
           # ==========================================
           # 🎩 FEDORA
