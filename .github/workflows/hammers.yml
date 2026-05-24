@@ -170,6 +170,8 @@ jobs:
 
       - name: ⚙️ Compilazione e Preparazione Sorgenti (oa & coa)
         run: |
+          echo "🔓 Sblocco la repository per permettere la lettura dei tag Git..."
+          git config --global --add safe.directory '*'
           echo "🔨 Compilo..."
           make
 
