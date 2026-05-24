@@ -19,6 +19,7 @@ jobs:
           # ==========================================
           - distro: alpine
             image: alpine:latest
+            pkg_pattern: "/home/artisan/packages/tmp/*/*.apk"
             prep_cmd: |
               apk update
               apk add go gcc musl-dev make git abuild sudo
@@ -29,25 +30,15 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                # Generazione chiavi nella Home di artisan (niente sudo qui!)
                 abuild-keygen -a -i -n
-                
                 cd $GITHUB_WORKSPACE
-                # Lasciapassare per far leggere a Git la cronologia dei tag
                 git config --global --add safe.directory '*'
-                
-                # ⚔️ LA CURA: Ricompiliamo il motore nativamente su Alpine (musl)
                 make clean
                 make
-                
-                # 🧠 La Mente prepara il tavolo da lavoro in /tmp/oa-alpine-build
                 ./coa/coa tools build alpine
-                
-                # 🔨 Il Martello chiude il pacchetto
                 cd /tmp/oa-alpine-build
                 abuild -r
               "
-            # Andiamo a pescare il pacchetto nella cartella 'tmp' creata da abuild
             install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
 
           # ==========================================
@@ -55,6 +46,7 @@ jobs:
           # ==========================================
           - distro: arch
             image: archlinux:latest
+            pkg_pattern: "*.pkg.tar.zst"
             prep_cmd: |
               pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
               useradd -m artisan
@@ -74,6 +66,7 @@ jobs:
           # ==========================================
           - distro: manjaro
             image: manjarolinux/base:latest
+            pkg_pattern: "*.pkg.tar.zst"
             prep_cmd: |
               pacman -Syu --noconfirm go gcc make git sudo fakeroot binutils
               useradd -m artisan
@@ -93,73 +86,48 @@ jobs:
           # ==========================================
           - distro: debian
             image: debian:bookworm
+            pkg_pattern: "*.deb"
             prep_cmd: |
               apt-get update
               apt-get install -y wget build-essential git sudo dpkg-dev
-              
-              # 💉 Iniezione di un Go moderno
               wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
               ln -s /usr/local/go/bin/go /usr/bin/go
-              
-              # 🧑‍🔧 Assumiamo il nostro apprendista non-root
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-            
             pack_cmd: |
-              # Diamo la proprietà del cantiere ad artisan
               chown -R artisan:artisan .
-              
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                
-                # Lasciapassare per Git
                 git config --global --add safe.directory '*'
-                
-                # ⚔️ Forgiamo le armi
                 make clean
                 make
-                
-                # 🧠 Ora coa sarà felice perché viene eseguito da artisan, non da root!
                 ./coa/coa tools build debian
               "
-              
             install_cmd: apt-get install -y ./*.deb
-
 
           # ==========================================
           # 🎩 FEDORA
           # ==========================================
           - distro: fedora
             image: fedora:latest
+            pkg_pattern: "*.rpm"
             prep_cmd: |
               dnf update -y
-              # Installiamo il necessario. Su Fedora 'golang' è già super aggiornato.
               dnf install -y gcc make git rpm-build golang sudo
-              
-              # 🧑‍🔧 Reclutiamo l'artigiano
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-            
             pack_cmd: |
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                
-                # Lasciapassare per Git
                 git config --global --add safe.directory '*'
-                
-                # ⚔️ Forgiamo le armi
                 make clean
                 make
-                
-                # 🧠 Generiamo l'RPM per Fedora
                 ./coa/coa tools build fedora
               "
-            
-            # Il pacchetto è già atterrato nella root, lo installiamo direttamente da qui
             install_cmd: dnf install -y ./*.rpm
 
           # ==========================================
@@ -167,33 +135,24 @@ jobs:
           # ==========================================
           - distro: opensuse
             image: opensuse/tumbleweed
+            pkg_pattern: "*.rpm"
             prep_cmd: |
-              # zypper usa -n per la modalità non interattiva
               zypper -n refresh
-              # Su openSUSE il pacchetto si chiama 'go', shadow serve per useradd
               zypper -n install gcc make git rpm-build go sudo shadow
-              
-              # 🧑‍🔧 Reclutiamo l'artigiano
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-            
             pack_cmd: |
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                
                 git config --global --add safe.directory '*'
-                
                 make clean
                 make
-                
-                # 🧠 Generiamo l'RPM per openSUSE (verifica se il tuo comando è 'opensuse' o 'suse')
                 ./coa/coa tools build opensuse
               "
-            
-            # Disabilitiamo i check GPG per l'installazione di pacchetti locali
-            install_cmd: zypper -n --no-gpg-checks install ./*.rpm /home/artisan/oa-tools/oa-tools*.rpm
+            install_cmd: zypper -n --no-gpg-checks install ./*.rpm
+
     container:
       image: ${{ matrix.image }}
 
@@ -208,13 +167,28 @@ jobs:
 
       - name: ⚙️ Compilazione e Preparazione Sorgenti (oa & coa)
         run: |
-          echo "🔨 Compilo e preparo le cartelle di staging (es. alpine-build)..."
+          echo "🔨 Compilo..."
           make
-          # non serve piu
 
       - name: 📦 Generazione Pacchetto Nativo (${{ matrix.distro }})
         run: ${{ matrix.pack_cmd }}
 
       - name: 🚀 Installazione nel sistema vivo
         run: ${{ matrix.install_cmd }}
-        
+
+      # --------------------------------------------------------------------
+      # ESTRAZIONE DEL BOTTINO LOCALE (Scaricabili separatamente)
+      # --------------------------------------------------------------------
+      - name: 🗄️ Prepara il pacchetto per l'esportazione
+        run: |
+          mkdir -p export
+          # Spostiamo il pacchetto generato nella cartella pulita 'export'
+          sh -c "cp ${{ matrix.pkg_pattern }} export/" || echo "⚠️ Nessun pacchetto trovato per questa esecuzione"
+
+      - name: 📤 Pubblica il pacchetto ${{ matrix.distro }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: oa-tools-${{ matrix.distro }}
+          path: export/
+          retention-days: 7
+          
