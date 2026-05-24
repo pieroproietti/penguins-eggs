@@ -123,12 +123,12 @@ jobs:
                 
                 make clean
                 make
-                ./coa/coa tools build debian
+                ./coa/coa tools build
               "
               
               # 4. Riportiamo il pacchetto sfornato nel workspace di GitHub
               cp /home/artisan/workspace/*.deb .
-              
+
 
           # ==========================================
           # 🎩 FEDORA
