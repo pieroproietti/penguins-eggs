@@ -17,35 +17,41 @@
 # ----------------------------------------------------------------------------
 {{ define "initramfs_cmd" }}
 # 1. Creazione della struttura feature 'oa-sidecar'
+echo "Sidecar attivp"
 FEATURE_DIR="/usr/share/mkinitfs/features.d/oa-sidecar"
 mkdir -p "$FEATURE_DIR"
 
-# 2. Scrittura del modulo di avvio (Sidecar)
-# Utilizziamo la porta 'root=' che Alpine gestisce nativamente
+# CREAZIONE DELLA FEATHURE sidecar
 cat << 'EOF' > "$FEATURE_DIR/init"
 if [ "${KOPT_root#live:LABEL=}" != "$KOPT_root" ]; then
     LABEL="${KOPT_root#live:LABEL=}"
-    ebegin "OA-Sidecar: Booting from $LABEL"
     
-    # Forza scansione dispositivi (risolve il mistero della label invisibile)
+    # 1. Preparazione directory (FONDAMENTALE)
+    mkdir -p /mnt /media/root-ro /media/root-rw/work /media/root-rw/root
+    
+    # 2. Scansione per far apparire i device
     for dev in /dev/sd[a-z]*; do [ -b "$dev" ] && blkid -o export "$dev" > /dev/null 2>&1; done
     nlplug-findfs -p /sbin/mdev
     
+    # 3. Montaggio ISO
     devicelive=$(findfs "LABEL=$LABEL")
-    if [ -n "$devicelive" ]; then
-        fstype=$(blkid | grep -m 1 "$LABEL" | sed -n 's/.*TYPE="\([^"]*\)".*/\1/p')
-        mkdir -p /mnt /media/root-ro /media/root-rw/work /media/root-rw/root
-        if mount -t "$fstype" -o ro "$devicelive" /mnt/ && \
-           mount -t squashfs -o ro "filesystem.squashfs" /media/root-ro; then
-            mount -t tmpfs root-tmpfs /media/root-rw
+    if [ -n "$devicelive" ] && mount -t iso9660 -o ro "$devicelive" /mnt/; then
+        
+        # 4. Montaggio SquashFS (il file è in /mnt/live/ come da tuo screenshot)
+        if mount -t squashfs -o ro /mnt/live/filesystem.squashfs /media/root-ro; then
+            
+            # 5. Montaggio Overlay
+            mount -t tmpfs tmpfs /media/root-rw
             mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work $sysroot
             
-            # Finalizzazione e switch_root
-            ! [ -f "$sysroot"/etc/resolv.conf ] && [ -f /etc/resolv.conf ] && cp /etc/resolv.conf "$sysroot"/etc
+            # Switch root
             exec switch_root $switch_root_opts "$sysroot" $chart_init "$KOPT_init" $KOPT_init_args
+        else
+            echo "ERRORE: Squashfs non montato" > /dev/kmsg
         fi
+    else
+        echo "ERRORE: ISO non montata" > /dev/kmsg
     fi
-    eend 1 "Sidecar boot failed"
 fi
 EOF
 
