@@ -42,12 +42,15 @@ EOF
 # 2. Pulizia vecchie patch
 sed -i '/# --- OA-SIDECAR START ---/,/# --- OA-SIDECAR END ---/d' "$INIT_FILE"
 
-# 3. INIEZIONE PURA (Forza bruta riga per riga, zero regex)
+
+# 3. INIEZIONE PURA (Wildcard case per bypassare spazi/CRLF)
 while IFS= read -r line || [ -n "$line" ]; do
     printf "%s\n" "$line"
-    if [ "$line" = "recovery_shell() {" ]; then
-        cat /tmp/oa-sidecar.patch
-    fi
+    case "$line" in
+        *"recovery_shell() {"*)
+            cat /tmp/oa-sidecar.patch
+            ;;
+    esac
 done < "$INIT_FILE" > "$INIT_FILE.new"
 
 mv "$INIT_FILE.new" "$INIT_FILE"
@@ -62,7 +65,7 @@ mkinitfs -o /boot/initramfs-oa-tools $KVER
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "find_kernel_initrd" }}
+{{ define "common_kernel_copy" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "\.old" | head -n 1)
 INITRD_OATOOLS="/home/eggs/liveroot/boot/initramfs-oa-tools"
 
