@@ -18,7 +18,7 @@
 {{ define "initramfs_cmd" }}
 INIT_FILE="/usr/share/mkinitfs/initramfs-init"
 
-# 1. Creazione fisica della patch (con Modprobe forzati)
+# 1. Creazione fisica della patch (con Modprobe forzati e Mount Move)
 cat << 'EOF' > /tmp/oa-sidecar.patch
     # --- OA-SIDECAR START ---
     echo ">>> [OA-SIDECAR] Rilevato fallimento Alpine, avvio paracadute... <<<" > /dev/console
@@ -48,6 +48,14 @@ cat << 'EOF' > /tmp/oa-sidecar.patch
                 if mount -t squashfs -o ro "/mnt/live/filesystem.squashfs" /media/root-ro 2>/dev/null; then
                     mount -t tmpfs tmpfs /media/root-rw
                     mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
+                    
+                    echo ">>> [OA-SIDECAR] Trasloco filesystem virtuali in corso... <<<" > /dev/console
+                    mkdir -p /sysroot/sys /sysroot/proc /sysroot/dev /sysroot/run
+                    mount --move /sys /sysroot/sys
+                    mount --move /proc /sysroot/proc
+                    mount --move /dev /sysroot/dev
+                    mount --move /run /sysroot/run 2>/dev/null
+                    
                     echo ">>> [OA-SIDECAR] SISTEMA PRONTO! Switch_root in corso... <<<" > /dev/console
                     exec switch_root -c /dev/console /sysroot /sbin/init
                 fi
@@ -93,6 +101,7 @@ EOF
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -c /etc/mkinitfs/live.conf -o /boot/initramfs-oa-tools $KVER
 {{ end }}
+
 
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
