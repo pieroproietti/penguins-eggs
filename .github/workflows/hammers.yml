@@ -164,6 +164,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true   # necessario per la versione da tags
 
       - name: 🧰 Allestimento attrezzi nella officina
         run: ${{ matrix.prep_cmd }}
@@ -172,6 +173,7 @@ jobs:
         run: |
           echo "🔓 Sblocco la repository per permettere la lettura dei tag Git..."
           git config --global --add safe.directory '*'
+
           echo "🔨 Compilo..."
           make
 
