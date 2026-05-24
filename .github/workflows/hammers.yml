@@ -35,7 +35,7 @@ jobs:
                 git config --global --add safe.directory '*'
                 make clean
                 make
-                ./coa/coa tools build alpine
+                ./coa/coa tools build
                 cd /tmp/oa-alpine-build
                 abuild -r
               "
@@ -56,7 +56,7 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                ./coa/coa tools build arch
+                ./coa/coa tools build
                 makepkg -s --noconfirm
               "
             install_cmd: pacman -U --noconfirm *.pkg.tar.zst
@@ -76,7 +76,7 @@ jobs:
               su - artisan -c "
                 set -e
                 cd $GITHUB_WORKSPACE
-                ./coa/coa tools build manjaro
+                ./coa/coa tools build
                 makepkg -s --noconfirm
               "
             install_cmd: pacman -U --noconfirm *.pkg.tar.zst
@@ -103,7 +103,7 @@ jobs:
                 git config --global --add safe.directory '*'
                 make clean
                 make
-                ./coa/coa tools build debian
+                ./coa/coa tools build
               "
             install_cmd: apt-get install -y ./*.deb
 
@@ -126,7 +126,7 @@ jobs:
                 git config --global --add safe.directory '*'
                 make clean
                 make
-                ./coa/coa tools build fedora
+                ./coa/coa tools build
               "
             install_cmd: dnf install -y ./*.rpm
 
@@ -149,7 +149,7 @@ jobs:
                 git config --global --add safe.directory '*'
                 make clean
                 make
-                ./coa/coa tools build opensuse
+                ./coa/coa tools build
               "
             install_cmd: zypper -n --no-gpg-checks install ./*.rpm
 
