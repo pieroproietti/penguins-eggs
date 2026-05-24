@@ -18,18 +18,14 @@
 {{ define "initramfs_cmd" }}
 INIT_FILE="/usr/share/mkinitfs/initramfs-init"
 
-# 1. Creazione fisica della patch (inattaccabile da qualsiasi shell)
+# 1. Creazione fisica della patch
 cat << 'EOF' > /tmp/oa-sidecar.patch
     # --- OA-SIDECAR START ---
     echo "DEBUG: OA-SIDECAR rilevato fallimento, avvio procedura di emergenza..." > /dev/kmsg
-    
     CMDLINE=$(cat /proc/cmdline)
     LABEL=$(echo "$CMDLINE" | tr ' ' '\n' | grep '^alpinelivelabel=' | cut -d= -f2)
-    
     if [ -n "$LABEL" ]; then
-        echo "DEBUG: Tentativo di montaggio forzato via Sidecar (Label: $LABEL)" > /dev/kmsg
         mkdir -p /mnt /media/root-ro /media/root-rw/work /media/root-rw/root
-        
         ISO_DEV=$(findfs "LABEL=$LABEL")
         if [ -n "$ISO_DEV" ] && mount -t iso9660 -o ro "$ISO_DEV" /mnt/ 2>/dev/null; then
             if mount -t squashfs -o ro "/mnt/live/filesystem.squashfs" /media/root-ro 2>/dev/null; then
@@ -40,32 +36,52 @@ cat << 'EOF' > /tmp/oa-sidecar.patch
             fi
         fi
     fi
-    echo "DEBUG: Sidecar fallito. Entro in shell di recupero." > /dev/kmsg
     # --- OA-SIDECAR END ---
 EOF
 
-# 2. PULIZIA: Rimuoviamo eventuali vecchie patch per evitare duplicati
+# 2. Pulizia e Iniezione
 sed -i '/# --- OA-SIDECAR START ---/,/# --- OA-SIDECAR END ---/d' "$INIT_FILE"
-
-# 3. INIEZIONE: Diciamo a sed di trovare 'recovery_shell() {' e 'leggere' (r) il file temporaneo
-sed -i '/recovery_shell() {/r /tmp/oa-sidecar.patch' "$INIT_FILE"
-
-# 4. Generazione initramfs
-KVER=$(ls -1 /lib/modules/ | head -n 1)
-mkinitfs -o /boot/initramfs-$KVER $KVER
-
-# Pulizia
+awk '/recovery_shell\(\) \{/ {print; system("cat /tmp/oa-sidecar.patch"); next}1' "$INIT_FILE" > "$INIT_FILE.new"
+mv "$INIT_FILE.new" "$INIT_FILE"
+chmod +x "$INIT_FILE"
 rm /tmp/oa-sidecar.patch
+
+# 3. GENERAZIONE CON NOME UNIVOCO (La tua idea)
+KVER=$(ls -1 /lib/modules/ | head -n 1)
+# Creiamo ESATTAMENTE initramfs-oa-tools
+mkinitfs -o /boot/initramfs-oa-tools $KVER
 {{ end }}
 
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
 {{ define "find_kernel_initrd" }}
-# Su Alpine i file si chiamano vmlinuz-[flavor] e initramfs-[flavor]
-KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | head -n 1)
-INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initramfs-* 2>/dev/null | head -n 1)
+# Il kernel possiamo continuare a prenderlo così, di solito ce n'è uno solo
+KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "\.old" | head -n 1)
+
+# Puntiamo dritti al NOSTRO file inequivocabile
+INITRD_OATOOLS="/home/eggs/liveroot/boot/initramfs-oa-tools"
+
+if [ -f "$KERNEL_PATH" ]; then 
+    cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz
+    echo "Kernel copiato: $KERNEL_PATH"
+fi
+
+# Copiamo il nostro initrd e facciamo pulizia immediata
+if [ -f "$INITRD_OATOOLS" ]; then 
+    cp "$INITRD_OATOOLS" /home/eggs/isodir/live/initrd.img
+    echo "Initrd OA-TOOLS patchato copiato con successo!"
+    
+    # Pulizia come hai suggerito: rimuoviamo la prova dal chroot
+    rm "$INITRD_OATOOLS"
+    echo "Initrd temporaneo rimosso da /boot."
+else
+    echo "ERRORE CRITICO: Il file $INITRD_OATOOLS non esiste!"
+    exit 1
+fi
 {{ end }}
+
+
 
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
