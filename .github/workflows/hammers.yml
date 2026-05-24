@@ -98,21 +98,29 @@ jobs:
               ln -s /usr/local/go/bin/go /usr/bin/go
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+              
             pack_cmd: |
               chown -R artisan:artisan .
+              
+              # Usiamo $(pwd) tra doppi apici, così la shell principale di GitHub 
+              # scrive il percorso assoluto reale PRIMA di passare la palla ad artisan
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd \"$(pwd)\"
+                
                 git config --global --add safe.directory '*'
+                
                 echo '=========================================='
-                echo '🔍 SPIA: Cosa legge Git in questo momento?'
+                echo '🔍 SPIA: Dove mi trovo e cosa vedo?'
+                pwd
                 git describe --tags --always
                 echo '=========================================='
+                
                 make clean
                 make
-                ./coa/coa tools build
+                ./coa/coa tools build debian
               "
-            install_cmd: apt-get install -y ./*.deb
+              install_cmd: apt-get install -y ./*.deb
 
           # ==========================================
           # 🎩 FEDORA
