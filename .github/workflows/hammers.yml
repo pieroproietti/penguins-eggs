@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# 🤫 Silenzia l'avviso di deprecazione e forza l'uso del motore Node.js aggiornato
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true    
+  
 jobs:
   hammer-build:
     runs-on: ubuntu-latest
