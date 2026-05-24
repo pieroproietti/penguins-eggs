@@ -104,6 +104,10 @@ jobs:
                 set -e
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
+                echo '=========================================='
+                echo '🔍 SPIA: Cosa legge Git in questo momento?'
+                git describe --tags --always
+                echo '=========================================='
                 make clean
                 make
                 ./coa/coa tools build
