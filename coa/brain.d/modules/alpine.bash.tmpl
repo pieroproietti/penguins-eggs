@@ -15,72 +15,48 @@
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
-# CREAZIONE DELLA FEATURE oa-sidecar
 {{ define "initramfs_cmd" }}
 INIT_FILE="/usr/share/mkinitfs/initramfs-init"
 
-# 1. Iniezione del codice con debug attivo
-# Usiamo un marker per sapere esattamente dove inserire/rimuovere il codice
-cat << 'EOF' >> "$INIT_FILE"
-set -x # Debug: stampa ogni comando eseguito
-
-# 1. Messaggio inequivocabile e PAUSA
-echo "***************************************************" > /dev/kmsg
-echo "DEBUG: IL SIDECAR E' STATO CARICATO!" > /dev/kmsg
-echo "DEBUG: ATTENDO 10 SECONDI PER LETTURA..." > /dev/kmsg
-echo "***************************************************" > /dev/kmsg
-sleep 10
-
-# Lettura forzata dei parametri direttamente dal Kernel
-CMDLINE=$(cat /proc/cmdline)
-LABEL=$(echo "$CMDLINE" | tr ' ' '\n' | grep '^alpinelivelabel=' | cut -d= -f2)
-SQUASH_NAME=$(echo "$CMDLINE" | tr ' ' '\n' | grep '^alpinelivesquashfs=' | cut -d= -f2)
-SQUASH_NAME=${SQUASH_NAME:-filesystem.squashfs}
-
-# Se abbiamo una label, forziamo il montaggio
-if [ -n "$LABEL" ]; then
-    echo "DEBUG: Trovata LABEL $LABEL, procedo con mount" > /dev/kmsg
-    mkdir -p /mnt /media/root-ro /media/root-rw/work /media/root-rw/root
+# 1. Creazione fisica della patch (inattaccabile da qualsiasi shell)
+cat << 'EOF' > /tmp/oa-sidecar.patch
+    # --- OA-SIDECAR START ---
+    echo "DEBUG: OA-SIDECAR rilevato fallimento, avvio procedura di emergenza..." > /dev/kmsg
     
-    # Forza scansione dispositivi (risolve il mistero della label invisibile)
-    for dev in /dev/sd[a-z]*; do [ -b "$dev" ] && blkid -o export "$dev" > /dev/null 2>&1; done
-    nlplug-findfs -p /sbin/mdev
+    CMDLINE=$(cat /proc/cmdline)
+    LABEL=$(echo "$CMDLINE" | tr ' ' '\n' | grep '^alpinelivelabel=' | cut -d= -f2)
     
-    # Identifica il device e monta
-    ISO_DEV=$(findfs "LABEL=$LABEL")
-    if [ -n "$ISO_DEV" ] && mount -t iso9660 -o ro "$ISO_DEV" /mnt/; then
-        echo "DEBUG: ISO montata in /mnt" > /dev/kmsg
+    if [ -n "$LABEL" ]; then
+        echo "DEBUG: Tentativo di montaggio forzato via Sidecar (Label: $LABEL)" > /dev/kmsg
+        mkdir -p /mnt /media/root-ro /media/root-rw/work /media/root-rw/root
         
-        # Mount SquashFS dal path standard /live/
-        if mount -t squashfs -o ro "/mnt/live/$SQUASH_NAME" /media/root-ro; then
-            echo "DEBUG: SquashFS montato. Configuro Overlay" > /dev/kmsg
-            
-            # Setup Overlay
-            mount -t tmpfs tmpfs /media/root-rw
-            mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work $sysroot
-            
-            echo "DEBUG: Switch_root imminente!" > /dev/kmsg
-            exec switch_root $switch_root_opts "$sysroot" $chart_init "$KOPT_init" $KOPT_init_args
-        else
-            echo "ERRORE: Squashfs non montato in /mnt/live/$SQUASH_NAME" > /dev/kmsg
+        ISO_DEV=$(findfs "LABEL=$LABEL")
+        if [ -n "$ISO_DEV" ] && mount -t iso9660 -o ro "$ISO_DEV" /mnt/ 2>/dev/null; then
+            if mount -t squashfs -o ro "/mnt/live/filesystem.squashfs" /media/root-ro 2>/dev/null; then
+                mount -t tmpfs tmpfs /media/root-rw
+                mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
+                echo "DEBUG: Recupero riuscito! Switch_root in corso..." > /dev/kmsg
+                exec switch_root -c /dev/console /sysroot /sbin/init
+            fi
         fi
-    else
-        echo "ERRORE: ISO non montata (dev=$ISO_DEV)" > /dev/kmsg
     fi
-fi
-set +x
-# --- FINE PATCH OA-SIDECAR ---
+    echo "DEBUG: Sidecar fallito. Entro in shell di recupero." > /dev/kmsg
+    # --- OA-SIDECAR END ---
 EOF
 
-# 2. Generazione dell'initramfs
+# 2. PULIZIA: Rimuoviamo eventuali vecchie patch per evitare duplicati
+sed -i '/# --- OA-SIDECAR START ---/,/# --- OA-SIDECAR END ---/d' "$INIT_FILE"
+
+# 3. INIEZIONE: Diciamo a sed di trovare 'recovery_shell() {' e 'leggere' (r) il file temporaneo
+sed -i '/recovery_shell() {/r /tmp/oa-sidecar.patch' "$INIT_FILE"
+
+# 4. Generazione initramfs
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
 
-# 3. Pulizia immediata: Rimuoviamo la patch dal file originale
-# Questo assicura che il tuo sistema di build resti pulito
-sed -i '/# --- INIZIO PATCH OA-SIDECAR ---/,/# --- FINE PATCH OA-SIDECAR ---/d' "$INIT_FILE"
+# Pulizia
+rm /tmp/oa-sidecar.patch
 {{ end }}
-
 
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
