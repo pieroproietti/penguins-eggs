@@ -39,16 +39,23 @@ cat << 'EOF' > /tmp/oa-sidecar.patch
     # --- OA-SIDECAR END ---
 EOF
 
-# 2. Pulizia e Iniezione
+# 2. Pulizia vecchie patch
 sed -i '/# --- OA-SIDECAR START ---/,/# --- OA-SIDECAR END ---/d' "$INIT_FILE"
-awk '/recovery_shell\(\) \{/ {print; system("cat /tmp/oa-sidecar.patch"); next}1' "$INIT_FILE" > "$INIT_FILE.new"
+
+# 3. INIEZIONE PURA (Forza bruta riga per riga, zero regex)
+while IFS= read -r line || [ -n "$line" ]; do
+    printf "%s\n" "$line"
+    if [ "$line" = "recovery_shell() {" ]; then
+        cat /tmp/oa-sidecar.patch
+    fi
+done < "$INIT_FILE" > "$INIT_FILE.new"
+
 mv "$INIT_FILE.new" "$INIT_FILE"
 chmod +x "$INIT_FILE"
 rm /tmp/oa-sidecar.patch
 
-# 3. GENERAZIONE CON NOME UNIVOCO (La tua idea)
+# 4. GENERAZIONE CON NOME UNIVOCO
 KVER=$(ls -1 /lib/modules/ | head -n 1)
-# Creiamo ESATTAMENTE initramfs-oa-tools
 mkinitfs -o /boot/initramfs-oa-tools $KVER
 {{ end }}
 
@@ -56,10 +63,7 @@ mkinitfs -o /boot/initramfs-oa-tools $KVER
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
 {{ define "find_kernel_initrd" }}
-# Il kernel possiamo continuare a prenderlo così, di solito ce n'è uno solo
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "\.old" | head -n 1)
-
-# Puntiamo dritti al NOSTRO file inequivocabile
 INITRD_OATOOLS="/home/eggs/liveroot/boot/initramfs-oa-tools"
 
 if [ -f "$KERNEL_PATH" ]; then 
@@ -67,12 +71,10 @@ if [ -f "$KERNEL_PATH" ]; then
     echo "Kernel copiato: $KERNEL_PATH"
 fi
 
-# Copiamo il nostro initrd e facciamo pulizia immediata
+# Copiamo il nostro initrd inequivocabile e facciamo pulizia immediata
 if [ -f "$INITRD_OATOOLS" ]; then 
     cp "$INITRD_OATOOLS" /home/eggs/isodir/live/initrd.img
     echo "Initrd OA-TOOLS patchato copiato con successo!"
-    
-    # Pulizia come hai suggerito: rimuoviamo la prova dal chroot
     rm "$INITRD_OATOOLS"
     echo "Initrd temporaneo rimosso da /boot."
 else
@@ -80,8 +82,6 @@ else
     exit 1
 fi
 {{ end }}
-
-
 
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
