@@ -11,7 +11,8 @@ import (
 	"coa/pkg/distro"
 	"coa/pkg/utils"
 
-	"gopkg.in/yaml.v3"
+	"github.com/spf13/viper" // Per gestire la configurazione
+	"gopkg.in/yaml.v3"       // Per gestire lo YAML
 )
 
 // DetectAndLoad rileva il sistema e consulta l'index.yaml per trovare lo spartito corretto.
@@ -126,5 +127,37 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		return nil, fmt.Errorf("errore sintassi nello YAML generato: %v", err)
 	}
 
+	// 7. OVERRIDE: Applichiamo il custom.yml se esiste
+	customCfg, err := LoadCustomSettings() // <--- Qui ricevi ENTRAMBI
+	if err != nil {
+		return nil, fmt.Errorf("errore nel caricamento di custom.yml: %v", err)
+	}
+
+	if customCfg != nil {
+		profile.Settings.Remaster = customCfg.Remaster
+	}
+
 	return &profile, nil
+}
+
+func LoadCustomSettings() (*Settings, error) {
+	v := viper.New()
+	v.SetConfigName("custom") // Cerca custom.yaml o custom.yml
+	v.AddConfigPath("/etc/oa-tools.d/")
+	v.AddConfigPath(".") // Utile per test veloci nella dir corrente
+
+	// Se il file non esiste, usciamo silenziosamente
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return nil, nil // Nessun custom trovato, tutto ok
+		}
+		return nil, err // Errore reale di lettura
+	}
+
+	var settings Settings
+	if err := v.Unmarshal(&settings); err != nil {
+		return nil, err
+	}
+	fmt.Printf("[DEBUG] Settings caricati da custom.yml: %+v\n", settings)
+	return &settings, nil
 }

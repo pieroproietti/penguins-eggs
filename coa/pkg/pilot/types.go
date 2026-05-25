@@ -2,25 +2,25 @@ package pilot
 
 // Profile rappresenta la struttura completa del file YAML
 type Profile struct {
-	Remaster []Step `yaml:"remaster"`
-	Install  []Step `yaml:"install"`
+	Remaster []Step   `yaml:"remaster" json:"remaster"`
+	Install  []Step   `yaml:"install" json:"install"`
+	Settings Settings `yaml:"settings" json:"settings"`
 }
 
 // Step è l'unità fondamentale del piano di lavoro.
-// Rappresenta un'azione specifica definita nel profilo.
 type Step struct {
 	Name        string `yaml:"name" json:"name,omitempty"`
 	Description string `yaml:"description" json:"description"`
-	Action      string `yaml:"action" json:"action"` // Sostituisce Command per chiarezza semantica
+	Action      string `yaml:"action" json:"action"`
 	RunCommand  string `yaml:"run_command,omitempty" json:"run_command,omitempty"`
 	Chroot      bool   `yaml:"chroot" json:"chroot"`
 	Path        string `yaml:"path,omitempty" json:"path,omitempty"`
 	Src         string `yaml:"src,omitempty" json:"src,omitempty"`
 	Dst         string `yaml:"dst,omitempty" json:"dst,omitempty"`
-	Users       []User `yaml:"users,omitempty" json:"users,omitempty"` // Supporto nativo per oa_users
+	Users       []User `yaml:"users,omitempty" json:"users,omitempty"`
 }
 
-// User definisce l'identità di un utente nel sistema live o installato
+// User definisce l'identità di un utente
 type User struct {
 	Login    string   `yaml:"login" json:"login"`
 	Password string   `yaml:"password" json:"password"`
@@ -31,14 +31,30 @@ type User struct {
 	GID      int      `yaml:"gid" json:"gid"`
 }
 
-// TemplateContext definisce i dati che iniettiamo nei file .tmpl
+// Strutture di Settings
+type Settings struct {
+	Remaster RemasterConfig `yaml:"remaster" json:"remaster"`
+}
+
+type RemasterConfig struct {
+	User        string            `yaml:"user" json:"user"`
+	Password    string            `yaml:"password" json:"password"`
+	WorkDir     string            `yaml:"work_dir" json:"work_dir"`
+	Compression CompressionConfig `yaml:"compression" json:"compression"`
+}
+
+type CompressionConfig struct {
+	Algorithm string `yaml:"algorithm" json:"algorithm"`
+	Level     int    `yaml:"level" json:"level"`
+}
+
+// TemplateContext e Index
 type TemplateContext struct {
 	Family         string
 	DistroID       string
 	IsGitHubAction bool
 }
 
-// Strutture per il mapping dell'indice
 type BrainIndex struct {
 	Distributions []DistroMap `yaml:"distributions"`
 }

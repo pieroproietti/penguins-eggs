@@ -12,9 +12,8 @@ import (
 )
 
 // GeneratePlan converte lo YAML in JSON.
-// Nota: steps ora è di tipo []pilot.Step
 func GeneratePlan(
-	steps []pilot.Step,
+	profile *pilot.Profile, // <-- FIRMA AGGIORNATA
 	familyID string,
 	isGitHubAction bool,
 	isRemaster bool,
@@ -25,8 +24,17 @@ func GeneratePlan(
 	var plan OAPlan
 
 	plan.IsGitHubAction = isGitHubAction
+	plan.Settings = profile.Settings.Remaster
 
-	// Teniamo l'utente di default come "salvagente" nel caso lo YAML non specifichi utenti
+	// --- CHECK DI COLLEGAMENTO ---
+	fmt.Printf("\n\033[1;35m[ENGINE DEBUG]\033[0m Verifica integrità Settings:\n")
+	fmt.Printf("  -> User:        %s\n", plan.Settings.User)
+	fmt.Printf("  -> Password:    %s\n", plan.Settings.Password)
+	fmt.Printf("  -> Algoritmo:   %s\n", plan.Settings.Compression.Algorithm)
+	fmt.Printf("  -> Livello:     %d\n", plan.Settings.Compression.Level)
+	fmt.Printf("--------------------------------------------\n")
+
+	// Teniamo l'utente di default come "salvagente"
 	defaultUser := pilot.User{
 		Login:    "live",
 		Password: "$6$oa-tools$uTKAYeAVn.Y.Dy2To6HXsHt1Gt4HpMghmOV93a46jFY7hkAQ3tk7eRTKjcvSYDf5sOf3qnKzyyPYXurKp9ST3.",
@@ -38,16 +46,15 @@ func GeneratePlan(
 
 	var hitBreakpoint bool
 
-	for _, step := range steps {
+	// Ora iteriamo su profile.Remaster
+	for _, step := range profile.Remaster {
 
 		if hitBreakpoint && step.Name != "coa-cleanup" {
 			continue
 		}
 
 		// --- IL PONTE: Sostituzione dinamica del percorso ISO ---
-		currentRunCommand := step.RunCommand
-		// Sanitize
-		currentRunCommand = strings.TrimSpace(currentRunCommand)
+		currentRunCommand := strings.TrimSpace(step.RunCommand)
 		if strings.Contains(currentRunCommand, "${ISO_OUTPUT}") {
 			currentRunCommand = strings.ReplaceAll(currentRunCommand, "${ISO_OUTPUT}", finalIsoPath)
 		}
@@ -58,14 +65,11 @@ func GeneratePlan(
 			currentDescription = strings.ReplaceAll(currentDescription, "${ISO_NAME}", filepath.Base(finalIsoPath))
 		}
 
-		// Usiamo Action al posto di Command!
 		switch step.Action {
-
 		case "oa_mount_logic":
 			plan.Plan = append(plan.Plan, expandMountLogic(workPath, isGitHubAction)...)
 
 		case "oa_users":
-			// 1. Creazione Home directory
 			plan.Plan = append(plan.Plan, OATask{
 				Step: pilot.Step{
 					Action:      "oa_shell",
@@ -74,28 +78,21 @@ func GeneratePlan(
 				},
 			})
 
-			// 2. Logica Utenti: Prendiamo gli utenti dallo YAML
 			usersToInject := step.Users
-
-			// Se lo YAML non ha utenti definiti, usiamo il salvagente
 			if len(usersToInject) == 0 {
 				usersToInject = []pilot.User{defaultUser}
 			}
 
-			// Recuperiamo i gruppi host specchiati (es. docker, libvirt, wheel)
 			mirroredGroups := utils.GetUserGroups()
-
-			// Iniettiamo i gruppi specchiati negli utenti che stiamo per passare
 			for i := range usersToInject {
 				usersToInject[i].Groups = mirroredGroups
 			}
 
-			// 3. Invio ad oa
 			plan.Plan = append(plan.Plan, OATask{
 				Step: pilot.Step{
 					Action:      "oa_users",
 					Description: "Iniezione identità utenti live",
-					Users:       usersToInject, // Passaggio DIRETTO degli utenti dallo YAML!
+					Users:       usersToInject,
 				},
 				PathLiveFs: workPath,
 			})
@@ -110,22 +107,17 @@ func GeneratePlan(
 			})
 
 		default:
-			// --- LA MAGIA DELL'EMBEDDING ---
-			// Invece di mappare 10 campi a mano, copiamo lo step intero.
 			task := OATask{
-				Step:       step,     // Eredita Action, Chroot, Path, Src, Dst, ecc.
-				PathLiveFs: workPath, // Campo specifico dell'Engine
+				Step:       step,
+				PathLiveFs: workPath,
 			}
-
-			// Sovrascriviamo solo i campi che abbiamo "risolto" con le variabili dinamiche
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
-
 			plan.Plan = append(plan.Plan, task)
 		}
 
 		if stopAfter != "" && step.Name == stopAfter {
-			fmt.Printf("\n\033[1;33m[ENGINE] 🛑 Breakpoint '%s' elaborato. Generazione JSON accorciata.\033[0m\n", step.Name)
+			fmt.Printf("\n\033[1;33m[ENGINE] 🛑 Breakpoint '%s' elaborato.\033[0m\n", step.Name)
 			hitBreakpoint = true
 		}
 	}

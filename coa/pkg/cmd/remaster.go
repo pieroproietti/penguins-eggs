@@ -84,8 +84,17 @@ and generate a precise execution plan for the OA engine.`,
 		LogSuccess("Spartito caricato con successo.")
 
 		// 3. ENGINE: Generiamo il piano JSON per oa
-		// NOTA: Passiamo stopAfter come 5° parametro al motore!
-		planPath, err := engine.GeneratePlan(profile.Remaster, myDistro.FamilyID, isGitHubAction, true, producePath, finalPath, stopAfter)
+		// ORA PASSAGGIO INTEGRALE: passiamo 'profile' (punta a tutto)
+		// invece del solo slice 'profile.Remaster'
+		planPath, err := engine.GeneratePlan(
+			profile, // <-- L'intero oggetto che contiene Settings e Remaster
+			myDistro.FamilyID,
+			isGitHubAction,
+			true,
+			producePath,
+			finalPath,
+			stopAfter,
+		)
 		if err != nil {
 			LogError("Impossibile generare il piano di volo: %v", err)
 			os.Exit(1)

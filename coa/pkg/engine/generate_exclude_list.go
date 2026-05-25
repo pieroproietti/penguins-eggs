@@ -13,10 +13,6 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 
 	// ==========================================================
 	// 1. Filesystem Virtuali e Temporanei
-	// Usiamo il "Doppio Colpo": /* per i file visibili e /.??* per quelli nascosti!
-	// ==========================================================
-	// ==========================================================
-	// 1. Filesystem Virtuali e Temporanei
 	// ==========================================================
 	excludes = append(excludes,
 		"dev/*",

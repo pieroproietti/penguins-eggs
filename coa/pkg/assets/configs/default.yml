@@ -1,0 +1,22 @@
+---
+# oa-tools embedded default configuration
+# Philosophy: https://penguins-eggs.net/blog/eggs-bananas
+
+wardrobe:
+  root: "~/.oa-wardrobe"
+  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
+
+remaster:
+  user: "live"
+  password: "evolution"
+  
+  # Working directory during ISO creation
+  work_dir: "/home/eggs"
+  
+  # Compression settings for mksquashfs
+  compression:
+    # Supported algorithms: zstd (default, fast), xz (max compression), lz4 (ultra-fast), gzip
+    algorithm: "zstd"
+    # Level: for zstd use 3 (fast) or 15+ (ultra). For others, leave at 0 to use their defaults.
+    level: 3
+    

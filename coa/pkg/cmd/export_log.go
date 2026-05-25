@@ -8,44 +8,65 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// logCmd rappresenta il sotto-comando "export log"
-var logCmd = &cobra.Command{
+var exportLogCmd = &cobra.Command{
 	Use:   "log",
-	Short: "Esporta il log di oa-tools sull'host principale",
+	Short: "Esporta log e piano in un unico comando",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Recuperiamo i flag
-		targetUser, _ := cmd.Flags().GetString("user")
-		targetIP, _ := cmd.Flags().GetString("ip")
-		targetDir, _ := cmd.Flags().GetString("dir")
+		user, _ := cmd.Flags().GetString("user")
+		ip, _ := cmd.Flags().GetString("ip")
+		dir, _ := cmd.Flags().GetString("dir")
 
-		sourceFile := "/var/log/oa-tools.log"
-		destination := fmt.Sprintf("%s@%s:%s", targetUser, targetIP, targetDir)
+		// 1. Definiamo i file locali
+		files := []string{"/var/log/oa-tools.log", "/tmp/coa/oa-plan.json"}
 
-		fmt.Printf("🚀 Esportazione log in corso...\nDa: %s\nA:  %s\n", sourceFile, destination)
+		// 2. Prepariamo il comando di pulizia remota
+		// Usiamo 'rm -f' per evitare errori se i file non esistono
+		cleanCmd := fmt.Sprintf("rm -f %s/oa-tools.log %s/oa-plan.json", dir, dir)
 
-		// Costruiamo il comando scp
-		scpCmd := exec.Command("scp", sourceFile, destination)
+		// 3. Eseguiamo la pulizia REMOTA via SSH e subito dopo l'SCP
+		// Usiamo '&&' per garantire che se la pulizia fallisce, l'invio non parte
+		remoteHost := fmt.Sprintf("%s@%s", user, ip)
 
-		// Agganciamo l'output standard per gestire password/errori
+		fmt.Printf("🚀 Connessione a %s e sincronizzazione in corso...\n", remoteHost)
+
+		// Eseguiamo il comando di pulizia
+		sshCmd := exec.Command("ssh", remoteHost, cleanCmd)
+		if err := sshCmd.Run(); err != nil {
+			fmt.Printf("⚠️ Avviso: impossibile pulire la destinazione: %v\n", err)
+		}
+
+		// 4. Inviamo i file esistenti
+		var toSend []string
+		for _, f := range files {
+			if _, err := os.Stat(f); err == nil {
+				toSend = append(toSend, f)
+			}
+		}
+
+		if len(toSend) == 0 {
+			fmt.Println("❌ Nessun file da esportare trovato.")
+			return
+		}
+
+		scpArgs := append(toSend, fmt.Sprintf("%s:%s/", remoteHost, dir))
+		scpCmd := exec.Command("scp", scpArgs...)
 		scpCmd.Stdout = os.Stdout
 		scpCmd.Stderr = os.Stderr
 
-		err := scpCmd.Run()
-		if err != nil {
-			fmt.Printf("❌ Errore durante l'esportazione: %v\n", err)
+		if err := scpCmd.Run(); err != nil {
+			fmt.Printf("❌ Errore durante l'invio: %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("✅ Log esportato con successo! Pronto per essere analizzato.")
+		fmt.Println("✅ Operazione completata in un unico passaggio.")
 	},
 }
 
 func init() {
-	// Ci agganciamo semplicemente al comando padre exportCmd che hai già definito altrove
-	exportCmd.AddCommand(logCmd)
+	exportCmd.AddCommand(exportLogCmd)
 
-	// Definiamo i flag di default comodi per la tua rete
-	logCmd.Flags().StringP("user", "u", "artisan", "Utente SSH di destinazione")
-	logCmd.Flags().StringP("ip", "i", "192.168.1.2", "Indirizzo IP di destinazione")
-	logCmd.Flags().StringP("dir", "d", "/home/artisan", "Directory di destinazione")
+	// DEVI definire i flag qui, altrimenti il comando non sa cosa cercare
+	exportLogCmd.Flags().StringP("user", "u", "artisan", "Utente SSH di destinazione")
+	exportLogCmd.Flags().StringP("ip", "i", "192.168.1.2", "Indirizzo IP di destinazione")
+	exportLogCmd.Flags().StringP("dir", "d", "/home/artisan", "Directory di destinazione")
 }
