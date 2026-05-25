@@ -91,26 +91,34 @@ remaster:
 	// ---------------------------------------------------------
 	docSourceDir := filepath.Join(ctx.ProjRoot, "docs")
 
-	// 5. Documentazione (Man pages)
+	// 5. Documentazione (Man sh	pages)
 	manDir := filepath.Join(buildDir, "usr/share/man/man1")
 	exec.Command("sh", "-c", fmt.Sprintf("cp %s/man/*.1 %s/ && gzip -9 %s/*.1", docSourceDir, manDir, manDir)).Run()
 
-	// 6. Completamenti shell e alias
-	bashTarget := filepath.Join(buildDir, "usr/share/bash-completion/completions/coa")
-	copyFile(filepath.Join(docSourceDir, "completion/coa.bash"), bashTarget)
-	copyFile(filepath.Join(docSourceDir, "completion/coa.zsh"), filepath.Join(buildDir, "usr/share/zsh/vendor-completions/_coa"))
-	copyFile(filepath.Join(docSourceDir, "completion/coa.fish"), filepath.Join(buildDir, "usr/share/fish/vendor_completions.d/coa.fish"))
+	// 6. Completamenti shell e alias (Generati freschi da Cobra via binario appena compilato)
+	bashCompDir := filepath.Join(buildDir, "usr/share/bash-completion/completions")
+	zshCompDir := filepath.Join(buildDir, "usr/share/zsh/vendor-completions")
+	fishCompDir := filepath.Join(buildDir, "usr/share/fish/vendor_completions.d")
 
-	os.Symlink("coa", filepath.Join(buildDir, "usr/share/bash-completion/completions/eggs"))
-	os.Symlink("_coa", filepath.Join(buildDir, "usr/share/zsh/vendor-completions/_eggs"))
-	os.Symlink("coa.fish", filepath.Join(buildDir, "usr/share/fish/vendor_completions.d/eggs.fish"))
+	// Esegue il binario 'coa' appena forgiato per generare i completamenti aggiornati
+	exec.Command(filepath.Join(binPath, "coa"), "completion", "bash").Output()
+	bashOut, _ := exec.Command(filepath.Join(binPath, "coa"), "completion", "bash").Output()
+	os.WriteFile(filepath.Join(bashCompDir, "coa"), bashOut, 0644)
 
-	// Patch Bash Completion per supportare l'alias 'eggs'
-	f, err := os.OpenFile(bashTarget, os.O_APPEND|os.O_WRONLY, 0644)
-	if err == nil {
-		f.WriteString("\n# eggs alias completion support\ncomplete -o default -F __start_coa eggs\n")
-		f.Close()
-	}
+	// Rigenera il completamento per l'alias "eggs" sostituendo "coa" con "eggs" nell'output
+	eggsBashOut := strings.ReplaceAll(string(bashOut), " coa", " eggs")
+	eggsBashOut = strings.ReplaceAll(eggsBashOut, "__start_coa", "__start_eggs")
+	os.WriteFile(filepath.Join(bashCompDir, "eggs"), []byte(eggsBashOut), 0644)
+
+	// ZSH
+	zshOut, _ := exec.Command(filepath.Join(binPath, "coa"), "completion", "zsh").Output()
+	os.WriteFile(filepath.Join(zshCompDir, "_coa"), zshOut, 0644)
+	os.Symlink("_coa", filepath.Join(zshCompDir, "_eggs"))
+
+	// FISH
+	fishOut, _ := exec.Command(filepath.Join(binPath, "coa"), "completion", "fish").Output()
+	os.WriteFile(filepath.Join(fishCompDir, "coa.fish"), fishOut, 0644)
+	os.Symlink("coa.fish", filepath.Join(fishCompDir, "eggs.fish"))
 
 	// 7. Generazione file control
 	controlContent := fmt.Sprintf(`Package: oa-tools

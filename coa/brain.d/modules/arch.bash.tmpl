@@ -28,7 +28,7 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "hook_find_kernel_initrd" }}
+{{ define "hook_kernel_paths" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "fallback" | head -n 1)
 INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initramfs* 2>/dev/null | grep -v "fallback" | head -n 1)
 {{ end }}

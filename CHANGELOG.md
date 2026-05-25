@@ -1,5 +1,18 @@
 # Changelog - oa-tools
 
+## 🚀 oa-tools v0.8.0: The Architectural Leap & Expanded Horizons
+
+This is a fundamental release for `oa-tools`, introducing a rock-solid template architecture and extended support for new distributions.
+
+### ✨ Key Features & Improvements
+* **Bulletproof Template Architecture:** Introduced strict `core_` and `hook_` nomenclature for all templates. This eliminates silent "shadowing" conflicts and provides a highly scalable foundation (ready for the upcoming Bianbu OS / RISC-V porting).
+* **Alpine "Sidecar" Parachute:** Implemented a native recovery system in the initramfs for Alpine Linux, ensuring stable OverlayFS mounting and virtual filesystem relocation right before OpenRC boot.
+* **openSUSE Support:** Added full support for openSUSE, bringing `oa-tools` on par with the historical parent distributions supported by `penguins-eggs`.
+* **CLI & UX Enhancements (Cobra):** * Native shell auto-completion (Bash/Zsh/Fish) dynamically generated during `.deb` packaging for both `coa` and the legacy `eggs` alias.
+    * New `coa export log` command to instantly extract debug logs to a remote host via SSH.
+* **Semantic Polish:** Renamed the destructive command to `eggs destroy` to align with standard DevOps terminology.
+
+
 ### 🐧 oa-tools v0.7.9 - The CI/CD & Architecture Release
 
 **Evolution Architecture**

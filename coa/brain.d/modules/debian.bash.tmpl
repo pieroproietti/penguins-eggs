@@ -38,7 +38,7 @@ update-initramfs -u -k all
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "hook_find_kernel_initrd" }}
+{{ define "hook_kernel_paths" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "rescue" | head -n 1)
 INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "rescue" | head -n 1)
 {{ end }}

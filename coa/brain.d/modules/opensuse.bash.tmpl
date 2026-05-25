@@ -21,7 +21,7 @@ dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensus
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "hook_find_kernel_initrd" }}
+{{ define "hook_kernel_paths" }}
 KERNEL_PATH=$(ls -v /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "rescue" | tail -n 1)
 INITRD_PATH="/home/eggs/liveroot/boot/initramfs-opensuse.img"
 {{ end }}

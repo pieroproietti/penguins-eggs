@@ -121,32 +121,16 @@ mkinitfs -c /etc/mkinitfs/live.conf -o /boot/initramfs-oa-tools $KVER
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "core_kernel_copy" }}
+{{ define "hook_kernel_paths" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "\.old" | head -n 1)
-INITRD_OATOOLS="/home/eggs/liveroot/boot/initramfs-oa-tools"
-
-if [ -f "$KERNEL_PATH" ]; then 
-    cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz
-    echo "Kernel copiato: $KERNEL_PATH"
-fi
-
-# Copiamo il nostro initrd inequivocabile e facciamo pulizia immediata
-if [ -f "$INITRD_OATOOLS" ]; then 
-    cp "$INITRD_OATOOLS" /home/eggs/isodir/live/initrd.img
-    echo "Initrd OA-TOOLS patchato copiato con successo!"
-    rm "$INITRD_OATOOLS"
-    echo "Initrd temporaneo rimosso da /boot."
-else
-    echo "ERRORE CRITICO: Il file $INITRD_OATOOLS non esiste!"
-    exit 1
-fi
+INITRD_PATH="/home/eggs/liveroot/boot/initramfs-oa-tools"
 {{ end }}
 
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
 {{ define "hook_squashfs" }}
-# Su Alpine non serve l'hook per 'casper', la struttura live standard è sufficiente
+# Su Alpine non serve l'hook_squashfs
 {{ end }}
 
 # ==============================================================================

@@ -7,30 +7,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var killCmd = &cobra.Command{
-	Use:   "kill",
+var destroyCmd = &cobra.Command{
+	Use:   "destroy",
 	Short: "Free the nest and unmount filesystems",
 	Long: `Safely tears down the remastering environment. 
 It uses MNT_DETACH to unmount the OverlayFS and virtual API filesystems (/dev, /proc, /sys) without affecting the running host, then removes the temporary workspace.`,
 	Example: `  # Clean up the default workspace
-  sudo coa kill`,
+  sudo coa destroy`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Controllo sudo: smontare filesystem e cancellare /home/eggs richiede i privilegi
 		CheckSudoRequirements(cmd.Name(), true)
-		handleKill()
+		handledestroy()
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(killCmd)
+	rootCmd.AddCommand(destroyCmd)
 }
 
 // =====================================================================
 // LOGICA DI PULIZIA
 // =====================================================================
 
-// handleKill gestisce la pulizia profonda invocando prima oa e poi rimuovendo la directory
-func handleKill() {
+// handledestroy gestisce la pulizia profonda invocando prima oa e poi rimuovendo la directory
+func handledestroy() {
 	LogNormal("Freeing the nest...")
 
 	// 1. Chiamiamo il motore C per smontare in sicurezza i mountpoint
