@@ -10,12 +10,12 @@
 # 3. GENERAZIONE MENU DI AVVIO E BRANDING
 # ATTENZIONE: Questo blocco deve rimanere su una riga singola
 # ----------------------------------------------------------------------------
-{{ define "boot_params" }}modules=loop,squashfs,sd-mod,usb-storage alpinelivelabel=OA_LIVE alpinelivesquashfs=filesystem.squashfs quiet{{ end }}
+{{ define "hook_boot_params" }}modules=loop,squashfs,sd-mod,usb-storage alpinelivelabel=OA_LIVE alpinelivesquashfs=filesystem.squashfs quiet{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
-{{ define "initramfs_cmd" }}
+{{ define "hook_initramfs_cmd" }}
 INIT_FILE="/usr/share/mkinitfs/initramfs-init"
 
 # 1. Creazione fisica della patch (con Modprobe forzati e Mount Move)
@@ -121,7 +121,7 @@ mkinitfs -c /etc/mkinitfs/live.conf -o /boot/initramfs-oa-tools $KVER
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "common_kernel_copy" }}
+{{ define "core_kernel_copy" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "\.old" | head -n 1)
 INITRD_OATOOLS="/home/eggs/liveroot/boot/initramfs-oa-tools"
 
@@ -145,14 +145,14 @@ fi
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
-{{ define "squashfs_hooks" }}
+{{ define "hook_squashfs" }}
 # Su Alpine non serve l'hook per 'casper', la struttura live standard è sufficiente
 {{ end }}
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
-{{ define "install_logic" }}
+{{ define "hook_install_logic" }}
 # 1. Rigeneriamo l'initramfs pulito per il sistema installato sul disco
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER

@@ -10,12 +10,12 @@
 # 3. GENERAZIONE MENU DI AVVIO E BRANDING
 # ATTENZIONE: Questo blocco deve rimanere su una riga singola
 # ----------------------------------------------------------------------------
-{{ define "boot_params" }}boot=live components rootwait{{ end }}
+{{ define "hook_boot_params" }}boot=live components rootwait{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
-{{ define "initramfs_cmd" }}
+{{ define "hook_initramfs_cmd" }}
 # 1. Forziamo l'initramfs a includere la maggior parte dei moduli (disabilitiamo 'dep')
 sed -i 's/^MODULES=.*/MODULES=most/' /etc/initramfs-tools/initramfs.conf
 
@@ -38,7 +38,7 @@ update-initramfs -u -k all
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "find_kernel_initrd" }}
+{{ define "hook_find_kernel_initrd" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "rescue" | head -n 1)
 INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "rescue" | head -n 1)
 {{ end }}
@@ -46,7 +46,7 @@ INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "resc
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
-{{ define "squashfs_hooks" }}
+{{ define "hook_squashfs" }}
 # mkdir -p /home/eggs/isodir/casper
 # ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/casper/filesystem.squashfs
 {{ end }}
@@ -54,7 +54,7 @@ INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "resc
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
-{{ define "install_logic" }}
+{{ define "hook_install_logic" }}
 # Applichiamo il fix anche sul sistema installato prima di generare l'initramfs
 echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
 update-initramfs -u

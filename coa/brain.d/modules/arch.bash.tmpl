@@ -9,12 +9,12 @@
 # ----------------------------------------------------------------------------
 # 3. GENERAZIONE MENU DI AVVIO E BRANDING
 # ----------------------------------------------------------------------------
-{{ define "boot_params" }}archisobasedir=arch archisolabel=${VOL_ID} cow_spacesize=2G{{ end }}
+{{ define "hook_boot_params" }}archisobasedir=arch archisolabel=${VOL_ID} cow_spacesize=2G{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
-{{ define "initramfs_cmd" }}
+{{ define "hook_initramfs_cmd" }}
 mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
 cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
@@ -28,7 +28,7 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "find_kernel_initrd" }}
+{{ define "hook_find_kernel_initrd" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "fallback" | head -n 1)
 INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initramfs* 2>/dev/null | grep -v "fallback" | head -n 1)
 {{ end }}
@@ -36,7 +36,7 @@ INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initramfs* 2>/dev/null | grep -v "f
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
-{{ define "squashfs_hooks" }}
+{{ define "hook_squashfs" }}
 mkdir -p /home/eggs/isodir/arch/x86_64
 ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/airootfs.sfs
 {{ end }}
@@ -44,7 +44,7 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/a
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
-{{ define "install_logic" }}
+{{ define "hook_install_logic" }}
 mkinitcpio -P
 if [ -d /sys/firmware/efi ]; then
       grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck

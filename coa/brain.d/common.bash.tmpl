@@ -1,21 +1,21 @@
 # ==============================================================================
 # 🧩 COMMON.TMPL - LIBRERIA OPERAZIONI UNIVERSALI OA-TOOLS 
 # ==============================================================================
-{{ define "platform_github" }}
+{{ define "core_platform_github" }}
 export SQ_COMP="zstd"
 export SQ_LEVEL="1"
 export SQ_BLOCK="256K"
 export SQ_PROCS="2"
 {{ end }}
 
-{{ define "platform_local" }}
+{{ define "core_platform_local" }}
 export SQ_COMP="zstd"
 export SQ_LEVEL="3"
 export SQ_BLOCK="1M"
 export SQ_PROCS=$(nproc)
 {{ end }}
 
-{{ define "common_bootloaders" }}
+{{ define "core_bootloaders" }}
 mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
 
 # Copia assets BIOS
@@ -41,11 +41,11 @@ fi
 {{ end }}
 
 
-{{ define "common_live_menus" }}
+{{ define "core_live_menus" }}
 set -e
 # 1. Variabili Universali
 VOL_ID="OA_LIVE"
-BOOT_PARAMS="{{ template "boot_params" . }}"
+BOOT_PARAMS="{{ template "hook_boot_params" . }}"
 WORK_DIR="/home/eggs/isodir"
 ASSETS_DIR="/etc/oa-tools.d/brain.d/assets"
 
@@ -156,7 +156,7 @@ EOF
 {{ end }}
 
 
-{{ define "live_sudoers" }}
+{{ define "core_live_sudoers" }}
 # 7.1. Sudoers e Gruppi (Usa template per sudo/wheel)
 USER="live"
 echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/00-live
@@ -166,7 +166,7 @@ usermod -aG {{ template "admin_group" . }},autologin ${USER} 2>/dev/null || true
 {{ end }}
 
 
-{{ define "live_icon" }}
+{{ define "core_live_icon" }}
 # 7.2. Creazione Icona Uovo (SVG 3D Golden Edition)
 ICON_PATH="/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
 mkdir -p $(dirname $ICON_PATH)
@@ -187,7 +187,7 @@ gtk-update-icon-cache /usr/share/icons/hicolor/ 2>/dev/null || true
 {{ end }}
 
 
-{{ define "live_launcher" }}
+{{ define "core_live_launcher" }}
 # 7.3. Desktop Launcher Certificato (Solo in usr/share)
 APP_DIR="/usr/share/applications"
 mkdir -p $APP_DIR
@@ -207,7 +207,7 @@ chmod +x $APP_DIR/install-system.desktop
 {{ end }}
 
 
-{{ define "live_trust_agent" }}
+{{ define "core_live_trust_agent" }}
 # 7.4. L'AGENTE DINAMICO (Crea e bypassa Sicurezza GIO/XFCE)
 mkdir -p /etc/xdg/autostart /usr/local/bin
 cat << 'EOF' > /usr/local/bin/oa-trust-desktop
@@ -257,7 +257,7 @@ EOF
 {{ end }}
 
 
-{{ define "live_autologin" }}
+{{ define "core_live_autologin" }}
 # 7.4.6. Autologin Universale (Forzato per tutte le distro)
 USER="live"
 if [ -d /etc/lightdm ]; then
@@ -281,7 +281,7 @@ fi
 # SANITIZZAZIONE HOST UNIVERSALE
 # Svuota fstab e crypttab per evitare che finiscano nell'initrd della Live
 # ----------------------------------------------------------------------------
-{{ define "sanitize_host" }}
+{{ define "core_sanitize_host" }}
 echo "# UNCONFIGURED FSTAB FOR LIVE SYSTEM" > /home/eggs/liveroot/etc/fstab
 if [ -f /home/eggs/liveroot/etc/crypttab ]; then
     echo "# UNCONFIGURED CRYPTTAB FOR LIVE SYSTEM" > /home/eggs/liveroot/etc/crypttab
@@ -289,7 +289,7 @@ fi
 {{ end }}
 
 
-{{ define "common_squashfs" }}
+{{ define "core_squashfs" }}
 # activate echo break
 set -xe
 echo "/tmp/coa/excludes.list"
@@ -300,9 +300,9 @@ echo
 # IL RUBINETTO: Qui il Go decide quale profilo iniettare!
 # ==========================================================
 {{ if .IsGitHubAction }}
-{{ template "platform_github" . }}
+{{ template "core_platform_github" . }}
 {{ else }}
-{{ template "platform_local" . }}
+{{ template "core_platform_local" . }}
 {{ end }}
 # ==========================================================
 
@@ -326,7 +326,7 @@ mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
 set +xe
 {{ end }}
 
-{{ define "common_xorriso" }}
+{{ define "core_xorriso" }}
 xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid 'OA_LIVE' \
 -eltorito-boot isolinux/isolinux.bin -eltorito-catalog isolinux/boot.cat \
 -no-emul-boot -boot-load-size 4 -boot-info-table \
@@ -335,15 +335,15 @@ xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid 'OA_LIVE' \
 -o ${ISO_OUTPUT} /home/eggs/isodir
 {{ end }}
 
-{{ define "common_kernel_copy" }}
-{{ template "find_kernel_initrd" . }}
+{{ define "core_kernel_copy" }}
+{{ template "hook_find_kernel_initrd" . }}
 if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
 if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
 {{ end }}
 
-{{ define "common_finalize" }}
+{{ define "core_finalize" }}
 #!/bin/bash
 set -e
 rm -f /etc/sudoers.d/00-live
-{{ template "install_logic" . }}
+{{ template "hook_install_logic" . }}
 {{ end }}
