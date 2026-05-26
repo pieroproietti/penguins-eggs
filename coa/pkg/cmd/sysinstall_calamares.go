@@ -52,6 +52,11 @@ func RunCalamaresInstaller(oaVersion string) {
 		utils.LogError("Errore configurazione partition.conf: %v", err)
 	}
 
+	// mount.conf
+	if err := calamares.PrepareMountConf(); err != nil {
+		utils.LogError("Errore configurazione mount.conf: %v", err)
+	}
+
 	// users.conf
 	if err := calamares.PrepareUserConf(); err != nil {
 		utils.LogError("Errore configurazione users.conf: %v", err)
