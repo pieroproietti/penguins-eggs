@@ -2,7 +2,6 @@ package builder
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -10,29 +9,6 @@ import (
 
 	sysctx "coa/pkg/context" // Il nostro scudo contestuale
 )
-
-// moveFile gestisce lo spostamento tra partizioni (es. /tmp -> /home)
-func moveFile(src, dst string) error {
-	err := os.Rename(src, dst)
-	if err == nil {
-		return nil
-	}
-	sourceFile, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer sourceFile.Close()
-	destFile, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer destFile.Close()
-	if _, err := io.Copy(destFile, sourceFile); err != nil {
-		return err
-	}
-	sourceFile.Close()
-	return os.Remove(src)
-}
 
 // packFedora genera il pacchetto RPM per Fedora e derivate RHEL.
 // NUOVA ARCHITETTURA: Tutto nella Home, percorsi agganciati tramite _topdir, zero confusione.
@@ -76,8 +52,7 @@ oa-tools: la rimasterizzazione universale secondo la filosofia eggs-bananas.
 %%install
 rm -rf %%{buildroot}
 mkdir -p %%{buildroot}/usr/bin
-mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d/assets
-mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d/modules
+mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d
 mkdir -p %%{buildroot}/usr/share/man/man1
 mkdir -p %%{buildroot}/usr/share/bash-completion/completions
 mkdir -p %%{buildroot}/usr/share/zsh/vendor-completions
@@ -88,29 +63,18 @@ install -m 0755 %%{_topdir}/../oa/oa %%{buildroot}/usr/bin/oa
 install -m 0755 %%{_topdir}/../coa/coa %%{buildroot}/usr/bin/coa
 ln -s coa %%{buildroot}/usr/bin/eggs
 
-# 2. Configurazione "Brain", YAML, Moduli e Assets
-cp -a %%{_topdir}/../coa/brain.d/* %%{buildroot}/etc/oa-tools.d/brain.d/
-cat <<EOF > %%{buildroot}/etc/oa-tools.d/oa-tools.yaml
----
-system:
-  dialect: "oa"
-  version: "%s"
-wardrobe:
-  root: "~/.oa-wardrobe"
-  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
-remaster:
-  default_user: "artisan"
-  work_dir: "/home/eggs"
-EOF
+# 2. Configurazione "Brain" e custom.yaml dinamico
+cp -a %%{_topdir}/../coa/brain.d/. %%{buildroot}/etc/oa-tools.d/brain.d/
+install -m 0644 %%{_topdir}/../etc/oa-tools.d/custom.yaml %%{buildroot}/etc/oa-tools.d/custom.yaml
 
-# 3. Man Pages (Generate un istante prima dal Makefile)
-cp %%{_topdir}/../coa/docs/man/*.1 %%{buildroot}/usr/share/man/man1/
+# 3. Man Pages (Allineate alla nuova architettura in root/docs)
+cp %%{_topdir}/../docs/man/*.1 %%{buildroot}/usr/share/man/man1/
 gzip -9 %%{buildroot}/usr/share/man/man1/*.1
 
-# 4. Shell Completions
-install -m 0644 %%{_topdir}/../coa/docs/completion/coa.bash %%{buildroot}/usr/share/bash-completion/completions/coa
-install -m 0644 %%{_topdir}/../coa/docs/completion/coa.zsh %%{buildroot}/usr/share/zsh/vendor-completions/_coa
-install -m 0644 %%{_topdir}/../coa/docs/completion/coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/coa.fish
+# 4. Shell Completions (Allineate alla nuova architettura in root/docs)
+install -m 0644 %%{_topdir}/../docs/completion/coa.bash %%{buildroot}/usr/share/bash-completion/completions/coa
+install -m 0644 %%{_topdir}/../docs/completion/coa.zsh %%{buildroot}/usr/share/zsh/vendor-completions/_coa
+install -m 0644 %%{_topdir}/../docs/completion/coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/coa.fish
 
 echo "complete -o default -F __start_coa eggs" >> %%{buildroot}/usr/share/bash-completion/completions/coa
 ln -s coa %%{buildroot}/usr/share/bash-completion/completions/eggs
@@ -122,14 +86,8 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 /usr/bin/coa
 /usr/bin/eggs
 %%dir /etc/oa-tools.d
-%%dir /etc/oa-tools.d/brain.d
-%%dir /etc/oa-tools.d/brain.d/assets
-%%dir /etc/oa-tools.d/brain.d/modules
-%%config(noreplace) /etc/oa-tools.d/oa-tools.yaml
-/etc/oa-tools.d/brain.d/*.yaml
-/etc/oa-tools.d/brain.d/*.tmpl
-/etc/oa-tools.d/brain.d/assets/*
-/etc/oa-tools.d/brain.d/modules/*.tmpl
+/etc/oa-tools.d/brain.d
+%%config(noreplace) /etc/oa-tools.d/custom.yaml
 /usr/share/man/man1/*.1.gz
 /usr/share/bash-completion/completions/*
 /usr/share/zsh/vendor-completions/*
@@ -138,7 +96,7 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 %%changelog
 * Sun May 10 2026 Piero Proietti <piero.proietti@gmail.com> - %s-%s
 - Native Proxmox build pipeline adaptation
-`, cleanVer, relNum, cleanVer, cleanVer, relNum)
+`, cleanVer, relNum, cleanVer, relNum)
 
 	os.WriteFile(specPath, []byte(specContent), 0644)
 
@@ -159,7 +117,10 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 	if len(matches) > 0 {
 		rpmFile := filepath.Base(matches[0])
 		finalPkg := filepath.Join(ctx.ProjRoot, rpmFile)
-		if err := moveFile(matches[0], finalPkg); err == nil {
+
+		// Usiamo il copyFile condiviso che è molto più sicuro, poi rimuoviamo l'originale
+		if err := copyFile(matches[0], finalPkg); err == nil {
+			os.Remove(matches[0])
 			fmt.Printf("[SUCCESS] Pacchetto RPM creato nella root: %s\n", finalPkg)
 		} else {
 			fmt.Printf("[ERROR] Failed to move RPM: %v\n", err)

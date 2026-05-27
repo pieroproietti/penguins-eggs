@@ -43,3 +43,4 @@ rsync -avz --delete \
     "artisan@${MOTHER_IP}:/home/artisan/oa-tools/" "$HOME/oa-tools/"
     
 echo "✅ Codice sorgente aggiornato con successo!"
+g

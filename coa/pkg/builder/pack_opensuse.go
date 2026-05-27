@@ -32,7 +32,6 @@ func packOpenSUSE(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	specPath := filepath.Join(buildRoot, "SPECS", "oa-tools-opensuse.spec")
 
 	// Generiamo lo SPEC. Su openSUSE le dipendenze cambiano nome rispetto a Fedora.
-	// Ad esempio, usiamo 'grub2' generico e i pacchetti dracut nativi di SUSE.
 	specContent := fmt.Sprintf(`%%define debug_package %%{nil}
 
 Name:           oa-tools
@@ -53,8 +52,7 @@ oa-tools: la rimasterizzazione universale secondo la filosofia eggs-bananas adat
 %%install
 rm -rf %%{buildroot}
 mkdir -p %%{buildroot}/usr/bin
-mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d/assets
-mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d/modules
+mkdir -p %%{buildroot}/etc/oa-tools.d/brain.d
 mkdir -p %%{buildroot}/usr/share/man/man1
 mkdir -p %%{buildroot}/usr/share/bash-completion/completions
 mkdir -p %%{buildroot}/usr/share/zsh/vendor-completions
@@ -65,29 +63,18 @@ install -m 0755 %%{_topdir}/../oa/oa %%{buildroot}/usr/bin/oa
 install -m 0755 %%{_topdir}/../coa/coa %%{buildroot}/usr/bin/coa
 ln -s coa %%{buildroot}/usr/bin/eggs
 
-# 2. Configurazione Brain & YAML
-cp -a %%{_topdir}/../coa/brain.d/* %%{buildroot}/etc/oa-tools.d/brain.d/
-cat <<EOF > %%{buildroot}/etc/oa-tools.d/oa-tools.yaml
----
-system:
-  dialect: "oa"
-  version: "%s"
-wardrobe:
-  root: "~/.oa-wardrobe"
-  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
-remaster:
-  default_user: "artisan"
-  work_dir: "/home/eggs"
-EOF
+# 2. Configurazione Brain & custom.yaml dinamico
+cp -a %%{_topdir}/../coa/brain.d/. %%{buildroot}/etc/oa-tools.d/brain.d/
+install -m 0644 %%{_topdir}/../etc/oa-tools.d/custom.yaml %%{buildroot}/etc/oa-tools.d/custom.yaml
 
-# 3. Man Pages
-cp %%{_topdir}/../coa/docs/man/*.1 %%{buildroot}/usr/share/man/man1/
+# 3. Man Pages (Allineate alla nuova architettura in root/docs)
+cp %%{_topdir}/../docs/man/*.1 %%{buildroot}/usr/share/man/man1/
 gzip -9 %%{buildroot}/usr/share/man/man1/*.1
 
-# 4. Shell Completions
-install -m 0644 %%{_topdir}/../coa/docs/completion/coa.bash %%{buildroot}/usr/share/bash-completion/completions/coa
-install -m 0644 %%{_topdir}/../coa/docs/completion/coa.zsh %%{buildroot}/usr/share/zsh/vendor-completions/_coa
-install -m 0644 %%{_topdir}/../coa/docs/completion/coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/coa.fish
+# 4. Shell Completions (Allineate alla nuova architettura in root/docs)
+install -m 0644 %%{_topdir}/../docs/completion/coa.bash %%{buildroot}/usr/share/bash-completion/completions/coa
+install -m 0644 %%{_topdir}/../docs/completion/coa.zsh %%{buildroot}/usr/share/zsh/vendor-completions/_coa
+install -m 0644 %%{_topdir}/../docs/completion/coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/coa.fish
 
 echo "complete -o default -F __start_coa eggs" >> %%{buildroot}/usr/share/bash-completion/completions/coa
 ln -s coa %%{buildroot}/usr/share/bash-completion/completions/eggs
@@ -99,23 +86,17 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 /usr/bin/coa
 /usr/bin/eggs
 %%dir /etc/oa-tools.d
-%%dir /etc/oa-tools.d/brain.d
-%%dir /etc/oa-tools.d/brain.d/assets
-%%dir /etc/oa-tools.d/brain.d/modules
-%%config(noreplace) /etc/oa-tools.d/oa-tools.yaml
-/etc/oa-tools.d/brain.d/*.yaml
-/etc/oa-tools.d/brain.d/*.tmpl
-/etc/oa-tools.d/brain.d/assets/*
-/etc/oa-tools.d/brain.d/modules/*.tmpl
+/etc/oa-tools.d/brain.d
+%%config(noreplace) /etc/oa-tools.d/custom.yaml
 /usr/share/man/man1/*.1.gz
 /usr/share/bash-completion/completions/*
 /usr/share/zsh/vendor-completions/*
 /usr/share/fish/vendor_completions.d/*
 
 %%changelog
-* Thu May 21 2026 Piero Proietti <piero.proietti@gmail.com> - %s-%s
+* Wed May 27 2026 Piero Proietti <piero.proietti@gmail.com> - %s-%s
 - openSUSE Slowroll native integration
-`, cleanVer, relNum, cleanVer, cleanVer, relNum)
+`, cleanVer, relNum, cleanVer, relNum)
 
 	os.WriteFile(specPath, []byte(specContent), 0644)
 
@@ -129,13 +110,16 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 		return
 	}
 
-	// Recupero del pacchetto sfornato (openSUSE potrebbe metterlo in x86_64 o noarch a seconda dei casi)
-	rpmPattern := filepath.Join(buildRoot, "RPMS", "**", "*.rpm")
+	// Recupero del pacchetto (Go Glob non supporta **, indichiamo esplicitamente x86_64)
+	rpmPattern := filepath.Join(buildRoot, "RPMS", "x86_64", "*.rpm")
 	matches, _ := filepath.Glob(rpmPattern)
 	if len(matches) > 0 {
 		rpmFile := filepath.Base(matches[0])
 		finalPkg := filepath.Join(ctx.ProjRoot, rpmFile)
-		if err := moveFile(matches[0], finalPkg); err == nil {
+
+		// Usiamo il robusto copyFile condiviso
+		if err := copyFile(matches[0], finalPkg); err == nil {
+			os.Remove(matches[0])
 			fmt.Printf("[SUCCESS] Pacchetto RPM per openSUSE creato nella root: %s\n", finalPkg)
 		} else {
 			fmt.Printf("[ERROR] Failed to move openSUSE RPM: %v\n", err)
