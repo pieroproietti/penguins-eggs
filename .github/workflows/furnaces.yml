@@ -20,7 +20,25 @@ jobs:
           VMID=$(grep "VM_ID_${{ matrix.distro }}" ./bin/p4config | cut -d'=' -f2 | tr -d '"')
           TARGET_IP="192.168.1.$VMID"
           
-          # 2. Teletrasporto (usa la nostra logica p4deploy)
+          # 2. Accensione VM
+          ./bin/p4start ${{ matrix.distro }}
+
+          # 3. Controllo accenzione
+          echo "⏳ Attesa avvio SSH su $TARGET_IP..."
+          max_retries=15
+          count=0
+          until ssh -o ConnectTimeout=2 -o BatchMode=yes artisan@$TARGET_IP exit >/dev/null 2>&1; do
+              echo "  Tentativo $count: VM non ancora pronta..."
+              sleep 3
+              ((count++))
+              if [ $count -ge $max_retries ]; then
+                  echo "❌ Timeout: La VM non ha risposto in tempo."
+                  exit 1
+              fi
+          done
+          echo "✅ SSH attivo!"
+
+          # 2. Teletrasporto
           ./bin/p4deploy ${{ matrix.distro }}
           
           # 3. Sequenza Operativa remota
