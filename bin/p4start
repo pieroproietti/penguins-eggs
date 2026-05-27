@@ -27,7 +27,7 @@ if [ -z "$VMID" ]; then
 fi
 
 # Se è stata passata una ISO, la agganciamo prima del boot
-if [ -not -z "$ISO_PATH" ]; then
+if [ -n "$ISO_PATH" ]; then
     echo "💿 Aggancio la ISO $ISO_PATH al lettore CD della VM $VMID..."
     ssh "$PVE_TARGET" "qm set $VMID --ide2 ${ISO_PATH},media=cdrom"
 fi
