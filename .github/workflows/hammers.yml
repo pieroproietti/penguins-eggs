@@ -39,7 +39,6 @@ jobs:
                 make clean
                 make
                 ./coa/coa tools build
-                cd /tmp/oa-alpine-build
                 abuild -r
               "
             install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
