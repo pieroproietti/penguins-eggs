@@ -1,0 +1,49 @@
+#!/bin/bash
+# Uso: p4deploy [distro]
+
+CONFIG_FILE="$HOME/oa-tools/bin/p4config"
+source "$CONFIG_FILE"
+
+DISTRO=$1
+if [ -z "$DISTRO" ]; then echo "Uso: $0 [distro]"; exit 1; fi
+
+VAR_NAME="VM_ID_${DISTRO}"
+TARGET_IP="192.168.1.${!VAR_NAME}"
+
+# Mappatura estensioni per il glob
+case $DISTRO in
+    debian)   EXT="deb" ;;
+    arch)     EXT="pkg.tar.zst" ;;
+    fedora)   EXT="rpm" ;;
+    alpine)   EXT="apk" ;;
+    *) echo "Distro non gestita"; exit 1 ;;
+esac
+
+echo "🚀 Recupero 'oa-tools-$DISTRO' dalla fucina..."
+
+# 1. Scarichiamo pulito in /tmp/deploy
+rm -rf /tmp/deploy && mkdir -p /tmp/deploy
+gh run download --repo pieroproietti/oa-tools --name "oa-tools-$DISTRO" --dir /tmp/deploy
+
+# 2. Verifichiamo cosa abbiamo pescato
+PACKAGE=$(ls /tmp/deploy/*.$EXT 2>/dev/null)
+
+if [ -z "$PACKAGE" ]; then
+    echo "❌ Nessun file .$EXT trovato dopo il download!"
+    exit 1
+fi
+
+# 3. Teletrasporto
+echo "📡 Invio $PACKAGE a $TARGET_IP..."
+check_ssh_keys "$TARGET_IP"
+scp "$PACKAGE" "artisan@${TARGET_IP}:/tmp/"
+
+if [ $? -eq 0 ]; then
+    echo "✅ Teletrasportato in /tmp su $TARGET_IP."
+    echo "Installa con: ssh artisan@$TARGET_IP 'sudo pacman -U /tmp/$(basename "$PACKAGE")'"
+else
+    echo "❌ Teletrasporto fallito."
+    exit 1
+fi
+
+rm -rf /tmp/deploy

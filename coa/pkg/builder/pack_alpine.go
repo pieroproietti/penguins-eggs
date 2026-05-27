@@ -1,143 +1,85 @@
 package builder
 
+/* sesta bandiera: versione nativa specifica per Alpine Linux */
+
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 
-	sysctx "coa/pkg/context" // Il nostro scudo contestuale
+	sysctx "coa/pkg/context"
 )
 
-// packAlpine prepara l'ambiente sorgente e l'APKBUILD per Alpine Linux
+// packAlpine genera il file APKBUILD per Alpine Linux.
+// NUOVA ARCHITETTURA: Percorsi agganciati risalendo da srcdir, zero dipendenze esterne.
 func packAlpine(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
-	LogBuild("Iniziando la preparazione dei sorgenti Alpine (APKBUILD)...")
+	// L'APKBUILD viene sputato sempre e comunque nella radice del progetto
+	outDir := ctx.ProjRoot
 
-	// 1. Il tavolo da lavoro ISOLATO nella cartella temporanea di sistema (/tmp)
-	//
-	// ATTENZIONE: Il nome della cartella DEVE essere "oa-alpine-build" e NON "oa-build".
-	// "oa-build" è il quartier generale (ctx.BaseBuildDir) dove coa genera manuali e completamenti.
-	// Alpine (tramite abuild) ha dinamiche distruttive: se usassimo lo stesso nome,
-	// il comando os.RemoveAll() qui sotto raderebbe al suolo tutti gli asset comuni
-	// appena creati, e il pacchetto finale verrebbe generato monco e senza eseguibile.
-	// Questo recinto separato salva la vita ai nostri sorgenti!
-	buildDir := filepath.Join(os.TempDir(), "oa-alpine-build")
-
-	// Pialliamo all'inizio per sicurezza, nel caso ci fosse una vecchia build
-	os.RemoveAll(buildDir)
-
-	stagingDir := filepath.Join(buildDir, "staging")
-	os.MkdirAll(stagingDir, 0755)
-	// 2. Creazione struttura in 'staging'
-	dirs := []string{
-		filepath.Join(stagingDir, "usr/bin"),
-		filepath.Join(stagingDir, "etc/oa-tools.d/brain.d"),
-		filepath.Join(stagingDir, "usr/share/man/man1"),
-		filepath.Join(stagingDir, "usr/share/bash-completion/completions"),
-		filepath.Join(stagingDir, "usr/share/zsh/vendor-completions"),
-		filepath.Join(stagingDir, "usr/share/fish/vendor_completions.d"),
-	}
-	for _, dir := range dirs {
-		os.MkdirAll(dir, 0755)
-	}
-
-	// 3. Binari
-	binPath := filepath.Join(stagingDir, "usr/bin")
-
-	// Puntiamo alla root del progetto (dove make ha compilato) e NON alla temp dir
-	srcOa := filepath.Join(ctx.ProjRoot, "oa", "oa")
-	srcCoa := filepath.Join(ctx.ProjRoot, "coa", "coa")
-
-	destOa := filepath.Join(binPath, "oa")
-	destCoa := filepath.Join(binPath, "coa")
-
-	// Controllo rigoroso: oa esiste davvero prima di copiarlo?
-	if _, err := os.Stat(srcOa); os.IsNotExist(err) {
-		LogError("❌ FALLIMENTO CRITICO: Il binario '%s' non esiste!", srcOa)
-		os.Exit(1)
-	}
-	// Stesso controllo di sicurezza per coa
-	if _, err := os.Stat(srcCoa); os.IsNotExist(err) {
-		LogError("❌ FALLIMENTO CRITICO: Il binario '%s' non esiste!", srcCoa)
-		os.Exit(1)
-	}
-
-	copyFile(srcOa, destOa)
-	copyFile(srcCoa, destCoa)
-
-	os.Chmod(destOa, 0755)
-	os.Chmod(destCoa, 0755)
-	os.Symlink("coa", filepath.Join(binPath, "eggs"))
-
-	// 4. Configurazione YAML e Brain
-	confDest := filepath.Join(stagingDir, "etc/oa-tools.d")
-	brainDest := filepath.Join(confDest, "brain.d")
-
-	// Uniamo baseVer e relNum per la versione tracciata nello yaml
-	fullVersion := fmt.Sprintf("%s-%s", baseVer, relNum)
-
-	oaYamlContent := fmt.Sprintf(`---
-system:
-  dialect: "oa"
-  version: "%s"
-wardrobe:
-  root: "~/.oa-wardrobe"
-  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
-remaster:
-  default_user: "artisan"
-  work_dir: "/home/eggs"
-`, fullVersion)
-	os.WriteFile(filepath.Join(confDest, "oa-tools.yaml"), []byte(oaYamlContent), 0644)
-	brainSrc := filepath.Join(ctx.CoaDir, "brain.d")
-	exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
-
-	// 5. Documentazione e Completamenti
-	docSourceDir := filepath.Join(ctx.BaseBuildDir, "docs")
-	manDir := filepath.Join(stagingDir, "usr/share/man/man1")
-	exec.Command("sh", "-c", fmt.Sprintf("cp %s/man/*.1 %s/ && gzip -9 %s/*.1", docSourceDir, manDir, manDir)).Run()
-
-	bashTarget := filepath.Join(stagingDir, "usr/share/bash-completion/completions/coa")
-	copyFile(filepath.Join(docSourceDir, "completion/coa.bash"), bashTarget)
-	copyFile(filepath.Join(docSourceDir, "completion/coa.zsh"), filepath.Join(stagingDir, "usr/share/zsh/vendor-completions/_coa"))
-	copyFile(filepath.Join(docSourceDir, "completion/coa.fish"), filepath.Join(stagingDir, "usr/share/fish/vendor_completions.d/coa.fish"))
-	os.Symlink("coa", filepath.Join(stagingDir, "usr/share/bash-completion/completions/eggs"))
-	os.Symlink("_coa", filepath.Join(stagingDir, "usr/share/zsh/vendor-completions/_eggs"))
-	os.Symlink("coa.fish", filepath.Join(stagingDir, "usr/share/fish/vendor_completions.d/eggs.fish"))
-
-	f, err := os.OpenFile(bashTarget, os.O_APPEND|os.O_WRONLY, 0644)
-	if err == nil {
-		f.WriteString("\n# eggs alias completion support\ncomplete -o default -F __start_coa eggs\n")
-		f.Close()
-	}
-
-	// ---------------------------------------------------------
-	// IL MAGICO APKBUILD (Stile Arch PKGBUILD)
-	// ---------------------------------------------------------
-	apkbuildContent := fmt.Sprintf(`# Generated by oa-tools builder
-pkgname=oa-tools
+	// L'APKBUILD NATIVO: Sulla falsariga di Arch, usiamo "${srcdir}/../"
+	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
+# coa is the mind and oa the arm
+pkgname=oa-tools-alpine
 pkgver=%s
 pkgrel=%s
-pkgdesc="coa is the mind and oa the arm"
-url="https://penguins-eggs.net"
+pkgdesc="oa-tools universal Linux remastering volgens la filosofia eggs-bananas"
+url="https://penguins-eggs.net/blog/eggs-bananas"
 arch="x86_64"
-license="MIT"
-maintainer="Piero Proietti <piero.proietti@gmail.com>"
-depends="squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi jq"
-options="!check !strip" # Vietiamo categoricamente ad Alpine di alterare i nostri binari
+license="GPL-3.0-only"
+# Dipendenze tipiche di Alpine per la rimasterizzazione
+depends="bash-completion dosfstools efibootmgr git grub jq mtools pv rsync squashfs-tools sudo xorriso"
+makedepends=""
+source=""
 
-# La funzione package si limita a travasare la nostra cartella staging
+builddir="$srcdir"
+
 package() {
-	mkdir -p "$pkgdir"
-	cp -a "$startdir/staging/"* "$pkgdir/"
+	# Nota: abuild lavora in 'src/'. Usiamo "${srcdir}/../" per ritornare
+	# stabilmente nella radice dei sorgenti reali appena compilati localmente.
+
+	# 1. Installazione binari GIA' COMPILATI localmente da 'make'
+	install -Dm755 "${srcdir}/../oa/oa" "${pkgdir}/usr/bin/oa"
+	install -Dm755 "${srcdir}/../coa/coa" "${pkgdir}/usr/bin/coa"
+	ln -s coa "${pkgdir}/usr/bin/eggs"
+
+	# 2. Configurazione e logica 'Brain' e custom.yaml
+	install -Dm644 "${srcdir}/../etc/oa-tools.d/custom.yaml" "${pkgdir}/etc/oa-tools.d/custom.yaml"
+
+	install -d "${pkgdir}/etc/oa-tools.d/brain.d"
+	if [ -d "${srcdir}/../coa/brain.d" ]; then
+		# Usiamo '/.' con cp -a per includere file nascosti e preservare i permessi
+		cp -a "${srcdir}/../coa/brain.d/." "${pkgdir}/etc/oa-tools.d/brain.d/"
+	fi
+
+	# 3. Documentazione (Man Pages) allineata alla radice del progetto
+	if [ -d "${srcdir}/../docs/man" ]; then
+		for manfile in "${srcdir}/../docs/man/"*.1; do
+			if [ -f "$manfile" ]; then
+				install -Dm644 "$manfile" "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
+				gzip -9 "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
+			fi
+		done
+	fi
+
+	# 4. Shell Completions riallineate a docs/completion/
+	install -Dm644 "${srcdir}/../docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
+	install -Dm644 "${srcdir}/../docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/site-functions/_coa"
+	install -Dm644 "${srcdir}/../docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
+
+	ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
+	ln -s _coa "${pkgdir}/usr/share/zsh/site-functions/_eggs"
+	ln -s coa.fish "${pkgdir}/usr/share/fish/vendor_completions.d/eggs.fish"
+
+	echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
 `, baseVer, relNum)
 
-	os.WriteFile(filepath.Join(buildDir, "APKBUILD"), []byte(apkbuildContent), 0644)
+	pkgbuildPath := filepath.Join(outDir, "APKBUILD")
+	err := os.WriteFile(pkgbuildPath, []byte(pkgbuildContent), 0644)
+	if err != nil {
+		fmt.Printf("[ERROR] Failed to write APKBUILD: %v\n", err)
+		return
+	}
 
-	// 6. Consegna dell'ambiente di build
-	LogBuild("✅ Ambiente sorgente Alpine pronto in: %s", buildDir)
-	LogBuild("👉 Per compilare: cd %s && abuild -r", buildDir)
-	// Salvaguardia mentale: pialliamo il quartier generale generico
-	// visto che abbiamo già trasferito tutto nell'ambiente Alpine.
-	os.RemoveAll(ctx.BaseBuildDir)
+	fmt.Printf("[SUCCESS] [Native Mode] APKBUILD (Alpine) generato nella root: %s\n", pkgbuildPath)
 }
