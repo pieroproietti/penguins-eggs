@@ -1,9 +1,7 @@
-name: "🏗️ Factory: Test & Remaster"
+name: "🏗️ Factory: complete remaster"
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
   test-remaster:

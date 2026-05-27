@@ -44,17 +44,20 @@ jobs:
             # 1. Trova il file reale
 
             install_cmd: |
-              PKG=$(ls /home/artisan/packages/tmp/*/*.apk | head -n 1)
+              echo "🔍 Cerco ovunque file .apk..."
+              find /home/artisan -name "*.apk"
 
-              # 2. Verifica che sia stato trovato
-              if [ -f "$PKG" ]; then
-                  echo "📦 Installazione di: $PKG"
+              # Se ne trova almeno uno, prendiamo il primo e installiamolo
+              PKG=$(find /home/artisan -name "*.apk" | head -n 1)
+
+              if [ -n "$PKG" ]; then
+                  echo "📦 Trovato: $PKG"
                   sudo apk add --allow-untrusted "$PKG"
               else
-                  echo "❌ Pacchetto non trovato in /home/artisan/packages/tmp/"
+                  echo "❌ NESSUN pacchetto .apk trovato in /home/artisan"
                   exit 1
               fi
-
+              
           # ==========================================
           # 🏹 ARCH LINUX (Il Banco di Prova)
           # ==========================================
