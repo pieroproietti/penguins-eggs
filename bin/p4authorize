@@ -1,0 +1,33 @@
+#!/bin/bash
+# p4authorize - Inietta la configurazione sudo NOPASSWD nella fucina
+
+CONFIG_FILE="$HOME/oa-tools/bin/p4config"
+if [ ! -f "$CONFIG_FILE" ]; then echo "❌ p4config non trovato."; exit 1; fi
+source "$CONFIG_FILE"
+
+DISTRO=$1
+if [ -z "$DISTRO" ]; then echo "Uso: $0 [distro] (oppure 'all')"; exit 1; fi
+
+PASSWORD="evolution" # La password standard delle tue fucine
+
+authorize_vm() {
+    local target_distro=$1
+    local vmid=$(grep "VM_ID_${target_distro}" "$CONFIG_FILE" | cut -d'=' -f2 | tr -d '"')
+    local target_ip="192.168.1.$vmid"
+    
+    echo "🔑 Sblocco sudo senza password su $target_distro ($target_ip)..."
+    
+    # Passiamo la password a sudo -S un'ultima volta per creare il file sudoers
+    ssh -o StrictHostKeyChecking=no artisan@$target_ip \
+        "echo '$PASSWORD' | sudo -S bash -c 'echo \"artisan ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/artisan && chmod 0440 /etc/sudoers.d/artisan'" 2>/dev/null
+        
+    echo "   ✅ $target_distro sbloccata."
+}
+
+if [ "$DISTRO" == "all" ]; then
+    grep "^VM_ID_" "$CONFIG_FILE" | grep -v "mother" | cut -d'_' -f3 | cut -d'=' -f1 | while read -r d; do
+        authorize_vm "$d"
+    done
+else
+    authorize_vm "$DISTRO"
+fi

@@ -1,0 +1,44 @@
+#!/bin/bash
+# p4nuke - Pialla e ripristina tutte le fucine allo stato vergine
+
+CONFIG_FILE="$HOME/oa-tools/bin/p4config"
+if [ ! -f "$CONFIG_FILE" ]; then 
+    echo "❌ Errore: p4config non trovato."
+    exit 1
+fi
+source "$CONFIG_FILE"
+
+echo "☢️  ATTENZIONE: Stai per PIALLARE le fucine e riportarle allo snapshot '$SNAPSHOT_NAME'."
+echo "Tutti i dati non salvati, le uova e le configurazioni manuali andranno distrutti."
+read -p "Sei assolutamente sicuro di voler procedere? (s/N): " confirm
+
+if [[ "$confirm" != [sS] ]]; then
+    echo "Operazione annullata. Fucine salve."
+    exit 0
+fi
+
+echo ""
+echo "🔥 Inizio sequenza di annientamento..."
+
+# Estraiamo dinamicamente tutte le distro da p4config ignorando 'mother' se non vuoi resettarla
+grep "^VM_ID_" "$CONFIG_FILE" | grep -v "mother" | while read -r line; do
+    # Estrae il nome (es. arch) e il vmid (es. 202)
+    DISTRO=$(echo "$line" | cut -d'_' -f3 | cut -d'=' -f1)
+    VMID=$(echo "$line" | cut -d'"' -f2)
+    
+    echo "💣 [ $DISTRO ] Spegnimento forzato e rollback (VMID: $VMID)..."
+    
+    # 1. Ferma la macchina se è accesa (ignora l'errore se è già spenta)
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=no "$PVE_TARGET" "qm stop $VMID" >/dev/null 2>&1
+    
+    # 2. Applica lo snapshot
+    if ssh -o BatchMode=yes -o StrictHostKeyChecking=no "$PVE_TARGET" "qm rollback $VMID $SNAPSHOT_NAME"; then
+        echo "   ✅ $DISTRO purificata."
+    else
+        echo "   ❌ Errore nel rollback di $DISTRO. Verifica che lo snapshot '$SNAPSHOT_NAME' esista."
+    fi
+done
+
+echo ""
+echo "🌱 Tutte le fucine sono state ripristinate con successo."
+echo "Puoi riaccenderle con 'p4start'."
