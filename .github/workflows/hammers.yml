@@ -41,6 +41,7 @@ jobs:
                 ./coa/coa tools build
                 abuild -r
               "
+            # checking alpine
             install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
 
           # ==========================================
