@@ -75,9 +75,6 @@ setxkbmap it
 
 # Aggiunge la cartella bin del monorepo oa-tools al PATH dell'utente
 export PATH="$HOME/oa-tools/bin:$PATH"
-```
+source ~/.local/share/bash-completion/completions/p4-suite
 
-Dopo aver salvato il file `~/.bashrc`, rinfresca la sessione corrente per attivare i comandi immediatamente senza riavviare:
-```bash
-source ~/.bashrc
 ```

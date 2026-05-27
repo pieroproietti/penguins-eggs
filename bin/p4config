@@ -5,12 +5,12 @@ PVE_TARGET="root@192.168.1.2"  # IP del Proxmox padre (con chiavi SSH già scamb
 # Mappatura Fucine (VMID:Nome)
 # Struttura: VM_ID_nome="VMID"
 VM_ID_mother="200"
-VM_ID_alpine="206"
+VM_ID_alpine="201"
 VM_ID_arch="202"
-VM_ID_debian="201"
+VM_ID_debian="203"
 VM_ID_fedora="204"
-VM_ID_manjaro="203"
-VM_ID_opensuse="205"
+VM_ID_manjaro="205"
+VM_ID_opensuse="206"
 
 # Nome dello snapshot "vergine" per i rollback
 SNAPSHOT_NAME="virgin"

@@ -8,7 +8,7 @@ COMPLETION_DIR="$HOME/.local/share/bash-completion/completions"
 MASTER_FILE="p4-suite"
 MASTER_PATH="$COMPLETION_DIR/$MASTER_FILE"
 
-# Comandi della suite
+# Comandi della suite (aggiunto p4pull mancante)
 COMMANDS=(p4config p4create p4deploy p4pull p4push p4reset p4ssh p4start p4stop)
 
 echo "🔨 Preparazione dell'ambiente in $COMPLETION_DIR..."
@@ -23,8 +23,8 @@ _p4_suite_completion() {
     # Parola corrente che l'utente sta digitando
     local cur="${COMP_WORDS[COMP_CWORD]}"
     
-    # Le nostre fucine (bersagli)
-    local fucine="arch debian fedora manjaro opensuse alpine"
+    # Le nostre fucine (bersagli in ordine alfabetico)
+    local fucine="alpine arch debian fedora manjaro opensuse"
     
     # Genera i suggerimenti filtrando le fucine in base a cosa è stato digitato finora
     COMPREPLY=( $(compgen -W "$fucine" -- "$cur") )
@@ -32,8 +32,8 @@ _p4_suite_completion() {
     return 0
 }
 
-# Lega la funzione di completamento a tutti gli script della suite
-complete -F _p4_suite_completion p4config p4create p4deploy p4push p4reset p4ssh p4start p4stop
+# Lega la funzione di completamento a TUTTI gli script della suite
+complete -F _p4_suite_completion p4config p4create p4deploy p4pull p4push p4reset p4ssh p4start p4stop
 EOF
 
 chmod 644 "$MASTER_PATH"
