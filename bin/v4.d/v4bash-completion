@@ -1,3 +1,0 @@
-mkdir -p ~/.local/share/bash-completion/completions/ 
-cp ~/oa-tools/bin/v4.d/completions.sh ~/.local/share/bash-completion/completions/vagrant
-chmod +x ~/.local/share/bash-completion/completions/vagrant

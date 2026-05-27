@@ -9,7 +9,7 @@ COA_DIR = coa
 OA_BIN  = $(OA_DIR)/oa
 COA_BIN = $(COA_DIR)/coa
 
-# Patterns per la rimozione dei pacchetti nativi
+# Patterns per la rimozione dei pacchetti nativi (Ora che li salviamo in root)
 PACKAGES = *.deb *.rpm *.pkg.tar.zst PKGBUILD
 
 # Target principale
@@ -30,14 +30,18 @@ build_coa:
 	@cd $(COA_DIR) && go build -ldflags "-X 'coa/pkg/cmd.AppVersion=$(VERSION)'" -o coa main.go
 
 # Target Documentazione: Genera man pages, markdown e autocompletamenti nativi
-# Target Documentazione: Genera man pages, markdown e autocompletamenti nativi
 docs: build_coa
 	@echo "  GENERATING DOCUMENTATION & COMPLETIONS..."
-	# Creiamo solo la cartella di base per la documentazione
-	@mkdir -p $(COA_DIR)/docs
-	# Diciamo a _gen_docs di usare direttamente $(COA_DIR)/docs come base,
-	# ci penserà lui a creare all'interno le cartelle man, md e completion
-	@-$(COA_BIN) _gen_docs --target ./$(COA_DIR)/docs
+	# Creiamo la cartella docs nella ROOT del progetto (allineato con pack_arch/pack_debian)
+	@mkdir -p docs
+	# Generiamo la documentazione nella root
+	@-$(COA_BIN) _gen_docs --target ./docs
+
+# Target per la creazione del pacchetto nativo
+package: all
+	@echo "  PACKAGING NATIVE OS DISTRIBUTION..."
+	# Usa il binario appena forgiato dal target 'all' per pacchettizzare se stesso
+	@./$(COA_BIN) tools build
 		
 clean:
 	@echo "  Pulizia binari e piani di volo..."
@@ -47,8 +51,9 @@ clean:
 	@echo "  Rimozione pacchetti nativi ($(PACKAGES))..."
 	@rm -f $(PACKAGES)
 	@echo "  Pulizia documentazione e completamenti..."
-	@rm -rf $(COA_DIR)/docs/man/*
-	@rm -rf $(COA_DIR)/docs/completion/*
-	@rm -rf $(COA_DIR)/docs/md/*
+	# Aggiornato per pulire la nuova cartella docs in root
+	@rm -rf docs/man/*
+	@rm -rf docs/completion/*
+	@rm -rf docs/md/*
 
-.PHONY: all build_oa build_coa docs clean
+.PHONY: all build_oa build_coa docs package clean

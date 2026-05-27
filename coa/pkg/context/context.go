@@ -3,22 +3,20 @@ package context
 import (
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"strings"
 )
 
 // I quattro ambienti ufficiali di oa-tools
 const (
-	EnvCI      = "ci"      // Docker / GitHub Actions
-	EnvVagrant = "vagrant" // VM Vagrant (con il mount 9p)
-	EnvVM      = "vm"      // Macchina virtuale pura (KVM/QEMU)
-	EnvHost    = "host"    // Hardware reale (colibri)
+	EnvCI   = "ci"   // Docker / GitHub Actions
+	EnvVM   = "vm"   // Macchina virtuale pura (KVM/QEMU)
+	EnvHost = "host" // Hardware reale (colibri)
 )
 
 // RuntimeContext contiene la mappa geopolitica e i percorsi dell'esecuzione attuale
 type RuntimeContext struct {
-	EnvType      string // ci, vagrant, vm, host
+	EnvType      string // ci, vm, host
 	ProjRoot     string // Radice della repository
 	OaDir        string // Cartella sorgenti C
 	CoaDir       string // Cartella sorgenti Go
@@ -41,12 +39,6 @@ func Detect() RuntimeContext {
 
 	// 2. Rilevamento indicatori hardware/software
 	isCI := os.Getenv("GITHUB_ACTIONS") == "true" || os.Getenv("CI") == "true"
-
-	isVagrant := false
-	currentUser, err := user.Current()
-	if err == nil && currentUser.Username == "vagrant" {
-		isVagrant = true
-	}
 
 	// 3. Controllo presenza virtualizzazione (Per distinguere VM da Host fisico)
 	isVirtual := true
@@ -74,11 +66,6 @@ func Detect() RuntimeContext {
 			ctx.BaseBuildDir = ctx.ProjRoot
 		}
 		ctx.ZstdLevel = 8
-
-	case isVagrant:
-		ctx.EnvType = EnvVagrant
-		ctx.BaseBuildDir = "/tmp/oa-build"
-		ctx.ZstdLevel = 3
 
 	case isVirtual:
 		ctx.EnvType = EnvVM

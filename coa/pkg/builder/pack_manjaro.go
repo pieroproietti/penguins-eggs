@@ -28,18 +28,19 @@ license=('GPL3')
 # Optimized Manjaro dependencies for oa-tools
 depends=(
 	'manjaro-tools-iso'      # Hook miso per initramfs (fondamentale su Manjaro)
-	'efibootmgr'
-	'libisoburn'
-	'squashfs-tools'
-	'mtools'
-	'dosfstools'
 	'arch-install-scripts'
-	'grub'
-	'rsync'
-	'sudo'
-	'pv'
-	'git'
 	'bash-completion'
+	'dosfstools'
+	'efibootmgr'
+	'git'
+	'grub'
+	'jq'
+	'libisoburn'
+	'mtools'
+	'pv'
+	'rsync'
+	'squashfs-tools'
+	'sudo'
 )
 
 conflicts=('penguins-eggs' 'oa-tools')

@@ -29,20 +29,6 @@
 
 ---
 
-## 0.2 Supported Distributions (Tested via Vagrant)
-
-| Distribution | Status | Notes |
-|--------------|--------|-------|
-| Debian (Bookworm, Bullseye) | ✅ Full | Primary dev target |
-| Arch Linux | ✅ Full | Requires `base-devel` |
-| Fedora (40+) | ✅ Full | |
-| Manjaro | ✅ Full | |
-| Ubuntu | ⚠️ Should work | Inherits Debian support |
-| RHEL/Rocky/Alma | ❌ Untested | Planned |
-
-**Rule:** Update this table and `Vagrantfile` when adding distros.
-
----
 
 ## 1. Project Architecture (The Brain and The Muscle)
 
@@ -64,7 +50,6 @@ Source of truth for environment awareness. Located in `coa/pkg/context`.
 | Env | Description |
 |-----|-------------|
 | `ci` | Ephemeral cloud runners (GitHub Actions Docker) |
-| `vagrant` | VMs with 9p shared folders |
 | `vm` | Standard VMs (KVM/QEMU) without shared mounts |
 | `host` | Bare metal (developer machine) |
 
@@ -72,15 +57,6 @@ Source of truth for environment awareness. Located in `coa/pkg/context`.
 
 ---
 
-## 3. Vagrant / 9p Mount Constraint – **CRITICAL**
-
-When `ctx.EnvType == "vagrant"`, the project runs inside a VM with host folder shared via **9p filesystem**.
-
-**Rule:** **NEVER** write build artifacts directly to repository folder in `vagrant` – 9p crashes with `Permission denied`.
-
-**ALWAYS** route artifacts, binaries, generated docs to RAM: `ctx.BaseBuildDir` (`/tmp/oa-build`).
-
----
 
 ## 4. Build and Packaging Lexicon (`pkg/builder`)
 
@@ -114,7 +90,6 @@ Compression levels (`zstd`) are dynamic. **ALWAYS** read `ctx.ZstdLevel` when co
 
 1. Add dependencies to `oa` – must stay **zero-dependency**
 2. Hardcode paths – always use `ctx.*` variables
-3. Assume `go build` works in `/vagrant` – use `ctx.BaseBuildDir` (RAM)
 4. Mix C and Go logic – cross the streams = broken build
 5. Suggest removing C – performance gain is non-negotiable
 
@@ -123,19 +98,6 @@ Compression levels (`zstd`) are dynamic. **ALWAYS** read `ctx.ZstdLevel` when co
 - Check `ctx.EnvType` before filesystem-heavy ops
 - Use `ctx.ZstdLevel` for squashfs
 - Add new packers in `coa/pkg/builder/pack_*.go`
-- Write tests that run in Vagrant (not just host)
-
----
-
-## 8. Testing with Vagrant
-
-```bash
-vagrant up debian      # or: arch, fedora, manjaro
-vagrant ssh -c "make && ./coa/coa remaster"
-vagrant destroy -f
-```
-
-**Rule:** All features must pass `vagrant up` on all four supported distros before merging.
 
 ---
 

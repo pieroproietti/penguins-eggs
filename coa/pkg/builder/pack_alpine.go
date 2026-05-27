@@ -122,7 +122,7 @@ url="https://penguins-eggs.net"
 arch="x86_64"
 license="MIT"
 maintainer="Piero Proietti <piero.proietti@gmail.com>"
-depends="squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi"
+depends="squashfs-tools xorriso dosfstools mtools rsync git sudo grub-efi jq"
 options="!check !strip" # Vietiamo categoricamente ad Alpine di alterare i nostri binari
 
 # La funzione package si limita a travasare la nostra cartella staging

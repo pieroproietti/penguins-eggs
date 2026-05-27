@@ -67,6 +67,7 @@ URL:            https://penguins-eggs.net/blog/eggs-bananas
 Requires:       bash-completion squashfs-tools xorriso dosfstools mtools
 Requires:       dracut-live gdisk git rsync sudo google-noto-emoji-fonts
 Requires:       grub2-pc-modules grub2-efi-x64-modules efibootmgr shim-x64
+Requires:       jq
 Conflicts:      penguins-eggs
 
 %%description

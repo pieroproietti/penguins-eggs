@@ -41,14 +41,12 @@ func packDebian(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	// 3. Installazione binari prendendoli direttamente dal Progetto (dove 'make' li ha appena forgiati)
 	binPath := filepath.Join(buildDir, "usr/bin")
 
-	errOa := copyFile(filepath.Join(ctx.ProjRoot, "oa", "oa"), filepath.Join(binPath, "oa"))
-	if errOa != nil {
-		LogError("⚠️ ERRORE: Impossibile copiare il binario 'oa': %v", errOa)
+	if err := copyFile(filepath.Join(ctx.ProjRoot, "oa", "oa"), filepath.Join(binPath, "oa")); err != nil {
+		LogError("⚠️ ERRORE: Impossibile copiare il binario 'oa': %v", err)
 	}
 
-	errCoa := copyFile(filepath.Join(ctx.ProjRoot, "coa", "coa"), filepath.Join(binPath, "coa"))
-	if errCoa != nil {
-		LogError("⚠️ ERRORE: Impossibile copiare il binario 'coa': %v", errCoa)
+	if err := copyFile(filepath.Join(ctx.ProjRoot, "coa", "coa"), filepath.Join(binPath, "coa")); err != nil {
+		LogError("⚠️ ERRORE: Impossibile copiare il binario 'coa': %v", err)
 	}
 
 	os.Chmod(filepath.Join(binPath, "oa"), 0755)
@@ -61,47 +59,50 @@ func packDebian(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	confDest := filepath.Join(buildDir, "etc/oa-tools.d")
 	brainDest := filepath.Join(confDest, "brain.d")
 
-	// L'indentazione rigorosa con spazi standard per evitare crash del parser YAML
-	oaYamlContent := fmt.Sprintf(`---
-# oa-tools configuration
-# coa is the mind and oa the arm
-# Philosophy: https://penguins-eggs.net/blog/eggs-bananas
+	// Copia configurazione custom.yaml dal sorgente root alla buildDir
+	defaultName := "custom.yaml"
+	defaultSrc := filepath.Join(ctx.ProjRoot, "etc", "oa-tools.d", defaultName)
+	defaultDest := filepath.Join(confDest, defaultName)
 
-system:
-  dialect: "oa"
-  version: "%s"
+	// Lettura e scrittura nativa
+	input, err := os.ReadFile(defaultSrc)
+	if err == nil {
+		os.WriteFile(defaultDest, input, 0644)
+	} else {
+		fmt.Printf("Attenzione: impossibile leggere %s: %v\n", defaultSrc, err)
+		os.Exit(1)
+	}
 
-wardrobe:
-  root: "~/.oa-wardrobe"
-  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
-
-remaster:
-  default_user: "artisan"
-  work_dir: "/home/eggs"
-`, fullVersion)
-
-	os.WriteFile(filepath.Join(confDest, "oa-tools.yaml"), []byte(oaYamlContent), 0644)
-
-	// Popolamento brain.d dai sorgenti stabili
+	// Popolamento brain.d dai sorgenti
 	brainSrc := filepath.Join(ctx.CoaDir, "brain.d")
-	exec.Command("sh", "-c", fmt.Sprintf("cp -r %s/* %s/", brainSrc, brainDest)).Run()
+
+	// Aggiungiamo "/." alla fine del percorso sorgente per prendere anche i file nascosti.
+	srcPath := brainSrc + string(filepath.Separator) + "."
+
+	// Invochiamo 'cp' direttamente, usando '-a' (archive) invece di '-r'.
+	cmd := exec.Command("cp", "-a", srcPath, brainDest)
+
+	// Catturiamo e gestiamo l'errore per evitare fallimenti silenziosi
+	if err := cmd.Run(); err != nil {
+		fmt.Printf("Errore critico durante il popolamento di %s: %v\n", brainDest, err)
+		os.Exit(1)
+	}
 
 	// ---------------------------------------------------------
 	// ORIGINE DOCUMENTI (Prendiamo dalla Root del progetto, non dalla fucina!)
 	// ---------------------------------------------------------
 	docSourceDir := filepath.Join(ctx.ProjRoot, "docs")
 
-	// 5. Documentazione (Man sh	pages)
+	// 5. Documentazione (Man pages) - con soppressione errori in caso manchino file
 	manDir := filepath.Join(buildDir, "usr/share/man/man1")
-	exec.Command("sh", "-c", fmt.Sprintf("cp %s/man/*.1 %s/ && gzip -9 %s/*.1", docSourceDir, manDir, manDir)).Run()
+	exec.Command("sh", "-c", fmt.Sprintf("cp %s/man/*.1 %s/ 2>/dev/null && gzip -9 %s/*.1 2>/dev/null", docSourceDir, manDir, manDir)).Run()
 
 	// 6. Completamenti shell e alias (Generati freschi da Cobra via binario appena compilato)
 	bashCompDir := filepath.Join(buildDir, "usr/share/bash-completion/completions")
 	zshCompDir := filepath.Join(buildDir, "usr/share/zsh/vendor-completions")
 	fishCompDir := filepath.Join(buildDir, "usr/share/fish/vendor_completions.d")
 
-	// Esegue il binario 'coa' appena forgiato per generare i completamenti aggiornati
-	exec.Command(filepath.Join(binPath, "coa"), "completion", "bash").Output()
+	// BASH: Esegue il binario 'coa' appena forgiato per generare i completamenti aggiornati
 	bashOut, _ := exec.Command(filepath.Join(binPath, "coa"), "completion", "bash").Output()
 	os.WriteFile(filepath.Join(bashCompDir, "coa"), bashOut, 0644)
 
@@ -125,7 +126,7 @@ remaster:
 Version: %s
 Architecture: amd64
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dosfstools, mtools, rsync, git, sudo, grub-pc-bin, grub-efi-amd64-bin
+Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dosfstools, mtools, rsync, git, sudo, grub-pc-bin, grub-efi-amd64-bin, jq
 Conflicts: penguins-eggs
 Description: coa is the mind and oa the arm
 `, fullVersion)
@@ -143,10 +144,8 @@ Description: coa is the mind and oa the arm
 		return
 	}
 
-	// 9. Destinazione finale simmetrica guidata dal Contesto (Raddrizzato lo switch)
+	// 9. Destinazione finale simmetrica guidata dal Contesto (Addio Vagrant!)
 	switch ctx.EnvType {
-	case sysctx.EnvVagrant:
-		LogBuild("[Vagrant Mode] Pacchetto Debian protetto in RAM: %s", tmpDebLocation)
 	case sysctx.EnvCI:
 		LogBuild("[CI Mode] Pacchetto Debian rilasciato nel workspace: %s", tmpDebLocation)
 	default:
@@ -162,6 +161,6 @@ Description: coa is the mind and oa the arm
 		}
 	}
 
-	// Pulizia dello staging scompattato (manteniamo pulita la RAM)
+	// Pulizia dello staging scompattato (manteniamo pulita la RAM o il disco locale)
 	os.RemoveAll(buildDir)
 }

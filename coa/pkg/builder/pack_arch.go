@@ -28,21 +28,21 @@ arch=('x86_64')
 license=('GPL3')
 depends=(
 	'mkinitcpio-archiso'
-	'efibootmgr'
-	'libisoburn'
-	'squashfs-tools'
-	'mtools'
-	'dosfstools'
 	'arch-install-scripts'
-	'grub'
-	'rsync'
-	'sudo'
-	'pv'
-	'git'
 	'bash-completion'
+	'dosfstools'
+	'efibootmgr'
+	'git'
+	'grub'
+	'jq'
+	'libisoburn'
+	'mtools'
+	'pv'
+	'rsync'
+	'squashfs-tools'
+	'sudo'
 )
 conflicts=('penguins-eggs' 'oa-tools')
-backup=('etc/oa-tools.d/oa-tools.yaml')
 options=(!debug)
 
 package() {
@@ -54,45 +54,30 @@ package() {
 	install -Dm755 "${srcdir}/../coa/coa" "${pkgdir}/usr/bin/coa"
 	ln -s coa "${pkgdir}/usr/bin/eggs"
 
-	# 2. Configurazione e logica 'Brain'
+	# 2. Configurazione e logica 'Brain' e custom.yaml
+	install -Dm644 "${srcdir}/../etc/oa-tools.d/custom.yaml" "${pkgdir}/etc/oa-tools.d/custom.yaml"
+	
 	install -d "${pkgdir}/etc/oa-tools.d/brain.d"
 	if [ -d "${srcdir}/../coa/brain.d" ]; then
-		cp -r "${srcdir}/../coa/brain.d/"* "${pkgdir}/etc/oa-tools.d/brain.d/"
+		# Usiamo '/.' con cp -a per includere eventuali file nascosti e preservare i permessi
+		cp -a "${srcdir}/../coa/brain.d/." "${pkgdir}/etc/oa-tools.d/brain.d/"
 	fi
 
-	cat <<EOF > "${pkgdir}/etc/oa-tools.d/oa-tools.yaml"
----
-# oa-tools configuration
-# Philosophy: https://penguins-eggs.net/blog/eggs-bananas
-
-system:
-  dialect: "oa"
-  version: "${pkgver}"
-
-wardrobe:
-  root: "~/.oa-wardrobe"
-  repo: "https://github.com/pieroproietti/oa-wardrobe.git"
-
-remaster:
-  default_user: "artisan"
-  work_dir: "/home/eggs"
-EOF
-
-	# 3. Documentazione (Man Pages) riallineata alla nuova struttura del Makefile
-	if [ -d "${srcdir}/../coa/docs/man" ]; then
-		install -d "${pkgdir}/usr/share/man/man1"
-		for manfile in "${srcdir}/../coa/docs/man/"*.1; do
+	# 3. Documentazione (Man Pages) allineata alla radice del progetto
+	if [ -d "${srcdir}/../docs/man" ]; then
+		for manfile in "${srcdir}/../docs/man/"*.1; do
 			if [ -f "$manfile" ]; then
-				cp "$manfile" "${pkgdir}/usr/share/man/man1/"
-				chmod 644 "${pkgdir}/usr/share/man/man1/"$(basename "$manfile")
+				# install -D crea l'albero intermedio e assegna i permessi in un colpo solo
+				install -Dm644 "$manfile" "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
+				gzip -9 "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
 			fi
 		done
 	fi
 
-	# 4. Shell Completions riallineate a coa/docs/completion/
-	install -Dm644 "${srcdir}/../coa/docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
-	install -Dm644 "${srcdir}/../coa/docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
-	install -Dm644 "${srcdir}/../coa/docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
+	# 4. Shell Completions riallineate a docs/completion/
+	install -Dm644 "${srcdir}/../docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
+	install -Dm644 "${srcdir}/../docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
+	install -Dm644 "${srcdir}/../docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
 
 	ln -s coa "${pkgdir}/usr/share/bash-completion/completions/eggs"
 	ln -s _coa "${pkgdir}/usr/share/zsh/vendor-completions/_eggs"

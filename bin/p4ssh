@@ -1,16 +1,38 @@
 #!/bin/bash
-# Uso: p4ssh [debian|arch|manjaro|fedora]
+# Uso: p4ssh [mother|debian|arch|manjaro|fedora|opensuse|alpine]
 
-if [ ! -f ~/oa-tools/bin/p4config ]; then echo "Errore: p4config non trovato in ~/bin/!"; exit 1; fi
-source ~/oa-tools/bin/p4config
+# 1. Carica la configurazione globale e le funzioni libreria
+CONFIG_FILE="$HOME/oa-tools/bin/p4config"
+if [ ! -f "$CONFIG_FILE" ]; then 
+    echo "❌ Errore: File p4config non trovato in $CONFIG_FILE"
+    exit 1
+fi
+source "$CONFIG_FILE"
 
 DISTRO=$1
+if [ -z "$DISTRO" ]; then
+    echo "Uso: $0 [distro]"
+    # Mostriamo rapidamente quali distro sono disponibili
+    echo "Disponibili: $(grep -oP '(?<=^VM_ID_)[^=]+' "$CONFIG_FILE" | tr '\n' ' ')"
+    exit 1
+fi
+
 VAR_NAME="VM_ID_${DISTRO}"
 VMID=${!VAR_NAME}
 
-if [ -z "$VMID" ]; then echo "Errore: Distro '$DISTRO' non configurata!"; exit 1; fi
+if [ -z "$VMID" ]; then 
+    echo "❌ Distro '$DISTRO' non configurata in p4config!"
+    exit 1
+fi
 
-echo "🔌 Connessione a $DISTRO (VMID: $VMID)... [CTRL+O per uscire]"
-#sleep 0.5
-#ssh -t "$PVE_TARGET" "qm terminal $VMID"
-ssh artisan@192.168.1.${VMID}
+# 2. Calcoliamo l'IP bersaglio
+TARGET_IP="192.168.1.${VMID}"
+
+echo "🔌 Preparazione connessione a $DISTRO ($TARGET_IP)..."
+
+# 3. --- RICHIAMO LA LIBRERIA CONDIVISA ---
+check_ssh_keys "$TARGET_IP"
+
+# 4. Connessione SSH interattiva
+echo "🚀 Connesso a $DISTRO! [Digita 'exit' o premi CTRL+D per chiudere la sessione]"
+ssh "artisan@${TARGET_IP}"

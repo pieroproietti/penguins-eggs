@@ -43,7 +43,7 @@ License:        GPLv3
 URL:            https://penguins-eggs.net/blog/eggs-bananas
 
 # Dipendenze verificate per il mondo SUSE/Zypper
-Requires:       bash-completion squashfs xorriso dosfstools mtools
+Requires:       bash-completion squashfs xorriso dosfstools mtools jq
 Requires:       dracut grub2 rsync sudo git pv
 Conflicts:      penguins-eggs
 

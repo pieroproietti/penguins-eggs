@@ -9,10 +9,39 @@ export SQ_PROCS="2"
 {{ end }}
 
 {{ define "core_platform_local" }}
-export SQ_COMP="zstd"
-export SQ_LEVEL="3"
+# --- AMBIENTE LOCALE ---
+# Massime prestazioni di base e libertà di override tramite custom.yaml
+DEFAULT_COMP="zstd"
+DEFAULT_LEVEL="3"
 export SQ_BLOCK="1M"
 export SQ_PROCS=$(nproc)
+
+# Controlliamo che jq sia installato per evitare errori silenziosi
+if command -v jq >/dev/null 2>&1; then
+    # Usiamo --arg per passare le variabili Bash in modo sicuro.
+    # Cerchiamo sia le chiavi minuscole che quelle Maiuscole (tipiche di Go)
+    export SQ_COMP=$(jq -r --arg def "$DEFAULT_COMP" '.settings.compression.algorithm // .settings.Compression.Algorithm // $def' /tmp/coa/oa-plan.json)
+    export SQ_LEVEL=$(jq -r --arg def "$DEFAULT_LEVEL" '.settings.compression.level // .settings.Compression.Level // $def' /tmp/coa/oa-plan.json)
+else
+    echo -e "\033[1;33m[SQUASHFS WARNING]\033[0m comando 'jq' non trovato! Uso compressione di default."
+    export SQ_COMP="$DEFAULT_COMP"
+    export SQ_LEVEL="$DEFAULT_LEVEL"
+fi
+
+# Fallback di sicurezza finale
+if [ "$SQ_COMP" = "null" ] || [ -z "$SQ_COMP" ]; then export SQ_COMP="$DEFAULT_COMP"; fi
+if [ "$SQ_LEVEL" = "null" ] || [ -z "$SQ_LEVEL" ] || [ "$SQ_LEVEL" = "0" ]; then export SQ_LEVEL="$DEFAULT_LEVEL"; fi
+
+# Costruiamo gli argomenti di compressione in base all'algoritmo
+if [ "$SQ_COMP" = "zstd" ]; then
+    COMP_ARGS="-comp zstd -Xcompression-level $SQ_LEVEL"
+elif [ "$SQ_COMP" = "xz" ]; then
+    COMP_ARGS="-comp xz" # xz non supporta -Xcompression-level su mksquashfs
+elif [ "$SQ_COMP" = "gzip" ]; then
+    COMP_ARGS="-comp gzip"
+else
+    COMP_ARGS="-comp $SQ_COMP"
+fi
 {{ end }}
 
 {{ define "core_bootloaders" }}
@@ -314,8 +343,7 @@ cat /tmp/coa/excludes.list
 
 mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
   -no-xattrs \
-  -comp $SQ_COMP \
-  -Xcompression-level $SQ_LEVEL \
+  $COMP_ARGS \
   -b $SQ_BLOCK \
   -processors $SQ_PROCS \
   -noappend \

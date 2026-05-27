@@ -34,7 +34,7 @@ func GeneratePlan(
 	fmt.Printf("  -> Livello:     %d\n", plan.Settings.Compression.Level)
 	fmt.Printf("--------------------------------------------\n")
 
-	// Teniamo l'utente di default come "salvagente"
+	/* Teniamo l'utente di default come "salvagente"
 	defaultUser := pilot.User{
 		Login:    "live",
 		Password: "$6$oa-tools$uTKAYeAVn.Y.Dy2To6HXsHt1Gt4HpMghmOV93a46jFY7hkAQ3tk7eRTKjcvSYDf5sOf3qnKzyyPYXurKp9ST3.",
@@ -43,6 +43,7 @@ func GeneratePlan(
 		UID:      1000,
 		GID:      1000,
 	}
+	*/
 
 	var hitBreakpoint bool
 
@@ -70,17 +71,40 @@ func GeneratePlan(
 			plan.Plan = append(plan.Plan, expandMountLogic(workPath, isGitHubAction)...)
 
 		case "oa_users":
+			// 1. Utente dinamico (fallback su "live")
+			targetUser := plan.Settings.User
+			if targetUser == "" {
+				targetUser = "live"
+			}
+
+			// 2. Hashiamo la password in Go! (Gestisce stringhe in chiaro, vuote o già hashate)
+			targetPassword := hashPassword(plan.Settings.Password)
+
+			// 3. Creiamo i percorsi dinamici per la home directory
+			homeDir := fmt.Sprintf("/home/%s", targetUser)
+			skelCmd := fmt.Sprintf("mkdir -p %s/liveroot%s && cp -a %s/liveroot/etc/skel/. %s/liveroot%s/", workPath, homeDir, workPath, workPath, homeDir)
+
 			plan.Plan = append(plan.Plan, OATask{
 				Step: pilot.Step{
 					Action:      "oa_shell",
-					Description: "Creazione home directory da /etc/skel",
-					RunCommand:  fmt.Sprintf("mkdir -p %s/liveroot/home/live && cp -a %s/liveroot/etc/skel/. %s/liveroot/home/live/", workPath, workPath, workPath),
+					Description: fmt.Sprintf("Creazione home directory per l'utente %s", targetUser),
+					RunCommand:  skelCmd,
 				},
 			})
 
 			usersToInject := step.Users
 			if len(usersToInject) == 0 {
-				usersToInject = []pilot.User{defaultUser}
+				// Iniettiamo l'utente on-the-fly con la password appena hashata
+				usersToInject = []pilot.User{
+					{
+						Login:    targetUser,
+						Password: targetPassword,
+						Home:     homeDir,
+						Shell:    "/bin/bash",
+						UID:      1000,
+						GID:      1000,
+					},
+				}
 			}
 
 			mirroredGroups := utils.GetUserGroups()
@@ -91,7 +115,7 @@ func GeneratePlan(
 			plan.Plan = append(plan.Plan, OATask{
 				Step: pilot.Step{
 					Action:      "oa_users",
-					Description: "Iniezione identità utenti live",
+					Description: fmt.Sprintf("Iniezione identità utente live (%s)", targetUser),
 					Users:       usersToInject,
 				},
 				PathLiveFs: workPath,
