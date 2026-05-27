@@ -25,23 +25,25 @@ jobs:
 
           # 3. Controllo accenzione
           echo "⏳ Attesa avvio SSH su $TARGET_IP..."
-          max_retries=15
-          count=0
-          until ssh -o ConnectTimeout=2 -o BatchMode=yes artisan@$TARGET_IP exit >/dev/null 2>&1; do
-              echo "  Tentativo $count: VM non ancora pronta..."
-              sleep 3
-              ((count++))
-              if [ $count -ge $max_retries ]; then
-                  echo "❌ Timeout: La VM non ha risposto in tempo."
-                  exit 1
-              fi
-          done
-          echo "✅ SSH attivo!"
+                    max_retries=15
+                    count=0
+                    
+                    until ssh -o ConnectTimeout=2 -o BatchMode=yes artisan@$TARGET_IP exit >/dev/null 2>&1; do
+                        echo "  Tentativo $count: VM non ancora pronta..."
+                        sleep 3
+                        count=$((count + 1))
+                        
+                        if [ "$count" -ge "$max_retries" ]; then
+                            echo "❌ Timeout: La VM non ha risposto in tempo."
+                            exit 1
+                        fi
+                    done
+                    echo "✅ SSH attivo!"
 
-          # 2. Teletrasporto
+          # 4. Teletrasporto
           ./bin/p4deploy ${{ matrix.distro }}
           
-          # 3. Sequenza Operativa remota
+          # 5. Sequenza Operativa remota
           echo "🚀 Lancio procedure di remaster su ${{ matrix.distro }} ($TARGET_IP)..."
           
           ssh artisan@$TARGET_IP << EOF
@@ -51,10 +53,10 @@ jobs:
             sudo eggs remaster
           EOF
           
-          # 4. Recupero dell'uovo
+          # 6. Recupero dell'uovo
           scp artisan@$TARGET_IP:/home/eggs/egg*.iso ./egg-${{ matrix.distro }}.iso
           
-          # 5. Spegnimento
+          # 7. Spegnimento
           ssh artisan@$TARGET_IP "sudo poweroff"
 
       - name: Upload Artefatto ISO
