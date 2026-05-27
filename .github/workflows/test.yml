@@ -1,4 +1,4 @@
-name: "🌋 The Furnace: Proxmox ISO Casting"
+name: "🌋 testing The Furnace: Proxmox ISO Casting"
 
 on:
   workflow_dispatch:
@@ -67,4 +67,3 @@ jobs:
       run: |
         echo "Ordino lo spegnimento della macchina..."
         ssh -o StrictHostKeyChecking=no artisan@${{ matrix.ip }} "echo 'evolution' | sudo -S poweroff" || true
-        
