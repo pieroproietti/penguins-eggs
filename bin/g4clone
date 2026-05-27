@@ -1,4 +1,22 @@
-#!/bin/sh
-# git clone http://github.com/pieroproietti/$1 --depth 1
-git clone http://github.com/pieroproietti/$1
+#!/bin/bash
+# Uso: g4clone [nome-repo]
 
+CONFIG_FILE="$HOME/oa-tools/bin/g4config"
+
+# 1. Verifica presenza configurazione
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+else
+    echo "❌ Errore: File di configurazione $CONFIG_FILE non trovato."
+    exit 1
+fi
+
+# 2. Verifica che il nome del repo sia stato passato
+if [ -z "$1" ]; then
+    echo "Uso: $(basename "$0") [nome-repo]"
+    exit 1
+fi
+
+# 3. Esecuzione del clone
+echo "🧬 Clonazione di $LOGIN/$1 in corso..."
+git clone "https://github.com/$LOGIN/$1.git"

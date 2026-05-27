@@ -1,0 +1,31 @@
+#!/bin/bash
+# g4setup - Inizializza l'ambiente Git leggendo da g4config
+
+CONFIG_FILE="$HOME/oa-tools/bin/g4config" # Adatta il path alla tua struttura
+
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+else
+    echo "❌ Errore: File $CONFIG_FILE non trovato."
+    exit 1
+fi
+
+echo "⚙️ Configurazione di Git per $AUTHOR ($MAIL)..."
+
+# Impostazioni base
+git config --global user.name "$AUTHOR"
+git config --global user.email "$MAIL"
+git config --global core.editor "$EDITOR"
+git config --global github.user "$LOGIN"
+
+# Gestione credenziali tramite parametro
+if [ "$1" = "-d" ]; then
+    echo "🗑️ Disattivazione del salvataggio credenziali Git..."
+    git config --global --unset credential.helper
+    rm -f ~/.git-credentials
+    echo "✅ Password rimosse."
+else
+    echo "💾 Abilitazione del salvataggio credenziali Git..."
+    git config --global credential.helper store
+    echo "✅ Credenziali pronte per essere salvate al prossimo inserimento."
+fi
