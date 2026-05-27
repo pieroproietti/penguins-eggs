@@ -41,8 +41,19 @@ jobs:
                 ./coa/coa tools build
                 abuild -r
               "
-            # checking alpine
-            install_cmd: apk add --allow-untrusted /home/artisan/packages/tmp/*/*.apk
+            # 1. Trova il file reale
+
+            install_cmd: |
+              PKG=$(ls /home/artisan/packages/tmp/*/*.apk | head -n 1)
+
+              # 2. Verifica che sia stato trovato
+              if [ -f "$PKG" ]; then
+                  echo "📦 Installazione di: $PKG"
+                  sudo apk add --allow-untrusted "$PKG"
+              else
+                  echo "❌ Pacchetto non trovato in /home/artisan/packages/tmp/"
+                  exit 1
+              fi
 
           # ==========================================
           # 🏹 ARCH LINUX (Il Banco di Prova)
