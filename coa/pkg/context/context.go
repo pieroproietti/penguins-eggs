@@ -32,33 +32,26 @@ func isVirtual() bool {
 func Detect() RuntimeContext {
 	ctx := RuntimeContext{}
 
-	// 1. Calcolo dinamico della radice del progetto
-	cwd, _ := os.Getwd()
-	ctx.ProjRoot = cwd
-	if filepath.Base(cwd) == "coa" {
-		ctx.ProjRoot = filepath.Dir(cwd)
+	// 1. Radice Progetto (più compatta)
+	if ctx.ProjRoot = os.Getenv("GITHUB_WORKSPACE"); ctx.ProjRoot == "" {
+		cwd, _ := os.Getwd()
+		ctx.ProjRoot, _ = filepath.Abs(cwd)
+		if filepath.Base(ctx.ProjRoot) == "coa" {
+			ctx.ProjRoot = filepath.Dir(ctx.ProjRoot)
+		}
 	}
-	ctx.OaDir = filepath.Join(ctx.ProjRoot, "oa")
-	ctx.CoaDir = filepath.Join(ctx.ProjRoot, "coa")
+	ctx.OaDir, ctx.CoaDir = filepath.Join(ctx.ProjRoot, "oa"), filepath.Join(ctx.ProjRoot, "coa")
 
-	// 2. Rilevamento prioritario: Se il Makefile ci ha passato OA_BUILD_DIR,
-	// usiamo quello senza discutere.
-	ctx.BaseBuildDir = os.Getenv("OA_BUILD_DIR")
-
-	// Se la variabile non è impostata, allora usiamo il fallback
-	if ctx.BaseBuildDir == "" {
+	// 2. Build Dir (One-liner con fallback)
+	if ctx.BaseBuildDir = os.Getenv("OA_BUILD_DIR"); ctx.BaseBuildDir == "" {
 		ctx.BaseBuildDir = "/tmp/oa-build-dir"
 	}
 
-	// 3. Rilevamento indicatori
-	isCI := os.Getenv("GITHUB_ACTIONS") == "true" || os.Getenv("CI") == "true"
-	isVirtual := isVirtual()
-
-	// 4. Assegnazione regole d'ingaggio
+	// 3. Assegnazione EnvType (Semplificata)
 	switch {
-	case isCI:
+	case os.Getenv("GITHUB_ACTIONS") == "true" || os.Getenv("CI") == "true":
 		ctx.EnvType = EnvCI
-	case isVirtual:
+	case isVirtual():
 		ctx.EnvType = EnvVM
 	default:
 		ctx.EnvType = EnvHost
