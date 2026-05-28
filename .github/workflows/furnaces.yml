@@ -1,4 +1,4 @@
-name: "🏗️ Factory: complete remaster"
+name: "🏗️ Furnaces Matrix (remaster)"
 
 on:
   workflow_dispatch:
