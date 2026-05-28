@@ -1,3 +1,34 @@
+package context
+
+import (
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+)
+
+// I quattro ambienti ufficiali di oa-tools
+const (
+	EnvCI   = "ci"   // Docker / GitHub Actions
+	EnvVM   = "vm"   // Macchina virtuale pura (KVM/QEMU)
+	EnvHost = "host" // Hardware reale (colibri)
+)
+
+// RuntimeContext contiene la mappa geopolitica e i percorsi dell'esecuzione attuale
+type RuntimeContext struct {
+	EnvType      string // ci, vm, host
+	ProjRoot     string // Radice della repository
+	OaDir        string // Cartella sorgenti C
+	CoaDir       string // Cartella sorgenti Go
+	BaseBuildDir string // Fucina per la compilazione dei binari (RAM o Workspace)
+	ZstdLevel    int    // Livello di compressione squashfs ottimizzato
+}
+
+func isVirtual() bool {
+	out, _ := exec.Command("systemd-detect-virt").Output()
+	return strings.TrimSpace(string(out)) != "none"
+}
+
 func Detect() RuntimeContext {
 	ctx := RuntimeContext{}
 
@@ -22,7 +53,7 @@ func Detect() RuntimeContext {
 
 	// 3. Rilevamento indicatori (logica invariata)
 	isCI := os.Getenv("GITHUB_ACTIONS") == "true" || os.Getenv("CI") == "true"
-	isVirtual := detectVirtualization() // Sposta la logica in una helper privata per pulizia
+	isVirtual := isVirtual() // Sposta la logica in una helper privata per pulizia
 
 	// 4. Assegnazione regole d'ingaggio
 	switch {
