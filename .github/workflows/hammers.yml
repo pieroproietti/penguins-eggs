@@ -36,9 +36,7 @@ jobs:
                 abuild-keygen -a -i -n
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                make clean
-                make
-                ./coa/coa tools build
+                make package
                 abuild -r
               "
             # 1. Trova il file reale
@@ -74,7 +72,7 @@ jobs:
                 set -e
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                ./coa/coa tools build
+                make package
                 makepkg -s --noconfirm
               "
             install_cmd: pacman -U --noconfirm *.pkg.tar.zst
@@ -95,7 +93,7 @@ jobs:
                 set -e
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                ./coa/coa tools build
+                make package
                 makepkg -s --noconfirm
               "
             install_cmd: pacman -U --noconfirm *.pkg.tar.zst
@@ -120,9 +118,7 @@ jobs:
                 set -e
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                make clean
-                make
-                ./coa/coa tools build
+                make package
               "
             install_cmd: apt-get install -y ./*.deb
 
@@ -143,9 +139,7 @@ jobs:
                 set -e
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                make clean
-                make
-                ./coa/coa tools build
+                make package
               "
             install_cmd: dnf install -y ./*.rpm
 
@@ -166,9 +160,7 @@ jobs:
                 set -e
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                make clean
-                make
-                ./coa/coa tools build
+                make package
               "
             install_cmd: zypper -n --no-gpg-checks install ./*.rpm
 
