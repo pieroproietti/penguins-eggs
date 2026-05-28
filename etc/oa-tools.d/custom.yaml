@@ -1,5 +1,5 @@
 ---
-# oa-tools v0.8.0-4 configurations
+# oa-tools v0.8.0-20 configurations
 
 remaster:
   # You MUST NOT change the default live user
@@ -13,4 +13,4 @@ remaster:
     # Options: zstd, xz, lz4, gzip
     algorithm: "zstd"
     # Level: for zstd use 1-19 (15 is the sweet spot for size/speed)
-    level: 15
+    level: 3

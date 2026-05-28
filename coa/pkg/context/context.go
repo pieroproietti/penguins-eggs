@@ -58,6 +58,7 @@ func Detect() RuntimeContext {
 	}
 
 	// 4. Assegnazione delle regole d'ingaggio e smistamento fucine
+	ctx.BaseBuildDir = "/tmp/oa-build-dir"
 	switch {
 	case isCI:
 		ctx.EnvType = EnvCI
@@ -65,17 +66,12 @@ func Detect() RuntimeContext {
 		if ctx.BaseBuildDir == "" {
 			ctx.BaseBuildDir = ctx.ProjRoot
 		}
-		ctx.ZstdLevel = 8
 
 	case isVirtual:
 		ctx.EnvType = EnvVM
-		ctx.BaseBuildDir = "/tmp/oa-build"
-		ctx.ZstdLevel = 15
 
 	default:
 		ctx.EnvType = EnvHost
-		ctx.BaseBuildDir = "/tmp/oa-build"
-		ctx.ZstdLevel = 19
 	}
 
 	return ctx

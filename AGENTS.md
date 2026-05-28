@@ -96,7 +96,6 @@ Compression levels (`zstd`) are dynamic. **ALWAYS** read `ctx.ZstdLevel` when co
 **ALWAYS:**
 
 - Check `ctx.EnvType` before filesystem-heavy ops
-- Use `ctx.ZstdLevel` for squashfs
 - Add new packers in `coa/pkg/builder/pack_*.go`
 
 ---

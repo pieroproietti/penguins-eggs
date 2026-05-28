@@ -36,23 +36,12 @@ Per gestire l'ambiente di sviluppo nativo su Proxmox senza l'overhead di Vagrant
 * **`p4stop`**
   Esegue uno spegnimento (graceful shutdown o cold stop) della *fucina* per liberare risorse RAM e CPU sull'hypervisor quando non è in uso.
 
-### 🛠️ La Suite di Orchestrazione v4 (per vagrant)
-Nati per interfacciarsi con il laboratorio virtuale basato su Vagrant e KVM senza digitare lunghe stringhe di configurazione.
-* `v4start` -> Accende il laboratorio virtuale (Arch Linux di default) con accelerazione hardware nativa.
-* `v4dns`   -> Raddrizza al volo i DNS dentro la VM se Go fa i capricci con i proxy.
-* `v4ssh`   -> Entra istantaneamente in sessione sicura nella VM per compilare.
-* `v4stop`  -> Spegne la VM salvando lo stato per riprendere il lavoro in un secondo momento.
-* `v4kill` -> Fa tabula rasa del disco virtuale su libvirt per garantire test da ambiente vergine.
-
 ---
 
 ### 🛠️ Alias miei per git
 Git è fantastico, ma alcune operazioni avanzate sui tag o sui rami remoti richiedono comandi lunghi e rischiosi. La serie `g4` standardizza le operazioni ripetitive sul monorepo:
 
-* **Gestione dei Tag:** Comandi come `g4tagmove`, `g4tagdel` o `g4taghead` permettono di manipolare i tag di rilascio locali e remoti al volo, senza rischiare di sbagliare la sintassi di `git push --delete`.
-* **Log e Debug:** `g4eggs-log` e `g4kill-log` aiutano a tracciare e ripulire la diagnostica durante i voli di test della rimasterizzazione.
-* **Automazione GitHub:** `g4reset-gh-pages` automatizza la pulizia e il riallineamento del ramo dedicato alla documentazione web, un'operazione che a mano richiederebbe diversi passaggi di checkout forzato.
-* **Ambienti Specifici:** Helper come `g4calamares-test` e `g4artisan` preparano i contesti reali per i test dell'installer grafico e delle credenziali.
+Giusto wrapper per non dover reimpostare i miei default e la mia password auromatica, ma puo essere usato da chiunque basta modificat g4config.
 
 ---
 
