@@ -1,7 +1,5 @@
 package builder
 
-/* nuova versione nativa specifica per Manjaro Linux */
-
 import (
 	"fmt"
 	"os"
@@ -11,12 +9,11 @@ import (
 )
 
 // packManjaro genera il file PKGBUILD specifico per Manjaro Linux.
-// NUOVA ARCHITETTURA: Percorsi relativi via srcdir, allineati alla root.
 func packManjaro(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
-	// Il PKGBUILD viene sputato sempre e comunque nella radice del progetto
 	outDir := ctx.ProjRoot
+	// Iniezione della nostra stanza sterile
+	buildBinDir := ctx.BaseBuildDir
 
-	// IL PKGBUILD NATIVO: Sfrutta "${srcdir}/../" per agganciare la Home del progetto.
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 # coa is the mind and oa the arm
 pkgname=oa-tools-manjaro
@@ -25,7 +22,6 @@ pkgrel=%s
 pkgdesc="oa-tools universal Linux remastering (Manjaro edition secondo la filosofia eggs-bananas)"
 arch=('x86_64')
 license=('GPL3')
-# Optimized Manjaro dependencies for oa-tools
 depends=(
 	'manjaro-tools-iso'
 	'arch-install-scripts'
@@ -42,41 +38,38 @@ depends=(
 	'squashfs-tools'
 	'sudo'
 )
-
 conflicts=('penguins-eggs' 'oa-tools')
 backup=('etc/oa-tools.d/custom.yaml')
 options=(!debug)
 
 package() {
-	# Nota: makepkg ci sposta dentro 'src/'. Usiamo "${srcdir}/../" per ritornare
-	# stabilmente nella radice dei sorgenti reali appena compilati localmente.
+	# Percorso assoluto dei binari forgiati dal Makefile
+	local BUILD_BIN_DIR="%s"
 
-	# 1. Installazione binari GIA' COMPILATI localmente da 'make'
-	install -Dm755 "${srcdir}/../oa/oa" "${pkgdir}/usr/bin/oa"
-	install -Dm755 "${srcdir}/../coa/coa" "${pkgdir}/usr/bin/coa"
+	# 1. Installazione binari dalla Stanza Sterile
+	install -Dm755 "${BUILD_BIN_DIR}/oa" "${pkgdir}/usr/bin/oa"
+	install -Dm755 "${BUILD_BIN_DIR}/coa" "${pkgdir}/usr/bin/coa"
 	ln -s coa "${pkgdir}/usr/bin/eggs"
 
-	# 2. Configurazione e logica 'Brain' e custom.yaml dinamico
+	# 2. Configurazione
 	install -Dm644 "${srcdir}/../etc/oa-tools.d/custom.yaml" "${pkgdir}/etc/oa-tools.d/custom.yaml"
 
 	install -d "${pkgdir}/etc/oa-tools.d/brain.d"
 	if [ -d "${srcdir}/../coa/brain.d" ]; then
-		# Usiamo '/.' con cp -a per includere eventuali file nascosti e preservare i permessi
 		cp -a "${srcdir}/../coa/brain.d/." "${pkgdir}/etc/oa-tools.d/brain.d/"
 	fi
 
-	# 3. Documentazione (Man Pages) allineata alla radice del progetto
+	# 3. Documentazione
 	if [ -d "${srcdir}/../docs/man" ]; then
 		for manfile in "${srcdir}/../docs/man/"*.1; do
 			if [ -f "$manfile" ]; then
-				# install -D crea l'albero intermedio e assegna i permessi
 				install -Dm644 "$manfile" "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
 				gzip -9 "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
 			fi
 		done
 	fi
 
-	# 4. Shell Completions riallineate a docs/completion/
+	# 4. Shell Completions
 	install -Dm644 "${srcdir}/../docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
 	install -Dm644 "${srcdir}/../docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
 	install -Dm644 "${srcdir}/../docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
@@ -87,15 +80,13 @@ package() {
 
 	echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, baseVer, relNum)
+`, baseVer, relNum, buildBinDir)
 
-	// Scrittura del file PKGBUILD direttamente nella cartella di output
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
-	err := os.WriteFile(pkgbuildPath, []byte(pkgbuildContent), 0644)
-	if err != nil {
-		fmt.Printf("[ERROR] Failed to write PKGBUILD in %s: %v\n", outDir, err)
+	if err := os.WriteFile(pkgbuildPath, []byte(pkgbuildContent), 0644); err != nil {
+		fmt.Printf("[ERROR] Failed to write PKGBUILD: %v\n", err)
 		return
 	}
 
-	fmt.Printf("[SUCCESS] [Native Mode] PKGBUILD (Manjaro) generato nella root: %s\n", pkgbuildPath)
+	fmt.Printf("[SUCCESS] [Native Mode] PKGBUILD (Manjaro) generato: %s\n", pkgbuildPath)
 }

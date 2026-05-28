@@ -11,13 +11,15 @@ import (
 )
 
 // packArch genera il file PKGBUILD per Arch Linux.
-// NUOVA ARCHITETTURA: Percorsi agganciati risalendo da srcdir, zero dipendenze esterne.
+// NUOVA ARCHITETTURA: Percorsi agganciati alla BaseBuildDir, zero dipendenze esterne.
 func packArch(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
-	// Il PKGBUILD viene sputato sempre e comunque nella radice del progetto
+	// Il PKGBUILD viene generato nella radice del progetto
 	outDir := ctx.ProjRoot
 
-	// IL PKGBUILD NATIVO: Risaliamo di un livello rispetto a srcdir (../)
-	// per pescare l'albero dei sorgenti reali nella Home dell'utente.
+	// Passiamo il percorso assoluto della stanza sterile al PKGBUILD
+	// in modo che makepkg trovi i binari ovunque decida di creare la sua cartella src/
+	buildBinDir := ctx.BaseBuildDir
+
 	pkgbuildContent := fmt.Sprintf(`# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 # coa is the mind and oa the arm
 pkgname=oa-tools-arch
@@ -46,35 +48,34 @@ conflicts=('penguins-eggs' 'oa-tools')
 options=(!debug)
 
 package() {
-	# Nota: makepkg ci infila dentro 'src/'. Usiamo "${srcdir}/../" per ritornare
-	# stabilmente nella radice dei sorgenti ed evitare disallineamenti.
+	# Percorso assoluto dei binari forgiati da 'make'
+	local BUILD_BIN_DIR="%s"
 
-	# 1. Installazione binari GIA' COMPILATI localmente da 'make'
-	install -Dm755 "${srcdir}/../oa/oa" "${pkgdir}/usr/bin/oa"
-	install -Dm755 "${srcdir}/../coa/coa" "${pkgdir}/usr/bin/coa"
+	# 1. Installazione binari GIA' COMPILATI
+	install -Dm755 "${BUILD_BIN_DIR}/oa" "${pkgdir}/usr/bin/oa"
+	install -Dm755 "${BUILD_BIN_DIR}/coa" "${pkgdir}/usr/bin/coa"
 	ln -s coa "${pkgdir}/usr/bin/eggs"
 
 	# 2. Configurazione e logica 'Brain' e custom.yaml
+	# NOTA: Qui restiamo agganciati ai sorgenti nella ProjRoot
 	install -Dm644 "${srcdir}/../etc/oa-tools.d/custom.yaml" "${pkgdir}/etc/oa-tools.d/custom.yaml"
 	
 	install -d "${pkgdir}/etc/oa-tools.d/brain.d"
 	if [ -d "${srcdir}/../coa/brain.d" ]; then
-		# Usiamo '/.' con cp -a per includere eventuali file nascosti e preservare i permessi
 		cp -a "${srcdir}/../coa/brain.d/." "${pkgdir}/etc/oa-tools.d/brain.d/"
 	fi
 
-	# 3. Documentazione (Man Pages) allineata alla radice del progetto
+	# 3. Documentazione (Man Pages)
 	if [ -d "${srcdir}/../docs/man" ]; then
 		for manfile in "${srcdir}/../docs/man/"*.1; do
 			if [ -f "$manfile" ]; then
-				# install -D crea l'albero intermedio e assegna i permessi in un colpo solo
 				install -Dm644 "$manfile" "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
 				gzip -9 "${pkgdir}/usr/share/man/man1/$(basename "$manfile")"
 			fi
 		done
 	fi
 
-	# 4. Shell Completions riallineate a docs/completion/
+	# 4. Shell Completions
 	install -Dm644 "${srcdir}/../docs/completion/coa.bash" "${pkgdir}/usr/share/bash-completion/completions/coa"
 	install -Dm644 "${srcdir}/../docs/completion/coa.zsh" "${pkgdir}/usr/share/zsh/vendor-completions/_coa"
 	install -Dm644 "${srcdir}/../docs/completion/coa.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/coa.fish"
@@ -85,7 +86,7 @@ package() {
 
 	echo "complete -o default -F __start_coa eggs" >> "${pkgdir}/usr/share/bash-completion/completions/coa"
 }
-`, baseVer, relNum)
+`, baseVer, relNum, buildBinDir)
 
 	pkgbuildPath := filepath.Join(outDir, "PKGBUILD")
 	err := os.WriteFile(pkgbuildPath, []byte(pkgbuildContent), 0644)

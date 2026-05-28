@@ -7,17 +7,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	sysctx "coa/pkg/context" // Il nostro scudo contestuale
+	sysctx "coa/pkg/context"
 )
 
 // packFedora genera il pacchetto RPM per Fedora e derivate RHEL.
-// NUOVA ARCHITETTURA: Tutto nella Home, percorsi agganciati tramite _topdir, zero confusione.
 func packFedora(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 	cleanVer := strings.TrimPrefix(baseVer, "v")
 	pkgName := fmt.Sprintf("oa-tools-%s-%s", cleanVer, relNum)
 
-	// Il nido di rpmbuild lo teniamo in un angolo isolato della home del progetto per pulizia
+	// La buildRoot rimane nella root del progetto per ispezionabilità
 	buildRoot := filepath.Join(ctx.ProjRoot, ".rpmbuild_tmp")
+
+	// Passiamo il percorso assoluto della stanza sterile allo SPEC
+	buildBinDir := ctx.BaseBuildDir
 
 	fmt.Printf("[build] Packing .rpm archive for %s (Native Proxmox Edition)...\n", pkgName)
 
@@ -29,8 +31,8 @@ func packFedora(baseVer string, relNum string, ctx sysctx.RuntimeContext) {
 
 	specPath := filepath.Join(buildRoot, "SPECS", "oa-tools.spec")
 
-	// Generiamo lo SPEC. Usiamo %%{_topdir}/../ per risalire alla radice reale dei sorgenti.
 	specContent := fmt.Sprintf(`%%define debug_package %%{nil}
+%%define build_bin_dir %s
 
 Name:           oa-tools
 Version:        %s
@@ -39,7 +41,6 @@ Summary:        coa is the mind and oa the arm
 License:        GPLv3
 URL:            https://penguins-eggs.net/blog/eggs-bananas
 
-# Dipendenze
 Requires:       bash-completion squashfs-tools xorriso dosfstools mtools
 Requires:       dracut-live gdisk git rsync sudo google-noto-emoji-fonts
 Requires:       grub2-pc-modules grub2-efi-x64-modules efibootmgr shim-x64
@@ -58,20 +59,19 @@ mkdir -p %%{buildroot}/usr/share/bash-completion/completions
 mkdir -p %%{buildroot}/usr/share/zsh/vendor-completions
 mkdir -p %%{buildroot}/usr/share/fish/vendor_completions.d
 
-# 1. Installazione Binari (Risaliamo rispetto a _topdir per pescare i binari pronti nella home)
-install -m 0755 %%{_topdir}/../oa/oa %%{buildroot}/usr/bin/oa
-install -m 0755 %%{_topdir}/../coa/coa %%{buildroot}/usr/bin/coa
+# 1. Installazione Binari dalla Stanza Sterile (BUILD_BIN_DIR)
+install -m 0755 %%{build_bin_dir}/oa %%{buildroot}/usr/bin/oa
+install -m 0755 %%{build_bin_dir}/coa %%{buildroot}/usr/bin/coa
 ln -s coa %%{buildroot}/usr/bin/eggs
 
-# 2. Configurazione "Brain" e custom.yaml dinamico
+# 2. Configurazione (Sorgenti)
 cp -a %%{_topdir}/../coa/brain.d/. %%{buildroot}/etc/oa-tools.d/brain.d/
 install -m 0644 %%{_topdir}/../etc/oa-tools.d/custom.yaml %%{buildroot}/etc/oa-tools.d/custom.yaml
 
-# 3. Man Pages (Allineate alla nuova architettura in root/docs)
+# 3. Documentazione e Completamenti (Sorgenti)
 cp %%{_topdir}/../docs/man/*.1 %%{buildroot}/usr/share/man/man1/
 gzip -9 %%{buildroot}/usr/share/man/man1/*.1
 
-# 4. Shell Completions (Allineate alla nuova architettura in root/docs)
 install -m 0644 %%{_topdir}/../docs/completion/coa.bash %%{buildroot}/usr/share/bash-completion/completions/coa
 install -m 0644 %%{_topdir}/../docs/completion/coa.zsh %%{buildroot}/usr/share/zsh/vendor-completions/_coa
 install -m 0644 %%{_topdir}/../docs/completion/coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/coa.fish
@@ -92,41 +92,22 @@ ln -s coa.fish %%{buildroot}/usr/share/fish/vendor_completions.d/eggs.fish
 /usr/share/bash-completion/completions/*
 /usr/share/zsh/vendor-completions/*
 /usr/share/fish/vendor_completions.d/*
-
-%%changelog
-* Sun May 10 2026 Piero Proietti <piero.proietti@gmail.com> - %s-%s
-- Native Proxmox build pipeline adaptation
-`, cleanVer, relNum, cleanVer, relNum)
+`, buildBinDir, cleanVer, relNum)
 
 	os.WriteFile(specPath, []byte(specContent), 0644)
 
-	fmt.Println("[build] Running rpmbuild...")
-	// Lanciamo rpmbuild impostando la directory di lavoro (Dir) nella radice del progetto
+	// Build
 	rpmCmd := exec.Command("rpmbuild", "-bb", "--define", fmt.Sprintf("_topdir %s", buildRoot), specPath)
-	rpmCmd.Dir = ctx.ProjRoot
 	rpmCmd.Stdout, rpmCmd.Stderr = os.Stdout, os.Stderr
+	rpmCmd.Run()
 
-	if err := rpmCmd.Run(); err != nil {
-		fmt.Printf("[ERROR] RPM build failed: %v\n", err)
-		return
-	}
-
-	// 3. Spostamento dell'RPM sfornato direttamente nella root del progetto
-	rpmPattern := filepath.Join(buildRoot, "RPMS", "x86_64", "*.rpm")
+	// Spostamento RPM
+	rpmPattern := filepath.Join(buildRoot, "RPMS", "*", "*.rpm")
 	matches, _ := filepath.Glob(rpmPattern)
 	if len(matches) > 0 {
-		rpmFile := filepath.Base(matches[0])
-		finalPkg := filepath.Join(ctx.ProjRoot, rpmFile)
-
-		// Usiamo il copyFile condiviso che è molto più sicuro, poi rimuoviamo l'originale
-		if err := copyFile(matches[0], finalPkg); err == nil {
-			os.Remove(matches[0])
-			fmt.Printf("[SUCCESS] Pacchetto RPM creato nella root: %s\n", finalPkg)
-		} else {
-			fmt.Printf("[ERROR] Failed to move RPM: %v\n", err)
-		}
+		finalPkg := filepath.Join(ctx.ProjRoot, filepath.Base(matches[0]))
+		copyFile(matches[0], finalPkg)
+		os.Remove(matches[0])
 	}
-
-	// Pulizia finale
 	os.RemoveAll(buildRoot)
 }
