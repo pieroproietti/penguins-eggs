@@ -62,10 +62,6 @@ func Detect() RuntimeContext {
 	switch {
 	case isCI:
 		ctx.EnvType = EnvCI
-		ctx.BaseBuildDir = os.Getenv("GITHUB_WORKSPACE")
-		if ctx.BaseBuildDir == "" {
-			ctx.BaseBuildDir = ctx.ProjRoot
-		}
 
 	case isVirtual:
 		ctx.EnvType = EnvVM
