@@ -6,7 +6,8 @@ OA_DIR  = oa
 COA_DIR = coa
 
 # La nostra stanza sterile temporanea
-OA_BUILD_DIR ?= /tmp/oa-build-dir
+OA_BUILD_DIR ?= $(if $(GITHUB_WORKSPACE),$(GITHUB_WORKSPACE)/build,/tmp/oa-build-dir)
+export OA_BUILD_DIR
 
 # Binari generati e isolati nella stanza sterile
 OA_BIN  = $(OA_BUILD_DIR)/oa
