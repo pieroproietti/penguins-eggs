@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 // finalPath è il percorso completo dove il pacchetto deve atterrare
@@ -19,6 +20,21 @@ func packager(stage, dist string, finalPath string) {
 	case "arch", "manjaro":
 		cmd = exec.Command("makepkg", "-s", "-f", "--noconfirm")
 		cmd.Dir = stage
+
+	case "fedora":
+		// 1. Creiamo una cartella dedicata per l'output di RPM dentro lo stage
+		rpmOutDir := filepath.Join(stage, "RPMS")
+		os.MkdirAll(rpmOutDir, 0755)
+
+		// 2. Il percorso del file .spec generato in precedenza dal Sarto
+		specFile := filepath.Join(stage, "oa-tools.spec")
+
+		// 3. Prepariamo il comando isolando rpmbuild nello staging
+		cmd = exec.Command("rpmbuild", "-bb",
+			"--define", fmt.Sprintf("_stagedir %s", stage),
+			"--define", fmt.Sprintf("_rpmdir %s", rpmOutDir),
+			specFile,
+		)
 
 	default:
 		fmt.Printf("⚠️ Distro %s non ancora implementata nel packager\n", dist)

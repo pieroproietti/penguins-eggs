@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
 	sysctx "coa/pkg/context" // <-- Il nostro cervello universale
 )
@@ -24,10 +25,13 @@ func HandleBuild(d *distro.Distro) {
 	ctx := sysctx.Detect()
 	baseVer, relNum := getGitVersion()
 
+	now := time.Now()
+
 	data := RecipeData{
 		BaseVersion: baseVer,
 		Rel:         relNum,
-		Date:        getPackageDate(),
+		Date:        now.Format(time.RFC1123Z),
+		RpmDate:     now.Format("Mon Jan 02 2006"),
 	}
 
 	// 2. staging
@@ -49,8 +53,9 @@ func HandleBuild(d *distro.Distro) {
 		}
 		finalPath = stage
 
-	case "fedora", "rhel", "centos", "rocky", "almalinux":
+	case "fedora":
 		finalPath = ctx.StageDir
+
 	case "alpine":
 		finalPath = ctx.StageDir
 	default:
@@ -58,5 +63,4 @@ func HandleBuild(d *distro.Distro) {
 		finalPath = filepath.Join(ctx.ProjRoot, pkgFileName)
 	}
 	packager(stage, dist, finalPath)
-
 }

@@ -1,15 +1,44 @@
 Name:           oa-tools
-Version:        {{.Version}}
+Version:        {{.BaseVersion}}
 Release:        {{.Rel}}%{?dist}
 Summary:        oa-tools universal Linux remastering
-License:        GPL-3.0-or-later
+License:        GPLv3
+URL:            https://penguins-eggs.net
+
+# Disabilitiamo l'estrazione di debug automatica di RPM 
+# (spesso corrompe i binari Go se non configurata a dovere)
+%define debug_package %{nil}
+%define __os_install_post %{nil}
 
 %description
-oa-tools universal Linux remastering system.
+oa-tools: universal Linux remastering suite.
+
+%prep
+# Nessun sorgente da estrarre (saltiamo)
+
+%build
+# Niente da compilare, ci ha già pensato Go (saltiamo)
+
+%install
+# Tracciamo i confini nella "buildroot" temporanea di RPM
+mkdir -p %{buildroot}/usr
+mkdir -p %{buildroot}/etc
+
+# Copiamo i file dal nostro staging (che gli passeremo via riga di comando come _stagedir)
+cp -a %{_stagedir}/usr/* %{buildroot}/usr/
+cp -a %{_stagedir}/etc/* %{buildroot}/etc/
 
 %files
+# Qui dichiariamo la proprietà esatta dei file
 /usr/bin/oa
 /usr/bin/coa
+/usr/bin/eggs
 /etc/oa-tools.d/
-/usr/share/man/man1/
-/usr/share/bash-completion/completions/
+/usr/share/man/man1/*
+/usr/share/bash-completion/completions/*
+/usr/share/fish/vendor_completions.d/*
+/usr/share/zsh/vendor-completions/*
+
+%changelog
+* {{.RpmDate}} Piero Proietti <piero.proietti@gmail.com> - {{.BaseVersion}}-{{.Rel}}
+- Automated build via oa-tools builder

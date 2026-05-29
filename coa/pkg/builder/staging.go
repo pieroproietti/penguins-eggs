@@ -47,7 +47,7 @@ func staging(ctx sysctx.RuntimeContext) string {
 	copyDir(filepath.Join(projRoot, "coa/brain.d"), filepath.Join(stageDir, "etc/oa-tools.d/brain.d"))
 
 	// 3. Documentazione (Man pages)
-	manFiles, _ := filepath.Glob(filepath.Join(projRoot, "docs/man/*.1"))
+	manFiles, _ := filepath.Glob(filepath.Join(buildDir, "docs/man/*.1"))
 	for _, f := range manFiles {
 		dest := filepath.Join(stageDir, "usr/share/man/man1", filepath.Base(f))
 		copyFile(f, dest)

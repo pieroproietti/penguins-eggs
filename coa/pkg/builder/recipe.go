@@ -15,8 +15,10 @@ func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
 	switch dist {
 	case "arch", "manjaro":
 		writePKGBUILD(ctx, stage, dist, data)
+
 	case "fedora":
-		writeSpecFile(stage, data)
+		writeSpecFile(ctx, stage, data)
+
 	case "alpine":
 		writeAPKBUILD(stage, data)
 	default:
@@ -35,16 +37,23 @@ func writePKGBUILD(ctx sysctx.RuntimeContext, stage string, dist string, data Re
 	// 2. Destinazione: nella root dello stage e DEVE chiamarsi esattamente "PKGBUILD"
 	destPath := filepath.Join(stage, "PKGBUILD")
 
-	fmt.Printf("[Sarto] --> Scrittura template: %s -> %s\n", tmplName, destPath)
+	fmt.Printf("[Recipe] --> Scrittura template: %s -> %s\n", tmplName, destPath)
 
 	// 3. Eseguiamo la fusione
 	return writeTemplate(tmplPath, destPath, data)
 }
 
-func writeSpecFile(stage string, data RecipeData) error {
-	fmt.Println(data)
-	fmt.Printf("[TODO] Implementare writeSpecFile per lo stage: %s\n", stage)
-	return nil
+func writeSpecFile(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {
+	// 1. Costruiamo i percorsi esatti
+	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", "fedora.tmpl")
+
+	// Il file di destinazione per RPM si chiama convenzionalmente col nome del pacchetto
+	destPath := filepath.Join(stage, "oa-tools.spec")
+
+	fmt.Printf("[Recipe] --> Scrittura template Fedora: fedora.tmpl -> %s\n", destPath)
+
+	// 2. Eseguiamo la fusione tramite la tua funzione di appoggio
+	return writeTemplate(tmplPath, destPath, data)
 }
 
 func writeAPKBUILD(stage string, data RecipeData) {
