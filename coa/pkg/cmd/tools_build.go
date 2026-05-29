@@ -30,7 +30,7 @@ It orchestrates the full compilation of both the C-native engine (oa) and the Go
 		myDistro := distro.NewDistro()
 
 		// Passa la palla al motore di build, includendo la versione di Git
-		builder.HandleBuild(myDistro, AppVersion)
+		builder.HandleBuild(myDistro)
 	},
 }
 

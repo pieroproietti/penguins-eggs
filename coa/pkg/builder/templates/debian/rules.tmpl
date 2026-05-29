@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_install:
+	mkdir -p debian/oa-tools/usr/bin
+	mkdir -p debian/oa-tools/etc/oa-tools.d
+	cp -a usr/bin/* debian/oa-tools/usr/bin/
+	cp -a etc/oa-tools.d/* debian/oa-tools/etc/oa-tools.d/
+    

@@ -1,0 +1,19 @@
+# Maintainer: Piero Proietti <piero.proietti@gmail.com>
+pkgname=oa-tools-manjaro
+pkgver={{.Version}}
+pkgrel={{.Rel}}
+pkgdesc="oa-tools universal Linux remastering"
+arch=('x86_64')
+url="https://penguins-eggs.net"
+license=('GPL3')
+
+# Queste variabili non servono più per copiare i file, 
+# perché lo stage ha già fatto il lavoro sporco.
+
+package() {
+    # Copia ricorsiva della struttura di staging.
+    # Tutto ciò che è in usr/ e etc/ nella cartella corrente 
+    # viene trasferito direttamente nella root del pacchetto.
+    cp -a usr "${pkgdir}/"
+    cp -a etc "${pkgdir}/"
+}

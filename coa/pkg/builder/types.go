@@ -1,5 +1,11 @@
 package builder
 
+type RecipeData struct {
+	BaseVersion string
+	Rel         string
+	Date        string
+}
+
 // Utilizziamo lo stesso set di colori per coerenza visiva tra i builder
 const (
 	ColorBlue   = "" // "\033[1;34m"

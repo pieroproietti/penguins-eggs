@@ -3,8 +3,7 @@ package builder
 import (
 	"coa/pkg/distro"
 	"fmt"
-	"os"
-	"strconv"
+	"path/filepath"
 	"strings"
 
 	sysctx "coa/pkg/context" // <-- Il nostro cervello universale
@@ -20,85 +19,41 @@ func LogError(format string, a ...interface{}) {
 	fmt.Printf("%s[ERROR]%s %s\n", ColorRed, ColorReset, msg)
 }
 
-// --------------------------------------
-
-var AppVersion string
-
-// HandleBuild coordina il packaging nativo.
-// NON COMPILA PIU' NULLA: assembla i binari già forgiati dal Makefile.
-func HandleBuild(d *distro.Distro, version string) {
-	AppVersion = version
-	baseVer, relNum := parseGitVersion(version)
-
-	// 1. RILEVAMENTO AMBIENTE UNIVERSALE E PERCORSI
+func HandleBuild(d *distro.Distro) {
+	// 1. Preparazione Dati (Il "Cervello")
 	ctx := sysctx.Detect()
+	baseVer, relNum := getGitVersion()
 
-	// Header pulito
-	fmt.Printf("%s====================================================%s\n", ColorCyan, ColorReset)
-	fmt.Printf("%s         COA BUILDER - Native Package Generation      %s\n", ColorCyan, ColorReset)
-	fmt.Printf("%s====================================================%s\n", ColorCyan, ColorReset)
+	dist := strings.ToLower(d.DistroLike)
 
-	LogBuild("Packaging version: %s", AppVersion)
-	LogBuild("Environment detected: %s (fucina: %s)", ctx.EnvType, ctx.BaseBuildDir)
+	data := RecipeData{
+		BaseVersion: baseVer,
+		Rel:         relNum,
+		Date:        getPackageDate(),
+	}
 
-	// 2. Create /etc/oa-tools/custom.yaml
-	// Rigeneriamo il file YAML con la versione corretta prima di pacchettizzarlo
-	cleanVer := strings.TrimPrefix(baseVer, "v")
-	fullVersion := fmt.Sprintf("%s-%s", cleanVer, relNum)
-	CreateDefaultYAML(ctx, fullVersion)
+	fmt.Println(data)
 
-	// 3. Routing verso i file specifici (I Sarti)
-	LogBuild("Detected Distro Family: %s%s%s", ColorYellow, d.FamilyID, ColorReset)
+	// 2. Facchino
+	stage := prepare(ctx, dist)
 
-	switch d.FamilyID {
-	case "alpine":
-		packAlpine(baseVer, relNum, ctx)
-	case "archlinux":
-		packArch(baseVer, relNum, ctx)
-	case "manjaro":
-		packManjaro(baseVer, relNum, ctx)
+	// 3. Sarto (ora passa 'data' invece di due stringhe separate)
+	addBuildRecipe(ctx, stage, dist, data)
+
+	// 4. Montatore
+	var finalPath string
+	switch dist {
+	case "archlinux", "manjaro":
+		// Arch non usa un percorso finale pre-definito allo stesso modo
+		finalPath = stage
 	case "fedora", "rhel", "centos", "rocky", "almalinux":
-		packFedora(baseVer, relNum, ctx)
-	case "opensuse":
-		packOpenSUSE(baseVer, relNum, ctx)
+		finalPath = stage
+	case "alpine":
+		finalPath = stage
 	default:
-		LogBuild("Falling back to Debian/Generic packaging...")
-		packDebian(baseVer, relNum, ctx)
+		pkgFileName := fmt.Sprintf("oa-tools_%s-%s_amd64.deb", data.BaseVersion, data.Rel)
+		finalPath = filepath.Join(ctx.ProjRoot, pkgFileName)
 	}
-}
+	runPackager(ctx, stage, dist, finalPath)
 
-func parseGitVersion(v string) (string, string) {
-	// 1. Togliamo la 'v' iniziale se presente
-	cleanV := strings.TrimPrefix(v, "v")
-	parts := strings.Split(cleanV, "-")
-
-	baseVer := parts[0]
-	relNum := "1"
-
-	// 2. Isoliamo la release
-	if len(parts) > 1 {
-		if _, err := strconv.Atoi(parts[1]); err == nil {
-			// Se è un numero puro (es. 195), è il nostro pkgrel
-			relNum = parts[1]
-		}
-	}
-
-	// 3. PULIZIA UNIVERSALE (Per Arch, Fedora, Alpine)
-	baseVer = strings.ReplaceAll(baseVer, "-", ".")
-	baseVer = strings.ReplaceAll(baseVer, "_", ".")
-
-	// 4. Fix storico per Debian
-	if len(baseVer) > 0 && (baseVer[0] < '0' || baseVer[0] > '9') {
-		baseVer = "0~" + baseVer
-	}
-
-	return baseVer, relNum
-}
-
-func copyFile(src, dst string) error {
-	data, err := os.ReadFile(src)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(dst, data, 0644)
 }

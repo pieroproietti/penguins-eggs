@@ -21,6 +21,7 @@ type RuntimeContext struct {
 	OaDir        string // Cartella sorgenti C
 	CoaDir       string // Cartella sorgenti Go
 	BaseBuildDir string // Fucina per la compilazione dei binari (RAM o Workspace)
+	StageDir     string // Fucina per la compilazione dei binari (RAM o Workspace)
 	ZstdLevel    int    // Livello di compressione squashfs ottimizzato
 }
 
@@ -45,6 +46,7 @@ func Detect() RuntimeContext {
 	// 2. Build Dir (One-liner con fallback)
 	if ctx.BaseBuildDir = os.Getenv("OA_BUILD_DIR"); ctx.BaseBuildDir == "" {
 		ctx.BaseBuildDir = "/tmp/oa-build-dir"
+		ctx.StageDir = "/tmp/oa-stage-dir"
 	}
 
 	// 3. Assegnazione EnvType (Semplificata)

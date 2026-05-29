@@ -1,0 +1,13 @@
+pkgname=oa-tools
+pkgver={{.Version}}
+pkgrel={{.Rel}}
+pkgdesc="oa-tools universal Linux remastering"
+url="https://penguins-eggs.net"
+arch="x86_64"
+license="GPL-3.0-or-later"
+
+package() {
+    mkdir -p "$pkgdir"
+    cp -a usr "$pkgdir/"
+    cp -a etc "$pkgdir/"
+}
