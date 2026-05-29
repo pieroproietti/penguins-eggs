@@ -46,6 +46,10 @@ func Detect() RuntimeContext {
 	// 2. Build Dir (One-liner con fallback)
 	if ctx.BaseBuildDir = os.Getenv("OA_BUILD_DIR"); ctx.BaseBuildDir == "" {
 		ctx.BaseBuildDir = "/tmp/oa-build-dir"
+	}
+
+	// StageDir deve avere sempre un valore, indipendentemente dalla BuildDir
+	if ctx.StageDir = os.Getenv("OA_STAGE_DIR"); ctx.StageDir == "" {
 		ctx.StageDir = "/tmp/oa-stage-dir"
 	}
 

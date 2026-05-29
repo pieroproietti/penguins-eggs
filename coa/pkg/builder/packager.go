@@ -1,15 +1,14 @@
 package builder
 
 import (
-	sysctx "coa/pkg/context"
 	"fmt"
 	"os"
 	"os/exec"
 )
 
 // finalPath è il percorso completo dove il pacchetto deve atterrare
-func runPackager(ctx sysctx.RuntimeContext, stage string, dist string, finalPath string) {
-	fmt.Printf("[build] Montatore: sigillo il pacchetto per %s...\n", dist)
+func packager(stage, dist string, finalPath string) {
+	fmt.Printf("[build] Packager: sigillo il pacchetto per %s...\n", dist)
 
 	var cmd *exec.Cmd
 
@@ -26,6 +25,7 @@ func runPackager(ctx sysctx.RuntimeContext, stage string, dist string, finalPath
 		return
 	}
 
+	fmt.Printf("[build] Esecuzione comando: %s\n", cmd.String())
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	if err := cmd.Run(); err != nil {
 		fmt.Printf("❌ Fallimento Montatore: %v\n", err)

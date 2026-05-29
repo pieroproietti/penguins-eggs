@@ -49,9 +49,22 @@ var genDocsCmd = &cobra.Command{
 		}
 
 		// 4. Generazione Script di Autocompletamento (Bash, Zsh, Fish)
+		// -> Prima generiamo quelli per il comando originale "coa"
 		rootCmd.GenBashCompletionFile(filepath.Join(compDir, "coa.bash"))
 		rootCmd.GenZshCompletionFile(filepath.Join(compDir, "coa.zsh"))
 		rootCmd.GenFishCompletionFile(filepath.Join(compDir, "coa.fish"), true)
+
+		// -> IL TRUCCO: Mascheriamo temporaneamente il comando come "eggs"
+		originalUse := rootCmd.Use
+		rootCmd.Use = "eggs"
+
+		// -> Ora Cobra genererà il codice interno usando "__start_eggs" invece di "__start_coa"
+		rootCmd.GenBashCompletionFile(filepath.Join(compDir, "eggs.bash"))
+		rootCmd.GenZshCompletionFile(filepath.Join(compDir, "eggs.zsh"))
+		rootCmd.GenFishCompletionFile(filepath.Join(compDir, "eggs.fish"), true)
+
+		// -> Ripristiniamo il nome originale per mantenere pulito lo stato interno
+		rootCmd.Use = originalUse
 
 		fmt.Println("[gen_docs] ✅ Documentazione e completamenti generati con successo.")
 	},

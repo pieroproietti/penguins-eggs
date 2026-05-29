@@ -24,36 +24,39 @@ func HandleBuild(d *distro.Distro) {
 	ctx := sysctx.Detect()
 	baseVer, relNum := getGitVersion()
 
-	dist := strings.ToLower(d.DistroLike)
-
 	data := RecipeData{
 		BaseVersion: baseVer,
 		Rel:         relNum,
 		Date:        getPackageDate(),
 	}
 
-	fmt.Println(data)
+	// 2. staging
+	stage := staging(ctx)
+	fmt.Printf("stage: %s\n\n\n\n", stage)
 
-	// 2. Facchino
-	stage := prepare(ctx, dist)
+	// 3. addBuildRecipe
+	dist := strings.ToLower(d.DistroLike)
+	recipe(ctx, stage, dist, data)
 
-	// 3. Sarto (ora passa 'data' invece di due stringhe separate)
-	addBuildRecipe(ctx, stage, dist, data)
-
-	// 4. Montatore
+	// 4. Packager
 	var finalPath string
 	switch dist {
-	case "archlinux", "manjaro":
-		// Arch non usa un percorso finale pre-definito allo stesso modo
+	case "arch", "archlinux", "manjaro":
+		err := writePKGBUILD(ctx, stage, dist, data)
+		if err != nil {
+			LogError("Fallimento Sarto per %s: %v", dist, err)
+			return
+		}
 		finalPath = stage
+
 	case "fedora", "rhel", "centos", "rocky", "almalinux":
-		finalPath = stage
+		finalPath = ctx.StageDir
 	case "alpine":
-		finalPath = stage
+		finalPath = ctx.StageDir
 	default:
 		pkgFileName := fmt.Sprintf("oa-tools_%s-%s_amd64.deb", data.BaseVersion, data.Rel)
 		finalPath = filepath.Join(ctx.ProjRoot, pkgFileName)
 	}
-	runPackager(ctx, stage, dist, finalPath)
+	packager(stage, dist, finalPath)
 
 }

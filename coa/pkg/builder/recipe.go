@@ -9,12 +9,12 @@ import (
 
 // addBuildRecipe scrive il file di controllo (PKGBUILD, SPEC, ecc.)
 // dentro la directory di staging preparata dal "Facchino".
-func addBuildRecipe(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) {
-	fmt.Printf("[build] Sarto: scrivo la ricetta per %s...\n", dist)
+func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
+	fmt.Printf("[build] Recipe: scrivo la ricetta per %s...\n", dist)
 
 	switch dist {
 	case "archlinux", "manjaro":
-		writePKGBUILD(stage, data)
+		writePKGBUILD(ctx, stage, dist, data)
 	case "fedora":
 		writeSpecFile(stage, data)
 	case "alpine":
@@ -25,16 +25,30 @@ func addBuildRecipe(ctx sysctx.RuntimeContext, stage string, dist string, data R
 }
 
 // Esempi di funzioni di scrittura (da espandere con i tuoi template)
-func writePKGBUILD(stage string, data RecipeData) {
-	fmt.Printf("[TODO] Implementare writePKGBUILD per lo stage: %s\n", stage)
+func writePKGBUILD(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) error {
+	// 1. Costruiamo il nome del file template dinamicamente (es. "arch.tmpl" o "manjaro.tmpl")
+	tmplName := fmt.Sprintf("%s.tmpl", dist)
+
+	// Il percorso punterà direttamente a coa/pkg/builder/templates/arch.tmpl
+	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
+
+	// 2. Destinazione: nella root dello stage e DEVE chiamarsi esattamente "PKGBUILD"
+	destPath := filepath.Join(stage, "PKGBUILD")
+
+	fmt.Printf("[Sarto] --> Scrittura template: %s -> %s\n", tmplName, destPath)
+
+	// 3. Eseguiamo la fusione
+	return writeTemplate(tmplPath, destPath, data)
 }
 
 func writeSpecFile(stage string, data RecipeData) error {
+	fmt.Println(data)
 	fmt.Printf("[TODO] Implementare writeSpecFile per lo stage: %s\n", stage)
 	return nil
 }
 
 func writeAPKBUILD(stage string, data RecipeData) {
+	fmt.Println(data)
 	fmt.Printf("[TODO] Implementare writeAPKBUILD per lo stage: %s\n", stage)
 }
 
