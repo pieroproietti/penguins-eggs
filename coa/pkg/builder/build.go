@@ -45,6 +45,9 @@ func HandleBuild(d *distro.Distro) {
 	// 4. Packager
 	var finalPath string
 	switch dist {
+	case "alpine":
+		finalPath = ctx.StageDir
+
 	case "arch", "archlinux", "manjaro":
 		err := writePKGBUILD(ctx, stage, dist, data)
 		if err != nil {
@@ -53,11 +56,9 @@ func HandleBuild(d *distro.Distro) {
 		}
 		finalPath = stage
 
-	case "fedora":
+	case "fedora", "opensuse":
 		finalPath = ctx.StageDir
 
-	case "alpine":
-		finalPath = ctx.StageDir
 	default:
 		pkgFileName := fmt.Sprintf("oa-tools_%s-%s_amd64.deb", data.BaseVersion, data.Rel)
 		finalPath = filepath.Join(ctx.ProjRoot, pkgFileName)

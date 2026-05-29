@@ -21,7 +21,8 @@ func packager(stage, dist string, finalPath string) {
 		cmd = exec.Command("makepkg", "-s", "-f", "--noconfirm")
 		cmd.Dir = stage
 
-	case "fedora":
+	case "fedora", "opensuse":
+
 		// 1. Creiamo una cartella dedicata per l'output di RPM dentro lo stage
 		rpmOutDir := filepath.Join(stage, "RPMS")
 		os.MkdirAll(rpmOutDir, 0755)

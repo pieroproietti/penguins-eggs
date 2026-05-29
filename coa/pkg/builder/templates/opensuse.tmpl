@@ -1,0 +1,39 @@
+Name:           oa-tools
+Version:        {{.BaseVersion}}
+Release:        {{.Rel}}
+Summary:        oa-tools universal Linux remastering
+License:        GPL-3.0-only
+Group:          System/Management
+URL:            https://penguins-eggs.net
+
+# Disabilitiamo l'estrazione di debug automatica e le manipolazioni post-installazione
+%define debug_package %{nil}
+%define __os_install_post %{nil}
+
+%description
+oa-tools: universal Linux remastering suite.
+
+%prep
+%build
+
+%install
+mkdir -p %{buildroot}/usr
+mkdir -p %{buildroot}/etc
+
+cp -a %{_stagedir}/usr/* %{buildroot}/usr/
+cp -a %{_stagedir}/etc/* %{buildroot}/etc/
+
+%files
+/usr/bin/oa
+/usr/bin/coa
+/usr/bin/eggs
+/etc/oa-tools.d/
+/usr/share/man/man1/*
+/usr/share/bash-completion/completions/*
+/usr/share/fish/vendor_completions.d/*
+/usr/share/zsh/vendor-completions/*
+
+
+%changelog
+* {{.RpmDate}} Piero Proietti <piero.proietti@gmail.com> - {{.BaseVersion}}-{{.Rel}}
+- Automated build via oa-tools builder for openSUSE
