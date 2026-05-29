@@ -46,7 +46,12 @@ func HandleBuild(d *distro.Distro) {
 	var finalPath string
 	switch dist {
 	case "alpine":
-		finalPath = ctx.StageDir
+		err := writeAPKBUILD(ctx, stage, data)
+		if err != nil {
+			LogError("Fallimento recipe per %s: %v", dist, err)
+			return
+		}
+		finalPath = stage
 
 	case "arch", "archlinux", "manjaro":
 		err := writePKGBUILD(ctx, stage, dist, data)

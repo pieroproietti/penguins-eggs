@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // finalPath è il percorso completo dove il pacchetto deve atterrare
@@ -14,6 +15,44 @@ func packager(stage, dist string, finalPath string) {
 	var cmd *exec.Cmd
 
 	switch dist {
+	case "alpine":
+		// 1. Creiamo una cartella isolata nello staging per l'output di Alpine
+		apkOutDir := filepath.Join(stage, "APK")
+		os.MkdirAll(apkOutDir, 0755)
+
+		// 2. Prepariamo il comando isolando abuild nello staging
+		// -f forza la build anche se ci sono warning
+		cmd = exec.Command("abuild", "-fr")
+		cmd.Dir = stage
+
+		// Passiamo REPODEST per costringerlo a salvare dentro la nostra cartella APK
+		cmd.Env = append(os.Environ(), fmt.Sprintf("REPODEST=%s", apkOutDir))
+
+		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+		fmt.Printf("[Montatore] Avvio abuild per Alpine...\n")
+		if err := cmd.Run(); err != nil {
+			fmt.Printf("❌ Fallimento abuild: %v\n", err)
+			return
+		}
+
+		// 3. Ricognizione Infallibile: esploriamo tutta la cartella APK e le sue sottocartelle
+		var pkgGenerato string
+
+		filepath.Walk(apkOutDir, func(path string, info os.FileInfo, e error) error {
+			// Se troviamo un file che finisce per .apk, ce lo salviamo
+			if e == nil && !info.IsDir() && strings.HasSuffix(info.Name(), ".apk") {
+				pkgGenerato = path
+			}
+			return nil
+		})
+
+		if pkgGenerato == "" {
+			fmt.Println("❌ Errore: file .apk non trovato nello staging dopo la build!")
+			return
+		}
+
+		fmt.Printf("✅ Pacchetto Alpine atterrato con successo in: %s\n", pkgGenerato)
+
 	case "debian":
 		cmd = exec.Command("dpkg-deb", "--root-owner-group", "--build", stage, finalPath)
 

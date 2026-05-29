@@ -14,7 +14,7 @@ func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
 
 	switch dist {
 	case "alpine":
-		writeAPKBUILD(stage, data)
+		writeAPKBUILD(ctx, stage, data)
 
 	case "arch", "manjaro":
 		writePKGBUILD(ctx, stage, dist, data)
@@ -27,7 +27,21 @@ func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
 	}
 }
 
-// Esempi di funzioni di scrittura (da espandere con i tuoi template)
+// Esempi di funzioni di scrittura
+func writeAPKBUILD(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {
+	// 1. Definiamo il nome del template e il percorso di origine
+	tmplName := "alpine.tmpl"
+	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
+
+	// 2. Destinazione: nella root dello stage e DEVE chiamarsi "APKBUILD"
+	destPath := filepath.Join(stage, "APKBUILD")
+
+	fmt.Printf("[Sarto] --> Scrittura template Alpine: %s -> %s\n", tmplName, destPath)
+
+	// 3. Eseguiamo la fusione dei dati
+	return writeTemplate(tmplPath, destPath, data)
+}
+
 func writePKGBUILD(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) error {
 	// 1. Costruiamo il nome del file template dinamicamente (es. "arch.tmpl" o "manjaro.tmpl")
 	tmplName := fmt.Sprintf("%s.tmpl", dist)
@@ -56,11 +70,6 @@ func writeSpecFile(ctx sysctx.RuntimeContext, stage string, dist string, data Re
 
 	// 2. Eseguiamo la fusione tramite la tua funzione di appoggio
 	return writeTemplate(tmplPath, destPath, data)
-}
-
-func writeAPKBUILD(stage string, data RecipeData) {
-	fmt.Println(data)
-	fmt.Printf("[TODO] Implementare writeAPKBUILD per lo stage: %s\n", stage)
 }
 
 func writeDebianFiles(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {

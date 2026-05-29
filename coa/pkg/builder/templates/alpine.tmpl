@@ -1,13 +1,34 @@
+# Maintainer: Piero Proietti <piero.proietti@gmail.com>
 pkgname=oa-tools
-pkgver={{.Version}}
+pkgver={{.BaseVersion}}
 pkgrel={{.Rel}}
 pkgdesc="oa-tools universal Linux remastering"
 url="https://penguins-eggs.net"
 arch="x86_64"
-license="GPL-3.0-or-later"
+license="GPL-3.0-only"
+depends="bash coreutils util-linux parted e2fsprogs dosfstools squashfs-tools xorriso rsync mtools grub-efi"
+options="!check"
+
+# TRUCCO 1: Disinneschiamo lo split automatico dei pacchetti.
+doc() { return 0; }
+bashcomp() { return 0; }
+zshcomp() { return 0; }
+fishcomp() { return 0; }
 
 package() {
-    mkdir -p "$pkgdir"
-    cp -a usr "$pkgdir/"
-    cp -a etc "$pkgdir/"
+    mkdir -p "$pkgdir/usr"
+    mkdir -p "$pkgdir/etc"
+
+    cp -a "$startdir/usr/"* "$pkgdir/usr/"
+    cp -a "$startdir/etc/"* "$pkgdir/etc/"
+
+    # TRUCCO 2: Normalizzazione dei permessi.
+    find "$pkgdir/usr/share" -type f -exec chmod 644 {} +
+
+    # TRUCCO 3: Compressione manuale delle Man Pages.
+    # Visto che abbiamo disabilitato il gestore doc di Alpine, dobbiamo
+    # comprimere noi i file .1 per non far scattare l'errore fatale.
+    if [ -d "$pkgdir/usr/share/man/man1" ]; then
+        gzip -9 "$pkgdir"/usr/share/man/man1/*.1
+    fi
 }
