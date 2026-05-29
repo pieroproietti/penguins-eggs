@@ -16,7 +16,7 @@ func packager(stage, dist string, finalPath string) {
 	case "debian":
 		cmd = exec.Command("dpkg-deb", "--root-owner-group", "--build", stage, finalPath)
 
-	case "archlinux":
+	case "arch":
 		cmd = exec.Command("makepkg", "-s", "-f", "--noconfirm")
 		cmd.Dir = stage
 

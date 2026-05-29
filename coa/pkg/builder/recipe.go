@@ -13,7 +13,7 @@ func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
 	fmt.Printf("[build] Recipe: scrivo la ricetta per %s...\n", dist)
 
 	switch dist {
-	case "archlinux", "manjaro":
+	case "arch", "manjaro":
 		writePKGBUILD(ctx, stage, dist, data)
 	case "fedora":
 		writeSpecFile(stage, data)
