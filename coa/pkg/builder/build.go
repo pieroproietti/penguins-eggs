@@ -3,7 +3,6 @@ package builder
 import (
 	"coa/pkg/distro"
 	"fmt"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -21,12 +20,12 @@ func LogError(format string, a ...interface{}) {
 }
 
 func HandleBuild(d *distro.Distro) {
-	// 1. Preparazione Dati (Il "Cervello")
+
+	// 1. Preparazione Dati
 	ctx := sysctx.Detect()
 	baseVer, relNum := getGitVersion()
-
+	dist := strings.ToLower(d.DistroLike)
 	now := time.Now()
-
 	data := RecipeData{
 		BaseVersion: baseVer,
 		Rel:         relNum,
@@ -35,38 +34,11 @@ func HandleBuild(d *distro.Distro) {
 	}
 
 	// 2. staging
-	stage := staging(ctx)
-	fmt.Printf("stage: %s\n\n\n\n", stage)
+	staging(ctx)
 
 	// 3. addBuildRecipe
-	dist := strings.ToLower(d.DistroLike)
-	recipe(ctx, stage, dist, data)
+	recipe(ctx, dist, data)
 
 	// 4. Packager
-	var finalPath string
-	switch dist {
-	case "alpine":
-		err := writeAPKBUILD(ctx, stage, data)
-		if err != nil {
-			LogError("Fallimento recipe per %s: %v", dist, err)
-			return
-		}
-		finalPath = stage
-
-	case "arch", "archlinux", "manjaro":
-		err := writePKGBUILD(ctx, stage, dist, data)
-		if err != nil {
-			LogError("Fallimento Sarto per %s: %v", dist, err)
-			return
-		}
-		finalPath = stage
-
-	case "fedora", "opensuse":
-		finalPath = ctx.StageDir
-
-	default:
-		pkgFileName := fmt.Sprintf("oa-tools_%s-%s_amd64.deb", data.BaseVersion, data.Rel)
-		finalPath = filepath.Join(ctx.ProjRoot, pkgFileName)
-	}
-	packager(stage, dist, finalPath)
+	packager(ctx, dist, data)
 }

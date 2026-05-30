@@ -8,8 +8,10 @@ import (
 )
 
 // recipe: scrive il file di controllo (PKGBUILD, SPEC, ecc.) nello staging
-func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
+func recipe(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 	fmt.Printf("[build] Recipe: scrivo la ricetta per %s...\n", dist)
+
+	stage := ctx.StageDir
 
 	switch dist {
 	case "alpine":
@@ -28,9 +30,8 @@ func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
 
 // writeAPKBUILD scrive APKBUILD per alpine
 func writeAPKBUILD(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {
-	// 1. Definiamo il nome del template e il percorso di origine
-	tmplName := "alpine.tmpl"
-	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
+	// 1. Definiamo il percorso e nome del template
+	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates/alpine.tmpl")
 
 	// 2. Destinazione: nella root dello stage e DEVE chiamarsi "APKBUILD"
 	destPath := filepath.Join(stage, "APKBUILD")
