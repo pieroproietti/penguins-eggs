@@ -6,6 +6,26 @@ pkgdesc="oa-tools universal Linux remastering"
 arch=('x86_64')
 url="https://penguins-eggs.net"
 license=('GPL3')
+depends=(
+	'manjaro-tools-iso'
+	'arch-install-scripts'
+	'bash-completion'
+	'dosfstools'
+	'efibootmgr'
+	'git'
+	'grub'
+	'jq'
+	'libisoburn'
+	'mtools'
+	'pv'
+	'rsync'
+	'squashfs-tools'
+	'sudo'
+)
+
+conflicts=('penguins-eggs' 'oa-tools')
+#backup=('etc/oa-tools.d/custom.yaml')
+#options=(!debug)
 
 package() {
     # Tracciamo i confini

@@ -7,6 +7,22 @@ arch=('x86_64')
 url="https://penguins-eggs.net"
 license=('GPL3')
 options=('!debug')
+depends=(
+	'mkinitcpio-archiso'
+	'arch-install-scripts'
+	'bash-completion'
+	'dosfstools'
+	'efibootmgr'
+	'git'
+	'grub'
+	'jq'
+	'libisoburn'
+	'mtools'
+	'pv'
+	'rsync'
+	'squashfs-tools'
+	'sudo'
+)
 
 package() {
     # Tracciamo i confini
