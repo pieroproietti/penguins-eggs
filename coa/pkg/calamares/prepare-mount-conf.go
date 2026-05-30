@@ -17,7 +17,7 @@ func PrepareMountConf() error {
 		btrfsOptions = "      - defaults"
 	}
 
-	config := fmt.Sprintf(`---
+config := fmt.Sprintf(`---
 # mount.conf - Generato dinamicamente da oa-tools
 # Filosofia: https://penguins-eggs.net/blog/eggs-bananas
 
@@ -53,6 +53,8 @@ btrfsSubvolumes:
     subvolume: /@cache
   - mountPoint: /var/log
     subvolume: /@log
+  - mountPoint: /.snapshots
+    subvolume: /@snapshots
 
 btrfsSwapSubvol: /@swap
 
