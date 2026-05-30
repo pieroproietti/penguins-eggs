@@ -20,7 +20,6 @@ func packager(stage, dist string, finalPath string) {
 		os.MkdirAll(apkOutDir, 0755)
 
 		// 2. Prepariamo il comando isolando abuild nello staging
-		// -f forza la build anche se ci sono warning
 		cmd = exec.Command("abuild", "-fr")
 		cmd.Dir = stage
 
@@ -35,7 +34,6 @@ func packager(stage, dist string, finalPath string) {
 		cmd.Dir = stage
 
 	case "fedora", "opensuse":
-
 		// 1. Creiamo una cartella dedicata per l'output di RPM dentro lo stage
 		rpmOutDir := filepath.Join(stage, "RPMS")
 		os.MkdirAll(rpmOutDir, 0755)
@@ -58,7 +56,7 @@ func packager(stage, dist string, finalPath string) {
 	fmt.Printf("[build] Esecuzione comando: %s\n", cmd.String())
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("❌ Fallimento Montatore: %v\n", err)
+		fmt.Printf("❌ Fallimento packager: %v\n", err)
 		return
 	}
 

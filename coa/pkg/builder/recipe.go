@@ -7,8 +7,7 @@ import (
 	"path/filepath"
 )
 
-// addBuildRecipe scrive il file di controllo (PKGBUILD, SPEC, ecc.)
-// dentro la directory di staging preparata dal "Facchino".
+// recipe: scrive il file di controllo (PKGBUILD, SPEC, ecc.) nello staging
 func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
 	fmt.Printf("[build] Recipe: scrivo la ricetta per %s...\n", dist)
 
@@ -27,7 +26,7 @@ func recipe(ctx sysctx.RuntimeContext, stage, dist string, data RecipeData) {
 	}
 }
 
-// Esempi di funzioni di scrittura
+// writeAPKBUILD scrive APKBUILD per alpine
 func writeAPKBUILD(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {
 	// 1. Definiamo il nome del template e il percorso di origine
 	tmplName := "alpine.tmpl"
@@ -36,33 +35,27 @@ func writeAPKBUILD(ctx sysctx.RuntimeContext, stage string, data RecipeData) err
 	// 2. Destinazione: nella root dello stage e DEVE chiamarsi "APKBUILD"
 	destPath := filepath.Join(stage, "APKBUILD")
 
-	fmt.Printf("[Sarto] --> Scrittura template Alpine: %s -> %s\n", tmplName, destPath)
-
 	// 3. Eseguiamo la fusione dei dati
 	return writeTemplate(tmplPath, destPath, data)
 }
 
+// writePKGBUILD scrive PKGBUILD per arch/manjaro
 func writePKGBUILD(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) error {
-	// 1. Costruiamo il nome del file template dinamicamente (es. "arch.tmpl" o "manjaro.tmpl")
+	// 1. Costruiamo il nome del file template (arch/manjaro) ed il percorso di origine
 	tmplName := fmt.Sprintf("%s.tmpl", dist)
-
-	// Il percorso punterà direttamente a coa/pkg/builder/templates/arch.tmpl
 	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
 
 	// 2. Destinazione: nella root dello stage e DEVE chiamarsi esattamente "PKGBUILD"
 	destPath := filepath.Join(stage, "PKGBUILD")
 
-	fmt.Printf("[Recipe] --> Scrittura template: %s -> %s\n", tmplName, destPath)
-
 	// 3. Eseguiamo la fusione
 	return writeTemplate(tmplPath, destPath, data)
 }
 
+// writeSpecFile: scrive oa-tools.spec per fedora/opensuse
 func writeSpecFile(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) error {
-	// 1. Costruiamo il nome del file template dinamicamente (es. "fedora.tmpl" o "opensuse.tmpl")
+	// 1. definiami il nome del template (fedora/opensuse)
 	tmplName := fmt.Sprintf("%s.tmpl", dist)
-
-	// Il percorso punterà direttamente a coa/pkg/builder/templates/arch.tmpl
 	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
 
 	// Il file di destinazione per RPM si chiama convenzionalmente col nome del pacchetto
@@ -72,6 +65,7 @@ func writeSpecFile(ctx sysctx.RuntimeContext, stage string, dist string, data Re
 	return writeTemplate(tmplPath, destPath, data)
 }
 
+// writeDebianFiles: configura DEBIAN e crea control, rules, compat, copyright
 func writeDebianFiles(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {
 	debianDir := filepath.Join(stage, "DEBIAN")
 
