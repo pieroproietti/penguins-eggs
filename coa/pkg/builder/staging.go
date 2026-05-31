@@ -41,7 +41,8 @@ func staging(ctx sysctx.RuntimeContext) string {
 	os.Symlink("coa", filepath.Join(stageDir, "usr/bin/eggs"))
 
 	// 2. Configurazione (dalla ProjRoot)
-	copyFile(filepath.Join(projRoot, "etc/oa-tools.d/custom.yaml"), filepath.Join(stageDir, "etc/oa-tools.d/custom.yaml"))
+
+	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.yaml"), filepath.Join(stageDir, "etc/oa-tools.d/custom.yaml"))
 
 	// Copia ricorsiva del brain.d
 	copyDir(filepath.Join(projRoot, "coa/brain.d"), filepath.Join(stageDir, "etc/oa-tools.d/brain.d"))

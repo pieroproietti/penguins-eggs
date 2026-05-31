@@ -1,7 +1,7 @@
 # custom.yml - Custom configurations for oa-tools
 # Override the embedded default settings here.
 
-# remaster:
+remaster:
   # Cannot change the default live user
   # user: "live"
 
@@ -9,8 +9,8 @@
   # password: "evolution"
 
   # You can adjust compression settings to maximize space saving
-  compression:
-    # Options: zstd, xz, lz4, gzip
-    # algorithm: "zstd"
-    # Level: for zstd use 1-19
-    # level: 3
+    compression:
+      # Options: zstd, xz, lz4, gzip
+      algorithm: "zstd"
+      # Level: for zstd use 1-19
+      level: 3
