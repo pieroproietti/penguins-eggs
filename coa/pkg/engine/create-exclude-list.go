@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
@@ -38,8 +39,6 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		"etc/fstab",
 		"etc/mtab",
 		"swapfile",
-		"var/lib/docker/",
-		"var/lib/containers/",
 		"etc/udev/rules.d/70-persistent-cd.rules",
 		"etc/udev/rules.d/70-persistent-net.rules",
 		"etc/NetworkManager/system-connections/*",
@@ -96,12 +95,12 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	}
 
 	// ==========================================================
-	// 5. Liste Utente (Custom)
+	// 6. Liste Utente (/etc/oa-tools.d/custom.exclude.list)
 	// ==========================================================
 	// Allineato al nuovo dialetto oa-tools
-	userList := "/etc/oa-tools.d/exclusion.list"
+	userList := "/etc/oa-tools.d/custom.exclude.list"
 	if _, err := os.Stat(userList); os.IsNotExist(err) {
-		userList = "conf/exclusion.list" // Path di sviluppo
+		fmt.Printf("[DEBUG] User exclude.list %s, not present", userList)
 	}
 
 	if data, err := os.ReadFile(userList); err == nil {

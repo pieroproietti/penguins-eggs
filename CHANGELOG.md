@@ -1,4 +1,8 @@
 # Changelog - oa-tools
+## 🚀 oa-tools v0.8.2: Packaging fixes, dynamic exclusions & Config rollout
+
+* **feat(config):** officially published the configuration file (`/etc/oa-tools.d/config.yaml` previously omitted by mistake). Users can now easily customize system-wide settings, including mksquashfs compression algorithms and parameters.
+* **feat(engine):** revamped `/etc/oa-tools.d/custom.exclude.list` with robust parsing (elegantly ignoring comments and blank lines) and populated it with default exclusions for heavy container engines (Docker, Podman, LXC/LXD) and Snap. Users can easily disable these defaults or expand the list at will to keep their generated ISOs perfectly lean.
 
 ## 🚀 oa-tools v0.8.0: The Architectural Leap & Expanded Horizons
 

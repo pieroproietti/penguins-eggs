@@ -43,6 +43,7 @@ func staging(ctx sysctx.RuntimeContext) string {
 	// 2. Configurazione (dalla ProjRoot)
 
 	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.yaml"), filepath.Join(stageDir, "etc/oa-tools.d/custom.yaml"))
+	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.exclude.list"), filepath.Join(stageDir, "etc/oa-tools.d/custom.exclude.list"))
 
 	// Copia ricorsiva del brain.d
 	copyDir(filepath.Join(projRoot, "coa/brain.d"), filepath.Join(stageDir, "etc/oa-tools.d/brain.d"))

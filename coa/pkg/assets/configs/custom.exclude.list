@@ -1,0 +1,26 @@
+# /etc/oa-tools.d/custom.exclude.list
+# Esclusioni personalizzate per la creazione della Live ISO
+
+# ==========================================
+# DOCKER & CONTAINERD
+# ==========================================
+var/lib/docker/
+var/lib/containerd/
+home/*/.docker/
+
+# ==========================================
+# PODMAN & ALTRI GESTORI CONTAINER
+# (LXC, LXD, systemd-nspawn)
+# ==========================================
+var/lib/containers/
+home/*/.local/share/containers/
+var/lib/lxc/
+var/lib/lxd/
+var/lib/machines/
+
+# ==========================================
+# SNAPD (Pacchetti Snap)
+# ==========================================
+var/lib/snapd/
+var/snap/
+snap/
