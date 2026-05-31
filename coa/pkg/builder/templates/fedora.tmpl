@@ -5,11 +5,15 @@ Summary:        oa-tools universal Linux remastering
 License:        GPLv3
 URL:            https://penguins-eggs.net
 
+# Dipendenze originali + livecd-tools per la creazione delle ISO
 Requires:       bash-completion squashfs-tools xorriso dosfstools mtools
 Requires:       dracut-live gdisk git rsync sudo google-noto-emoji-fonts
 Requires:       grub2-pc-modules grub2-efi-x64-modules efibootmgr shim-x64
-Requires:       jq
+Requires:       jq livecd-tools
 
+# Gestione della transizione: diciamo a DNF di sostituire penguins-eggs
+Conflicts:      penguins-eggs
+Obsoletes:      penguins-eggs
 
 # Disabilitiamo l'estrazione di debug automatica di RPM 
 # (spesso corrompe i binari Go se non configurata a dovere)
@@ -18,6 +22,8 @@ Requires:       jq
 
 %description
 oa-tools: universal Linux remastering suite.
+coa is the mind, oa is the arm. This suite provides the
+necessary tools for Linux system remastering and administration.
 
 %prep
 # Nessun sorgente da estrarre (saltiamo)

@@ -7,6 +7,7 @@ arch=('x86_64')
 url="https://penguins-eggs.net"
 license=('GPL3')
 options=('!debug')
+
 depends=(
 	'mkinitcpio-archiso'
 	'arch-install-scripts'
@@ -23,6 +24,10 @@ depends=(
 	'squashfs-tools'
 	'sudo'
 )
+
+# Indichiamo a pacman che questo pacchetto sostituisce la vecchia guardia
+conflicts=('penguins-eggs')
+replaces=('penguins-eggs')
 
 package() {
     # Tracciamo i confini

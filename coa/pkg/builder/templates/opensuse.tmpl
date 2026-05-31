@@ -9,12 +9,18 @@ URL:            https://penguins-eggs.net
 Requires:       bash-completion squashfs xorriso dosfstools mtools jq
 Requires:       dracut grub2 rsync sudo git pv
 
+# Gestione della transizione: diciamo a Zypper di sostituire la vecchia versione
+Conflicts:      penguins-eggs
+Obsoletes:      penguins-eggs
+
 # Disabilitiamo l'estrazione di debug automatica e le manipolazioni post-installazione
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
 %description
 oa-tools: universal Linux remastering suite.
+coa is the mind, oa is the arm. This suite provides the
+necessary tools for Linux system remastering and administration.
 
 %prep
 %build

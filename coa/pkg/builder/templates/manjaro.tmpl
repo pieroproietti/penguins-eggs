@@ -6,6 +6,8 @@ pkgdesc="oa-tools universal Linux remastering"
 arch=('x86_64')
 url="https://penguins-eggs.net"
 license=('GPL3')
+options=('!debug')
+
 depends=(
 	'manjaro-tools-iso'
 	'arch-install-scripts'
@@ -23,9 +25,10 @@ depends=(
 	'sudo'
 )
 
-conflicts=('penguins-eggs' 'oa-tools')
-#backup=('etc/oa-tools.d/custom.yaml')
-#options=(!debug)
+# Gestione pulita della transizione e delle dipendenze
+provides=('oa-tools')
+conflicts=('penguins-eggs' 'oa-tools' 'oa-tools-arch')
+replaces=('penguins-eggs')
 
 package() {
     # Tracciamo i confini
@@ -36,4 +39,3 @@ package() {
     cp -a "${startdir}/usr/"* "${pkgdir}/usr/"
     cp -a "${startdir}/etc/"* "${pkgdir}/etc/"
 }
-

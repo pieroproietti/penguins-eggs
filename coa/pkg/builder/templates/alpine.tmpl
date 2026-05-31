@@ -6,7 +6,40 @@ pkgdesc="oa-tools universal Linux remastering"
 url="https://penguins-eggs.net"
 arch="x86_64"
 license="GPL-3.0-only"
-depends="bash coreutils util-linux parted e2fsprogs dosfstools squashfs-tools xorriso rsync mtools grub-efi"
+
+# Merged and cleaned dependencies from penguins-eggs and new oa-tools requirements
+depends="
+    alpine-conf
+    apk-tools
+    bash
+    bash-completion
+    cryptsetup
+    curl
+    device-mapper-libs
+    dosfstools
+    git
+    grub-bios
+    grub-efi
+    jq
+    lsblk
+    lvm2
+    mkinitfs
+    musl-locales
+    parted
+    polkit
+    rsync
+    shadow
+    squashfs-tools
+    xorriso
+    zstd
+    btrfs-progs
+    sudo
+"
+
+# Handle transition from penguins-eggs
+provides="oa-tools"
+replaces="penguins-eggs"
+
 options="!check"
 
 # TRUCCO 1: Disinneschiamo lo split automatico dei pacchetti.
