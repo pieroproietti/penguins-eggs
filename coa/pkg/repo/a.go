@@ -18,7 +18,7 @@ func HandleRepos(action string) error {
 			err = addDebian()
 		case "alpine":
 			err = addAlpine()
-		case "archlinux", "arch":
+		case "archlinux", "arch", "manjaro":
 			err = addArch(d.DistroID == "manjaro")
 		case "fedora", "rhel", "almalinux":
 			err = addFedoraEl(d.DistroID != "Fedora" && d.DistroID != "fedora")
