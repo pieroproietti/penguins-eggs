@@ -3,7 +3,7 @@
 
 I believe these new features will be highly interesting for many users: the ability to change the live user password and customize the compression algorithm, as well as easily add or remove custom exclusions during the remastering process.
 
-* **feat(config):** officially published the configuration file (`/etc/oa-tools.d/config.yaml`, previously omitted by mistake). Users can now easily customize system-wide settings, including the live user password, as well as mksquashfs compression algorithms and parameters.
+* **feat(config):** officially published the configuration file (`/etc/oa-tools.d/custom.yaml`, previously omitted by mistake). Users can now easily customize system-wide settings, including the live user password, as well as mksquashfs compression algorithms and parameters.
 * **feat(engine):** revamped `/etc/oa-tools.d/custom.exclude.list` with robust parsing (elegantly ignoring comments and blank lines) and populated it with default exclusions for heavy container engines (Docker, Podman, LXC/LXD) and Snap. Users can easily disable these defaults or expand the list at will to keep their generated ISOs perfectly lean.
 
 ## 🚀 oa-tools v0.8.0: The Architectural Leap & Expanded Horizons
