@@ -1,4 +1,4 @@
-name: 🏭 Fornace Continuous Integration
+name: 🏭 Furnace: Install and Remaster
 
 on:
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
         id: get_ip
         run: |
           # Usiamo direttamente la variabile ${{ matrix.mac }} senza interrogare Proxmox!
-          IP=$(ssh -o StrictHostKeyChecking=no artisan@father '
+          IP=$(sshpass -p "$PVE_PASS" ssh -o StrictHostKeyChecking=no artisan@father '
             while true; do
               ping -c 1 -b 255.255.255.255 > /dev/null 2>&1
               FOUND=$(ip -4 neigh show | grep -i "${{ matrix.mac }}" | awk "{print \$1}" | head -n 1)
