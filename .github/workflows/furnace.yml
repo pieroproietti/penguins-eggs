@@ -11,6 +11,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: alpine
+            vmid: 301 # 👈 Modifica se l'ID su Proxmox è diverso
+            snapshot: virgin
+            subnet: "192.168.1"
+            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-alpine.zip"
+            prep_cmd: "sh -c 'apk update && apk add wget unzip sshpass'"
+            install_cmd: "apk add --allow-untrusted ./*.apk"
+
           - os: arch
             vmid: 302
             snapshot: virgin
@@ -116,4 +124,3 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S qm shutdown ${{ matrix.vmid }}"
-          
