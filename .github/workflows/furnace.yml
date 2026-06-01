@@ -1,4 +1,4 @@
-name: "🏭 Furnace: Install and Remaster"
+name: 🏭 Furnace: Install and Remaster
 
 on:
   workflow_dispatch:
@@ -14,14 +14,14 @@ jobs:
           - os: arch
             vmid: 302
             snapshot: virgin
-            mac: "bc:24:11:8d:33:97" # 👈 MAC Fisso per Arch
+            mac: "bc:24:11:8d:33:97" # 👈 MAC Arch
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
             prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
           - os: debian
             vmid: 303
             snapshot: virgin
-            mac: "BC:24:11:15:E1:87" # 👈 MAC Fisso per Debian
+            mac: "BC:24:11:15:E1:87" # 👈 MAC Debian
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt install -y ./*.deb"
@@ -30,18 +30,28 @@ jobs:
       - name: 🔐 Caricamento Segreti (Air-gapped)
         run: |
           source /etc/p4/secrets.env
+          
+          # 👇 ISTRUZIONE CRITICA: Ordina a GitHub di censurare queste parole nei log!
+          echo "::add-mask::$SSH_PASSWD"
+          echo "::add-mask::$PROXMOX_PASSWD"
+          
           echo "VM_USER=$SSH_USER" >> $GITHUB_ENV
           echo "VM_PASS=$SSH_PASSWD" >> $GITHUB_ENV
           echo "PVE_PASS=$PROXMOX_PASSWD" >> $GITHUB_ENV
 
       - name: 🔄 Rollback & Avvio VM
+        env:
+          SSHPASS: ${{ env.PVE_PASS }} # Passiamo la password tramite ambiente (invisibile)
         run: |
-          sshpass -p "$PVE_PASS" ssh -o StrictHostKeyChecking=no artisan@father "echo '$PVE_PASS' | sudo -S qm rollback ${{ matrix.vmid }} ${{ matrix.snapshot }} && echo '$PVE_PASS' | sudo -S qm start ${{ matrix.vmid }}"
+          # Usiamo sshpass -e e dev/null per saltare i blocchi di interattività
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo \"\$PVE_PASS\" | sudo -S sh -c 'qm rollback ${{ matrix.vmid }} ${{ matrix.snapshot }} && qm start ${{ matrix.vmid }}'"
 
       - name: 📡 Ricerca IP dinamico
         id: get_ip
+        env:
+          SSHPASS: ${{ env.PVE_PASS }}
         run: |
-          IP=$(sshpass -p "$PVE_PASS" ssh -o StrictHostKeyChecking=no artisan@father '
+          IP=$(sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father '
             while true; do
               ping -c 1 -b 255.255.255.255 > /dev/null 2>&1
               FOUND=$(ip -4 neigh show | grep -i "${{ matrix.mac }}" | awk "{print \$1}" | head -n 1)
@@ -56,28 +66,32 @@ jobs:
           echo "VM_IP=$IP" >> $GITHUB_ENV
 
       - name: ⏳ Attesa demone SSH sulla VM
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
         run: |
-          while ! sshpass -p "$VM_PASS" ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${{ env.VM_USER }}@${{ env.VM_IP }} exit; do
+          while ! sshpass -e ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${{ env.VM_USER }}@${{ env.VM_IP }} exit; do
             sleep 2
             echo -n "s"
           done
           echo -e "\n✅ SSH Pronto!"
 
       - name: 🛠️ Setup, Remaster e Export
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
         run: |
-          sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
             echo "📦 Preparazione ambiente (${{ matrix.os }})..."
-            echo "$VM_PASS" | sudo -S ${{ matrix.prep_cmd }}
+            echo "\$VM_PASS" | sudo -S ${{ matrix.prep_cmd }}
             
             echo "📥 Download artefatti..."
             wget -q -O pacchetti.zip "${{ matrix.artifact_url }}"
             unzip -o pacchetti.zip
             
             echo "⚙️ Installazione oa-tools..."
-            echo "$VM_PASS" | sudo -S ${{ matrix.install_cmd }}
+            echo "\$VM_PASS" | sudo -S ${{ matrix.install_cmd }}
             
             echo "💿 Creazione ISO (coa remaster)..."
-            echo "$VM_PASS" | sudo -S coa remaster
+            echo "\$VM_PASS" | sudo -S coa remaster
             
             echo "🚀 Configurazione SSH ed Esportazione..."
             mkdir -p /home/${{ env.VM_USER }}/.ssh
@@ -85,10 +99,14 @@ jobs:
             echo "    StrictHostKeyChecking no" >> /home/${{ env.VM_USER }}/.ssh/config
             echo "    UserKnownHostsFile /dev/null" >> /home/${{ env.VM_USER }}/.ssh/config
             
-            sshpass -p "$PVE_PASS" eggs export iso --clean
+            # Qui passiamo la pwd di PVE all'esportazione di eggs
+            SSHPASS="\$PVE_PASS" sshpass -e eggs export iso --clean
           EOF
 
       - name: 🛑 Spegnimento VM
         if: always()
+        env:
+          SSHPASS: ${{ env.PVE_PASS }}
         run: |
-          sshpass -p "$PVE_PASS" ssh -o StrictHostKeyChecking=no artisan@father "echo '$PVE_PASS' | sudo -S qm shutdown ${{ matrix.vmid }}"
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo \"\$PVE_PASS\" | sudo -S qm shutdown ${{ matrix.vmid }}"
+          
