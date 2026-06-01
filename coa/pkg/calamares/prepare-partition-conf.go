@@ -33,7 +33,6 @@ func GetAvailableFS() []string {
 	return available
 }
 
-// 3. Genera il file di configurazione con il layout dinamico (Quella aggiornata)
 func PreparePartitionConf() error {
 	tableType := getPartitionTableType()
 	fsList := GetAvailableFS()
@@ -45,7 +44,6 @@ func PreparePartitionConf() error {
 	defaultFs := fsList[0]
 	btrfsSubvolumes := ""
 
-	// Se btrfs è disponibile, lo impostiamo come default (ma l'utente potrà cambiarlo!)
 	for _, fs := range fsList {
 		if fs == "btrfs" {
 			defaultFs = "btrfs"
@@ -65,24 +63,40 @@ btrfs:
 		}
 	}
 
-	// ABBIAMO ELIMINATO layoutYaml.
-	// Lasciamo fare al motore dinamico di Calamares!
+	var layoutYaml string
+	if tableType == "gpt" {
+		layoutYaml = `partitionLayout:
+  - name: "efi"
+    filesystem: "fat32"
+    mountPoint: "/boot/efi"
+    size: 300MiB
+    attributes: [ "boot", "esp" ]
+  - name: "root"
+    mountPoint: "/"
+    size: 100%` // <--- NESSUN 'filesystem' SPECIFICATO! Userà la scelta della GUI!
+	} else {
+		layoutYaml = `partitionLayout:
+  - name: "bios_grub"
+    filesystem: "unformatted"
+    size: 8MiB
+    attributes: [ "bios_grub" ]
+  - name: "root"
+    mountPoint: "/"
+    size: 100%` // <--- Idem per BIOS.
+	}
 
 	config := fmt.Sprintf(`---
 # partition.conf - Generato dinamicamente il %s
 # Dialetto: %s | Filosofia: https://penguins-eggs.net/blog/eggs-bananas
 
 defaultPartitionTableType: %s
-
-efi:
-  mountPoint: "/boot/efi"
-  recommendedSize: 300MiB
-  minimumSize: 32MiB
-  label: "EFI"
-
 defaultFileSystemType:  "%s"
 availableFileSystemTypes: %s
+
 %s
+
+%s
+
 userSwapChoices: [none, small, suspend, file]
 drawNestedPartitions: false
 alwaysShowPartitionLabels: true
@@ -91,7 +105,7 @@ initialSwapChoice: none
 
 lvm:
   enable: true
-`, currentDate, dialect, tableType, defaultFs, availableFSYaml, btrfsSubvolumes)
+`, currentDate, dialect, tableType, defaultFs, availableFSYaml, layoutYaml, btrfsSubvolumes)
 
 	targetPath := oaInstallerRoot + "/modules/partition.conf"
 	os.MkdirAll(oaInstallerRoot+"/modules", 0755)
