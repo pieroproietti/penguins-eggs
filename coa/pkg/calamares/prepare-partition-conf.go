@@ -36,7 +36,7 @@ func GetAvailableFS() []string {
 // 3. Genera il file di configurazione con il layout dinamico (Quella aggiornata)
 func PreparePartitionConf() error {
 	tableType := getPartitionTableType()
-	fsList := GetAvailableFS() // <-- Qui chiama la tua funzione perfetta!
+	fsList := GetAvailableFS()
 
 	dialect := "oa"
 	currentDate := time.Now().Format("2006-01-02")
@@ -45,56 +45,34 @@ func PreparePartitionConf() error {
 	defaultFs := fsList[0]
 	btrfsSubvolumes := ""
 
+	// Se btrfs è disponibile, lo impostiamo come default (ma l'utente potrà cambiarlo!)
 	for _, fs := range fsList {
 		if fs == "btrfs" {
 			defaultFs = "btrfs"
 			btrfsSubvolumes = `
 # Regole di subvolume essenziali per BTRFS
 btrfs:
-    - mountPoint: /
-      subvolume: /@
-    - mountPoint: /home
-      subvolume: /@home
-    - mountPoint: /var/cache
-      subvolume: /@cache
-    - mountPoint: /var/log
-      subvolume: /@log
+  - mountPoint: /
+    subvolume: /@
+  - mountPoint: /home
+    subvolume: /@home
+  - mountPoint: /var/cache
+    subvolume: /@cache
+  - mountPoint: /var/log
+    subvolume: /@log
 `
 			break
 		}
 	}
 
-	var layoutYaml string
-	if tableType == "gpt" {
-		layoutYaml = fmt.Sprintf(`partitionLayout:
-    - name: "efi"
-      filesystem: "fat32"
-      mountPoint: "/boot/efi"
-      size: 300MiB
-      attributes: [ "boot", "esp" ]
-    - name: "root"
-      filesystem: "%s"
-      mountPoint: "/"
-      size: 100%%`, defaultFs)
-	} else {
-		layoutYaml = fmt.Sprintf(`partitionLayout:
-    - name: "bios_grub"
-      filesystem: "unformatted"
-      size: 8MiB
-      attributes: [ "bios_grub" ]
-    - name: "root"
-      filesystem: "%s"
-      mountPoint: "/"
-      size: 100%%`, defaultFs)
-	}
+	// ABBIAMO ELIMINATO layoutYaml.
+	// Lasciamo fare al motore dinamico di Calamares!
 
 	config := fmt.Sprintf(`---
 # partition.conf - Generato dinamicamente il %s
 # Dialetto: %s | Filosofia: https://penguins-eggs.net/blog/eggs-bananas
 
 defaultPartitionTableType: %s
-
-%s
 
 efi:
   mountPoint: "/boot/efi"
@@ -106,7 +84,6 @@ defaultFileSystemType:  "%s"
 availableFileSystemTypes: %s
 %s
 userSwapChoices: [none, small, suspend, file]
-luksGeneration: luks1
 drawNestedPartitions: false
 alwaysShowPartitionLabels: true
 initialPartitioningChoice: none
@@ -114,7 +91,7 @@ initialSwapChoice: none
 
 lvm:
   enable: true
-`, currentDate, dialect, tableType, layoutYaml, defaultFs, availableFSYaml, btrfsSubvolumes)
+`, currentDate, dialect, tableType, defaultFs, availableFSYaml, btrfsSubvolumes)
 
 	targetPath := oaInstallerRoot + "/modules/partition.conf"
 	os.MkdirAll(oaInstallerRoot+"/modules", 0755)
