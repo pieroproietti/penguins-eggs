@@ -1,4 +1,4 @@
-name: 🏭 Furnace: Install and Remaster
+name: "🏭 Furnace: Install and Remaster"
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
           - os: debian
             vmid: 303
             snapshot: virgin
-            mac: "BC:24:11:15:E1:87" # 👈 Inserisci il MAC reale di Debian
+            mac: "BC:24:11:15:E1:87" # 👈 MAC Fisso per Debian
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt install -y ./*.deb"
@@ -36,12 +36,11 @@ jobs:
 
       - name: 🔄 Rollback & Avvio VM
         run: |
-          ssh -o StrictHostKeyChecking=no artisan@father "sudo qm rollback ${{ matrix.vmid }} ${{ matrix.snapshot }} && sudo qm start ${{ matrix.vmid }}"
+          sshpass -p "$PVE_PASS" ssh -o StrictHostKeyChecking=no artisan@father "echo '$PVE_PASS' | sudo -S qm rollback ${{ matrix.vmid }} ${{ matrix.snapshot }} && echo '$PVE_PASS' | sudo -S qm start ${{ matrix.vmid }}"
 
       - name: 📡 Ricerca IP dinamico
         id: get_ip
         run: |
-          # Usiamo direttamente la variabile ${{ matrix.mac }} senza interrogare Proxmox!
           IP=$(sshpass -p "$PVE_PASS" ssh -o StrictHostKeyChecking=no artisan@father '
             while true; do
               ping -c 1 -b 255.255.255.255 > /dev/null 2>&1
@@ -92,4 +91,4 @@ jobs:
       - name: 🛑 Spegnimento VM
         if: always()
         run: |
-          ssh -o StrictHostKeyChecking=no artisan@father "sudo qm shutdown ${{ matrix.vmid }}"
+          sshpass -p "$PVE_PASS" ssh -o StrictHostKeyChecking=no artisan@father "echo '$PVE_PASS' | sudo -S qm shutdown ${{ matrix.vmid }}"
