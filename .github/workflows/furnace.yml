@@ -1,4 +1,4 @@
-name: Fornace Continuous Integration
+name: 🏭 Furnace (install last oa-tools package and remastering)
 
 on:
   workflow_dispatch:
@@ -11,14 +11,14 @@ jobs:
       fail-fast: false # Se Arch fallisce, Debian continua (o viceversa)
       matrix:
         include:
-          # - os: arch
-          #   vmid: 300
-          #   snapshot: virgin
-          #   artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
-          #   prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
-          #   install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
+          - os: arch
+            vmid: 302
+            snapshot: virgin
+            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
+            prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
+            install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
           - os: debian
-            vmid: 301
+            vmid: 303
             snapshot: virgin
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
@@ -75,6 +75,9 @@ jobs:
             echo "⚙️ Installazione oa-tools..."
             echo "$VM_PASS" | sudo -S ${{ matrix.install_cmd }}
             
+            echo "💿 Pulizia..."
+            echo "$VM_PASS" | sudo -S coa tools clean
+
             echo "💿 Creazione ISO (coa remaster)..."
             echo "$VM_PASS" | sudo -S coa remaster
             
