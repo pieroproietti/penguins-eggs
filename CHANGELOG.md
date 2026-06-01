@@ -1,4 +1,23 @@
 # Changelog - oa-tools
+
+## [0.8.3] - 2026-06-01 
+
+### Added
+- **The Furnace CI**: Fully automated Proxmox/GitHub Actions pipeline for unattended ISO generation.
+- Support for automated build matrices across Arch, Debian, Alpine, and Fedora.
+- Dynamic IP discovery in CI via targeted ARP sweep (bypassing static MAC/IP configurations).
+- `repo add` and `repo rm` commands for cross-distribution repository management.
+
+### Fixed
+- Handled missing `/etc/skel` and BusyBox `cp` limitations during the creation of the live user home directory on Alpine Linux.
+- Bypassed Linux kernel ping broadcast restrictions during automated CI network discovery.
+
+### Changed
+- Improved SELinux compatibility during the remastering process for Fedora-based systems.
+
+### Deprecated / Beta
+- `repo add/rm` commands are currently in Beta for openSUSE and Alpine Linux pending minor compatibility fixes.
+
 ## 🚀 oa-tools v0.8.2: Packaging fixes, dynamic exclusions & Config rollout
 
 I believe these new features will be highly interesting for many users: the ability to change the live user password and customize the compression algorithm, as well as easily add or remove custom exclusions during the remastering process.
