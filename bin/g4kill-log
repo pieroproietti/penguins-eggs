@@ -1,7 +1,4 @@
 #!/bin/sh
-CONFIG_FILE="$HOME/oa-tools/bin/g4config"
-source "$CONFIG_FILE"
-
 MAX_RETRIES=3
 FAILED_RUNS=""
 TEMPDIR=$(mktemp -d)
