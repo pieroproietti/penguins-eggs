@@ -1,68 +1,25 @@
-name: "🏗️ Furnaces Matrix (remaster)"
+name: Fornaces - ISO Build
 
 on:
-  workflow_dispatch:
+  # Permette di far partire la pipeline manualmente dal tab "Actions" di GitHub
+  workflow_dispatch: 
+  
+  # Decommenta queste righe se vuoi che parta in automatico ad ogni nuova release
+  # release:
+  #   types: [published]
 
 jobs:
-  test-remaster:
-    runs-on: self-hosted
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [debian, arch, fedora, alpine]
-            
+  bake-isos:
+    # Il tassello fondamentale: dice a GitHub di dirottare il job sul tuo server locale!
+    runs-on: self-hosted 
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout del codice
+        uses: actions/checkout@v4
 
-      - name: Deploy and Remaster
-        run: |
-          # 1. Recupero VMID dal file p4config (Senza doverlo scrivere qui)
-          VMID=$(grep "VM_ID_${{ matrix.distro }}" ./bin/p4config | cut -d'=' -f2 | tr -d '"')
-          TARGET_IP="192.168.1.$VMID"
-          
-          # 2. Accensione VM
-          ./bin/p4start ${{ matrix.distro }}
+      - name: Rendi eseguibile lo script
+        run: chmod +x bin/furnace.sh
 
-          # 3. Controllo accenzione
-          echo "⏳ Attesa avvio SSH su $TARGET_IP..."
-                    max_retries=15
-                    count=0
-                    
-                    until ssh -o ConnectTimeout=2 -o BatchMode=yes artisan@$TARGET_IP exit >/dev/null 2>&1; do
-                        echo "  Tentativo $count: VM non ancora pronta..."
-                        sleep 3
-                        count=$((count + 1))
-                        
-                        if [ "$count" -ge "$max_retries" ]; then
-                            echo "❌ Timeout: La VM non ha risposto in tempo."
-                            exit 1
-                        fi
-                    done
-                    echo "✅ SSH attivo!"
-
-          # 4. Teletrasporto
-          ./bin/p4deploy ${{ matrix.distro }}
-          
-          # 5. Sequenza Operativa remota
-          echo "🚀 Lancio procedure di remaster su ${{ matrix.distro }} ($TARGET_IP)..."
-          
-          ssh artisan@$TARGET_IP << EOF
-            sudo ./bin/install-native /tmp/*.pkg.* /tmp/*.rpm /tmp/*.deb /tmp/*.apk 2>/dev/null
-            sudo eggs tools clean
-            sudo eggs destroy
-            sudo eggs remaster
-          EOF
-          
-          # 6. Recupero dell'uovo
-          scp artisan@$TARGET_IP:/home/eggs/egg*.iso ./egg-${{ matrix.distro }}.iso
-          
-          # 7. Spegnimento
-          ssh artisan@$TARGET_IP "sudo poweroff"
-
-      - name: Upload Artefatto ISO
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.distro }}-egg
-          path: ./egg-${{ matrix.distro }}.iso
-          retention-days: 3
-          
+      - name: 🔥 Avvio della Fornace
+        # Esegue lo script con privilegi di root per poter comandare Proxmox (qm)
+        run: sudo bin/furnace.sh
