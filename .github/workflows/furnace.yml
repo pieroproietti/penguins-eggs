@@ -1,4 +1,4 @@
-name: 🏭 Furnace: Install and Remaster
+name: 🏭 Furnace Install and Remaster
 
 on:
   workflow_dispatch:
@@ -109,4 +109,3 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo \"\$PVE_PASS\" | sudo -S qm shutdown ${{ matrix.vmid }}"
-          
