@@ -22,7 +22,7 @@ jobs:
             snapshot: virgin
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
             prep_cmd: "apt update && apt install -y wget unzip sshpass"
-            install_cmd: "apt install -y ./*.deb"
+            install_cmd: "apt-get install -y ./*.deb"
 
     steps:
       - name: 🔐 Caricamento Segreti (Air-gapped)
