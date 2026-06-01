@@ -34,6 +34,15 @@ jobs:
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt install -y ./*.deb"
 
+
+          - os: fedora
+            vmid: 304
+            snapshot: virgin
+            subnet: "192.168.1"
+            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-fedora.zip"
+            prep_cmd: "sh -c 'dnf makecache && dnf install -y wget unzip sshpass'"
+            install_cmd: "dnf install -y ./*.rpm"
+            
     steps:
       - name: 🔐 Caricamento Segreti (Air-gapped)
         run: |
