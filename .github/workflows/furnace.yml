@@ -1,28 +1,30 @@
-name: 🏭 Furnace (install last oa-tools package and remastering)
+name: 🏭 Fornace Continuous Integration
 
 on:
   workflow_dispatch:
 
 jobs:
   bake-isos:
-    name: Build ISO su ${{ matrix.os }}
+    name: 🏭 Build ISO su ${{ matrix.os }}
     runs-on: self-hosted
     strategy:
-      fail-fast: false # Se Arch fallisce, Debian continua (o viceversa)
+      fail-fast: false
       matrix:
         include:
           - os: arch
             vmid: 302
             snapshot: virgin
+            mac: "bc:24:11:8d:33:97" # 👈 MAC Fisso per Arch
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
             prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
           - os: debian
             vmid: 303
             snapshot: virgin
+            mac: "BC:24:11:15:E1:87" # 👈 Inserisci il MAC reale di Debian
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
-            install_cmd: "apt-get install -y ./*.deb"
+            install_cmd: "apt install -y ./*.deb"
 
     steps:
       - name: 🔐 Caricamento Segreti (Air-gapped)
@@ -39,11 +41,11 @@ jobs:
       - name: 📡 Ricerca IP dinamico
         id: get_ip
         run: |
+          # Usiamo direttamente la variabile ${{ matrix.mac }} senza interrogare Proxmox!
           IP=$(ssh -o StrictHostKeyChecking=no artisan@father '
-            MAC=$(sudo qm config ${{ matrix.vmid }} | grep -o -E "([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}" | head -n 1 | tr "[:upper:]" "[:lower:]")
             while true; do
               ping -c 1 -b 255.255.255.255 > /dev/null 2>&1
-              FOUND=$(ip -4 neigh show | grep -i "$MAC" | awk "{print \$1}" | head -n 1)
+              FOUND=$(ip -4 neigh show | grep -i "${{ matrix.mac }}" | awk "{print \$1}" | head -n 1)
               if [ -n "$FOUND" ]; then
                 echo "$FOUND"
                 break
@@ -69,15 +71,12 @@ jobs:
             echo "$VM_PASS" | sudo -S ${{ matrix.prep_cmd }}
             
             echo "📥 Download artefatti..."
-            wget -O pacchetti.zip "${{ matrix.artifact_url }}"
+            wget -q -O pacchetti.zip "${{ matrix.artifact_url }}"
             unzip -o pacchetti.zip
             
             echo "⚙️ Installazione oa-tools..."
             echo "$VM_PASS" | sudo -S ${{ matrix.install_cmd }}
             
-            echo "💿 Pulizia..."
-            echo "$VM_PASS" | sudo -S coa tools clean
-
             echo "💿 Creazione ISO (coa remaster)..."
             echo "$VM_PASS" | sudo -S coa remaster
             
@@ -91,6 +90,6 @@ jobs:
           EOF
 
       - name: 🛑 Spegnimento VM
-        if: always() # Questo step viene eseguito anche se la build fallisce, evitando VM "zombie"
+        if: always()
         run: |
           ssh -o StrictHostKeyChecking=no artisan@father "sudo qm shutdown ${{ matrix.vmid }}"
