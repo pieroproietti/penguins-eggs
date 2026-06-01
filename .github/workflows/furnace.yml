@@ -15,13 +15,13 @@ jobs:
           #   vmid: 300
           #   snapshot: virgin
           #   artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
-          #   prep_cmd: "pacman -Sy --noconfirm wget unzip sshpass"
+          #   prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
           #   install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
           - os: debian
             vmid: 301
             snapshot: virgin
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
-            prep_cmd: "apt-get update && apt-get install -y wget unzip sshpass"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt-get install -y ./*.deb"
 
     steps:
