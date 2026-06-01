@@ -41,12 +41,13 @@ func PreparePartitionConf() error {
 	currentDate := time.Now().Format("2006-01-02")
 	availableFSYaml := "[\"" + strings.Join(fsList, "\", \"") + "\"]"
 
-	defaultFs := fsList[0]
+	defaultFs := "ext4" // Mettiamo ext4 come default a prova di bomba
 	btrfsSubvolumes := ""
 
+	// Se btrfs è disponibile, prepariamo le sue regole,
+	// ma si attiveranno SOLO se l'utente lo sceglie dalla GUI!
 	for _, fs := range fsList {
 		if fs == "btrfs" {
-			defaultFs = "btrfs"
 			btrfsSubvolumes = `
 # Regole di subvolume essenziali per BTRFS
 btrfs:
@@ -63,28 +64,7 @@ btrfs:
 		}
 	}
 
-	var layoutYaml string
-	if tableType == "gpt" {
-		layoutYaml = `partitionLayout:
-  - name: "efi"
-    filesystem: "fat32"
-    mountPoint: "/boot/efi"
-    size: 300MiB
-    attributes: [ "boot", "esp" ]
-  - name: "root"
-    mountPoint: "/"
-    size: 100%` // <--- NESSUN 'filesystem' SPECIFICATO! Userà la scelta della GUI!
-	} else {
-		layoutYaml = `partitionLayout:
-  - name: "bios_grub"
-    filesystem: "unformatted"
-    size: 8MiB
-    attributes: [ "bios_grub" ]
-  - name: "root"
-    mountPoint: "/"
-    size: 100%` // <--- Idem per BIOS.
-	}
-
+	// IL TRUCCO: Nessun partitionLayout e LVM disabilitato!
 	config := fmt.Sprintf(`---
 # partition.conf - Generato dinamicamente il %s
 # Dialetto: %s | Filosofia: https://penguins-eggs.net/blog/eggs-bananas
@@ -93,7 +73,11 @@ defaultPartitionTableType: %s
 defaultFileSystemType:  "%s"
 availableFileSystemTypes: %s
 
-%s
+efi:
+  mountPoint: "/boot/efi"
+  recommendedSize: 300MiB
+  minimumSize: 32MiB
+  label: "EFI"
 
 %s
 
@@ -104,8 +88,8 @@ initialPartitioningChoice: none
 initialSwapChoice: none
 
 lvm:
-  enable: true
-`, currentDate, dialect, tableType, defaultFs, availableFSYaml, layoutYaml, btrfsSubvolumes)
+  enable: false
+`, currentDate, dialect, tableType, defaultFs, availableFSYaml, btrfsSubvolumes)
 
 	targetPath := oaInstallerRoot + "/modules/partition.conf"
 	os.MkdirAll(oaInstallerRoot+"/modules", 0755)
