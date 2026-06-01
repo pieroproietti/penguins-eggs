@@ -1,4 +1,4 @@
-name: 🏭 Furnace Install and Remaster
+name: "🏭 Furnace: Install and Remaster"
 
 on:
   workflow_dispatch:
@@ -14,14 +14,14 @@ jobs:
           - os: arch
             vmid: 302
             snapshot: virgin
-            mac: "bc:24:11:8d:33:97" # 👈 MAC Arch
+            subnet: "192.168.1" # 👈 La classe IP della tua rete (senza l'ultimo numero)
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
             prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
           - os: debian
             vmid: 303
             snapshot: virgin
-            mac: "BC:24:11:15:E1:87" # 👈 MAC Debian
+            subnet: "192.168.1" # 👈 La classe IP della tua rete
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt install -y ./*.deb"
@@ -51,9 +51,18 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           IP=$(sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father '
+            # 1. Legge il MAC address in tempo reale direttamente da Proxmox
+            MAC=$(echo "${{ env.PVE_PASS }}" | sudo -S qm config ${{ matrix.vmid }} | grep "net0" | grep -o -E "([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}" | tr "[:upper:]" "[:lower:]")
+            
+            echo "Sto cercando IP per il MAC: $MAC sulla rete ${{ matrix.subnet }}.x..." >&2
+            
+            # 2. Sweep ARP Veloce (Bypassa i blocchi dei kernel moderni)
             while true; do
-              ping -c 1 -b 255.255.255.255 > /dev/null 2>&1
-              FOUND=$(ip -4 neigh show | grep -i "${{ matrix.mac }}" | awk "{print \$1}" | head -n 1)
+              for i in {1..254}; do ping -c 1 -W 1 ${{ matrix.subnet }}.$i >/dev/null 2>&1 & done
+              wait
+              
+              # Trova il MAC nella tabella di Proxmox ed estrae solo l IP
+              FOUND=$(ip -4 neigh show | grep -i "$MAC" | cut -d" " -f1 | head -n 1)
               if [ -n "$FOUND" ]; then
                 echo "$FOUND"
                 break
@@ -107,3 +116,4 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S qm shutdown ${{ matrix.vmid }}"
+          
