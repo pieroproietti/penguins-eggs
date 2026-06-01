@@ -1,0 +1,93 @@
+name: Fornace Continuous Integration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bake-isos:
+    name: Build ISO su ${{ matrix.os }}
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false # Se Arch fallisce, Debian continua (o viceversa)
+      matrix:
+        include:
+          - os: arch
+            vmid: 300
+            snapshot: virgin
+            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
+            prep_cmd: "pacman -Sy --noconfirm wget unzip sshpass"
+            install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
+          - os: debian
+            vmid: 301
+            snapshot: virgin
+            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
+            prep_cmd: "apt update && apt install -y wget unzip sshpass"
+            install_cmd: "apt install -y ./*.deb"
+
+    steps:
+      - name: 🔐 Caricamento Segreti (Air-gapped)
+        run: |
+          source /etc/p4/secrets.env
+          echo "VM_USER=$SSH_USER" >> $GITHUB_ENV
+          echo "VM_PASS=$SSH_PASSWD" >> $GITHUB_ENV
+          echo "PVE_PASS=$PROXMOX_PASSWD" >> $GITHUB_ENV
+
+      - name: 🔄 Rollback & Avvio VM
+        run: |
+          ssh -o StrictHostKeyChecking=no artisan@father "sudo qm rollback ${{ matrix.vmid }} ${{ matrix.snapshot }} && sudo qm start ${{ matrix.vmid }}"
+
+      - name: 📡 Ricerca IP dinamico
+        id: get_ip
+        run: |
+          IP=$(ssh -o StrictHostKeyChecking=no artisan@father '
+            MAC=$(sudo qm config ${{ matrix.vmid }} | grep -o -E "([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}" | head -n 1 | tr "[:upper:]" "[:lower:]")
+            while true; do
+              ping -c 1 -b 255.255.255.255 > /dev/null 2>&1
+              FOUND=$(ip -4 neigh show | grep -i "$MAC" | awk "{print \$1}" | head -n 1)
+              if [ -n "$FOUND" ]; then
+                echo "$FOUND"
+                break
+              fi
+              sleep 2
+            done
+          ')
+          echo "✅ IP Assegnato: $IP"
+          echo "VM_IP=$IP" >> $GITHUB_ENV
+
+      - name: ⏳ Attesa demone SSH sulla VM
+        run: |
+          while ! sshpass -p "$VM_PASS" ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${{ env.VM_USER }}@${{ env.VM_IP }} exit; do
+            sleep 2
+            echo -n "s"
+          done
+          echo -e "\n✅ SSH Pronto!"
+
+      - name: 🛠️ Setup, Remaster e Export
+        run: |
+          sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
+            echo "📦 Preparazione ambiente (${{ matrix.os }})..."
+            echo "$VM_PASS" | sudo -S ${{ matrix.prep_cmd }}
+            
+            echo "📥 Download artefatti..."
+            wget -O pacchetti.zip "${{ matrix.artifact_url }}"
+            unzip -o pacchetti.zip
+            
+            echo "⚙️ Installazione oa-tools..."
+            echo "$VM_PASS" | sudo -S ${{ matrix.install_cmd }}
+            
+            echo "💿 Creazione ISO (coa remaster)..."
+            echo "$VM_PASS" | sudo -S coa remaster
+            
+            echo "🚀 Configurazione SSH ed Esportazione..."
+            mkdir -p /home/${{ env.VM_USER }}/.ssh
+            echo "Host *" > /home/${{ env.VM_USER }}/.ssh/config
+            echo "    StrictHostKeyChecking no" >> /home/${{ env.VM_USER }}/.ssh/config
+            echo "    UserKnownHostsFile /dev/null" >> /home/${{ env.VM_USER }}/.ssh/config
+            
+            sshpass -p "$PVE_PASS" eggs export iso --clean
+          EOF
+
+      - name: 🛑 Spegnimento VM
+        if: always() # Questo step viene eseguito anche se la build fallisce, evitando VM "zombie"
+        run: |
+          ssh -o StrictHostKeyChecking=no artisan@father "sudo qm shutdown ${{ matrix.vmid }}"
