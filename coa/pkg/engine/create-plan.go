@@ -8,12 +8,11 @@ import (
 	"strings"
 
 	"coa/pkg/pilot"
-	"coa/pkg/utils"
 )
 
 // GeneratePlan converte lo YAML in JSON.
 func GeneratePlan(
-	profile *pilot.Profile, // <-- FIRMA AGGIORNATA
+	profile *pilot.Profile,
 	familyID string,
 	isGitHubAction bool,
 	isRemaster bool,
@@ -26,26 +25,10 @@ func GeneratePlan(
 	plan.IsGitHubAction = isGitHubAction
 	plan.Settings = profile.Settings.Remaster
 
-	// --- CHECK DI COLLEGAMENTO ---
-	fmt.Printf("\n\033[1;35m[ENGINE DEBUG]\033[0m Verifica integrità Settings:\n")
-	fmt.Printf("  -> User:        %s\n", plan.Settings.User)
-	fmt.Printf("  -> Password:    %s\n", plan.Settings.Password)
-	fmt.Printf("  -> Algoritmo:   %s\n", plan.Settings.Compression.Algorithm)
-	fmt.Printf("  -> Livello:     %d\n", plan.Settings.Compression.Level)
-	fmt.Printf("--------------------------------------------\n")
-
-	/* Teniamo l'utente di default come "salvagente"
-	defaultUser := pilot.User{
-		Login:    "live",
-		Password: "$6$oa-tools$uTKAYeAVn.Y.Dy2To6HXsHt1Gt4HpMghmOV93a46jFY7hkAQ3tk7eRTKjcvSYDf5sOf3qnKzyyPYXurKp9ST3.",
-		Home:     "/home/live",
-		Shell:    "/bin/bash",
-		UID:      1000,
-		GID:      1000,
-	}
-	*/
-
 	var hitBreakpoint bool
+
+	// VARIABILE PER MEMORIZZARE IL COMANDO MKSQUASHFS
+	var savedMksquashfsCmd string
 
 	// Ora iteriamo su profile.Remaster
 	for _, step := range profile.Remaster {
@@ -54,13 +37,11 @@ func GeneratePlan(
 			continue
 		}
 
-		// --- IL PONTE: Sostituzione dinamica del percorso ISO ---
 		currentRunCommand := strings.TrimSpace(step.RunCommand)
 		if strings.Contains(currentRunCommand, "${ISO_OUTPUT}") {
 			currentRunCommand = strings.ReplaceAll(currentRunCommand, "${ISO_OUTPUT}", finalIsoPath)
 		}
 
-		// --- DESCRIZIONE DINAMICA ---
 		currentDescription := step.Description
 		if strings.Contains(currentDescription, "${ISO_NAME}") {
 			currentDescription = strings.ReplaceAll(currentDescription, "${ISO_NAME}", filepath.Base(finalIsoPath))
@@ -71,55 +52,7 @@ func GeneratePlan(
 			plan.Plan = append(plan.Plan, expandMountLogic(workPath, isGitHubAction)...)
 
 		case "oa_users":
-			// 1. Utente dinamico (fallback su "live")
-			targetUser := plan.Settings.User
-			if targetUser == "" {
-				targetUser = "live"
-			}
-
-			// 2. Hashiamo la password in Go! (Gestisce stringhe in chiaro, vuote o già hashate)
-			targetPassword := hashPassword(plan.Settings.Password)
-
-			// 3. Creiamo i percorsi dinamici per la home directory
-			homeDir := fmt.Sprintf("/home/%s", targetUser)
-			skelCmd := fmt.Sprintf("mkdir -p %s/liveroot%s && cp -a %s/liveroot/etc/skel/. %s/liveroot%s/", workPath, homeDir, workPath, workPath, homeDir)
-
-			plan.Plan = append(plan.Plan, OATask{
-				Step: pilot.Step{
-					Action:      "oa_shell",
-					Description: fmt.Sprintf("Creazione home directory per l'utente %s", targetUser),
-					RunCommand:  skelCmd,
-				},
-			})
-
-			usersToInject := step.Users
-			if len(usersToInject) == 0 {
-				// Iniettiamo l'utente on-the-fly con la password appena hashata
-				usersToInject = []pilot.User{
-					{
-						Login:    targetUser,
-						Password: targetPassword,
-						Home:     homeDir,
-						Shell:    "/bin/bash",
-						UID:      1000,
-						GID:      1000,
-					},
-				}
-			}
-
-			mirroredGroups := utils.GetUserGroups()
-			for i := range usersToInject {
-				usersToInject[i].Groups = mirroredGroups
-			}
-
-			plan.Plan = append(plan.Plan, OATask{
-				Step: pilot.Step{
-					Action:      "oa_users",
-					Description: fmt.Sprintf("Iniezione identità utente live (%s)", targetUser),
-					Users:       usersToInject,
-				},
-				PathLiveFs: workPath,
-			})
+			plan.Plan = append(plan.Plan, oaUsers(plan.Settings, step, workPath)...)
 
 		case "oa_umount":
 			plan.Plan = append(plan.Plan, OATask{
@@ -137,6 +70,33 @@ func GeneratePlan(
 			}
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
+
+			// SALVIAMO MKSQUASHFS QUANDO PASSA
+			if task.Name == "coa-squashfs" {
+				savedMksquashfsCmd = "NOT AVAILABLE" // currentRunCommand
+			}
+
+			// IL MOMENTO MAGICO: SIAMO SU XORRISO, CREIAMO E INIETTIAMO DOTDISK!
+			if task.Name == "coa-xorriso" {
+				isoFilename := filepath.Base(finalIsoPath)
+				isoWorkDir := filepath.Join(workPath, "isodir")
+
+				dotDiskScript := buildDotDiskScript(isoWorkDir, isoFilename, savedMksquashfsCmd, "NOT AVAILABLE")
+
+				// 1. Accodiamo lo script per creare la cartella .disk AL PIANO
+				plan.Plan = append(plan.Plan, OATask{
+					Step: pilot.Step{
+						Action:      "oa_shell",
+						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
+						RunCommand:  dotDiskScript,
+					},
+					PathLiveFs: workPath,
+				})
+
+				fmt.Printf("\n\033[1;32m[ENGINE] Iniezione metadati .disk completata per live-boot.\033[0m\n")
+			}
+
+			// 2. Accodiamo FINALMENTE l'azione originale (squashfs, xorriso o altro)
 			plan.Plan = append(plan.Plan, task)
 		}
 
