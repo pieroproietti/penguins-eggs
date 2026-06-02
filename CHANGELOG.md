@@ -9,6 +9,7 @@
 - `repo add` and `repo rm` commands for cross-distribution repository management.
 - Bugfix: Resolved an issue where the ISO dropped to (initramfs) in VirtualBox by implementing the proper .disk/info and .disk/id metadata for Debian live-boot.
 - Build: Cleaned up the release version naming in the Makefile by removing the commit hash from the generated tags.
+- Added coa tools grub40 command to automatically generate universal GRUB 40_custom entries for booting ISOs via loopback.
 
 ### Fixed
 - Handled missing `/etc/skel` and BusyBox `cp` limitations during the creation of the live user home directory on Alpine Linux.
