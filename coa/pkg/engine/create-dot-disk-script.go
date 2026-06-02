@@ -24,7 +24,7 @@ func getLinuxUUID() string {
 // 2. Costruiamo lo script bash.
 // Usiamo cat << 'EOF' (con gli apici) per evitare che i caratteri speciali
 // e gli apici dentro i comandi xorriso/mksquashfs rompano lo script Bash!
-func buildDotDiskScript(isoWorkDir, isoFilename, mksquashfsCmd, xorrisoCmd string) string {
+func createDotDiskScript(isoWorkDir, isoFilename, mksquashfsCmd, xorrisoCmd string) string {
 	uuid := getLinuxUUID()
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 

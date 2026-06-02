@@ -27,9 +27,6 @@ func GeneratePlan(
 
 	var hitBreakpoint bool
 
-	// VARIABILE PER MEMORIZZARE IL COMANDO MKSQUASHFS
-	var savedMksquashfsCmd string
-
 	// Ora iteriamo su profile.Remaster
 	for _, step := range profile.Remaster {
 
@@ -71,22 +68,18 @@ func GeneratePlan(
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
 
-			// SALVIAMO MKSQUASHFS QUANDO PASSA
-			if task.Name == "coa-squashfs" {
-				savedMksquashfsCmd = "NOT AVAILABLE" // currentRunCommand
-			}
-
-			// IL MOMENTO MAGICO: SIAMO SU XORRISO, CREIAMO E INIETTIAMO DOTDISK!
+			// Prima di "coa-xorriso" inseriamo "coa-dot-disk"
 			if task.Name == "coa-xorriso" {
 				isoFilename := filepath.Base(finalIsoPath)
 				isoWorkDir := filepath.Join(workPath, "isodir")
 
-				dotDiskScript := buildDotDiskScript(isoWorkDir, isoFilename, savedMksquashfsCmd, "NOT AVAILABLE")
+				dotDiskScript := createDotDiskScript(isoWorkDir, isoFilename, "", "")
 
 				// 1. Accodiamo lo script per creare la cartella .disk AL PIANO
 				plan.Plan = append(plan.Plan, OATask{
 					Step: pilot.Step{
 						Action:      "oa_shell",
+						Name:        "coa-dot-disk",
 						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
 						RunCommand:  dotDiskScript,
 					},
