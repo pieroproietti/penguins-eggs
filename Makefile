@@ -1,5 +1,6 @@
 # 1. THE SINGLE SOURCE OF TRUTH
-VERSION := $(shell git describe --tags --always 2>/dev/null || echo "0.0.0-dev")
+#VERSION := $(shell git describe --tags --always 2>/dev/null || echo "0.0.0-dev")
+VERSION := $(shell git describe --tags --always 2>/dev/null | sed 's/-g[0-9a-f]*$$//' || echo "0.0.0-dev")
 
 # Directory sorgenti (Struttura fissa del repository)
 OA_DIR  = oa
