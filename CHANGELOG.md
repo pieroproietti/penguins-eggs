@@ -7,6 +7,8 @@
 - Support for automated build matrices across Arch, Debian, Alpine, and Fedora.
 - Dynamic IP discovery in CI via targeted ARP sweep (bypassing static MAC/IP configurations).
 - `repo add` and `repo rm` commands for cross-distribution repository management.
+- Bugfix: Resolved an issue where the ISO dropped to (initramfs) in VirtualBox by implementing the proper .disk/info and .disk/id metadata for Debian live-boot.
+- Build: Cleaned up the release version naming in the Makefile by removing the commit hash from the generated tags.
 
 ### Fixed
 - Handled missing `/etc/skel` and BusyBox `cp` limitations during the creation of the live user home directory on Alpine Linux.
