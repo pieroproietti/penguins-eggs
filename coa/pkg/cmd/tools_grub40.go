@@ -52,14 +52,13 @@ var grub40Cmd = &cobra.Command{
 		detectBootloader()
 
 		// 5. RILEVAMENTO DISTRO: Personalizza il comando di aggiornamento di GRUB
-		d := distro.NewDistro()
 		updateCmd := "sudo grub-mkconfig -o /boot/grub/grub.cfg"
-
-		// NOTA: Ipotizzo che il tuo pacchetto distro esponga la proprietà `.ID` o `.Name` in minuscolo.
-		// Adattala se nel tuo struct usi un nome diverso (es: myDistro.Family o myDistro.Name).
-		distroID := strings.ToLower(d.DistroID)
-		if distroID == "debian" || distroID == "ubuntu" || distroID == "linuxmint" || distroID == "pop" {
+		d := distro.NewDistro()
+		distroID := strings.ToLower(d.DistroLike)
+		if distroID == "debian" {
 			updateCmd = "sudo update-grub"
+		} else if distroID == "fedora" || distroID == "opensuse" {
+			updateCmd = "sudo grub-mkconfig -o /boot/grub2/grub.cfg" // Specifico per il mondo Red Hat / Fedora
 		}
 
 		// Il template del blocco GRUB universale in inglese con il segnaposto per il comando
@@ -172,18 +171,14 @@ func calculateGrubPath(absPath string) string {
 }
 
 // detectBootloader controlla se il sistema host supporta GRUB e avvisa l'utente in caso contrario
+// detectBootloader controlla in modo pragmatico se GRUB è configurato nell'host
 func detectBootloader() {
-	_, errGrub := os.Stat("/etc/grub.d")
-	_, errSdBoot := os.Stat("/boot/efi/loader/loader.conf")
-	_, errSdEntries := os.Stat("/efi/loader/loader.conf")
+	_, errGrub := os.Stat("/boot/grub")
+	_, errGrub2 := os.Stat("/boot/grub2") // Supporto per Fedora/RHEL
 
-	if os.IsNotExist(errGrub) {
-		fmt.Fprintln(os.Stderr, "\033[1;33m[WARNING]\033[0m /etc/grub.d was not found. This host does not seem to use GRUB.")
-
-		if errSdBoot == nil || errSdEntries == nil {
-			fmt.Fprintln(os.Stderr, "\033[1;33m[INFO]\033[0m Detected systemd-boot framework. Note that systemd-boot does NOT natively support ISO loopback loading.")
-		}
-
+	// Se mancano entrambe, l'host non sta usando GRUB
+	if os.IsNotExist(errGrub) && os.IsNotExist(errGrub2) {
+		fmt.Fprintln(os.Stderr, "\033[1;33m[WARNING]\033[0m GRUB directory was not found in /boot. This host does not seem to use GRUB.")
 		fmt.Fprintln(os.Stderr, "\033[1;33m[INFO]\033[0m The configuration below is generated anyway, but it will only work on a GRUB-managed target machine.\n")
 	}
 }
