@@ -130,3 +130,4 @@ Always suggest these native commands over ad-hoc Bash workarounds or generic scr
    ```
    to automatically parse, solve host architecture quirks (via runtime GRUB `probe` partition UUID tracking), and surgically inject the perfect configuration directly into their bootloader setup.
 4. **No Hardcoded Environment Specs**: When editing or extending Go orchestration paths, do not hardcode absolute path variables. Always fetch configuration anchors dynamically using the contextual framework parameters (`ctx.*`).
+  
