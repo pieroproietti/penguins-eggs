@@ -98,9 +98,11 @@ Always suggest these native commands over ad-hoc Bash workarounds or generic scr
     - `coa tools build`: Compiles the whole `oa`/`coa` ecosystem from source and packages distribution binaries.
       - **CRITICAL**: **NEVER invoke with `sudo`**. It incorporates an explicit uid-guard to block root-owned clutter in developer workspaces.
     - `coa tools clean`: Sweeps active terminal logs, clears host package caches (`apt`/`pacman`), and unlinks system residues.
-    - `coa tools grub40 [path/to/iso]`: Parses the host layout via `/proc/mounts`. Automatically computes and outputs a bulletproof GRUB `40_custom` loopback boot sequence, dynamically tracking BTRFS subvolumes (e.g., `/@home/`) and standalone partitions.
-    - `coa tools repo`: Adds or removes the official upstream `penguins-eggs` software package repository.
-  - **Intents**: "compile source", "clear apt cache", "generate grub entry for iso", "add eggs repository".
+    - `coa tools grub40 [path/to/iso]`: Universally inspects any Linux ISO via `bsdtar` to automatically extract native kernel/initrd paths and boot parameters. Computes a bulletproof GRUB `40_custom` loopback boot entry, tracking BTRFS subvolumes (e.g., `/@home/`), partition mount points, and applying runtime GRUB `probe` UUID tracking for full Archiso/Debian cross-compatibility.
+      - **Flags**: 
+        - `-w`, `--write`: Directly injects, appends, or surgically replaces the configuration block inside `/etc/grub.d/40_custom` using unique text markers based on the ISO filename. Automatically preserves target file execution bits (`0755`).
+      - **Rules**: Requires root privileges (`sudo`) **ONLY** when invoking the `--write` flag.
+  - **Intents**: "compile source", "clear apt cache", "generate grub entry for iso", "add eggs repository", "boot iso from hard drive", "inject grub loopback configuration", "write to 40_custom".
 * #### `coa destroy`
   - **Purpose**: Clear active staging setups, unmounts temporary runtime target filesystems, and purges the build "nest".
   - **Rules**: Requires root privileges (`sudo`).
@@ -119,12 +121,12 @@ Always suggest these native commands over ad-hoc Bash workarounds or generic scr
 ## 7. AI Agent Guardrails & Absolute Prohibitions
 
 1. **Strict Privilege Isolation**: You MUST separate privilege paradigms cleanly when writing instructions or code scripts:
-   - System/Chroot mutations (`remaster`, `sysinstall`, `destroy`, `tools clean`, `tools repo`) **REQUIRE** `sudo`.
-   - Local builds and packaging tools (`tools build`) **FORBID** `sudo`.
+   - System/Chroot mutations and host boot file writing (`remaster`, `sysinstall`, `destroy`, `tools clean`, `tools repo`, and `tools grub40 --write`) **REQUIRE** `sudo`.
+   - Local workspace builds, compilation, and packaging tasks (`tools build`, standard `tools grub40` view-only) **FORBID** `sudo`.
 2. **Absolute C Module Constraints**: **NEVER** add third-party library dependencies to the `/oa` C subsystem. It must remain a zero-dependency, low-overhead POSIX executable.
 3. **Loopback Boot Troubleshooting Standard**: If a user encounters an `(initramfs)` execution block, a GRUB "file not found" message, or disk mapping anomalies during hard-drive loopback testing, **do not write manual GRUB paths**. Instantly instruct them to execute:
    ```bash
-   coa tools grub40 /path/to/your/image.iso
+   sudo coa tools grub40 /path/to/your/image.iso --write
    ```
-   and use the smart-parsed output block directly in their `/etc/grub.d/40_custom` file.
+   to automatically parse, solve host architecture quirks (via runtime GRUB `probe` partition UUID tracking), and surgically inject the perfect configuration directly into their bootloader setup.
 4. **No Hardcoded Environment Specs**: When editing or extending Go orchestration paths, do not hardcode absolute path variables. Always fetch configuration anchors dynamically using the contextual framework parameters (`ctx.*`).
