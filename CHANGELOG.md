@@ -1,5 +1,17 @@
 # Changelog - oa-tools
 
+## [0.8.4] - 2026-06-03
+
+### Added
+- **New universal `coa tools grub40` command**: Introduced an advanced feature to automate loopback booting of any Linux ISO directly from the host's GRUB menu, eliminating the need for USB flashing during remastering tests.
+  - **Ultra-fast inspection via `bsdtar`**: Switched from `xorriso` to native `bsdtar` parsing. The tool now dissects the target ISO in milliseconds, extracting the real paths of Kernel and Initrd from internal configuration files (`grub.cfg`, `isolinux.cfg`).
+  - **Dynamic handling for Arch Linux (Kiro/Archiso)**: Resolved the recovery shell boot hang (`device did not show up`) by injecting the GRUB `probe` module. GRUB dynamically calculates the host partition's UUID at runtime, passing it to Archiso via `img_dev` and `img_loop` parameters.
+  - **Native Debian/Ubuntu integration**: Seamless support for the `live-boot` engine by automatically mapping the `findiso` boot parameter.
+  - **Automation with `--write` / `-w` flag**: Added the ability to directly inject the generated `menuentry` into `/etc/grub.d/40_custom`.
+  - **Surgical replacement using markers**: The injection mechanism uses unique identifier comments based on the ISO filename (`# >>> oa-tools start...`). This automatically overwrites existing entries when rebuilding the same ISO, preventing file clutter while strictly preserving file execution permissions (`0755`).
+  - **Smart host distro detection**: Automatically identifies the host operating system to suggest or run the correct bootloader update command (`update-grub` on Debian/Ubuntu, `grub-mkconfig` on Arch/Fedora).
+  
+
 ## [0.8.3] - 2026-06-01 
 
 ### Added
