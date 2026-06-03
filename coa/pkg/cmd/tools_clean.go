@@ -38,9 +38,5 @@ Ideale da lanciare prima di 'coa remaster' per ottenere una ISO più compatta.`,
 }
 
 func init() {
-	// Aggiungiamo il comando 'clean' come figlio del comando 'tools'
-	// Assicurati che toolsCmd sia dichiarato da qualche parte (es. in tools.go)
-	toolsCmd.AddCommand(toolsCleanCmd)
-
 	toolsCleanCmd.Flags().BoolVarP(&cleanVerbose, "verbose", "v", false, "Mostra l'output dettagliato dei comandi di pulizia")
 }

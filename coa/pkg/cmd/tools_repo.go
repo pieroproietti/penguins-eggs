@@ -49,7 +49,5 @@ Azioni supportate:
 }
 
 func init() {
-	rootCmd.AddCommand(toolsCmd)
-	// Aggiungiamo il comando 'repo' come figlio del comando 'tools'
 	toolsCmd.AddCommand(toolsRepoCmd)
 }
