@@ -19,8 +19,8 @@ var writeToGrub bool
 // grub40Cmd represents the 'coa tools grub40' command
 var grub40Cmd = &cobra.Command{
 	Use:   "grub40 [path/to/iso]",
-	Short: "Generate GRUB configuration to boot an ISO via loopback",
-	Long:  `Calculates the exact path of the ISO for GRUB (handling BTRFS subvolumes and separate mount points), detects its size, and prints or directly injects the configuration block into /etc/grub.d/40_custom.`,
+	Short: "Generate GRUB configuration to boot ANY ISO via loopback",
+	Long:  `Inspects any Linux ISO via bsdtar, automatically extracts its native Kernel path, Initrd path, and boot parameters, and generates or injects the perfect GRUB configuration block.`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -66,16 +66,18 @@ var grub40Cmd = &cobra.Command{
 			updateCmd = "sudo grub-mkconfig -o /boot/grub2/grub.cfg"
 		}
 
-		// 6. ISPEZIONE ISO TARGET VIA BSDTAR: Rileva se la ISO interna è Arch, Debian, Fedora o Alpine
-		kernelParams := extractOaKernelParams(absPath)
+		// 6. PARSING UNIVERSALE DELLA ISO VIA BSDTAR
+		kernelPath, initrdPath, kernelParams, useLoopbackCfg := inspectGenericIso(absPath)
 
 		// 7. GENERAZIONE DEI MARCATORI UNICI PER QUESTA ISO
 		startMarker := fmt.Sprintf("# >>> oa-tools start: %s <<<", isoName)
 		endMarker := fmt.Sprintf("# >>> oa-tools end: %s <<<", isoName)
 
-		// Costruiamo il blocco pulito nativo di GRUB racchiuso tra i suoi marcatori di sosta
-		grubEntry := fmt.Sprintf(`%s
-menuentry "oa-tools: %s" --class isoboot {
+		// 8. COSTRUZIONE DEL BLOCCO DI MENUENTRY DI GRUB
+		var grubEntry string
+		if useLoopbackCfg {
+			grubEntry = fmt.Sprintf(`%s
+menuentry "oa-tools: %s (via loopback.cfg)" --class isoboot {
     insmod part_gpt
     insmod part_msdos
     insmod ext2
@@ -84,18 +86,42 @@ menuentry "oa-tools: %s" --class isoboot {
     insmod loopback
 
     set isofile="%s"
-
     search --no-floppy --set=root --file $isofile
     loopback loop $isofile
-
-    linux (loop)/live/vmlinuz %s
-    initrd (loop)/live/initrd.img
+    
+    set iso_path=$isofile
+    export iso_path
+    configfile (loop)/boot/grub/loopback.cfg
 }
-%s`, startMarker, isoName, grubPath, kernelParams, endMarker)
+%s`, startMarker, isoName, grubPath, endMarker)
+		} else {
+			// Inseriamo il probe dinamico dell'UUID per dare ad Archiso le coordinate della partizione ospite
+			grubEntry = fmt.Sprintf(`%s
+menuentry "oa-tools: %s" --class isoboot {
+    insmod part_gpt
+    insmod part_msdos
+    insmod ext2
+    insmod btrfs
+    insmod iso9660
+    insmod loopback
+    insmod probe
 
-		// 8. LOGICA DI SCRITTURA DIRETTA O CONSULTAZIONE STANDARD
+    set isofile="%s"
+
+    search --no-floppy --set=root --file $isofile
+    probe -u $root --set=rootuuid
+    set imgdevpath="/dev/disk/by-uuid/$rootuuid"
+
+    loopback loop $isofile
+
+    linux (loop)%s %s
+    initrd (loop)%s
+}
+%s`, startMarker, isoName, grubPath, kernelPath, kernelParams, initrdPath, endMarker)
+		}
+
+		// 9. LOGICA DI SCRITTURA DIRETTA O CONSULTAZIONE STANDARD
 		if writeToGrub {
-			// Il salvagente di root: toccare i file in /etc/grub.d richiede l'autorizzazione massima
 			if os.Geteuid() != 0 {
 				fmt.Fprintln(os.Stderr, "\033[1;31m[ERRORE]\033[0m L'iniezione automatica richiede i privilegi di root. Rilancia il comando con 'sudo'.")
 				os.Exit(1)
@@ -103,7 +129,6 @@ menuentry "oa-tools: %s" --class isoboot {
 
 			targetFile := "/etc/grub.d/40_custom"
 
-			// Leggiamo il file attuale; se non esiste lo inizializziamo col suo schema 'tail' standard
 			contentBytes, err := os.ReadFile(targetFile)
 			var content string
 			if err != nil {
@@ -112,17 +137,14 @@ menuentry "oa-tools: %s" --class isoboot {
 				content = string(contentBytes)
 			}
 
-			// SOSTITUZIONE CHIRURGICA: Se esisteva già un blocco per questa specifica ISO, lo radiamo al suolo
 			if strings.Contains(content, startMarker) && strings.Contains(content, endMarker) {
 				startIndex := strings.Index(content, startMarker)
 				endIndex := strings.Index(content, endMarker) + len(endMarker)
 				content = content[:startIndex] + content[endIndex:]
 			}
 
-			// APPEND PULITO: Agganciamo il nuovo blocco in coda ripulendo gli spazi vuoti di troppo
 			content = strings.TrimSpace(content) + "\n\n" + grubEntry + "\n"
 
-			// Scrittura finale mantenendo tassativamente i permessi di esecuzione originali (0755)
 			err = os.WriteFile(targetFile, []byte(content), 0755)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "\033[1;31m[ERRORE]\033[0m Scrittura fallita su %s: %v\n", targetFile, err)
@@ -133,7 +155,6 @@ menuentry "oa-tools: %s" --class isoboot {
 			fmt.Printf("\033[1;34m[INFO]\033[0m Per rendere effettive le modifiche esegui: '%s'\n", updateCmd)
 
 		} else {
-			// Comportamento classico: stampiamo il blocco descrittivo sulla console
 			grubTemplate := `
 # oa-tools %s
 # Add to /etc/grub.d/40_custom or run with '--write' to inject automatically.
@@ -148,43 +169,92 @@ menuentry "oa-tools: %s" --class isoboot {
 	},
 }
 
-// Logic to extract parameters by inspecting the internal files of the target ISO via bsdtar
-func extractOaKernelParams(isoPath string) string {
-	// Tentativo A: Lettura di boot/grub/grub.cfg usando bsdtar (senza lo slash iniziale)
-	cmd := exec.Command("bsdtar", "-O", "-xf", isoPath, "boot/grub/grub.cfg")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &bytes.Buffer{} // Silenziamo l'output se il file non esiste (es. ISO solo legacy)
+// inspectGenericIso analizza a fondo l'ISO cercando file di boot e ne estrae l'anatomia
+func inspectGenericIso(isoPath string) (kernel, initrd, params string, useLoopbackCfg bool) {
+	cmdCheck := exec.Command("bsdtar", "-O", "-xf", isoPath, "boot/grub/loopback.cfg")
+	var outCheck bytes.Buffer
+	cmdCheck.Stdout = &outCheck
+	cmdCheck.Stderr = &bytes.Buffer{}
+	_ = cmdCheck.Run()
 
-	_ = cmd.Run()
+	if outCheck.Len() > 0 {
+		return "", "", "", true
+	}
 
-	// Tentativo B: Fallback su isolinux/isolinux.cfg se GRUB manca
-	if out.Len() == 0 {
-		cmd = exec.Command("bsdtar", "-O", "-xf", isoPath, "isolinux/isolinux.cfg")
+	targets := []string{
+		"boot/grub/grub.cfg",
+		"EFI/BOOT/grub.cfg",
+		"efi/boot/grub.cfg",
+		"isolinux/isolinux.cfg",
+		"boot/syslinux/syslinux.cfg",
+		"boot/x86_64/loader/grub.cfg",
+		"boot/x86_64/loader/isolinux.cfg",
+	}
+
+	var configText string
+	for _, target := range targets {
+		cmd := exec.Command("bsdtar", "-O", "-xf", isoPath, target)
+		var out bytes.Buffer
 		cmd.Stdout = &out
 		cmd.Stderr = &bytes.Buffer{}
 		_ = cmd.Run()
+		if out.Len() > 0 {
+			configText = out.String()
+			break
+		}
 	}
 
-	configText := out.String()
-
-	// 1. FIRMA ARCH LINUX (Kiro / Archiso)
-	if strings.Contains(configText, "archisobasedir") {
-		return "archisobasedir=arch archisolabel=OA_LIVE img_loop=$isofile cow_spacesize=2G"
+	if configText == "" {
+		return "/live/vmlinuz", "/live/initrd.img", "boot=live components rootwait findiso=$isofile", false
 	}
 
-	// 2. FIRMA FEDORA (Dracut Live Image)
-	if strings.Contains(configText, "rd.live.image") || strings.Contains(configText, "root=live:") {
-		return "root=live:CDLABEL=OA_LIVE rd.live.image iso-scan.iso=$isofile rootwait"
+	lines := strings.Split(configText, "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+
+		if strings.HasPrefix(line, "linux ") || strings.HasPrefix(line, "linuxefi ") || strings.HasPrefix(line, "kernel ") {
+			fields := strings.Fields(line)
+			if len(fields) > 1 {
+				kernel = fields[1]
+				kernel = strings.TrimPrefix(kernel, "/@")
+				if !strings.HasPrefix(kernel, "/") {
+					kernel = "/" + kernel
+				}
+				params = strings.Join(fields[2:], " ")
+			}
+		}
+
+		if strings.HasPrefix(line, "initrd ") || strings.HasPrefix(line, "initrdefi ") {
+			fields := strings.Fields(line)
+			if len(fields) > 1 {
+				initrd = fields[1]
+				initrd = strings.TrimPrefix(initrd, "/@")
+				if !strings.HasPrefix(initrd, "/") {
+					initrd = "/" + initrd
+				}
+			}
+		}
 	}
 
-	// 3. FIRMA ALPINE LINUX (Alpine Initfs)
-	if strings.Contains(configText, "alpine_dev") || strings.Contains(configText, "modules=loop") {
-		return "alpine_dev=loop img_loop=$isofile modules=loop,squashfs,sd-mod,usb-storage quiet"
+	if kernel != "" {
+		// Se intercettiamo la firma Arch, gli iniettiamo la variabile hardware $imgdevpath calcolata da GRUB
+		if strings.Contains(params, "archisobasedir") {
+			params = "archisobasedir=arch archisolabel=OA_LIVE img_dev=$imgdevpath img_loop=$isofile cow_spacesize=2G"
+		} else if strings.Contains(params, "rd.live.image") || strings.Contains(params, "root=live:") {
+			params = "root=live:CDLABEL=OA_LIVE rd.live.image iso-scan.iso=$isofile rootwait"
+		} else if strings.Contains(params, "alpine_dev") || strings.Contains(configText, "alpine") {
+			params = "alpine_dev=loop img_loop=$isofile modules=loop,squashfs,sd-mod,usb-storage quiet"
+		} else if strings.Contains(params, "boot=casper") {
+			params = "boot=casper iso-scan/filename=$isofile quiet splash"
+		} else {
+			if !strings.Contains(params, "findiso=") {
+				params = "boot=live components rootwait findiso=$isofile"
+			}
+		}
+		return kernel, initrd, params, false
 	}
 
-	// 4. FALLBACK PREDEFINITO: Standard live-boot per Debian, Ubuntu e derivate eggs
-	return "boot=live components rootwait findiso=$isofile"
+	return "/live/vmlinuz", "/live/initrd.img", "boot=live components rootwait findiso=$isofile", false
 }
 
 // Logica intelligente per mappare il percorso reale per GRUB analizzando i mount point dell'host
@@ -274,7 +344,6 @@ func detectBootloader() {
 }
 
 func init() {
-	// Registrazione del flag booleano nel sistema Cobra CLI
 	grub40Cmd.Flags().BoolVarP(&writeToGrub, "write", "w", false, "Inject the menu entry directly into /etc/grub.d/40_custom")
 	toolsCmd.AddCommand(grub40Cmd)
 }
