@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"coa/pkg/distro" // Assicurati che l'import corrisponda al tuo modulo
+	"coa/pkg/distro"
 )
 
 type Bleach struct {
@@ -35,7 +35,7 @@ func (b *Bleach) run(name string, args ...string) {
 	cmd.Run()
 }
 
-// Clean esegue la pulizia del sistema
+// Clean esegue la pulizia del sistema per recuperare spazio prima del remastering
 func (b *Bleach) Clean() error {
 	d := distro.NewDistro()
 
@@ -48,7 +48,6 @@ func (b *Bleach) Clean() error {
 		b.run("apk", "cache", "purge")
 
 	case "archlinux":
-		// Usiamo sh -c per la pipe "yes |"
 		b.run("sh", "-c", "yes | pacman -Scc")
 
 	case "debian":
@@ -56,27 +55,28 @@ func (b *Bleach) Clean() error {
 		b.run("apt-get", "autoclean", "-y")
 		os.RemoveAll("/var/lib/apt/lists/lock")
 
-	case "fedora", "openmamba":
+	case "fedora":
 		b.run("sh", "-c", "dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q) -y")
 		b.run("dnf", "clean", "all")
 
 	case "opensuse":
 		b.run("zypper", "clean")
-
-	case "voidlinux":
-		b.run("xbps-remove", "-O", "-y")
 	}
 
-	// 2. Fastpack (Flatpak cache)
-	b.log("Pulizia cache Flatpak")
-	matches, _ := filepath.Glob("/var/tmp/flatpak-cache-*")
-	for _, match := range matches {
-		os.RemoveAll(match)
+	// 2. Cache di terze parti (Flatpak & Snap)
+	b.log("Pulizia cache Flatpak e Snap")
+	if matches, err := filepath.Glob("/var/tmp/flatpak-cache-*"); err == nil {
+		for _, match := range matches {
+			os.RemoveAll(match)
+		}
 	}
+	// Snap conserva versioni vecchie disabilitate che occupano GB
+	os.RemoveAll("/var/lib/snapd/cache")
 
-	// 3. Bash History
-	b.log("Pulizia cronologia bash")
+	// 3. Cronologia Shell (Root)
+	b.log("Pulizia cronologia shell di root")
 	os.RemoveAll("/root/.bash_history")
+	os.RemoveAll("/root/.zsh_history")
 
 	// 4. Pulizia Journald / Syslog
 	b.log("Pulizia log di sistema")

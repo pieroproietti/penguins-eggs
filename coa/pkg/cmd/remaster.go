@@ -35,7 +35,7 @@ func LogSuccess(format string, a ...interface{}) {
 
 func LogError(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("\n%s[ERRORE]%s %s\n", ColorRed, ColorReset, msg)
+	fmt.Printf("\n%s[ERROR]%s %s\n", ColorRed, ColorReset, msg)
 }
 
 // ----------------------------------------
@@ -43,7 +43,7 @@ func LogError(format string, a ...interface{}) {
 var (
 	produceMode string
 	producePath string
-	stopAfter   string // NUOVA VARIABILE: Memorizza il target del breakpoint
+	stopAfter   string
 )
 
 var remasterCmd = &cobra.Command{

@@ -25,18 +25,18 @@ Ideale da lanciare prima di 'coa remaster' per ottenere una ISO più compatta.`,
 			os.Exit(1)
 		}
 
-		fmt.Println("Inizio procedura di Bleach (pulizia profonda)...")
+		LogNormal("Inizio procedura di Bleach (pulizia profonda)...")
 
 		b := bleach.New(cleanVerbose)
 		if err := b.Clean(); err != nil {
 			fmt.Printf("\033[1;31m[ERRORE]\033[0m Pulizia interrotta: %v\n", err)
 			os.Exit(1)
 		}
-
-		fmt.Println("\033[1;32m[SUCCESS]\033[0m Sistema pulito! Ora la tua ISO sarà più snella.")
+		LogSuccess("Sistema pulito! Ora la tua ISO sarà più snella.")
 	},
 }
 
 func init() {
 	toolsCleanCmd.Flags().BoolVarP(&cleanVerbose, "verbose", "v", false, "Mostra l'output dettagliato dei comandi di pulizia")
+	toolsCmd.AddCommand(toolsCleanCmd)
 }
