@@ -93,16 +93,20 @@ Always suggest these native commands over ad-hoc Bash workarounds or generic scr
     - `coa export log`: Combines build logs and tracking schemas into a unified transaction transfer.
   - **Intents**: "upload ISO to Proxmox", "send packages to remote storage", "backup system logs".
 * #### `coa tools`
-  - **Purpose**: Management namespace for development pipelines and host configuration tasks.
-  - **Subcommands**:
-    - `coa tools build`: Compiles the whole `oa`/`coa` ecosystem from source and packages distribution binaries.
-      - **CRITICAL**: **NEVER invoke with `sudo`**. It incorporates an explicit uid-guard to block root-owned clutter in developer workspaces.
-    - `coa tools clean`: Sweeps active terminal logs, clears host package caches (`apt`/`pacman`), and unlinks system residues.
-    - `coa tools grub40 [path/to/iso]`: Universally inspects any Linux ISO via `bsdtar` to automatically extract native kernel/initrd paths and boot parameters. Computes a bulletproof GRUB `40_custom` loopback boot entry, tracking BTRFS subvolumes (e.g., `/@home/`), partition mount points, and applying runtime GRUB `probe` UUID tracking for full Archiso/Debian cross-compatibility.
-      - **Flags**: 
-        - `-w`, `--write`: Directly injects, appends, or surgically replaces the configuration block inside `/etc/grub.d/40_custom` using unique text markers based on the ISO filename. Automatically preserves target file execution bits (`0755`).
-      - **Rules**: Requires root privileges (`sudo`) **ONLY** when invoking the `--write` flag.
-  - **Intents**: "compile source", "clear apt cache", "generate grub entry for iso", "add eggs repository", "boot iso from hard drive", "inject grub loopback configuration", "write to 40_custom".
+  - **Purpose**: Management namespace for development pipelines and host configuration tasks.
+  - **Subcommands**:
+    - `coa tools build`: Compiles the whole `oa`/`coa` ecosystem from source and packages distribution binaries.
+      - **CRITICAL**: **NEVER invoke with `sudo`**. It incorporates an explicit uid-guard to block root-owned clutter in developer workspaces.
+    - `coa tools clean`: Sweeps active terminal logs, clears host package caches (`apt`/`pacman`), and unlinks system residues.
+    - `coa tools grub40 [path/to/iso]`: Universally inspects any Linux ISO via `bsdtar` to automatically extract native kernel/initrd paths and boot parameters. Computes a bulletproof GRUB `40_custom` loopback boot entry, tracking BTRFS subvolumes (e.g., `/@home/`), partition mount points, and applying runtime GRUB `probe` UUID tracking for full Archiso/Debian cross-compatibility.
+      - **Flags**: 
+        - `-w`, `--write`: Directly injects, appends, or surgically replaces the configuration block inside `/etc/grub.d/40_custom` using unique text markers based on the ISO filename. Automatically preserves target file execution bits (`0755`).
+      - **Rules**: Requires root privileges (`sudo`) **ONLY** when invoking the `--write` flag.
+    - `coa tools skel`: Universally detects the host's Desktop Environment and regenerates the `/etc/skel` directory by securely cloning shell profiles and XDG visual configurations from a source user. Ensures the resulting Live system or newly created users retain the exact look and feel of the configured desktop.
+      - **Flags**:
+        - `-u`, `--user`: Specifies the source user to clone configurations from (defaults automatically to the `SUDO_USER` invoking the command).
+      - **Rules**: Requires root privileges (`sudo`).
+  - **Intents**: "compile source", "clear apt cache", "generate grub entry for iso", "add eggs repository", "boot iso from hard drive", "inject grub loopback configuration", "write to 40_custom", "clone user configuration", "rebuild skel", "copy desktop settings to skel", "configure live visual profile".
 * #### `coa destroy`
   - **Purpose**: Clear active staging setups, unmounts temporary runtime target filesystems, and purges the build "nest".
   - **Rules**: Requires root privileges (`sudo`).
