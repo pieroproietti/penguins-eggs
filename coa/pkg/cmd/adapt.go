@@ -1,7 +1,9 @@
 package cmd
 
 import (
-	"os/exec"
+	"fmt"
+
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -30,15 +32,14 @@ func init() {
 
 // handleAdapt adatta la risoluzione del monitor per le Virtual Machine
 func handleAdapt() {
-	// Nota: usiamo LogNormal e LogSuccess che abbiamo già definito nel pacchetto cmd (es. in remaster.go)
-	LogNormal("Adapting monitor resolution...")
+	utils.LogNormal("Adapting monitor resolution...")
 
 	virtualOutputs := []string{"Virtual-0", "Virtual-1", "Virtual-2", "Virtual-3"}
 
 	for _, output := range virtualOutputs {
-		cmd := exec.Command("xrandr", "--output", output, "--auto")
-		_ = cmd.Run() // Ignoriamo gli errori in modo silenzioso, perché non tutti gli output esisteranno
+		// Ignoriamo gli errori e l'output in modo silenzioso, perché non tutti gli output esisteranno
+		_ = utils.ExecQuiet(fmt.Sprintf("xrandr --output %s --auto", output))
 	}
 
-	LogSuccess("Resolution adapted.")
+	utils.LogSuccess("Resolution adapted.")
 }

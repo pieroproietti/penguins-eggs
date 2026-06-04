@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,32 +12,6 @@ import (
 
 	"github.com/spf13/cobra"
 )
-
-// --- SISTEMA DI LOGGING CENTRALIZZATO ---
-const (
-	ColorCyan   = "" // "\033[1;36m"
-	ColorRed    = "" // "\033[1;31m"
-	ColorGreen  = "" // "\033[1;32m"
-	ColorYellow = "" // "\033[1;33m" // Aggiunto per i messaggi di debug/breakpoint
-	ColorReset  = "" // "\033[0m"
-)
-
-func LogNormal(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	utils.LogNormal("%s", msg)
-}
-
-func LogSuccess(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	utils.LogNormal("%s", msg)
-}
-
-func LogError(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	utils.LogNormal("\n%s", msg)
-}
-
-// ----------------------------------------
 
 var (
 	produceMode string
@@ -60,7 +33,7 @@ and generate a precise execution plan for the OA engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 
-		LogNormal("Avvio procedura di rimasterizzazione...")
+		utils.LogNormal("Avvio procedura di rimasterizzazione...")
 
 		// 1. Il ponte di comando valuta la situazione (Il Sensore)
 		isGitHubAction := false
@@ -73,19 +46,16 @@ and generate a precise execution plan for the OA engine.`,
 		isoName := myDistro.GetISOName()
 
 		finalPath := filepath.Join(producePath, isoName)
-		LogNormal("L'uovo verrà generato in: %s", finalPath)
+		utils.LogNormal("L'uovo verrà generato in: %s", finalPath)
 
 		// 2. PILOT: Carichiamo lo spartito dal Brain
 		profile, err := pilot.DetectAndLoad(isGitHubAction)
 		if err != nil {
-			LogError("Impossibile caricare il Brain Profile: %v", err)
-			os.Exit(1)
+			utils.Fatal("Impossibile caricare il Brain Profile: %v", err)
 		}
-		LogSuccess("Spartito caricato con successo.")
+		utils.LogSuccess("Spartito caricato con successo.")
 
 		// 3. ENGINE: Generiamo il piano JSON per oa
-		// ORA PASSAGGIO INTEGRALE: passiamo 'profile' (punta a tutto)
-		// invece del solo slice 'profile.Remaster'
 		planPath, err := engine.GeneratePlan(
 			profile, // <-- L'intero oggetto che contiene Settings e Remaster
 			myDistro.FamilyID,
@@ -96,20 +66,19 @@ and generate a precise execution plan for the OA engine.`,
 			stopAfter,
 		)
 		if err != nil {
-			LogError("Impossibile generare il piano di volo: %v", err)
-			os.Exit(1)
+			utils.Fatal("Impossibile generare il piano di volo: %v", err)
 		}
 
 		// RECUPERO BOOTLOADERS
-		LogNormal("Recupero bootloaders (penguins-bootloaders)...")
+		utils.LogNormal("Recupero bootloaders (penguins-bootloaders)...")
 		utils.EnsureBootloaders("/tmp/coa/bootloaders")
 
 		// GENERAZIONE EXCLUSIONI
-		LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
+		utils.LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
 		engine.GenerateExcludeList(produceMode, isGitHubAction)
 
 		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il JSON appena generato
-		LogNormal("Passaggio dei comandi al motore OA...")
+		utils.LogNormal("Passaggio dei comandi al motore OA...")
 		oaCmd := exec.Command("oa", planPath)
 
 		// Colleghiamo l'output di oa direttamente al terminale dell'utente
@@ -117,15 +86,14 @@ and generate a precise execution plan for the OA engine.`,
 		oaCmd.Stderr = os.Stderr
 
 		if err := oaCmd.Run(); err != nil {
-			LogError("L'esecuzione di oa è fallita: %v", err)
-			os.Exit(1)
+			utils.Fatal("L'esecuzione di oa è fallita: %v", err)
 		}
 
 		// Vittoria finale: Differenziamo il messaggio se abbiamo usato il breakpoint
 		if stopAfter != "" {
-			utils.LogNormal("\n%s[DEBUG]%s Breakpoint raggiunto e ambiente smontato in sicurezza. Pronto per l'ispezione! 🐧🔍")
+			utils.LogWarning("Breakpoint raggiunto e ambiente smontato in sicurezza. Pronto per l'ispezione! 🐧🔍")
 		} else {
-			utils.LogSuccess("\n%s[SUCCESSO]%s Rimasterizzazione completata! L'uovo è pronto. 🐧🥚")
+			utils.LogSuccess("Rimasterizzazione completata! L'uovo è pronto. 🐧🥚")
 		}
 	},
 }

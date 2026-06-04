@@ -3,11 +3,11 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"time"
 
 	"coa/pkg/distro"
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -34,8 +34,7 @@ func handleExportIso(clean bool) {
 	// Ricerca nel nido locale
 	allFiles, _ := filepath.Glob(filepath.Join(isoSrcDir, isoPattern))
 	if len(allFiles) == 0 {
-		LogError("Il nido è vuoto per il prefisso: %s", prefixBase)
-		return
+		utils.Fatal("Il nido è vuoto per il prefisso: %s", prefixBase)
 	}
 
 	// 2. Identificazione dell'ultima ISO (basata su ModTime)
@@ -52,36 +51,43 @@ func handleExportIso(clean bool) {
 	}
 
 	targetFileName := filepath.Base(latestFile)
-	LogNormal("Ultima ISO trovata: %s", targetFileName)
+	utils.LogNormal("Ultima ISO trovata: %s", targetFileName)
 
 	// 3. Setup SSH Multiplexing
 	socketPath := "/tmp/coa-ssh-mux"
-	muxArgs := []string{"-o", "ControlPath=" + socketPath}
 
-	// Start Master Connection
-	exec.Command("ssh", "-M", "-f", "-N", "-o", "ControlPath="+socketPath, remoteUserHost).Run()
-	defer exec.Command("ssh", "-O", "exit", "-o", "ControlPath="+socketPath, remoteUserHost).Run()
+	// Start Master Connection (in background)
+	startMuxCmd := fmt.Sprintf("ssh -M -f -N -o ControlPath=%s %s", socketPath, remoteUserHost)
+	utils.ExecQuiet(startMuxCmd)
+
+	// Assicuriamoci di chiudere il socket alla fine, avvolgendo il comando nel defer
+	defer func() {
+		stopMuxCmd := fmt.Sprintf("ssh -O exit -o ControlPath=%s %s", socketPath, remoteUserHost)
+		utils.ExecQuiet(stopMuxCmd)
+	}()
 
 	// 4. Logica di Pulizia su Proxmox
 	if clean {
-		LogNormal("Pulizia su Proxmox: rimozione versioni precedenti con prefisso %s", prefixBase)
+		utils.LogNormal("Pulizia su Proxmox: rimozione versioni precedenti con prefisso %s", prefixBase)
 		rmCmdStr := fmt.Sprintf("rm -f %s/%s*.iso", remoteIsoPath, prefixBase)
-		sshCmd := exec.Command("ssh", append(muxArgs, remoteUserHost, rmCmdStr)...)
-		if err := sshCmd.Run(); err != nil {
-			LogNormal("Nessuna vecchia ISO rimossa su Proxmox.")
+
+		// Eseguiamo silenziosamente il comando remoto tramite il socket SSH
+		sshCmd := fmt.Sprintf("ssh -o ControlPath=%s %s '%s'", socketPath, remoteUserHost, rmCmdStr)
+		if err := utils.ExecQuiet(sshCmd); err != nil {
+			utils.LogNormal("Nessuna vecchia ISO rimossa su Proxmox.")
 		}
 	}
 
 	// 5. Invio effettivo
-	LogNormal("Inviando %s verso Proxmox...", targetFileName)
+	utils.LogNormal("Inviando %s verso Proxmox...", targetFileName)
 	dst := fmt.Sprintf("%s:%s", remoteUserHost, remoteIsoPath)
-	scpCmd := exec.Command("scp", append(muxArgs, latestFile, dst)...)
-	scpCmd.Stdout = os.Stdout
-	scpCmd.Stderr = os.Stderr
 
-	if err := scpCmd.Run(); err != nil {
-		LogError("Errore durante il trasferimento: %v", err)
+	// Il comando SCP formattato in modo lineare
+	scpCmd := fmt.Sprintf("scp -o ControlPath=%s '%s' '%s'", socketPath, latestFile, dst)
+
+	if err := utils.Exec(scpCmd); err != nil {
+		utils.LogError("Errore durante il trasferimento: %v", err)
 	} else {
-		LogSuccess("Esportazione completata con successo!")
+		utils.LogSuccess("Esportazione completata con successo!")
 	}
 }

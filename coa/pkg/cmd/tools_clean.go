@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"os"
-
-	"coa/pkg/bleach" // Assicurati che il path sia corretto
+	"coa/pkg/bleach"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -19,20 +17,18 @@ Ideale da lanciare prima di 'coa remaster' per ottenere una ISO più compatta.`,
 	Example: `  sudo coa tools clean
   sudo coa tools clean --verbose`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Controllo root: la pulizia profonda richiede i privilegi massimi
-		if os.Geteuid() != 0 {
-			utils.Fatal(" Il comando clean deve essere eseguito come root (sudo).")
-			os.Exit(1)
-		}
+		// Sostituiamo il check manuale con la funzione centralizzata del pacchetto cmd
+		CheckSudoRequirements(cmd.Name(), true)
 
-		LogNormal("Inizio procedura di Bleach (pulizia profonda)...")
+		utils.LogNormal("Inizio procedura di Bleach (pulizia profonda)...")
 
 		b := bleach.New(cleanVerbose)
 		if err := b.Clean(); err != nil {
-			utils.LogError("Pulizia interrotta: %v", err)
-			os.Exit(1)
+			// Fatal stampa in rosso ed esce da solo con codice 1
+			utils.Fatal("Pulizia interrotta: %v", err)
 		}
-		LogSuccess("Sistema pulito! Ora la tua ISO sarà più snella.")
+
+		utils.LogSuccess("Sistema pulito! Ora la tua ISO sarà più snella.")
 	},
 }
 

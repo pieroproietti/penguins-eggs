@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"os"
-	"os/exec"
+
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -31,44 +32,36 @@ func init() {
 
 // handledestroy gestisce la pulizia profonda invocando prima oa e poi rimuovendo la directory
 func handledestroy() {
-	LogNormal("Freeing the nest...")
+	utils.LogNormal("Freeing the nest...")
 
 	// 1. Chiamiamo il motore C per smontare in sicurezza i mountpoint
-	// Nota: assumiamo che 'oa' sia nel PATH, come in remaster.go
-	cmd := exec.Command("oa", "cleanup")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		LogError("Cleanup (unmount) failed: %v", err)
+	// Grazie a utils.Exec ci risparmiamo tutto il setup di Stdout/Stderr
+	if err := utils.Exec("oa cleanup"); err != nil {
+		utils.LogError("Cleanup (unmount) failed: %v", err)
 		// Non blocchiamo l'esecuzione qui, proviamo comunque a rimuovere la cartella
 	}
 
 	// 2. Rimozione fisica della workspace
 	workPath := "/home/eggs"
-	LogNormal("Removing workspace: %s", workPath)
+	utils.LogNormal("Removing workspace: %s", workPath)
 
-	rmCmd := exec.Command("rm", "-rf", workPath)
-	rmCmd.Stdout = os.Stdout
-	rmCmd.Stderr = os.Stderr
-
-	if err := rmCmd.Run(); err != nil {
-		LogError("Physical removal failed: %v", err)
+	if err := utils.Exec("rm -rf " + workPath); err != nil {
+		utils.LogError("Physical removal failed: %v", err)
 	} else {
-		LogSuccess("Nest is empty. System clean.")
+		utils.LogSuccess("Nest is empty. System clean.")
 	}
 
 	// 3. Rimozione del file di log di oa
 	logFile := "/var/log/oa-tools.log"
-	LogNormal("Removing log file: %s", logFile)
+	utils.LogNormal("Removing log file: %s", logFile)
 
 	if err := os.Remove(logFile); err != nil {
 		if os.IsNotExist(err) {
-			LogNormal("Log file '%s' non trovato, nulla da rimuovere.", logFile)
+			utils.LogNormal("Log file '%s' non trovato, nulla da rimuovere.", logFile)
 		} else {
-			LogError("Failed to remove log file: %v", err)
+			utils.LogError("Failed to remove log file: %v", err)
 		}
 	} else {
-		LogSuccess("Log file eliminato con successo.")
+		utils.LogSuccess("Log file eliminato con successo.")
 	}
 }

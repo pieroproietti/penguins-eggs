@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"coa/pkg/distro"
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -26,10 +26,10 @@ func init() {
 
 func handleExportPkg(clean bool) {
 	myDistro := distro.NewDistro()
-	distro := myDistro.DistroID
+	distroID := myDistro.DistroID
 	family := myDistro.FamilyID
 
-	LogNormal("Famiglia rilevata: %s. Ricerca pacchetti pertinenti...", family)
+	utils.LogNormal("Famiglia rilevata: %s. Ricerca pacchetti pertinenti...", family)
 
 	var pattern string
 	var extension string
@@ -49,48 +49,50 @@ func handleExportPkg(clean bool) {
 		pattern = "oa-tools-manjaro-*.pkg.tar.zst"
 		extension = ".pkg.tar.zst"
 	default:
-		LogNormal("Nessuna regola di esportazione specifica per la distro %s della famiglia: %s", distro, family)
-		return
+		// Fatal stampa e chiude l'esecuzione
+		utils.Fatal("Nessuna regola di esportazione specifica per la distro %s della famiglia: %s", distroID, family)
 	}
 
 	foundFiles, _ := filepath.Glob(pattern)
 	if len(foundFiles) == 0 {
-		LogError("Nessun pacchetto %s trovato per l'esportazione.", extension)
-		return
+		utils.Fatal("Nessun pacchetto %s trovato per l'esportazione.", extension)
 	}
 
-	// SSH Multiplexing
+	// SSH Multiplexing: prepariamo le opzioni come stringa singola
 	socketPath := "/tmp/coa-ssh-mux-pkg"
-	muxArgs := []string{"-o", "ControlMaster=auto", "-o", "ControlPath=" + socketPath, "-o", "ControlPersist=2m"}
+	muxOpts := fmt.Sprintf("-o ControlMaster=auto -o ControlPath=%s -o ControlPersist=2m", socketPath)
+
 	defer func() {
-		exec.Command("ssh", "-O", "exit", "-o", "ControlPath="+socketPath, remoteUserHost).Run()
+		stopMuxCmd := fmt.Sprintf("ssh -O exit -o ControlPath=%s %s", socketPath, remoteUserHost)
+		utils.ExecQuiet(stopMuxCmd)
 		os.Remove(socketPath)
 	}()
 
 	if clean {
-		LogNormal("Pulizia remota vecchi pacchetti %s...", extension)
+		utils.LogNormal("Pulizia remota vecchi pacchetti %s...", extension)
 		cleanCmdStr := fmt.Sprintf("rm -f %s%s", remotePkgPath, pattern)
-		sshArgs := append(muxArgs, remoteUserHost, cleanCmdStr)
 
-		if err := exec.Command("ssh", sshArgs...).Run(); err != nil {
-			LogNormal("Pulizia remota non necessaria o fallita (nessun file trovato).")
+		// Il comando ssh assemblato come stringa
+		sshCmd := fmt.Sprintf("ssh %s %s '%s'", muxOpts, remoteUserHost, cleanCmdStr)
+
+		if err := utils.ExecQuiet(sshCmd); err != nil {
+			utils.LogNormal("Pulizia remota non necessaria o fallita (nessun file trovato).")
 		} else {
-			LogSuccess("Vecchi pacchetti %s rimossi dal server.", extension)
+			utils.LogSuccess("Vecchi pacchetti %s rimossi dal server.", extension)
 		}
 	}
 
 	for _, pkg := range foundFiles {
-		LogNormal("Esportazione: %s", pkg)
+		utils.LogNormal("Esportazione: %s", pkg)
 		dstStr := fmt.Sprintf("%s:%s", remoteUserHost, remotePkgPath)
-		scpArgs := append(muxArgs, pkg, dstStr)
 
-		scpCmd := exec.Command("scp", scpArgs...)
-		scpCmd.Stdout, scpCmd.Stderr = os.Stdout, os.Stderr
+		// Il comando scp assemblato come stringa
+		scpCmd := fmt.Sprintf("scp %s '%s' '%s'", muxOpts, pkg, dstStr)
 
-		if err := scpCmd.Run(); err != nil {
-			LogError("Trasferimento fallito per %s: %v", pkg, err)
+		if err := utils.Exec(scpCmd); err != nil {
+			utils.LogError("Trasferimento fallito per %s: %v", pkg, err)
 		} else {
-			LogSuccess("%s inviato con successo.", pkg)
+			utils.LogSuccess("%s inviato con successo.", pkg)
 		}
 	}
 }

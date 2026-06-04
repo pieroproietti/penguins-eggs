@@ -118,15 +118,23 @@ Always suggest these native commands over ad-hoc Bash workarounds or generic scr
 
 ---
 
-## 7. AI Agent Guardrails & Absolute Prohibitions
+### 7. AI Agent Guardrails & Absolute Prohibitions
 
-1. **Strict Privilege Isolation**: You MUST separate privilege paradigms cleanly when writing instructions or code scripts:
-   - System/Chroot mutations and host boot file writing (`remaster`, `sysinstall`, `destroy`, `tools clean`, `tools repo`, and `tools grub40 --write`) **REQUIRE** `sudo`.
-   - Local workspace builds, compilation, and packaging tasks (`tools build`, standard `tools grub40` view-only) **FORBID** `sudo`.
-2. **Absolute C Module Constraints**: **NEVER** add third-party library dependencies to the `/oa` C subsystem. It must remain a zero-dependency, low-overhead POSIX executable.
-3. **Loopback Boot Troubleshooting Standard**: If a user encounters an `(initramfs)` execution block, a GRUB "file not found" message, or disk mapping anomalies during hard-drive loopback testing, **do not write manual GRUB paths**. Instantly instruct them to execute:
-   ```bash
-   sudo coa tools grub40 /path/to/your/image.iso --write
-   ```
-   to automatically parse, solve host architecture quirks (via runtime GRUB `probe` partition UUID tracking), and surgically inject the perfect configuration directly into their bootloader setup.
-4. **No Hardcoded Environment Specs**: When editing or extending Go orchestration paths, do not hardcode absolute path variables. Always fetch configuration anchors dynamically using the contextual framework parameters (`ctx.*`).
+5. **CRITICAL: Centralized Logging Enforcement (Go)**
+   * **NEVER** write raw `fmt.Printf`, `fmt.Println`, `fmt.Fprintf`, or hardcode ANSI color strings (e.g., `\033[1;33m`) for CLI feedback.
+   * You **MUST** import `coa/pkg/utils` and use the centralized logging wrappers: 
+     - `utils.LogNormal("msg", vars)` (Cyan tag)
+     - `utils.LogSuccess("msg", vars)` (Green tag)
+     - `utils.LogWarning("msg", vars)` (Yellow tag)
+     - `utils.LogError("msg", vars)` (Red tag, outputs to Stderr)
+     - `utils.Fatal("msg", vars)` (Logs error and calls os.Exit(1))
+   * **Do not** append `\n` at the end of the strings; the wrappers handle it automatically.
+
+6. **CRITICAL: Centralized Command Execution Enforcement (Go)**
+   * **NEVER** write raw boilerplate like `cmd := exec.Command("sh", "-c", "...")` with manual `os.Stdout` and `os.Stderr` assignments for standard shell commands.
+   * You **MUST** import `coa/pkg/utils` and use the execution wrappers:
+     - `utils.Exec("command")`: For standard execution where output flows to the terminal.
+     - `utils.ExecQuiet("command")`: For silent executions where output is hidden.
+     - `utils.ExecCapture("command")`: To execute and return the output as a `string` for parsing (replaces `bytes.Buffer` boilerplate).
+   * **Exception:** You may use raw `os/exec` ONLY if advanced, multi-stage stream manipulation (like chaining `StdinPipe` / `StdoutPipe` across multiple concurrent processes) is strictly required.
+   

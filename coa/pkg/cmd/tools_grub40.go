@@ -1,15 +1,12 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
-	"coa/pkg/distro" // Importiamo il tuo pacchetto per rilevare l'host
-
+	"coa/pkg/distro"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -31,15 +28,13 @@ var grub40Cmd = &cobra.Command{
 		// 1. Ottiene il percorso assoluto dal punto di vista del sistema host
 		absPath, err := filepath.Abs(isoPath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error calculating absolute path: %v\n", err)
-			os.Exit(1)
+			utils.Fatal("Error calculating absolute path: %v", err)
 		}
 
 		// 2. Verifica l'esistenza del file e ne legge la dimensione
 		info, err := os.Stat(absPath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: cannot access file (are you sure it exists?): %v\n", err)
-			os.Exit(1)
+			utils.Fatal("Error: cannot access file (are you sure it exists?): %v", err)
 		}
 
 		sizeBytes := info.Size()
@@ -97,7 +92,6 @@ menuentry "oa-tools: %s (via loopback.cfg)" --class isoboot {
 }
 %s`, startMarker, isoName, grubPath, endMarker)
 		} else {
-			// Inseriamo il probe dinamico dell'UUID per dare ad Archiso le coordinate della partizione ospite
 			grubEntry = fmt.Sprintf(`%s
 menuentry "oa-tools: %s" --class isoboot {
     insmod part_gpt
@@ -125,8 +119,7 @@ menuentry "oa-tools: %s" --class isoboot {
 		// 9. LOGICA DI SCRITTURA DIRETTA O CONSULTAZIONE STANDARD
 		if writeToGrub {
 			if os.Geteuid() != 0 {
-				fmt.Fprintln(os.Stderr, "\033[1;31m[ERRORE]\033[0m L'iniezione automatica richiede i privilegi di root. Rilancia il comando con 'sudo'.")
-				os.Exit(1)
+				utils.Fatal("L'iniezione automatica richiede i privilegi di root. Rilancia il comando con 'sudo'.")
 			}
 
 			targetFile := "/etc/grub.d/40_custom"
@@ -149,12 +142,11 @@ menuentry "oa-tools: %s" --class isoboot {
 
 			err = os.WriteFile(targetFile, []byte(content), 0755)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "\033[1;31m[ERRORE]\033[0m Scrittura fallita su %s: %v\n", targetFile, err)
-				os.Exit(1)
+				utils.Fatal("Scrittura fallita su %s: %v", targetFile, err)
 			}
 
-			utils.LogSuccess(" Entry per '%s' configurata con successo in %s.\n", isoName, targetFile)
-			utils.LogNormal("[INFO] Per rendere effettive le modifiche esegui: '%s'", updateCmd)
+			utils.LogSuccess("Entry per '%s' configurata con successo in %s.", isoName, targetFile)
+			utils.LogNormal("Per rendere effettive le modifiche esegui: '%s'", updateCmd)
 
 		} else {
 			grubTemplate := `
@@ -173,13 +165,10 @@ menuentry "oa-tools: %s" --class isoboot {
 
 // inspectGenericIso analizza a fondo l'ISO cercando file di boot e ne estrae l'anatomia
 func inspectGenericIso(isoPath string) (kernel, initrd, params string, useLoopbackCfg bool) {
-	cmdCheck := exec.Command("bsdtar", "-O", "-xf", isoPath, "boot/grub/loopback.cfg")
-	var outCheck bytes.Buffer
-	cmdCheck.Stdout = &outCheck
-	cmdCheck.Stderr = &bytes.Buffer{}
-	_ = cmdCheck.Run()
-
-	if outCheck.Len() > 0 {
+	// Usiamo ExecCapture per prelevare il contenuto in modo pulito e ignoriamo l'errore se fallisce
+	checkCmd := fmt.Sprintf("bsdtar -O -xf '%s' boot/grub/loopback.cfg 2>/dev/null", isoPath)
+	outCheck, _ := utils.ExecCapture(checkCmd)
+	if len(strings.TrimSpace(outCheck)) > 0 {
 		return "", "", "", true
 	}
 
@@ -195,13 +184,12 @@ func inspectGenericIso(isoPath string) (kernel, initrd, params string, useLoopba
 
 	var configText string
 	for _, target := range targets {
-		cmd := exec.Command("bsdtar", "-O", "-xf", isoPath, target)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		cmd.Stderr = &bytes.Buffer{}
-		_ = cmd.Run()
-		if out.Len() > 0 {
-			configText = out.String()
+		// Catturiamo il file di configurazione con bsdtar usando la shell di ExecCapture
+		cmdStr := fmt.Sprintf("bsdtar -O -xf '%s' '%s' 2>/dev/null", isoPath, target)
+		out, _ := utils.ExecCapture(cmdStr)
+
+		if len(strings.TrimSpace(out)) > 0 {
+			configText = out
 			break
 		}
 	}
@@ -340,8 +328,8 @@ func detectBootloader() {
 	_, errGrub2 := os.Stat("/boot/grub2")
 
 	if os.IsNotExist(errGrub) && os.IsNotExist(errGrub2) {
-		fmt.Fprintln(os.Stderr, "\033[1;33m[WARNING]\033[0m GRUB directory was not found in /boot. This host does not seem to use GRUB.")
-		fmt.Fprintln(os.Stderr, "\033[1;33m[INFO]\033[0m The configuration below is generated anyway, but it will only work on a GRUB-managed target machine.\n")
+		utils.LogWarning("GRUB directory was not found in /boot. This host does not seem to use GRUB.")
+		utils.LogNormal("The configuration below is generated anyway, but it will only work on a GRUB-managed target machine.")
 	}
 }
 
