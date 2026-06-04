@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"coa/pkg/builder"
@@ -22,7 +21,7 @@ It orchestrates the full compilation of both the C-native engine (oa) and the Go
 		// Controllo Anti-Sudo: blocchiamo l'esecuzione se l'utente è root
 		if os.Geteuid() == 0 {
 			utils.Fatal(" Esecuzione interrotta. NON eseguire 'coa tools build' con sudo!")
-			fmt.Println("La compilazione deve essere effettuata come utente normale per evitare di " +
+			utils.LogNormal("La compilazione deve essere effettuata come utente normale per evitare di " +
 				"creare file e pacchetti di proprietà di root nel tuo workspace.")
 			os.Exit(1)
 		}

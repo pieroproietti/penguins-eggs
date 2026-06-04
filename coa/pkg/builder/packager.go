@@ -2,6 +2,7 @@ package builder
 
 import (
 	sysctx "coa/pkg/context"
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 	"os/exec"
@@ -10,7 +11,7 @@ import (
 )
 
 func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
-	fmt.Printf("[build] Packager: sigillo il pacchetto per %s...\n", dist)
+	utils.LogNormal("[build] Packager: sigillo il pacchetto per %s...", dist)
 
 	stage := ctx.StageDir
 	var cmd *exec.Cmd
@@ -59,15 +60,15 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		)
 
 	default:
-		fmt.Printf("⚠️ Distro %s non ancora implementata nel packager\n", dist)
+		utils.LogWarning("Distro %s non ancora implementata nel packager", dist)
 		return
 	}
 
 	// --- ESECUZIONE DEL COMANDO ---
-	fmt.Printf("[build] Esecuzione comando: %s\n", cmd.String())
+	utils.LogNormal("[build] Esecuzione comando: %s", cmd.String())
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("❌ Fallimento packager: %v\n", err)
+		utils.LogError("Fallimento packager: %v", err)
 		return
 	}
 
@@ -104,14 +105,14 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		if generatedPkg != "" {
 			err := moveFile(generatedPkg, finalDest)
 			if err != nil {
-				fmt.Printf("❌ Errore durante lo spostamento del pacchetto: %v\n", err)
+				utils.LogError("Errore durante lo spostamento del pacchetto: %v", err)
 				return
 			}
 		} else {
-			fmt.Println("❌ Errore critico: il Montatore ha finito senza errori, ma non trovo il pacchetto nello stage!")
+			utils.LogError("Errore critico: il Montatore ha finito senza errori, ma non trovo il pacchetto nello stage!")
 			return
 		}
 	}
 
-	fmt.Printf("✅ Pacchetto %s: %s, creato in: %s\n", dist, pkgFileName, ctx.ProjRoot)
+	utils.LogSuccess("Pacchetto %s: %s, creato in: %s", dist, pkgFileName, ctx.ProjRoot)
 }

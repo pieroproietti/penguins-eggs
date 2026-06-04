@@ -181,7 +181,7 @@ func printAiPrompt(packages []string) {
 	promptContent := sb.String()
 
 	// 4. Stampa a video per l'utente
-	fmt.Println("\n" + utils.ColorCyan + promptContent + utils.ColorReset)
+	utils.LogNormal("\n" + utils.ColorCyan + promptContent + utils.ColorReset)
 
 	// 5. Scrittura su file AIPrompt.txt nella HOME reale dell'utente
 	userHome, _ := os.UserHomeDir()
@@ -201,6 +201,6 @@ func printAiPrompt(packages []string) {
 			utils.Exec(fmt.Sprintf("sudo chown %s:%s %s", sudoUser, sudoUser, promptFile))
 		}
 		logToFile(fmt.Sprintf("✅ File AIPrompt.txt generato in: %s", promptFile))
-		fmt.Printf("File di prompt generato nella Home: %s%s%s\n\n", utils.ColorYellow, promptFile, utils.ColorReset)
+		utils.LogNormal("File di prompt generato nella Home: %s%s%s\n", utils.ColorYellow, promptFile, utils.ColorReset)
 	}
 }

@@ -149,10 +149,10 @@ func LoadCustomSettings() (*Settings, error) {
 	// Se il file non esiste, usciamo silenziosamente
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			fmt.Printf("[DEBUG] /etc/oa-tools/custom.yaml NOT found!\n")
+			utils.LogNormal("[DEBUG] /etc/oa-tools/custom.yaml NOT found!")
 			return nil, nil // Nessun custom trovato, tutto ok
 		}
-		fmt.Printf("[DEBUG] error reading /etc/oa-tools/custom.yaml\n")
+		utils.LogNormal("[DEBUG] error reading /etc/oa-tools/custom.yaml")
 		return nil, err // Errore reale di lettura
 	}
 
@@ -160,6 +160,6 @@ func LoadCustomSettings() (*Settings, error) {
 	if err := v.Unmarshal(&settings); err != nil {
 		return nil, err
 	}
-	fmt.Printf("[DEBUG] Settings caricati da custom.yml: %+v\n", settings)
+	utils.LogNormal("[DEBUG] Settings caricati da custom.yml: %+v", settings)
 	return &settings, nil
 }

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"coa/pkg/distro"
+	"coa/pkg/utils"
 )
 
 type Bleach struct {
@@ -22,7 +23,7 @@ func New(verbose bool) *Bleach {
 
 func (b *Bleach) log(msg string) {
 	if b.Verbose {
-		fmt.Printf("\033[1;33m[bleach]\033[0m %s\n", msg)
+		utils.LogNormal("[bleach] %s", msg)
 	}
 }
 

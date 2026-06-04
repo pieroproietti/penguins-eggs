@@ -1,3 +1,6 @@
+// Copyright 2026 Piero Proietti <piero.proietti@gmail.com>.
+// All rights reserved.
+
 package assets
 
 import (
@@ -5,20 +8,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"coa/pkg/utils"
 )
-
-// --- SISTEMA DI LOGGING ASSETS ---
-const (
-	ColorCyan  = "\033[1;36m"
-	ColorReset = "\033[0m"
-)
-
-func logAssets(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("%s[coa-assets]%s %s\n", ColorCyan, ColorReset, msg)
-}
-
-// ---------------------------------
 
 //go:embed configs/*
 var internalConfigs embed.FS
@@ -28,7 +20,8 @@ var calamaresFiles embed.FS
 
 // ExtractCalamares estrae i file universali di Calamares usando fsCopy
 func ExtractCalamares(destRoot string) error {
-	logAssets("Estrazione asset Calamares in: %s", destRoot)
+	// Chiamata diretta e pulita al logger centralizzato
+	utils.LogNormal("Estrazione asset Calamares in: %s", destRoot)
 
 	if err := os.MkdirAll(destRoot, 0755); err != nil {
 		return fmt.Errorf("impossibile creare la directory %s: %v", destRoot, err)

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"coa/pkg/utils"
 	"os"
 	"path/filepath"
 
@@ -17,7 +17,7 @@ var genDocsCmd = &cobra.Command{
 	Hidden: true, // Nascondiamo questo comando agli utenti normali (non apparirà in 'coa --help')
 	Short:  "Genera file Markdown, Man pages e script di autocompletamento",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("[gen_docs] Generazione documentazione nella cartella: %s\n", docTarget)
+		utils.LogNormal("[gen_docs] Generazione documentazione nella cartella: %s", docTarget)
 
 		// 1. Preparazione delle cartelle di destinazione
 		mdDir := filepath.Join(docTarget, "md")
@@ -27,14 +27,14 @@ var genDocsCmd = &cobra.Command{
 		dirs := []string{mdDir, manDir, compDir}
 		for _, dir := range dirs {
 			if err := os.MkdirAll(dir, 0755); err != nil {
-				fmt.Printf("[ERRORE] Impossibile creare la directory %s: %v\n", dir, err)
+				utils.LogError("Impossibile creare la directory %s: %v", dir, err)
 				os.Exit(1)
 			}
 		}
 
 		// 2. Generazione Documentazione Markdown
 		if err := doc.GenMarkdownTree(rootCmd, mdDir); err != nil {
-			fmt.Printf("[ERRORE] Generazione Markdown fallita: %v\n", err)
+			utils.LogError("Generazione Markdown fallita: %v", err)
 			os.Exit(1)
 		}
 
@@ -44,7 +44,7 @@ var genDocsCmd = &cobra.Command{
 			Section: "1",
 		}
 		if err := doc.GenManTree(rootCmd, header, manDir); err != nil {
-			fmt.Printf("[ERRORE] Generazione Man pages fallita: %v\n", err)
+			utils.LogError("Generazione Man pages fallita: %v", err)
 			os.Exit(1)
 		}
 
@@ -66,7 +66,7 @@ var genDocsCmd = &cobra.Command{
 		// -> Ripristiniamo il nome originale per mantenere pulito lo stato interno
 		rootCmd.Use = originalUse
 
-		fmt.Println("[gen_docs] ✅ Documentazione e completamenti generati con successo.")
+		utils.LogSuccess("[gen_docs] Documentazione e completamenti generati con successo.")
 	},
 }
 

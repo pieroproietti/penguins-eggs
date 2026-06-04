@@ -17,7 +17,7 @@ func PrepareMountConf() error {
 		btrfsOptions = "      - defaults"
 	}
 
-config := fmt.Sprintf(`---
+	config := fmt.Sprintf(`---
 # mount.conf - Generato dinamicamente da oa-tools
 # Filosofia: https://penguins-eggs.net/blog/eggs-bananas
 

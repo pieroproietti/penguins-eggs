@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"coa/pkg/bleach" // Assicurati che il path sia corretto
@@ -30,7 +29,7 @@ Ideale da lanciare prima di 'coa remaster' per ottenere una ISO più compatta.`,
 
 		b := bleach.New(cleanVerbose)
 		if err := b.Clean(); err != nil {
-			fmt.Printf("\033[1;31m[ERRORE]\033[0m Pulizia interrotta: %v\n", err)
+			utils.LogError("Pulizia interrotta: %v", err)
 			os.Exit(1)
 		}
 		LogSuccess("Sistema pulito! Ora la tua ISO sarà più snella.")

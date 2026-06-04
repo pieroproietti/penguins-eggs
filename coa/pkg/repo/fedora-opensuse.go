@@ -84,7 +84,7 @@ func removeRpm(isSuse bool) error {
 		keys := strings.Split(strings.TrimSpace(string(out)), "\n")
 		for _, k := range keys {
 			if k != "" {
-				fmt.Printf("Rimozione chiave GPG %s...\n", k)
+				utils.LogNormal("Rimozione chiave GPG %s...", k)
 				exec.Command("rpm", "-e", k).Run()
 			}
 		}

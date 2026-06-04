@@ -2,6 +2,7 @@ package builder
 
 import (
 	sysctx "coa/pkg/context"
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,7 +10,7 @@ import (
 
 // recipe: scrive il file di controllo (PKGBUILD, SPEC, ecc.) nello staging
 func recipe(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
-	fmt.Printf("[build] Recipe: scrivo la ricetta per %s...\n", dist)
+	utils.LogNormal("[build] Recipe: scrivo la ricetta per %s...", dist)
 
 	stage := ctx.StageDir
 
@@ -87,7 +88,7 @@ func writeDebianFiles(ctx sysctx.RuntimeContext, stage string, data RecipeData) 
 		destPath := filepath.Join(debianDir, destName)
 
 		// Feedback a video per il manutentore
-		fmt.Printf("--> Scrittura template: %s -> %s\n", tmplName, destPath)
+		utils.LogNormal("--> Scrittura template: %s -> %s", tmplName, destPath)
 
 		// Usiamo direttamente 'data' che contiene BaseVersion, Rel e Date
 		err := writeTemplate(tmplPath, destPath, data)

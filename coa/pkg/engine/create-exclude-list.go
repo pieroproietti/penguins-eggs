@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"fmt"
+	"coa/pkg/utils"
 	"os"
 	"strings"
 )
@@ -100,7 +100,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	// Allineato al nuovo dialetto oa-tools
 	userList := "/etc/oa-tools.d/custom.exclude.list"
 	if _, err := os.Stat(userList); os.IsNotExist(err) {
-		fmt.Printf("[DEBUG] User exclude.list %s, not present", userList)
+		utils.LogNormal("[DEBUG] User exclude.list %s, not present", userList)
 	}
 
 	if data, err := os.ReadFile(userList); err == nil {

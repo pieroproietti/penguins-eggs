@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"coa/pkg/repo" // Assicurati che il path sia corretto
@@ -28,7 +27,7 @@ Azioni supportate:
 
 		// Valida l'azione (accettiamo 'remove' come alias silenzioso per retrocompatibilità/abitudine)
 		if action != "add" && action != "rm" && action != "remove" {
-			fmt.Printf("\033[1;31m[ERRORE]\033[0m Azione non valida: '%s'. Usa 'add' o 'rm'.\n", action)
+			utils.LogError("Azione non valida: '%s'. Usa 'add' o 'rm'.", action)
 			os.Exit(1)
 		}
 
@@ -40,12 +39,12 @@ Azioni supportate:
 
 		// Passiamo il controllo al modulo repo che gestirà il routing in base alla distro
 		if err := repo.HandleRepos(action); err != nil {
-			fmt.Printf("\033[1;31m[ERRORE]\033[0m Operazione fallita: %v\n", err)
+			utils.LogError("Operazione fallita: %v", err)
 			os.Exit(1)
 		}
 
 		// Messaggio di chiusura a colori (il dettaglio viene già stampato da pkg/repo)
-		fmt.Println("\033[1;32m[SUCCESS]\033[0m Configurazione repository completata con successo.")
+		utils.LogSuccess("Configurazione repository completata con successo.")
 	},
 }
 

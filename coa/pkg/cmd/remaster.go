@@ -25,17 +25,17 @@ const (
 
 func LogNormal(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("%s[coa]%s %s\n", ColorCyan, ColorReset, msg)
+	utils.LogNormal("%s", msg)
 }
 
 func LogSuccess(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("%s[coa]%s %s\n", ColorGreen, ColorReset, msg)
+	utils.LogNormal("%s", msg)
 }
 
 func LogError(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("\n%s[ERROR]%s %s\n", ColorRed, ColorReset, msg)
+	utils.LogNormal("\n%s", msg)
 }
 
 // ----------------------------------------
@@ -123,9 +123,9 @@ and generate a precise execution plan for the OA engine.`,
 
 		// Vittoria finale: Differenziamo il messaggio se abbiamo usato il breakpoint
 		if stopAfter != "" {
-			fmt.Printf("\n%s[DEBUG]%s Breakpoint raggiunto e ambiente smontato in sicurezza. Pronto per l'ispezione! 🐧🔍\n", ColorYellow, ColorReset)
+			utils.LogNormal("\n%s[DEBUG]%s Breakpoint raggiunto e ambiente smontato in sicurezza. Pronto per l'ispezione! 🐧🔍")
 		} else {
-			fmt.Printf("\n%s[SUCCESSO]%s Rimasterizzazione completata! L'uovo è pronto. 🐧🥚\n", ColorGreen, ColorReset)
+			utils.LogSuccess("\n%s[SUCCESSO]%s Rimasterizzazione completata! L'uovo è pronto. 🐧🥚")
 		}
 	},
 }

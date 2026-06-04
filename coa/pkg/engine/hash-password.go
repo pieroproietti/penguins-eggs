@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"fmt"
+	"coa/pkg/utils"
 	"os/exec"
 	"strings"
 )
@@ -22,7 +22,7 @@ func hashPassword(password string) string {
 	cmd := exec.Command("openssl", "passwd", "-6", password)
 	out, err := cmd.Output()
 	if err != nil {
-		fmt.Printf("\n\033[1;31m[ENGINE WARNING]\033[0m Impossibile hasare la password con openssl: %v\n", err)
+		utils.LogNormal("\n[ENGINE WARNING] Impossibile hasare la password con openssl: %v", err)
 		// Fallback di sicurezza: hash di "eggs"
 		return "$6$oa-tools$uTKAYeAVn.Y.Dy2To6HXsHt1Gt4HpMghmOV93a46jFY7hkAQ3tk7eRTKjcvSYDf5sOf3qnKzyyPYXurKp9ST3."
 	}

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 	"os/exec"
@@ -27,12 +28,12 @@ var exportLogCmd = &cobra.Command{
 		// Usiamo '&&' per garantire che se la pulizia fallisce, l'invio non parte
 		remoteHost := fmt.Sprintf("%s@%s", user, ip)
 
-		fmt.Printf("🚀 Connessione a %s e sincronizzazione in corso...\n", remoteHost)
+		utils.LogNormal("🚀 Connessione a %s e sincronizzazione in corso...", remoteHost)
 
 		// Eseguiamo il comando di pulizia
 		sshCmd := exec.Command("ssh", remoteHost, cleanCmd)
 		if err := sshCmd.Run(); err != nil {
-			fmt.Printf("⚠️ Avviso: impossibile pulire la destinazione: %v\n", err)
+			utils.LogWarning("Avviso: impossibile pulire la destinazione: %v", err)
 		}
 
 		// 4. Inviamo i file esistenti
@@ -44,7 +45,7 @@ var exportLogCmd = &cobra.Command{
 		}
 
 		if len(toSend) == 0 {
-			fmt.Println("❌ Nessun file da esportare trovato.")
+			utils.LogError("Nessun file da esportare trovato.")
 			return
 		}
 
@@ -54,11 +55,11 @@ var exportLogCmd = &cobra.Command{
 		scpCmd.Stderr = os.Stderr
 
 		if err := scpCmd.Run(); err != nil {
-			fmt.Printf("❌ Errore durante l'invio: %v\n", err)
+			utils.LogError("Errore durante l'invio: %v", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("✅ Operazione completata in un unico passaggio.")
+		utils.LogSuccess("Operazione completata in un unico passaggio.")
 	},
 }
 

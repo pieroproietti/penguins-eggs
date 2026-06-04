@@ -7,12 +7,13 @@ import (
 	"os/exec"
 
 	"coa/pkg/assets"
+	"coa/pkg/utils"
 )
 
 // logCalamares stampa i log con il prefisso coa
 func logCalamares(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("%s[coa-calamares]%s %s\n", ColorCyan, ColorReset, msg)
+	utils.LogNormal("%s", msg)
 }
 
 // Setup coordina la pulizia, l'estrazione e la configurazione dinamica

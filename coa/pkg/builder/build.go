@@ -2,6 +2,7 @@ package builder
 
 import (
 	"coa/pkg/distro"
+	"coa/pkg/utils"
 	"fmt"
 	"strings"
 	"time"
@@ -11,12 +12,12 @@ import (
 
 func LogBuild(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("%s[build]%s %s\n", ColorBlue, ColorReset, msg)
+	utils.LogNormal("[build] %s", msg)
 }
 
 func LogError(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Printf("%s[ERROR]%s %s\n", ColorRed, ColorReset, msg)
+	utils.LogNormal("%s", msg)
 }
 
 func HandleBuild(d *distro.Distro) {

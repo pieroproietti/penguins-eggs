@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"fmt"
-
 	"coa/pkg/distro"
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -26,12 +25,12 @@ It does not save this state or alter any configuration; it simply provides a cle
 		myDistro := distro.NewDistro()
 
 		// 2. Stampa a video usando i colori centralizzati (Senza passare per l'engine!)
-		fmt.Printf("\n%s--- coa distro detect ---%s\n", ColorCyan, ColorReset)
-		fmt.Printf("Host Distro:     %s\n", myDistro.DistroID)
-		fmt.Printf("Family:          %s\n", myDistro.FamilyID)
-		fmt.Printf("DistroLike:      %s\n", myDistro.DistroLike)
-		fmt.Printf("Codename:        %s\n", myDistro.CodenameID)
-		fmt.Printf("Release:         %s\n", myDistro.ReleaseID)
+		utils.LogNormal("\n%s--- coa distro detect ---%s")
+		utils.LogNormal("Host Distro:     %s", myDistro.DistroID)
+		utils.LogNormal("Family:          %s", myDistro.FamilyID)
+		utils.LogNormal("DistroLike:      %s", myDistro.DistroLike)
+		utils.LogNormal("Codename:        %s", myDistro.CodenameID)
+		utils.LogNormal("Release:         %s", myDistro.ReleaseID)
 	},
 }
 

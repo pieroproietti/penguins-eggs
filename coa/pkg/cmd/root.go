@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 
@@ -32,8 +33,8 @@ func Execute() {
 // CheckSudoRequirements verifica che l'utente sia root se il comando lo richiede
 func CheckSudoRequirements(cmdName string, needSudo bool) {
 	if needSudo && os.Geteuid() != 0 {
-		fmt.Printf("\033[1;33m[AVVISO]\033[0m Il comando '%s' richiede privilegi di root.\n", cmdName)
-		fmt.Println("Esegui: sudo coa", cmdName)
+		utils.LogWarning("Il comando '%s' richiede privilegi di root.", cmdName)
+		utils.LogNormal("Esegui: sudo coa", cmdName)
 		os.Exit(1)
 	}
 }

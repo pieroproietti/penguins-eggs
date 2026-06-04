@@ -2,12 +2,12 @@ package engine
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"coa/pkg/pilot"
+	"coa/pkg/utils"
 )
 
 // GeneratePlan converte lo YAML in JSON.
@@ -86,7 +86,7 @@ func GeneratePlan(
 					PathLiveFs: workPath,
 				})
 
-				fmt.Printf("\n\033[1;32m[ENGINE] Iniezione metadati .disk completata per live-boot.\033[0m\n")
+				utils.LogNormal("\n[ENGINE] Iniezione metadati .disk completata per live-boot.")
 			}
 
 			// 2. Accodiamo FINALMENTE l'azione originale (squashfs, xorriso o altro)
@@ -94,7 +94,7 @@ func GeneratePlan(
 		}
 
 		if stopAfter != "" && step.Name == stopAfter {
-			fmt.Printf("\n\033[1;33m[ENGINE] 🛑 Breakpoint '%s' elaborato.\033[0m\n", step.Name)
+			utils.LogNormal("\n[ENGINE] 🛑 Breakpoint '%s' elaborato.", step.Name)
 			hitBreakpoint = true
 		}
 	}

@@ -154,7 +154,7 @@ menuentry "oa-tools: %s" --class isoboot {
 			}
 
 			utils.LogSuccess(" Entry per '%s' configurata con successo in %s.\n", isoName, targetFile)
-			fmt.Printf("\033[1;34m[INFO]\033[0m Per rendere effettive le modifiche esegui: '%s'\n", updateCmd)
+			utils.LogNormal("[INFO] Per rendere effettive le modifiche esegui: '%s'", updateCmd)
 
 		} else {
 			grubTemplate := `
@@ -166,7 +166,7 @@ menuentry "oa-tools: %s" --class isoboot {
 # Detected size: %s
 
 ` + grubEntry + "\n"
-			fmt.Printf(grubTemplate, AppVersion, updateCmd, isoName, sizeStr)
+			utils.LogNormal(grubTemplate, AppVersion, updateCmd, isoName, sizeStr)
 		}
 	},
 }

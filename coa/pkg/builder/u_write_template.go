@@ -9,8 +9,8 @@ import (
 func writeTemplate(tmplPath string, destPath string, data RecipeData) error {
 	// absTmpl, _ := filepath.Abs(tmplPath)
 	// absDest, _ := filepath.Abs(destPath)
-	// fmt.Printf("[DEBUG] Tmpl: %s\n", absTmpl)
-	// fmt.Printf("[DEBUG] Dest: %s\n", absDest)
+	// utils.LogNormal("[DEBUG] Tmpl: %s", absTmpl)
+	// utils.LogNormal("[DEBUG] Dest: %s", absDest)
 
 	// 1. Parsing del file template
 	tmpl, err := template.ParseFiles(tmplPath)

@@ -20,7 +20,7 @@ func EnsureBootloaders(targetDir string) (string, error) {
 		return targetDir, nil
 	}
 
-	fmt.Printf("\033[1;33m[coa]\033[0m Bootloaders non trovati in %s. Inizio download...\n", targetDir)
+	LogNormal("[coa] Bootloaders non trovati in %s. Inizio download...", targetDir)
 
 	// 2. Download
 	resp, err := http.Get(BootloaderURL)

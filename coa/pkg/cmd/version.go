@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -12,7 +12,7 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Non richiede permessi di root
 		CheckSudoRequirements(cmd.Name(), false)
-		fmt.Printf("coa %s - The Mind of remaster\n", AppVersion)
+		utils.LogNormal("coa %s - The Mind of remaster", AppVersion)
 	},
 }
 
