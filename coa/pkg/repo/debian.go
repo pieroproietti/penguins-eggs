@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 	"os/exec"
@@ -28,7 +29,7 @@ func isDeb822() bool {
 
 // AddDebian configura la repository su Debian/Ubuntu
 func addDebian() error {
-	fmt.Println("Configurazione repository penguins-eggs per Debian/Ubuntu...")
+	utils.LogNormal("Configurazione repository penguins-eggs per Debian/Ubuntu...")
 
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("questo comando richiede i privilegi di root (usa sudo)")
@@ -43,7 +44,7 @@ func addDebian() error {
 
 	// 2. Routing del formato: DEB822 o Classico
 	if isDeb822() {
-		fmt.Println("[INFO] Rilevato formato DEB822. Generazione file .sources...")
+		utils.LogNormal("[INFO] Rilevato formato DEB822. Generazione file .sources...")
 
 		content := fmt.Sprintf("Types: deb\nURIs: %s/deb\nSuites: stable\nComponents: main\nSigned-By: %s\n", repoUrl, repoKeyPath)
 
@@ -51,7 +52,7 @@ func addDebian() error {
 			return fmt.Errorf("impossibile scrivere il file %s: %w", repoSources, err)
 		}
 	} else {
-		fmt.Println("[INFO] Rilevato formato classico. Generazione file .list...")
+		utils.LogNormal("[INFO] Rilevato formato classico. Generazione file .list...")
 
 		content := fmt.Sprintf("deb [signed-by=%s] %s/deb stable main\n", repoKeyPath, repoUrl)
 
@@ -60,13 +61,13 @@ func addDebian() error {
 		}
 	}
 
-	fmt.Println("✅ Repository aggiunta con successo. Esegui 'apt update'.")
+	utils.LogSuccess("✅ Repository aggiunta con successo. Esegui 'apt update'.")
 	return nil
 }
 
 // RemoveDebian elimina la repository dal sistema
 func removeDebian() error {
-	fmt.Println("Rimozione repository penguins-eggs...")
+	utils.LogNormal("Rimozione repository penguins-eggs...")
 
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("questo comando richiede i privilegi di root (usa sudo)")
@@ -77,6 +78,6 @@ func removeDebian() error {
 	os.Remove(repoList)
 	os.Remove(repoSources) // Puliamo anche il .sources per sicurezza
 
-	fmt.Println("🗑️ Repository rimossa con successo. Esegui 'apt update'.")
+	utils.LogNormal("🗑️ Repository rimossa con successo. Esegui 'apt update'.")
 	return nil
 }

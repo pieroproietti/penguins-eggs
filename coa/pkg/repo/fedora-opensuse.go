@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 	"os/exec"
@@ -19,7 +20,7 @@ const (
 
 // AddFedoraEl supporta Fedora e EL9 (Alma/Rocky)
 func addFedoraEl(isEl9 bool) error {
-	fmt.Println("Configurazione repository RPM (Fedora/EL9)...")
+	utils.LogNormal("Configurazione repository RPM (Fedora/EL9)...")
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("richiesti privilegi di root")
 	}
@@ -38,13 +39,13 @@ func addFedoraEl(isEl9 bool) error {
 	exec.Command("rpm", "--import", rpmKeyUrl).Run()
 	exec.Command("dnf", "clean", "metadata").Run()
 
-	fmt.Println("✅ Repository aggiunto. Esegui 'dnf check-update'.")
+	utils.LogSuccess("✅ Repository aggiunto. Esegui 'dnf check-update'.")
 	return nil
 }
 
 // AddSuse usa i parametri specifici per zypper
 func addSuse() error {
-	fmt.Println("Configurazione repository openSUSE...")
+	utils.LogNormal("Configurazione repository openSUSE...")
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("richiesti privilegi di root")
 	}
@@ -57,13 +58,13 @@ func addSuse() error {
 
 	exec.Command("rpm", "--import", rpmKeyUrl).Run()
 
-	fmt.Println("✅ Repository aggiunto. Esegui 'zypper refresh'.")
+	utils.LogSuccess("✅ Repository aggiunto. Esegui 'zypper refresh'.")
 	return nil
 }
 
 // RemoveRpm gestisce la rimozione per Fedora, EL9 E openSUSE (rimuovendo la chiave GPG dinamicamente)
 func removeRpm(isSuse bool) error {
-	fmt.Println("Rimozione repository RPM...")
+	utils.LogNormal("Rimozione repository RPM...")
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("richiesti privilegi di root")
 	}
@@ -88,9 +89,9 @@ func removeRpm(isSuse bool) error {
 			}
 		}
 	} else {
-		fmt.Println("[INFO] Nessuna chiave GPG da rimuovere.")
+		utils.LogNormal("[INFO] Nessuna chiave GPG da rimuovere.")
 	}
 
-	fmt.Println("🗑️ Repository rimosso con successo.")
+	utils.LogNormal("🗑️ Repository rimosso con successo.")
 	return nil
 }

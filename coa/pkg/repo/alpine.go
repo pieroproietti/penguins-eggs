@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"coa/pkg/utils"
+
 	"fmt"
 	"os"
 	"os/exec"
@@ -16,7 +18,7 @@ const (
 )
 
 func addAlpine() error {
-	fmt.Println("Configurazione repository penguins-eggs per Alpine...")
+	utils.LogNormal("Configurazione repository penguins-eggs per Alpine...")
 
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("richiesti privilegi di root (sudo)")
@@ -29,13 +31,13 @@ func addAlpine() error {
 			return fmt.Errorf("errore download chiave: %w", err)
 		}
 	} else {
-		fmt.Println("[INFO] Chiave già esistente.")
+		utils.LogNormal("[INFO] Chiave già esistente.")
 	}
 
 	// 2. Repo
 	content, _ := os.ReadFile(alpineRepoFile)
 	if strings.Contains(string(content), alpineRepoUrl) {
-		fmt.Println("[INFO] La linea del repository è già in /etc/apk/repositories.")
+		utils.LogNormal("[INFO] La linea del repository è già in /etc/apk/repositories.")
 	} else {
 		f, err := os.OpenFile(alpineRepoFile, os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil {
@@ -43,15 +45,15 @@ func addAlpine() error {
 		}
 		defer f.Close()
 		f.WriteString("\n" + alpineRepoUrl + "\n")
-		fmt.Println("✅ Repository aggiunto.")
+		utils.LogSuccess("✅ Repository aggiunto.")
 	}
 
-	fmt.Println("Esegui 'apk update' per aggiornare i repository.")
+	utils.LogNormal("Esegui 'apk update' per aggiornare i repository.")
 	return nil
 }
 
 func removeAlpine() error {
-	fmt.Println("Rimozione repository Alpine...")
+	utils.LogNormal("Rimozione repository Alpine...")
 
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("richiesti privilegi di root (sudo)")
@@ -71,6 +73,6 @@ func removeAlpine() error {
 		os.WriteFile(alpineRepoFile, []byte(strings.Join(newLines, "\n")+"\n"), 0644)
 	}
 
-	fmt.Println("🗑️ Repository e chiave rimossi. Esegui 'apk update'.")
+	utils.LogNormal("🗑️ Repository e chiave rimossi. Esegui 'apk update'.")
 	return nil
 }

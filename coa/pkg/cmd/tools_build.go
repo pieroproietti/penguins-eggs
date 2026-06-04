@@ -6,6 +6,7 @@ import (
 
 	"coa/pkg/builder"
 	"coa/pkg/distro"
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -20,7 +21,7 @@ It orchestrates the full compilation of both the C-native engine (oa) and the Go
 	Run: func(cmd *cobra.Command, args []string) {
 		// Controllo Anti-Sudo: blocchiamo l'esecuzione se l'utente è root
 		if os.Geteuid() == 0 {
-			fmt.Println("\033[1;31m[ERRORE]\033[0m Esecuzione interrotta. NON eseguire 'coa tools build' con sudo!")
+			utils.Fatal(" Esecuzione interrotta. NON eseguire 'coa tools build' con sudo!")
 			fmt.Println("La compilazione deve essere effettuata come utente normale per evitare di " +
 				"creare file e pacchetti di proprietà di root nel tuo workspace.")
 			os.Exit(1)

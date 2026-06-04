@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"coa/pkg/repo" // Assicurati che il path sia corretto
+	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -33,7 +34,7 @@ Azioni supportate:
 
 		// Controllo root: toccare i repository richiede i privilegi massimi
 		if os.Geteuid() != 0 {
-			fmt.Println("\033[1;31m[ERRORE]\033[0m Il comando repo deve essere eseguito come root (sudo).")
+			utils.Fatal(" Il comando repo deve essere eseguito come root (sudo).")
 			os.Exit(1)
 		}
 

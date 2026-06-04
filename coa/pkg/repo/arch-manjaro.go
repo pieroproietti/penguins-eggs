@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 	"os/exec"
@@ -22,7 +23,7 @@ func addArch(isManjaro bool) error {
 		distroName = "Manjaro"
 		serverUrl = archBaseUrl + "/manjaro"
 	}
-	fmt.Printf("Configurazione repository penguins-eggs per %s...\n", distroName)
+	utils.LogNormal("Configurazione repository penguins-eggs per %s...\n", distroName)
 
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("richiesti privilegi di root (sudo)")
@@ -30,11 +31,11 @@ func addArch(isManjaro bool) error {
 
 	content, _ := os.ReadFile(pacmanConfPath)
 	if strings.Contains(string(content), repoNameBlock) {
-		fmt.Printf("[INFO] Il repository %s esiste già in %s\n", repoNameBlock, pacmanConfPath)
+		utils.LogNormal("[INFO] Il repository %s esiste già in %s\n", repoNameBlock, pacmanConfPath)
 		return nil
 	}
 
-	fmt.Printf("Importazione della chiave GPG: %s...\n", archKeyId)
+	utils.LogNormal("Importazione della chiave GPG: %s...\n", archKeyId)
 	exec.Command("pacman-key", "--recv-key", archKeyId, "--keyserver", "keyserver.ubuntu.com").Run()
 	exec.Command("pacman-key", "--lsign-key", archKeyId).Run()
 
@@ -47,17 +48,17 @@ func addArch(isManjaro bool) error {
 	defer f.Close()
 	f.WriteString(repoBlock)
 
-	fmt.Println("✅ Repository aggiunto con successo!")
+	utils.LogSuccess("✅ Repository aggiunto con successo!")
 	if isManjaro {
-		fmt.Println("Esegui 'sudo pamac update --force-refresh'")
+		utils.LogNormal("Esegui 'sudo pamac update --force-refresh'")
 	} else {
-		fmt.Println("Esegui 'sudo pacman -Syyu'")
+		utils.LogNormal("Esegui 'sudo pacman -Syyu'")
 	}
 	return nil
 }
 
 func removeArch(isManjaro bool) error {
-	fmt.Println("Rimozione repository Arch/Manjaro...")
+	utils.LogNormal("Rimozione repository Arch/Manjaro...")
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("richiesti privilegi di root (sudo)")
 	}
@@ -79,7 +80,7 @@ func removeArch(isManjaro bool) error {
 		strContent = strings.ReplaceAll(strContent, repoBlockNoNL, "")
 
 		os.WriteFile(pacmanConfPath, []byte(strings.TrimSpace(strContent)+"\n"), 0644)
-		fmt.Println("🗑️ Repository rimosso da pacman.conf.")
+		utils.LogNormal("🗑️ Repository rimosso da pacman.conf.")
 	}
 
 	return nil

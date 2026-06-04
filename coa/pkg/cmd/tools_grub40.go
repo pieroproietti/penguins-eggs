@@ -10,6 +10,8 @@ import (
 
 	"coa/pkg/distro" // Importiamo il tuo pacchetto per rilevare l'host
 
+	"coa/pkg/utils"
+
 	"github.com/spf13/cobra"
 )
 
@@ -151,7 +153,7 @@ menuentry "oa-tools: %s" --class isoboot {
 				os.Exit(1)
 			}
 
-			fmt.Printf("\033[1;32m[SUCCESS]\033[0m Entry per '%s' configurata con successo in %s.\n", isoName, targetFile)
+			utils.LogSuccess(" Entry per '%s' configurata con successo in %s.\n", isoName, targetFile)
 			fmt.Printf("\033[1;34m[INFO]\033[0m Per rendere effettive le modifiche esegui: '%s'\n", updateCmd)
 
 		} else {
