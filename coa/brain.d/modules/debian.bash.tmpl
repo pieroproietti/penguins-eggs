@@ -16,11 +16,12 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "hook_initramfs_cmd" }}
-# 1. Forziamo l'initramfs a includere la maggior parte dei moduli (disabilitiamo 'dep')
+# 1. Forziamo l'initramfs a includere la maggior parte dei moduli
 sed -i 's/^MODULES=.*/MODULES=most/' /etc/initramfs-tools/initramfs.conf
 
-# 2. Iniettiamo i moduli assicurandoci della sintassi corretta (col trattino!)
-for mod in fat vfat nls_cp437 nls_iso8859-1 nls_utf8; do
+# 2. Iniettiamo i moduli essenziali forzandone il caricamento immediato (Early Load).
+# Aggiunti i moduli per: CD-ROM (sr_mod, cdrom), File System Live (iso9660, squashfs, overlay, loop)
+for mod in fat vfat nls_cp437 nls_iso8859-1 nls_utf8 loop squashfs overlay iso9660 cdrom sr_mod; do
     if ! grep -q "^${mod}$" /etc/initramfs-tools/modules; then
         echo "$mod" >> /etc/initramfs-tools/modules
     fi
@@ -32,6 +33,8 @@ depmod -a $(ls /lib/modules/ | head -n 1) 2>/dev/null || true
 
 # 3. Forziamo Debian a non cercare dischi di swap fantasma (evita timeout di 30s al boot)
 echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
+
+# 4. Rigeneriamo l'initramfs
 update-initramfs -u -k all
 {{ end }}
 
