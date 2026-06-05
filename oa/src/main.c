@@ -64,6 +64,8 @@ int execute_verb(cJSON *root, cJSON *task) {
         res = oa_umount(&ctx);
     } else if (strcmp(action_name, "oa_shell") == 0) {
         res = oa_shell(&ctx);
+    } else if (strcmp(action_name, "oa_ell") == 0) {
+        res = oa_ell(&ctx); // coa l'oa!
     } else if (strcmp(action_name, "shell") == 0) {
         // Gestione unificata dell'azione ignorata
         LOG_INFO("Azione 'shell' ignorata dal core C (competenza di Go).");

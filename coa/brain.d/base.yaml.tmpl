@@ -15,6 +15,12 @@ settings:
       level: 3
 
 remaster:
+
+  - name: "test-ell"
+    action: "oa_ell"
+    command: "ls"
+    message: "Daje, il tubo tiene!"
+
   # ----------------------------------------------------------------------------
   # 1. INITIAL SETUP AND MOUNT
   # ----------------------------------------------------------------------------
@@ -116,6 +122,7 @@ remaster:
   - name: "coa-cleanup"
     description: "Environment unmounting and cleanup"
     action: "oa_umount"
+
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

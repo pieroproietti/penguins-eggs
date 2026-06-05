@@ -35,6 +35,7 @@ int oa_mkdir(OA_Context *ctx);
 int oa_mount_generic(OA_Context *ctx);
 int oa_bind(OA_Context *ctx);
 int oa_shell(OA_Context *ctx);
+int oa_ell(OA_Context *ctx);
 int oa_umount(OA_Context *ctx);
 int oa_users(OA_Context *ctx);
 
