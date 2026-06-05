@@ -36,16 +36,7 @@ Under the hood, the project is powered by two distinct entities: **oa** (the wor
 
 We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
-### 🦾 [oa](./DOCS/README.md) (**eggs in my dialect**) - The Workhorse
-**Language: C**
-`oa` is the low-level engine. It handles the "heavy lifting" of the system:
-- Managing OverlayFS and mount points.
-- Executing SquashFS compression.
-- Remove and create users and groupt via yocto_style functions.
-- Interacting directly with the Linux Kernel and system binaries.
-- **Philosophy:** Performance, stability, and zero-dependency execution.
-
-### 🧠 [coa](./DOCS/README.md) (**brooding in my dialect**) - The Orchestrator
+### 🧠 [coa](./DOCS/README.md) (**brooding in my dialect**) - The Mind
 It manages the full lifecycle: from laying the ISO to the final installation.
 
 The name derives from the dialect word coa, referring to the act of brooding or incubating eggs until they are ready to hatch.
@@ -54,6 +45,14 @@ The name derives from the dialect word coa, referring to the act of brooding or 
 
 For coa commands, see [coa command Reference](/DOCS/COA_COMMANDS.md).
 
+### 🦾 [oa](./DOCS/README.md) (**eggs in my dialect**) - The Workhorse
+**Language: C**
+`oa` is the low-level engine. It handles the "heavy lifting" of the system:
+- Managing OverlayFS and mount points.
+- Executing SquashFS compression.
+- Remove and create users and groupt via yocto_style functions.
+- Interacting directly with the Linux Kernel and system binaries.
+- **Philosophy:** Performance, stability, and zero-dependency execution.
 
 ## 🚀 Getting Started
 
@@ -72,10 +71,7 @@ This will compile both binaries:
 - `./oa/oa` (The Engine)
 - `./coa/coa` (The Orchestrator)
 
-> TIP: You can create native package like: .deb, PKGBUILD, rpm using
-```
-coa/coa build
-```
+> TIP: Actually you can get native packages, simply using `make clean package`
 
 ---
 
