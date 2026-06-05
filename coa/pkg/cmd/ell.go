@@ -29,6 +29,7 @@ var ellCmd = &cobra.Command{
 			fmt.Fprintln(os.Stderr, "coa ell: ricevuto payload vuoto.")
 			os.Exit(1)
 		}
+		fmt.Printf("\n[DEBUG-WORKER] JSON Grezzo ricevuto dal C:\n%s\n\n", string(payload))
 
 		// 2. Lettura "esplorativa" per estrarre solo il nome dell'azione
 		var taskBase struct {

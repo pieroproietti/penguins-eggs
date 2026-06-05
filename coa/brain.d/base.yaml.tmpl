@@ -2,6 +2,8 @@
 # 🧩 OA UNIVERSAL FRAMEWORK (EVOLUTION EDITION)
 # ==============================================================================
 
+
+
 # ----------------------------------------------------------------------------
 # impostazioni che possono essere sovrascritte dall'utente
 # ----------------------------------------------------------------------------
@@ -15,14 +17,6 @@ settings:
       level: 3
 
 remaster:
-
-  # ----------------------------------------------------------------------------
-  # 1. INITIAL SETUP AND MOUNT
-  # ----------------------------------------------------------------------------
-  - name: "test-ell"
-    action: "oa_ell"
-    command: "ping"
-    message: "just a test for oa-ell"
 
   # ----------------------------------------------------------------------------
   # 1. INITIAL SETUP AND MOUNT
@@ -98,9 +92,19 @@ remaster:
 {{ include "core_live_icon" . | indent 6 }}
 {{ include "core_live_launcher" . | indent 6 }}
 {{ include "core_live_trust_agent" . | indent 6 }}
-{{ include "core_live_autologin" . | indent 6 }}
 
-# ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # 7.1 coa-autologin-gui
+  # ----------------------------------------------------------------------------
+  - name: coa-autologin-gui
+    description: "Creazione di autologin per utente live"
+    action: "oa_ell"
+    params:
+      user: "live"
+      is_gui: true
+
+
+  # ----------------------------------------------------------------------------
   # 8. FILESYSTEM.SQUASHFS COMPRESSION
   # ----------------------------------------------------------------------------
   - name: "coa-squashfs"
@@ -125,7 +129,6 @@ remaster:
   - name: "coa-cleanup"
     description: "Environment unmounting and cleanup"
     action: "oa_umount"
-
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

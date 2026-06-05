@@ -12,16 +12,22 @@ import (
 type ActionAutologinGui struct {
 	Name               string `json:"name"`
 	ResolvedTargetRoot string `json:"resolved_target_root"`
-	User               string `json:"user"`
+
+	// Mappiamo esattamente la struttura in arrivo da 'params'
+	Params struct {
+		Module string `json:"module"`
+		User   string `json:"user"`
+		IsGui  bool   `json:"is_gui"`
+	} `json:"params"`
 }
 
 // RunAutologin coordina le configurazioni per i vari Display Manager
 func RunAutologin(config ActionAutologinGui) error {
 	root := config.ResolvedTargetRoot
-	user := config.User
+	user := config.Params.User // <-- Estrazione pulita e tipizzata!
 
 	if user == "" {
-		user = "live" // Fallback di sicurezza
+		user = "pippo" // Manteniamo il fallback di sicurezza, fa sempre comodo
 	}
 
 	fmt.Printf("🥚 [oa-ell] Esecuzione coa-autologin-gui per utente '%s'\n", user)
