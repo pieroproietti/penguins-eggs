@@ -1,7 +1,7 @@
 # ==============================================================================
-# 🧩 OA UNIVERSAL FRAMEWORK (EVOLUTION EDITION)
+# 🧩 FILE: base.yaml.tmpl
+# 🎯 ROLE: Main orchestration plan (YAML) for oa-tools framework
 # ==============================================================================
-
 # ----------------------------------------------------------------------------
 # impostazioni che possono essere sovrascritte dall'utente
 # ----------------------------------------------------------------------------
@@ -25,13 +25,12 @@ remaster:
 # ----------------------------------------------------------------------------
 # 2. BOOTLOADERS PREPARATION
 # ----------------------------------------------------------------------------
-{{ template "ell_bootloaders" . | indent 2 }}
-
+{{ include "ell_bootloaders" . | indent 2 }}
 
 # ----------------------------------------------------------------------------
 # 3. LIVE MENUS
 # ----------------------------------------------------------------------------
-{{ template "ell_live_menus" . | indent 2 }}
+{{ include "ell_live_menus" . | indent 2 }}
 
 
 # ----------------------------------------------------------------------------
@@ -42,13 +41,9 @@ remaster:
     action: "oa_users"
 
 # ----------------------------------------------------------------------------
-# 4.1 SANITIZE HOST
+# 4.1 Sanitize host
 # ----------------------------------------------------------------------------
-  - name: "coa-sanitize-host"
-    description: "Remove /etc/fstab from live"
-    action: "oa_shell"
-    run_command: |
-{{ include "core_sanitize_host" . | indent 6 }}
+{{ include "ell_sanitize_host" . | indent 2 }}
 
 # ----------------------------------------------------------------------------
 # 5. LIVE INITRAMFS
@@ -73,27 +68,7 @@ remaster:
 # ----------------------------------------------------------------------------
 # 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
 # ----------------------------------------------------------------------------
-{{ template "ell_enable_live" . | indent 2 }}
-
-  - name: "coa-live-icon"
-    description: "Creazione Icona Uovo (SVG 3D Golden Edition)"
-    action: "oa_ell"
-    params:
-      module: "template"
-      dest: "/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
-      permissions: 0644
-      content: |
-        <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
-            <stop offset="0%" stop-color="#ffe066" />
-            <stop offset="50%" stop-color="#f0ad4e" />
-            <stop offset="100%" stop-color="#b87311" />
-            </radialGradient>
-        </defs>
-        <ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
-        <path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
-        </svg>
+{{ include "ell_enable_live" . | indent 2 }}
 
 # ----------------------------------------------------------------------------
 # 7.1 coa-autologin-gui
@@ -105,6 +80,10 @@ remaster:
       user: "live"
       is_gui: true
 
+# ----------------------------------------------------------------------------
+# 7.5 coa-egg-icon
+# ----------------------------------------------------------------------------
+{{ include "ell-egg-icon" . | indent 2 }}
 
 # ----------------------------------------------------------------------------
 # 8. FILESYSTEM.SQUASHFS COMPRESSION

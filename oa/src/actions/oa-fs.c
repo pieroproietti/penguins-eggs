@@ -17,7 +17,7 @@ int oa_mkdir(OA_Context *ctx)
         return 1;
     }
 
-    LOG_INFO("Creazione directory: %s", path->valuestring);
+    LOG_INFO("Creazione mountpoint: %s", path->valuestring);
 
     char cmd[PATH_SAFE];
     snprintf(cmd, sizeof(cmd), "mkdir -p %s", path->valuestring);

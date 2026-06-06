@@ -1,15 +1,16 @@
 # ==============================================================================
-# 🧩 COMMON.TMPL - LIBRERIA OPERAZIONI UNIVERSALI OA-TOOLS 
+# 🧩 FILE: scripts.tmpl
+# 🎯 ROLE: Low-level Bash functions library for core operations
 # ==============================================================================
-{{ define "core_platform_github" }}
-export SQ_COMP="zstd"
-export SQ_LEVEL="1"
-export SQ_BLOCK="256K"
-export SQ_PROCS="2"
-{{ end }}
 
-{{ define "core_platform_local" }}
-# --- AMBIENTE LOCALE ---
+{{ define "core_squashfs" }}
+# activate echo break
+set -xe
+echo 
+
+# ==========================================================
+# CONFIGURAZIONE COMPRESSIONE SQUASHFS
+# ==========================================================
 # Massime prestazioni di base e libertà di override tramite custom.yaml
 DEFAULT_COMP="zstd"
 DEFAULT_LEVEL="3"
@@ -42,62 +43,6 @@ elif [ "$SQ_COMP" = "gzip" ]; then
 else
     COMP_ARGS="-comp $SQ_COMP"
 fi
-{{ end }}
-
-{{ define "core_bootloaders" }}
-mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
-
-# Copia assets BIOS
-cp /tmp/coa/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/ 2>/dev/null || true
-cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true
-
-# Copia del binario EFI (Percorso corretto e unificato!)
-EFI_SRC="/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi"
-if [ -f "$EFI_SRC" ]; then
-    cp "$EFI_SRC" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
-fi
-
-# Generazione immagine FAT per EFI (12MB)
-dd if=/dev/zero of=/home/eggs/isodir/EFI/BOOT/efi.img bs=1M count=12
-mkfs.vfat /home/eggs/isodir/EFI/BOOT/efi.img
-mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI
-mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI/BOOT
-
-# Iniezione del binario nella partizione FAT
-if [ -f /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ]; then
-    mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
-fi
-{{ end }}
-
-
-# ----------------------------------------------------------------------------
-# SANITIZZAZIONE HOST UNIVERSALE
-# Svuota fstab e crypttab per evitare che finiscano nell'initrd della Live
-# ----------------------------------------------------------------------------
-{{ define "core_sanitize_host" }}
-echo "# UNCONFIGURED FSTAB FOR LIVE SYSTEM" > /home/eggs/liveroot/etc/fstab
-if [ -f /home/eggs/liveroot/etc/crypttab ]; then
-    echo "# UNCONFIGURED CRYPTTAB FOR LIVE SYSTEM" > /home/eggs/liveroot/etc/crypttab
-fi
-{{ end }}
-
-
-{{ define "core_squashfs" }}
-# activate echo break
-set -xe
-#echo "/tmp/coa/excludes.list"
-#cat /tmp/coa/excludes.list 
-echo 
-
-# ==========================================================
-# IL RUBINETTO: Qui il Go decide quale profilo iniettare!
-# ==========================================================
-{{ if .IsGitHubAction }}
-{{ template "core_platform_github" . }}
-{{ else }}
-{{ template "core_platform_local" . }}
-{{ end }}
-# ==========================================================
 
 echo "========================================================"
 echo "🚀 AVVIO MKSQUASHFS (Profilo: $SQ_COMP L$SQ_LEVEL, $SQ_BLOCK, $SQ_PROCS Cores)"
