@@ -135,5 +135,5 @@ if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.i
 #!/bin/bash
 set -e
 rm -f /etc/sudoers.d/00-live
-{{ template "hook_install_logic" . }}
+{{ include "hook_install_logic" . | indent 6 }}
 {{ end }}

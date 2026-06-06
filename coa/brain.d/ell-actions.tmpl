@@ -1,5 +1,5 @@
 {{ define "ell_bootloaders" }}
-# --- 1. PREPARAZIONE STRUTTURA ---
+# --- 2.1. PREPARAZIONE STRUTTURA ---
 - name: "coa-boot-dirs"
   description: "Creazione directory bootloader"
   action: "oa_ell"
@@ -7,7 +7,7 @@
     module: "shell"
     command: "mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT"
 
-# --- 2. COPIA ASSETS BIOS ---
+# --- 2.2. COPIA ASSETS BIOS ---
 - name: "coa-copy-isolinux"
   description: "Copia binari ISOLINUX"
   action: "oa_ell"
@@ -24,7 +24,7 @@
     module: "shell"
     command: "cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true"
 
-# --- 3. LOGICA EFI ---
+# --- 2.3. LOGICA EFI ---
 - name: "coa-copy-efi-binary"
   description: "Copia binario EFI"
   action: "oa_ell"
@@ -35,7 +35,7 @@
           cp "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
       fi
 
-# --- 4. GENERAZIONE EFI.IMG ---
+# --- 2.4. GENERAZIONE EFI.IMG ---
 - name: "coa-gen-efi-img"
   description: "Generazione immagine FAT per EFI"
   action: "oa_ell"
@@ -152,141 +152,137 @@
 
 
 {{ define "ell_live_menus" }}
-  # ============================================================================
-  # 3. BOOT MENU & ASSETS (GRUB & ISOLINUX)
-  # ============================================================================
+# --- ASSETS: SPLASH SCREEN ---
+- name: "coa-copy-splash-grub"
+  description: "Copia splash screen per GRUB"
+  action: "oa_ell"
+  params:
+    module: "copy"
+    src: "/etc/oa-tools.d/brain.d/assets/splash.png"
+    dest: "/home/eggs/isodir/boot/grub/splash.png"
+    ignore_missing: true
 
-  # --- ASSETS: SPLASH SCREEN ---
-  - name: "coa-copy-splash-grub"
-    description: "Copia splash screen per GRUB"
-    action: "oa_ell"
-    params:
-      module: "copy"
-      src: "/etc/oa-tools.d/brain.d/assets/splash.png"
-      dest: "/home/eggs/isodir/boot/grub/splash.png"
-      ignore_missing: true
+- name: "coa-copy-splash-isolinux"
+  description: "Copia splash screen per ISOLINUX"
+  action: "oa_ell"
+  params:
+    module: "copy"
+    src: "/etc/oa-tools.d/brain.d/assets/splash.png"
+    dest: "/home/eggs/isodir/isolinux/splash.png"
+    ignore_missing: true
 
-  - name: "coa-copy-splash-isolinux"
-    description: "Copia splash screen per ISOLINUX"
-    action: "oa_ell"
-    params:
-      module: "copy"
-      src: "/etc/oa-tools.d/brain.d/assets/splash.png"
-      dest: "/home/eggs/isodir/isolinux/splash.png"
-      ignore_missing: true
+# --- ASSETS: FONT UNICODE ---
+# Priorità 2 (Fallback): Copia dagli assets
+- name: "coa-copy-font-assets"
+  description: "Copia font GRUB da assets (fallback)"
+  action: "oa_ell"
+  params:
+    module: "copy"
+    src: "/etc/oa-tools.d/brain.d/assets/unicode.pf2"
+    dest: "/home/eggs/isodir/boot/grub/font.pf2"
+    ignore_missing: true
 
-  # --- ASSETS: FONT UNICODE ---
-  # Priorità 2 (Fallback): Copia dagli assets
-  - name: "coa-copy-font-assets"
-    description: "Copia font GRUB da assets (fallback)"
-    action: "oa_ell"
-    params:
-      module: "copy"
-      src: "/etc/oa-tools.d/brain.d/assets/unicode.pf2"
-      dest: "/home/eggs/isodir/boot/grub/font.pf2"
-      ignore_missing: true
+# Priorità 1 (Principale): Copia dal sistema (sovrascrive se esiste)
+- name: "coa-copy-font-sys"
+  description: "Copia font GRUB dal sistema"
+  action: "oa_ell"
+  params:
+    module: "copy"
+    src: "/usr/share/grub/unicode.pf2"
+    dest: "/home/eggs/isodir/boot/grub/font.pf2"
+    ignore_missing: true
 
-  # Priorità 1 (Principale): Copia dal sistema (sovrascrive se esiste)
-  - name: "coa-copy-font-sys"
-    description: "Copia font GRUB dal sistema"
-    action: "oa_ell"
-    params:
-      module: "copy"
-      src: "/usr/share/grub/unicode.pf2"
-      dest: "/home/eggs/isodir/boot/grub/font.pf2"
-      ignore_missing: true
+# --- TEMPLATES: GENERAZIONE MENU ---
+- name: "coa-grub-menu-main"
+  description: "Generazione dinamica GRUB.cfg principale"
+  action: "oa_ell"
+  params:
+    module: "template"
+    dest: "/home/eggs/isodir/boot/grub/grub.cfg"
+    content: |
+      set timeout=5
+      set default=2
 
-  # --- TEMPLATES: GENERAZIONE MENU ---
-  - name: "coa-grub-menu-main"
-    description: "Generazione dinamica GRUB.cfg principale"
-    action: "oa_ell"
-    params:
-      module: "template"
-      dest: "/home/eggs/isodir/boot/grub/grub.cfg"
-      content: |
-        set timeout=5
-        set default=2
+      insmod efi_gop
+      insmod efi_uga
+      insmod all_video
+      insmod gfxterm
+      insmod png
+      insmod part_gpt
+      insmod part_msdos
+      insmod fat
+      insmod iso9660
 
-        insmod efi_gop
-        insmod efi_uga
-        insmod all_video
-        insmod gfxterm
-        insmod png
-        insmod part_gpt
-        insmod part_msdos
-        insmod fat
-        insmod iso9660
+      search --no-floppy --set=root --label OA_LIVE
 
-        search --no-floppy --set=root --label OA_LIVE
+      if loadfont /boot/grub/font.pf2; then
+          set gfxmode=auto
+          terminal_output gfxterm
+      fi
 
-        if loadfont /boot/grub/font.pf2; then
-            set gfxmode=auto
-            terminal_output gfxterm
-        fi
+      background_image /boot/grub/splash.png
 
-        background_image /boot/grub/splash.png
+      # ==========================================
+      # COLORI MENU PRINCIPALE
+      # ==========================================
+      set menu_color_normal=white/black
+      set menu_color_highlight=white/blue
 
-        # ==========================================
-        # COLORI MENU PRINCIPALE
-        # ==========================================
-        set menu_color_normal=white/black
-        set menu_color_highlight=white/blue
+      # ==========================================
+      # COLORI EDITOR E TERMINALE
+      # ==========================================
+      set color_normal=white/black
+      set color_highlight=white/blue
 
-        # ==========================================
-        # COLORI EDITOR E TERMINALE
-        # ==========================================
-        set color_normal=white/black
-        set color_highlight=white/blue
+      menuentry "--- oa-tools ---" {
+          true
+      }
+      menuentry "" {
+          true
+      }
+      menuentry "Start [[ osRelease "PRETTY_NAME" ]]" {
+          linux /live/vmlinuz {{ template "hook_boot_params" . }}
+          initrd /live/initrd.img
+      }
+      menuentry "Start [[ osRelease "PRETTY_NAME" ]] - RAM mode" {
+          linux /live/vmlinuz {{ template "hook_boot_params" . }} toram
+          initrd /live/initrd.img
+      }
 
-        menuentry "--- oa-tools ---" {
-            true
-        }
-        menuentry "" {
-            true
-        }
-        menuentry "Start [[ osRelease "PRETTY_NAME" ]]" {
-            linux /live/vmlinuz {{ template "hook_boot_params" . }}
-            initrd /live/initrd.img
-        }
-        menuentry "Start [[ osRelease "PRETTY_NAME" ]] - RAM mode" {
-            linux /live/vmlinuz {{ template "hook_boot_params" . }} toram
-            initrd /live/initrd.img
-        }
+- name: "coa-isolinux-menu"
+  description: "Generazione dinamica ISOLINUX.cfg"
+  action: "oa_ell"
+  params:
+    module: "template"
+    dest: "/home/eggs/isodir/isolinux/isolinux.cfg"
+    content: |
+      UI vesamenu.c32
+      TIMEOUT 50
+      DEFAULT live
 
-  - name: "coa-isolinux-menu"
-    description: "Generazione dinamica ISOLINUX.cfg"
-    action: "oa_ell"
-    params:
-      module: "template"
-      dest: "/home/eggs/isodir/isolinux/isolinux.cfg"
-      content: |
-        UI vesamenu.c32
-        TIMEOUT 50
-        DEFAULT live
+      MENU BACKGROUND splash.png
+      MENU TITLE oa-tools
 
-        MENU BACKGROUND splash.png
-        MENU TITLE oa-tools
+      LABEL live
+          MENU LABEL Start [[ osRelease "PRETTY_NAME" ]]
+          LINUX /live/vmlinuz
+          APPEND {{ template "hook_boot_params" . }}
+          INITRD /live/initrd.img
 
-        LABEL live
-            MENU LABEL Start [[ osRelease "PRETTY_NAME" ]]
-            LINUX /live/vmlinuz
-            APPEND {{ template "hook_boot_params" . }}
-            INITRD /live/initrd.img
+      LABEL ram
+          MENU LABEL Start [[ osRelease "PRETTY_NAME" ]] - RAM mode
+          LINUX /live/vmlinuz
+          APPEND {{ template "hook_boot_params" . }} toram
+          INITRD /live/initrd.img
 
-        LABEL ram
-            MENU LABEL Start [[ osRelease "PRETTY_NAME" ]] - RAM mode
-            LINUX /live/vmlinuz
-            APPEND {{ template "hook_boot_params" . }} toram
-            INITRD /live/initrd.img
-
-  - name: "coa-efi-trampoline"
-    description: "Generazione Trampolino GRUB per EFI"
-    action: "oa_ell"
-    params:
-      module: "template"
-      dest: "/home/eggs/isodir/EFI/BOOT/grub.cfg"
-      content: |
-        search --set=root --file /live/filesystem.squashfs
-        set prefix=($root)/boot/grub
-        configfile $prefix/grub.cfg
+- name: "coa-efi-trampoline"
+  description: "Generazione Trampolino GRUB per EFI"
+  action: "oa_ell"
+  params:
+    module: "template"
+    dest: "/home/eggs/isodir/EFI/BOOT/grub.cfg"
+    content: |
+      search --set=root --file /live/filesystem.squashfs
+      set prefix=($root)/boot/grub
+      configfile $prefix/grub.cfg
 {{ end }}
