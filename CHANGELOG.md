@@ -1,4 +1,25 @@
 # Changelog - oa-tools
+## Release v0.8.5: The Declarative Evolution 🚀 2026-06-06
+This release marks a fundamental architectural milestone for the framework. We have successfully transitioned from a heavily imperative Bash-scripted workflow to a clean, highly robust **declarative YAML orchestration** model. 
+
+The engine is now smarter, the codebase is significantly lighter, and the remastering flight plan is easier to read, maintain, and extend.
+
+### 🌟 Key Architectural Changes
+
+* **The Declarative Engine (`base.yaml.tmpl`)**: The entire live ISO generation process is now orchestrated by a master YAML plan. This provides an Ansible-like, step-by-step clear overview of the remastering and installation hooks.
+* **The `oa_ell` Bridge**: Upgraded the internal Go worker (`cmd/ell.go`) to act as a flawless bridge between the C engine and the system. It features a new, indestructible JSON router capable of seamlessly handling tasks like dynamic templating, file copying, and native shell execution.
+* **Massive Bash Reduction**: Hundreds of lines of complex, imperative Bash logic have been retired. Core configurations—including bootloader staging (GRUB/ISOLINUX), sudoers setup, trusted desktop launchers, universal autologin, and SVG icon generation—are now handled purely through declarative `ell-actions.tmpl` tasks.
+
+### 🛠️ Core Improvements & Fixes
+
+* **Unified Squashfs Compression**: Streamlined the root filesystem compression logic (`core_squashfs`). Dropped legacy container-build workarounds in favor of a highly optimized, dynamically injected local profile (defaulting to multi-core `zstd` with automatic fallback configurations).
+* **Bulletproof YAML Parsing**: Resolved deep-level scope and Go-template injection edge-cases (`{{- include ... }}`). The `pilot` engine now generates the exact JSON flight plan flawlessly, immune to invisible characters or indentation mismatches.
+* **Library Standardization**: Reorganized the template libraries with clear roles and strict 80-column headers (`base.yaml.tmpl`, `scripts.tmpl`, `ell-actions.tmpl`), establishing a clean standard for future open-source contributions.
+* **Smarter User Identity Handling**: The internal worker now reliably maps and sanitizes user data, executing native identity injection (e.g., creating the `live` user with specific groups and GID/UID) without dropping to shell scripts.
+
+### 🎯 What's Next?
+With the YAML/Go/C orchestration bridge now fully operational and stable, the framework's foundation is rock-solid. Adding new features or supporting new distributions is now just a matter of adding a few declarative lines to the YAML plan.
+
 
 ## [0.8.4] - 2026-06-03
 
