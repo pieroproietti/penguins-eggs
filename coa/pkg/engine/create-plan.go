@@ -19,7 +19,8 @@ func GeneratePlan(
 	isRemaster bool,
 	workPath string,
 	finalIsoPath string,
-	stopAfter string) (string, error) {
+	stopAfter string,
+	isDebug bool) (string, error) { // <--- Nuovo parametro
 
 	var plan OAPlan
 
@@ -135,6 +136,23 @@ func GeneratePlan(
 			utils.LogNormal("\n[ENGINE] 🛑 Breakpoint '%s' elaborato.", step.Name)
 			hitBreakpoint = true
 		}
+	}
+
+	// =========================================================================
+	// INTERCETTAZIONE DEBUG JSON
+	// =========================================================================
+	if isDebug {
+		fmt.Println("\n====================================================================")
+		fmt.Println("                     [oa-tools] DEBUG JSON PLAN                     ")
+		fmt.Println("====================================================================")
+
+		// Formattiamo il JSON in modo leggibile (pretty print)
+		jsonDebug, _ := json.MarshalIndent(plan, "", "  ")
+		fmt.Println(string(jsonDebug))
+
+		fmt.Println("====================================================================")
+		fmt.Println("[debug] Esecuzione interrotta dal flag --debug. Nessuna ISO generata.")
+		os.Exit(0) // Qui ha senso uscire, perché siamo nell'engine!
 	}
 
 	return savePlan(plan)

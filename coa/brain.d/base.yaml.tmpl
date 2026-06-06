@@ -25,24 +25,16 @@ remaster:
     description: "Chroot environment and mount point preparation"
     action: "oa_mount_logic"
 
+# ----------------------------------------------------------------------------
+# 2. BOOTLOADERS PREPARATION
+# ----------------------------------------------------------------------------
+{{ include "ell_bootloaders" . | indent 2 }}
+
 
   # ----------------------------------------------------------------------------
-  # 2. BOOTLOADERS PREPARATION
+  # 3. LIVE MENUS
   # ----------------------------------------------------------------------------
-  - name: "coa-bootloaders"
-    description: "Staging bootloader assets for BIOS (ISOLINUX) and UEFI (GRUB/EFI)"
-    action: "oa_shell"
-    run_command: |
-{{ include "core_bootloaders" . | indent 6 }}
-
-  # ----------------------------------------------------------------------------
-  # 3. BOOT MENU AND BRANDING GENERATION
-  # ----------------------------------------------------------------------------
-  - name: "coa-live-menus"
-    description: "Dynamic GRUB and ISOLINUX menu generation"
-    action: "oa_shell"
-    run_command: |
-{{ include "core_live_menus" . | indent 6 }}
+{{ include "ell_live_menus" . | indent 2 }}
 
   # ----------------------------------------------------------------------------
   # 4. USER IDENTITY
@@ -78,20 +70,32 @@ remaster:
     description: "Dynamic kernel and initrd copy to ISO root"
     action: "oa_shell"
     run_command: |
-{{ include "core_kernel_copy" . | indent 6 }}    
+{{ include "core_kernel_copy" . | indent 6 }}
 
   # ----------------------------------------------------------------------------
   # 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
   # ----------------------------------------------------------------------------
-  - name: "coa-enable-live"
-    description: "Privilege configuration, trusted launcher, and universal autologin"
-    action: "oa_shell"
-    chroot: true
-    run_command: |
-{{ include "core_live_sudoers" . | indent 6 }}
-{{ include "core_live_icon" . | indent 6 }}
-{{ include "core_live_launcher" . | indent 6 }}
-{{ include "core_live_trust_agent" . | indent 6 }}
+{{ include "ell_enable_live" . | indent 2 }}
+
+  - name: "coa-live-icon"
+    description: "Creazione Icona Uovo (SVG 3D Golden Edition)"
+    action: "oa_ell"
+    params:
+      module: "template"
+      dest: "/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
+      permissions: 0644
+      content: |
+        <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#ffe066" />
+            <stop offset="50%" stop-color="#f0ad4e" />
+            <stop offset="100%" stop-color="#b87311" />
+            </radialGradient>
+        </defs>
+        <ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
+        <path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
+        </svg>
 
   # ----------------------------------------------------------------------------
   # 7.1 coa-autologin-gui
@@ -129,6 +133,7 @@ remaster:
   - name: "coa-cleanup"
     description: "Environment unmounting and cleanup"
     action: "oa_umount"
+
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

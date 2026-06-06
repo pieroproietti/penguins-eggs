@@ -8,19 +8,6 @@ import (
 	"strings"
 )
 
-// ActionAutologinGui mappa il payload JSON inviato dal C per l'azione coa-autologin-gui
-type ActionAutologinGui struct {
-	Name               string `json:"name"`
-	ResolvedTargetRoot string `json:"resolved_target_root"`
-
-	// Mappiamo esattamente la struttura in arrivo da 'params'
-	Params struct {
-		Module string `json:"module"`
-		User   string `json:"user"`
-		IsGui  bool   `json:"is_gui"`
-	} `json:"params"`
-}
-
 // RunAutologin coordina le configurazioni per i vari Display Manager
 func RunAutologin(config ActionAutologinGui) error {
 	root := config.ResolvedTargetRoot
