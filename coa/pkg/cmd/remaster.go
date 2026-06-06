@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	// <--- Aggiunto per intercettare pilot.ErrDebugMode
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,6 +18,7 @@ var (
 	produceMode string
 	producePath string
 	stopAfter   string
+	debugPlan   bool // <--- Nuova variabile per il flag di debug
 )
 
 var remasterCmd = &cobra.Command{
@@ -29,7 +31,10 @@ and generate a precise execution plan for the OA engine.`,
   sudo ./coa remaster --mode standard
   
   # Debug mode: stop after a specific step
-  sudo ./coa remaster --stop-after coa-initrd`,
+  sudo ./coa remaster --stop-after coa-initrd
+  
+  # Print the generated JSON plan (or YAML) and exit
+  sudo ./coa remaster --debug`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 
@@ -64,6 +69,7 @@ and generate a precise execution plan for the OA engine.`,
 			producePath,
 			finalPath,
 			stopAfter,
+			debugPlan, // <--- Passiamo il flag anche all'engine
 		)
 		if err != nil {
 			utils.Fatal("Impossibile generare il piano di volo: %v", err)
@@ -104,6 +110,9 @@ func init() {
 
 	// Registrazione del nuovo flag per il breakpoint
 	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
+
+	// Registrazione del flag di debug
+	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON (o lo YAML in caso di pre-processing) ed esce senza masterizzare")
 
 	rootCmd.AddCommand(remasterCmd)
 }

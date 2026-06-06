@@ -1,0 +1,84 @@
+# ==============================================================================
+# 🧩 FILE: scripts.tmpl
+# 🎯 ROLE: Low-level Bash functions library for core operations
+# ==============================================================================
+
+{{ define "core_squashfs" }}
+# activate echo break
+set -xe
+echo 
+
+# ==========================================================
+# CONFIGURAZIONE COMPRESSIONE SQUASHFS
+# ==========================================================
+# Massime prestazioni di base e libertà di override tramite custom.yaml
+DEFAULT_COMP="zstd"
+DEFAULT_LEVEL="3"
+export SQ_BLOCK="1M"
+export SQ_PROCS=$(nproc)
+
+# Controlliamo che jq sia installato per evitare errori silenziosi
+if command -v jq >/dev/null 2>&1; then
+    # Usiamo --arg per passare le variabili Bash in modo sicuro.
+    # Cerchiamo sia le chiavi minuscole che quelle Maiuscole (tipiche di Go)
+    export SQ_COMP=$(jq -r --arg def "$DEFAULT_COMP" '.settings.compression.algorithm // .settings.Compression.Algorithm // $def' /tmp/coa/oa-plan.json)
+    export SQ_LEVEL=$(jq -r --arg def "$DEFAULT_LEVEL" '.settings.compression.level // .settings.Compression.Level // $def' /tmp/coa/oa-plan.json)
+else
+    echo -e "\033[1;33m[SQUASHFS WARNING]\033[0m comando 'jq' non trovato! Uso compressione di default."
+    export SQ_COMP="$DEFAULT_COMP"
+    export SQ_LEVEL="$DEFAULT_LEVEL"
+fi
+
+# Fallback di sicurezza finale
+if [ "$SQ_COMP" = "null" ] || [ -z "$SQ_COMP" ]; then export SQ_COMP="$DEFAULT_COMP"; fi
+if [ "$SQ_LEVEL" = "null" ] || [ -z "$SQ_LEVEL" ] || [ "$SQ_LEVEL" = "0" ]; then export SQ_LEVEL="$DEFAULT_LEVEL"; fi
+
+# Costruiamo gli argomenti di compressione in base all'algoritmo
+if [ "$SQ_COMP" = "zstd" ]; then
+    COMP_ARGS="-comp zstd -Xcompression-level $SQ_LEVEL"
+elif [ "$SQ_COMP" = "xz" ]; then
+    COMP_ARGS="-comp xz" # xz non supporta -Xcompression-level su mksquashfs
+elif [ "$SQ_COMP" = "gzip" ]; then
+    COMP_ARGS="-comp gzip"
+else
+    COMP_ARGS="-comp $SQ_COMP"
+fi
+
+echo "========================================================"
+echo "🚀 AVVIO MKSQUASHFS (Profilo: $SQ_COMP L$SQ_LEVEL, $SQ_BLOCK, $SQ_PROCS Cores)"
+echo "========================================================"
+
+mksquashfs /home/eggs/liveroot /home/eggs/isodir/live/filesystem.squashfs \
+  -no-xattrs \
+  $COMP_ARGS \
+  -b $SQ_BLOCK \
+  -processors $SQ_PROCS \
+  -noappend \
+  -wildcards \
+  -ef /tmp/coa/excludes.list \
+  -p "mnt d 0755 root root" \
+  -p "media d 0755 root root"
+set +xe
+{{ end }}
+
+{{ define "core_xorriso" }}
+xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid 'OA_LIVE' \
+-eltorito-boot isolinux/isolinux.bin -eltorito-catalog isolinux/boot.cat \
+-no-emul-boot -boot-load-size 4 -boot-info-table \
+-isohybrid-mbr /tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin \
+-eltorito-alt-boot -e EFI/BOOT/efi.img -no-emul-boot -isohybrid-gpt-basdat \
+-o ${ISO_OUTPUT} /home/eggs/isodir
+{{ end }}
+
+{{ define "core_kernel_copy" }}
+{{ template "hook_kernel_paths" . }}
+if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
+if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
+{{ end }}
+
+{{ define "core_finalize" }}
+#!/bin/bash
+set -e
+rm -f /etc/sudoers.d/00-live
+{{ include "hook_install_logic" . | indent 6 }}
+{{ end }}

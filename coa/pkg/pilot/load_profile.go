@@ -74,15 +74,18 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		return nil, fmt.Errorf("nessun modulo trovato per %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
 	}
 
-	// 5. RENDERING DEI TEMPLATE (Composizione Common + Modulo + Base)
+	// =========================================================================
+	// 5. RENDERING DEI TEMPLATE (La Nuova Architettura a 4 Pilastri)
+	// =========================================================================
 	basePath := filepath.Join(baseDir, "base.yaml.tmpl")
-	commonPath := filepath.Join(baseDir, "common.bash.tmpl")
+	scriptsPath := filepath.Join(baseDir, "scripts.tmpl")        // Il dominio imperativo (Bash)
+	ellActionsPath := filepath.Join(baseDir, "ell-actions.tmpl") // Il dominio dichiarativo (YAML/Go)
 
 	// Assumiamo che i moduli siano nella sottocartella 'modules' e abbiano estensione .tmpl
 	modulePath := filepath.Join(baseDir, "modules", moduleFile)
 
-	// Log aggiornato per mostrare la tripla fusione
-	utils.LogNormal("%s[pilot]%s Compilazione: common.bash.tmpl + %s + base.yaml.tmpl", utils.ColorCyan, utils.ColorReset, moduleFile)
+	// Log aggiornato per mostrare la quadrupla fusione
+	utils.LogNormal("%s[pilot]%s Compilazione: scripts.tmpl + ell-actions.tmpl + %s + base.yaml.tmpl", utils.ColorCyan, utils.ColorReset, moduleFile)
 
 	// Context da passare al template
 	ctx := TemplateContext{
@@ -92,7 +95,7 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	}
 
 	// Creiamo un nuovo template base
-	tmpl := template.New(filepath.Base(basePath)) // <-- Corretto: usiamo basePath
+	tmpl := template.New(filepath.Base(basePath))
 
 	// Aggiungiamo le funzioni magiche "include" e "indent"
 	tmpl.Funcs(template.FuncMap{
@@ -108,11 +111,10 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		},
 	})
 
-	// 3. Parsiamo i file
-	// Usiamo _, err per non ridefinire tmpl, dato che ParseFiles agisce sul puntatore
-	_, err = tmpl.ParseFiles(commonPath, modulePath, basePath)
+	// 5.1 Parsiamo i file (Iniettiamo l'intero arsenale nel motore di Go)
+	_, err = tmpl.ParseFiles(scriptsPath, ellActionsPath, modulePath, basePath)
 	if err != nil {
-		return nil, fmt.Errorf("errore nel parsing dei template (%s, %s, %s): %v", commonPath, modulePath, basePath, err)
+		return nil, fmt.Errorf("errore nel parsing dei template: %v", err)
 	}
 
 	var rendered bytes.Buffer
@@ -124,11 +126,13 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	// 6. Parsing dello YAML finale renderizzato
 	var profile Profile
 	if err := yaml.Unmarshal(rendered.Bytes(), &profile); err != nil {
-		return nil, fmt.Errorf("errore sintassi nello YAML generato: %v", err)
+		// SALVATAGGIO D'EMERGENZA: Scrive il file corrotto in /tmp per ispezionarlo
+		os.WriteFile("/tmp/oa-failed-yaml.txt", rendered.Bytes(), 0644)
+		return nil, fmt.Errorf("errore sintassi YAML (riga visibile in /tmp/oa-failed-yaml.txt): %v", err)
 	}
 
 	// 7. OVERRIDE: Applichiamo il custom.yml se esiste
-	customCfg, err := LoadCustomSettings() // <--- Qui ricevi ENTRAMBI
+	customCfg, err := LoadCustomSettings()
 	if err != nil {
 		return nil, fmt.Errorf("errore nel caricamento di custom.yml: %v", err)
 	}

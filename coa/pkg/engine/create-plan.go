@@ -2,6 +2,7 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,7 +19,8 @@ func GeneratePlan(
 	isRemaster bool,
 	workPath string,
 	finalIsoPath string,
-	stopAfter string) (string, error) {
+	stopAfter string,
+	isDebug bool) (string, error) { // <--- Nuovo parametro
 
 	var plan OAPlan
 
@@ -60,6 +62,43 @@ func GeneratePlan(
 				PathLiveFs: workPath,
 			})
 
+		case "oa-ell":
+			task := OATask{
+				Step:       step,
+				PathLiveFs: workPath,
+			}
+			task.Description = currentDescription
+			task.RunCommand = currentRunCommand
+
+			// 1. Controlliamo se ci sono effettivamente dei parametri passati dal profile
+			if len(step.Params) > 0 {
+
+				// 2. Estraiamo un parametro specifico in modo sicuro
+				// L'idioma "comma ok" ci protegge dai crash se la chiave non esiste
+				if val, exists := step.Params["script_path"]; exists {
+
+					// 3. Facciamo il casting (type assertion) al tipo che ci aspettiamo
+					if scriptPath, isString := val.(string); isString {
+						// Ora sappiamo per certo che scriptPath è una stringa valida
+						// Possiamo iniettarlo nel comando o manipolare il task
+						task.RunCommand = fmt.Sprintf("%s %s", currentRunCommand, scriptPath)
+						utils.LogNormal("\n[ENGINE] Parametro 'script_path' iniettato in oa-ell: %s", scriptPath)
+					} else {
+						utils.LogWarning("\n[ENGINE] Il parametro 'script_path' non è una stringa valida!")
+					}
+				}
+
+				// Puoi fare lo stesso per parametri booleani, interi, ecc.
+				if val, exists := step.Params["force_execution"]; exists {
+					if force, isBool := val.(bool); isBool && force {
+						utils.LogNormal("\n[ENGINE] Esecuzione forzata abilitata per oa-ell")
+					}
+				}
+			}
+
+			// Infine, accodiamo il task "arricchito" al piano
+			plan.Plan = append(plan.Plan, task)
+
 		default:
 			task := OATask{
 				Step:       step,
@@ -97,6 +136,23 @@ func GeneratePlan(
 			utils.LogNormal("\n[ENGINE] 🛑 Breakpoint '%s' elaborato.", step.Name)
 			hitBreakpoint = true
 		}
+	}
+
+	// =========================================================================
+	// INTERCETTAZIONE DEBUG JSON
+	// =========================================================================
+	if isDebug {
+		fmt.Println("\n====================================================================")
+		fmt.Println("                     [oa-tools] DEBUG JSON PLAN                     ")
+		fmt.Println("====================================================================")
+
+		// Formattiamo il JSON in modo leggibile (pretty print)
+		jsonDebug, _ := json.MarshalIndent(plan, "", "  ")
+		fmt.Println(string(jsonDebug))
+
+		fmt.Println("====================================================================")
+		fmt.Println("[debug] Esecuzione interrotta dal flag --debug. Nessuna ISO generata.")
+		os.Exit(0) // Qui ha senso uscire, perché siamo nell'engine!
 	}
 
 	return savePlan(plan)

@@ -57,7 +57,7 @@ int execute_verb(cJSON *root, cJSON *task) {
         }
     }
 
-    LOG_INFO(">>> Invocazione modulo interno: %s", action_name);
+    // LOG_INFO(">>> Invocazione modulo interno: %s", action_name);
 
     int res = 1;
     if (strcmp(action_name, "oa_umount") == 0) {

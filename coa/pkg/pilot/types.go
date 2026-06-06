@@ -18,6 +18,9 @@ type Step struct {
 	Src         string `yaml:"src,omitempty" json:"src,omitempty"`
 	Dst         string `yaml:"dst,omitempty" json:"dst,omitempty"`
 	Users       []User `yaml:"users,omitempty" json:"users,omitempty"`
+
+	// LA CHIAVE UNIVERSALE PER I MODULI
+	Params map[string]interface{} `yaml:"params,omitempty" json:"params,omitempty"`
 }
 
 // User definisce l'identità di un utente
