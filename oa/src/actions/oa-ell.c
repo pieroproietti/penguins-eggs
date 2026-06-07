@@ -71,18 +71,20 @@ int oa_ell(OA_Context *ctx) {
     }
 
     if (pid == 0) { 
-        // PROCESSO FIGLIO (L'esecutore Go)
-        close(pfd[1]); // Chiude il lato scrittura, il figlio deve solo ascoltare
+        // PROCESSO FIGLIO
+        close(pfd[1]); 
 
         // Sostituisce lo STDIN standard del processo con la nostra Pipe
         dup2(pfd[0], STDIN_FILENO);
         close(pfd[0]);
 
-        // Evoca il binario Go
-        execlp("coa", "coa", "ell", (char *)NULL);
+        // 1. Usiamo il path assoluto per evitare dubbi
+        // 2. Usiamo execle per passare esplicitamente l'ambiente (environ)
+        extern char **environ;
+        execle("/usr/bin/coa", "coa", "ell", (char *)NULL, environ);
         
-        // Se arriva qui, il sistema non ha trovato 'coa' nel PATH.
-        perror("oa_ell: execlp('coa ell') failed");
+        // Se arriviamo qui, c'è un errore grave
+        perror("oa_ell: execle('/usr/bin/coa ell') failed");
         _exit(1); 
     }
 

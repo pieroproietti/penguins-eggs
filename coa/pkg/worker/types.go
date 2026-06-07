@@ -52,3 +52,18 @@ type ActionTemplate struct {
 		Vars        map[string]string `json:"vars,omitempty"`
 	} `json:"params"`
 }
+
+// ActionXorriso mappa esattamente il payload JSON inviato dal tuo file YAML
+type ActionXorriso struct {
+	Name   string `json:"name"`
+	Module string `json:"module"`
+	Params struct {
+		OutputFile  string `json:"output_file"`
+		SourceDir   string `json:"source_dir"`
+		Volid       string `json:"volid"`
+		IsolinuxBin string `json:"isolinux_bin"`
+		IsolinuxCat string `json:"isolinux_cat"`
+		EfiImg      string `json:"efi_img"`
+		Isohdpfx    string `json:"isohdpfx"`
+	} `json:"params"`
+}

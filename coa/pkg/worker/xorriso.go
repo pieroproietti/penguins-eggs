@@ -6,42 +6,31 @@ import (
 	"os/exec"
 )
 
-// ActionXorriso mappa esattamente il payload JSON inviato dal tuo file YAML
-type ActionXorriso struct {
-	Name   string `json:"name"`
-	Module string `json:"module"`
-	Params struct {
-		OutputFile  string `json:"output_file"`
-		SourceDir   string `json:"source_dir"`
-		Volid       string `json:"volid"`
-		IsolinuxBin string `json:"isolinux_bin"`
-		IsolinuxCat string `json:"isolinux_cat"`
-		EfiImg      string `json:"efi_img"`
-		Isohdpfx    string `json:"isohdpfx"`
-	} `json:"params"`
-}
+// ... struct ActionXorriso rimane uguale ...
 
-// RunXorriso prende i parametri ed esegue il comando di masterizzazione
 func RunXorriso(task ActionXorriso) error {
 	p := task.Params
 
-	// 1. Controlli di sicurezza: ti salvano dal lanciare un processo lungo
-	//    se mancano i parametri fondamentali.
-	if p.OutputFile == "" || p.SourceDir == "" {
+	// 0. LA MAGIA: Espansione delle variabili stile Bash
+	// Trasforma le stringhe letterali come "${ISO_OUTPUT}" nei loro valori reali
+	// pescando dalle variabili d'ambiente correnti.
+	actualOutput := os.ExpandEnv(p.OutputFile)
+	actualSource := os.ExpandEnv(p.SourceDir)
+
+	// 1. Controlli di sicurezza (ora usiamo le variabili espanse)
+	if actualOutput == "" || actualSource == "" {
 		return fmt.Errorf("parametri output_file e source_dir sono obbligatori")
 	}
 
-	// Verifica immediata che la cartella da comprimere esista davvero
-	if _, err := os.Stat(p.SourceDir); os.IsNotExist(err) {
-		return fmt.Errorf("la directory sorgente '%s' non esiste", p.SourceDir)
+	if _, err := os.Stat(actualSource); os.IsNotExist(err) {
+		return fmt.Errorf("la directory sorgente '%s' non esiste", actualSource)
 	}
 
-	// Default di fallback per il nome volume se non specificato nello YAML
 	if p.Volid == "" {
 		p.Volid = "OA_LIVE"
 	}
 
-	// 2. Costruzione sicura degli argomenti (nessun problema di string injection Bash!)
+	// 2. Costruzione sicura degli argomenti
 	args := []string{
 		"-as", "mkisofs",
 		"-iso-level", "3",
@@ -63,19 +52,17 @@ func RunXorriso(task ActionXorriso) error {
 		"-isohybrid-gpt-basdat",
 
 		// Output file e Cartella Sorgente
-		"-o", p.OutputFile,
-		p.SourceDir,
+		"-o", actualOutput, // <-- Usiamo la variabile espansa!
+		actualSource, // <-- Usiamo la variabile espansa!
 	}
 
-	fmt.Printf("\n💿 Generazione ISO ibrida: %s\n", p.OutputFile)
-	fmt.Printf("📁 Sorgente: %s\n", p.SourceDir)
+	fmt.Printf("\n💿 Generazione ISO ibrida: %s\n", actualOutput)
+	fmt.Printf("📁 Sorgente: %s\n", actualSource)
 	fmt.Println("⏳ Avvio compressione xorriso (potrebbe richiedere qualche minuto)...")
 
 	// 3. Esecuzione del processo nativo
 	cmd := exec.Command("xorriso", args...)
 
-	// Colleghiamo lo standard output e error in modo trasparente.
-	// Così l'utente vedrà le percentuali e i log di xorriso direttamente nel terminale!
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -83,6 +70,6 @@ func RunXorriso(task ActionXorriso) error {
 		return fmt.Errorf("processo xorriso fallito: %w", err)
 	}
 
-	fmt.Printf("✅ Immagine ISO creata con successo in: %s\n", p.OutputFile)
+	fmt.Printf("✅ Immagine ISO creata con successo in: %s\n", actualOutput)
 	return nil
 }
