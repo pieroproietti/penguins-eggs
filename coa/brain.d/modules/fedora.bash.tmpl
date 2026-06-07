@@ -31,6 +31,11 @@ INITRD_PATH="/home/eggs/liveroot/boot/initramfs-fedora.img"
 # ----------------------------------------------------------------------------
 {{ define "hook_squashfs" }}
 mkdir -p /home/eggs/isodir/LiveOS
+timeout=10
+while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
+    sleep 1
+    timeout=$((timeout-1))
+done
 ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
 {{ end }}
 

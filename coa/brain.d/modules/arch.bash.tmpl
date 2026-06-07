@@ -38,6 +38,11 @@ INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initramfs* 2>/dev/null | grep -v "f
 # ----------------------------------------------------------------------------
 {{ define "hook_squashfs" }}
 mkdir -p /home/eggs/isodir/arch/x86_64
+timeout=10
+while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
+    sleep 1
+    timeout=$((timeout-1))
+done
 ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/airootfs.sfs
 {{ end }}
 

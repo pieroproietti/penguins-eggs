@@ -38,6 +38,11 @@ INITRD_PATH=$(ls /home/eggs/liveroot/boot/initramfs-*.img 2>/dev/null | grep -v 
 # ----------------------------------------------------------------------------
 {{ define "hook_squashfs" }}
 mkdir -p /home/eggs/isodir/manjaro/x86_64
+timeout=10
+while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
+    sleep 1
+    timeout=$((timeout-1))
+done
 ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_64/livefs.sfs
 {{ end }}
 
