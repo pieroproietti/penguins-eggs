@@ -1,4 +1,0 @@
-#!/usr/bin/env ruby
-require_relative "../lib/ruby_os_tools"
-
-RubyOSTools::CLI.new(ARGV).run
