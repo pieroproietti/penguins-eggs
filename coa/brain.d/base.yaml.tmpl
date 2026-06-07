@@ -116,6 +116,9 @@ remaster:
       dest_file: "/home/eggs/isodir/live/filesystem.squashfs"
       excludes_file: "/tmp/coa/excludes.list"
   
+# ln -f /home/eggs/isodir/live/filesystem.squashfs in arch, fedora, manjaro
+{{ hook_squashfs }}
+
 # ----------------------------------------------------------------------------
 # 9. ISO XORRISO PACKAGING
 # ----------------------------------------------------------------------------
