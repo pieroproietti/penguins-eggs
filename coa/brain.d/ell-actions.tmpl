@@ -5,7 +5,7 @@
 
 {{ define "ell_bootloaders" }}
 # --- 2.1. PREPARAZIONE STRUTTURA ---
-- name: "coa-boot-dirs"
+- name: "create-bootloader-dirs"
   description: "Creazione directory bootloader"
   action: "oa_ell"
   module: "shell"
@@ -13,7 +13,7 @@
     command: "mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT"
 
 # --- 2.2. COPIA ASSETS BIOS ---
-- name: "coa-copy-isolinux"
+- name: "copy-isolinux"
   description: "Copia binari ISOLINUX"
   action: "oa_ell"
   module: "copy"
@@ -22,7 +22,7 @@
     dest: "/home/eggs/isodir/isolinux/isolinux.bin"
     ignore_missing: true
 
-- name: "coa-copy-syslinux-modules"
+- name: "copy-syslinux-modules"
   description: "Copia moduli SYSLINUX"
   action: "oa_ell"
   module: "shell"
@@ -30,7 +30,7 @@
     command: "cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true"
 
 # --- 2.3. LOGICA EFI ---
-- name: "coa-copy-efi-binary"
+- name: "copy-efi-binary"
   description: "Copia binario EFI"
   action: "oa_ell"
   module: "shell"
@@ -41,7 +41,7 @@
       fi
 
 # --- 2.4. GENERAZIONE EFI.IMG ---
-- name: "coa-gen-efi-img"
+- name: "gen-efi.img"
   description: "Generazione immagine FAT per EFI"
   action: "oa_ell"
   module: "shell"
@@ -59,7 +59,7 @@
 
 {{ define "ell_live_menus" }}
 # 3.1 -- ASSETS: SPLASH SCREEN ---
-- name: "coa-copy-splash-grub"
+- name: "copy-splash-grub"
   description: "Copia splash screen per GRUB"
   action: "oa_ell"
   module: "copy"
@@ -68,7 +68,7 @@
     dest: "/home/eggs/isodir/boot/grub/splash.png"
     ignore_missing: true
 
-- name: "coa-copy-splash-isolinux"
+- name: "copy-splash-isolinux"
   description: "Copia splash screen per ISOLINUX"
   action: "oa_ell"
   module: "copy"
@@ -80,7 +80,7 @@
 
 # 3.2 -- ASSETS: FONT UNICODE ---
 # Priorità 2 (Fallback): Copia dagli assets
-- name: "coa-copy-font-assets"
+- name: "copy-assets-fonts"
   description: "Copia font GRUB da assets (fallback)"
   action: "oa_ell"
   module: "copy"
@@ -90,7 +90,7 @@
     ignore_missing: true
 
 # 3.3. Priorità 1 (Principale): Copia dal sistema (sovrascrive se esiste)
-- name: "coa-copy-font-sys"
+- name: "copy-system-fonts"
   description: "Copia font GRUB dal sistema"
   action: "oa_ell"
   module: "copy"
@@ -100,7 +100,7 @@
     ignore_missing: true
 
 # 3.4. --- TEMPLATES: GENERAZIONE MENU ---
-- name: "coa-grub-menu-main"
+- name: "create-grub-menu-main"
   description: "Generazione dinamica GRUB.cfg principale"
   action: "oa_ell"
   module: "template"
@@ -157,8 +157,8 @@
       }
 
 # 3.5 -- GENERAZIONE MENU ISOLINUX
-- name: "coa-isolinux-menu"
-  description: "Generazione dinamica ISOLINUX.cfg"
+- name: "create-isolinux.cfg"
+  description: "Generazione isolinux.cfg"
   action: "oa_ell"
   module: "template"
   params:
@@ -184,7 +184,7 @@
           INITRD /live/initrd.img
 
 # 3.6 -- GENERAZIONE TRAMPOLINE GRUB
-- name: "coa-efi-trampoline"
+- name: "create-efi-grub-trampoline"
   description: "Generazione Trampolino GRUB per EFI"
   action: "oa_ell"
   module: "template"
@@ -199,7 +199,7 @@
 
 ## -- 4.1 sanitize host
 {{ define "ell_sanitize_host" }}
-- name: "coa-sanitize-fstab"
+- name: "sanitize-fstab"
   description: "Remove /etc/fstab from live"
   action: "oa_ell"
   chroot: true
@@ -210,7 +210,7 @@
     content: |
       # UNCONFIGURED FSTAB FOR LIVE SYSTEM
 
-- name: "coa-sanitize-crypttab"
+- name: "sanitize-crypttab"
   description: "Remove /etc/crypttab from live"
   action: "oa_ell"
   chroot: true
@@ -225,7 +225,7 @@
 {{ define "ell_enable_live" }}
 ## 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
 # 7.1. Configurazione Sudoers (Senza password)
-- name: "coa-live-sudoers"
+- name: "conf-live-sudoers"
   description: "Configurazione sudoers per utente live"
   action: "oa_ell"
   module: "template"
@@ -237,7 +237,7 @@
       live ALL=(ALL) NOPASSWD:ALL
 
 # 7.2. Desktop Launcher Universale
-- name: "coa-live-launcher"
+- name: "create-live-launcher"
   description: "Desktop Launcher di installazione"
   action: "oa_ell"
   module: "template"
@@ -258,7 +258,7 @@
       Categories=System;
 
 # 7.3. Trust Agent (Script Bash dinamico creato da YAML)
-- name: "coa-trust-agent-script"
+- name: "trust-agent-script"
   description: "Script per il trust dinamico del desktop launcher"
   action: "oa_ell"
   module: "template"
@@ -298,7 +298,7 @@
       fi
 
 # 7.4. Trust Agent Autostart
-- name: "coa-trust-agent-autostart"
+- name: "trust-agent-autostart"
   description: "Innesco XDG Autostart per il trust agent"
   action: "oa_ell"
   module: "template"

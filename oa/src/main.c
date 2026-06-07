@@ -50,7 +50,7 @@ int execute_verb(cJSON *root, cJSON *task) {
 
     cJSON *description = cJSON_GetObjectItemCaseSensitive(task, "description");
     if (cJSON_IsString(description)) {
-        printf("%s[coa]%s %s\n", CLR_CYAN, CLR_RESET, description->valuestring);
+        printf("[coa] %s\n", description->valuestring);
         if (oa_log_file) {
             fprintf(oa_log_file, "[coa] %s\n", description->valuestring);
             fflush(oa_log_file);

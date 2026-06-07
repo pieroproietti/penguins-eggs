@@ -18,9 +18,10 @@ remaster:
 # ----------------------------------------------------------------------------
 # 1. INITIAL SETUP AND MOUNT
 # ----------------------------------------------------------------------------
-  - name: "coa-fs-setup"
+  - name: "oa-mount-logic"
     description: "Chroot environment and mount point preparation"
     action: "oa_mount_logic"
+    module: "oa_mount_logic"
 
 # ----------------------------------------------------------------------------
 # 2. BOOTLOADERS PREPARATION
@@ -36,7 +37,7 @@ remaster:
 # ----------------------------------------------------------------------------
 # 4. USER IDENTITY
 # ----------------------------------------------------------------------------
-  - name: "coa-identity"
+  - name: "Indentity"
     description: "Live user injection and password sanitization"
     action: "oa_users"
 
@@ -106,7 +107,7 @@ remaster:
 # ----------------------------------------------------------------------------
 # 8. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
-  - name: "Compressione del filesystem in SquashFS"
+  - name: "mksquashfs"
     action: "oa_ell"
     module: "mksquashfs"
     params:
@@ -129,7 +130,7 @@ remaster:
 # ----------------------------------------------------------------------------
 # 9. ISO XORRISO PACKAGING
 # ----------------------------------------------------------------------------
-  - name: "coa-xorriso"
+  - name: "xorriso"
     action: "oa_ell"
     module: "xorriso"
     params:
@@ -145,7 +146,7 @@ remaster:
 # ----------------------------------------------------------------------------
 # 10. CLEANUP
 # ----------------------------------------------------------------------------
-  - name: "coa-cleanup"
+  - name: "cleanup"
     description: "Environment unmounting and cleanup"
     action: "oa_umount"
 
