@@ -116,7 +116,14 @@ remaster:
       dest_file: "/home/eggs/isodir/live/filesystem.squashfs"
       excludes_file: "/tmp/coa/excludes.list"
   
-# ln -f /home/eggs/isodir/live/filesystem.squashfs in arch, fedora, manjaro
+# ----------------------------------------------------------------------------
+# 8.1 Hard link to /home/eggs/isodir/live/filesystem.squashfs in arch, fedora, manjaro
+# ----------------------------------------------------------------------------
+  - name: "hook_squashfs"
+    description: "Hard link to /home/eggs/isodir/live/filesystem.squashfs in arch, fedora, manjaro"
+    action: "oa_shell"
+    chroot: true
+    run_command: |
 {{ include "hook_squashfs" . | indent 6 }}
 
 # ----------------------------------------------------------------------------
