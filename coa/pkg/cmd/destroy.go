@@ -22,8 +22,20 @@ It uses MNT_DETACH to unmount the OverlayFS and virtual API filesystems (/dev, /
 	},
 }
 
+var killCmd = &cobra.Command{
+	Use:    "kill",
+	Short:  "Alias for destroy - aggressively free the nest",
+	Hidden: false, // O true se vuoi tenerlo un "easter egg" per esperti
+	Run: func(cmd *cobra.Command, args []string) {
+		// Stessa logica di protezione
+		CheckSudoRequirements("kill", true)
+		handledestroy()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(destroyCmd)
+	rootCmd.AddCommand(killCmd) // Aggiungiamo anche questo
 }
 
 // =====================================================================

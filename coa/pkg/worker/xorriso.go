@@ -4,18 +4,26 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
-
-// ... struct ActionXorriso rimane uguale ...
 
 func RunXorriso(task ActionXorriso) error {
 	p := task.Params
 
-	// 0. LA MAGIA: Espansione delle variabili stile Bash
-	// Trasforma le stringhe letterali come "${ISO_OUTPUT}" nei loro valori reali
-	// pescando dalle variabili d'ambiente correnti.
+	// 1. Espansione classica
 	actualOutput := os.ExpandEnv(p.OutputFile)
+
+	// 2. FALLBACK DI SICUREZZA:
+	// Se dopo l'espansione è ancora vuoto, usiamo un path predefinito basato sulla home
+	if actualOutput == "" || actualOutput == "${ISO_OUTPUT}" {
+		actualOutput = filepath.Join("/home/eggs/oa-live.iso")
+		fmt.Printf("⚠️  Warning: ISO_OUTPUT non risolto, uso fallback: %s\n", actualOutput)
+	}
+
 	actualSource := os.ExpandEnv(p.SourceDir)
+	if actualSource == "" {
+		actualSource = "/home/eggs/isodir" // Fallback di sicurezza
+	}
 
 	// 1. Controlli di sicurezza (ora usiamo le variabili espanse)
 	if actualOutput == "" || actualSource == "" {

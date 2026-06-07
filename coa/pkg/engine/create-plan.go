@@ -109,11 +109,16 @@ func GeneratePlan(
 
 			// Prima di "coa-xorriso" inseriamo "coa-dot-disk"
 			if task.Name == "coa-xorriso" {
-				isoFilename := filepath.Base(finalIsoPath)
-				isoWorkDir := filepath.Join(workPath, "isodir")
+				task.Params["output_file"] = finalIsoPath // Passiamo il path assoluto, è più sicuro!
+				task.Params["source_dir"] = filepath.Join(workPath, "isodir")
 
-				dotDiskScript := createDotDiskScript(isoWorkDir, isoFilename, "", "")
+				// 2. Ora usiamo questi valori per creare lo script .disk
+				// Dobbiamo estrarli con type assertion perché sono interfacce
+				outputFile := task.Params["output_file"].(string)
+				sourceDir := task.Params["source_dir"].(string)
 
+				// Creazione script .disk (usiamo i valori appena iniettati)
+				dotDiskScript := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
 				// 1. Accodiamo lo script per creare la cartella .disk AL PIANO
 				plan.Plan = append(plan.Plan, OATask{
 					Step: pilot.Step{
