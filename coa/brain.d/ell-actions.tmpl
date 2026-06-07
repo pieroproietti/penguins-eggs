@@ -8,16 +8,16 @@
 - name: "coa-boot-dirs"
   description: "Creazione directory bootloader"
   action: "oa_ell"
+  module: "shell"
   params:
-    module: "shell"
     command: "mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT"
 
 # --- 2.2. COPIA ASSETS BIOS ---
 - name: "coa-copy-isolinux"
   description: "Copia binari ISOLINUX"
   action: "oa_ell"
+  module: "copy"
   params:
-    module: "copy"
     src: "/tmp/coa/bootloaders/ISOLINUX/isolinux.bin"
     dest: "/home/eggs/isodir/isolinux/isolinux.bin"
     ignore_missing: true
@@ -25,16 +25,16 @@
 - name: "coa-copy-syslinux-modules"
   description: "Copia moduli SYSLINUX"
   action: "oa_ell"
+  module: "shell"
   params:
-    module: "shell"
     command: "cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true"
 
 # --- 2.3. LOGICA EFI ---
 - name: "coa-copy-efi-binary"
   description: "Copia binario EFI"
   action: "oa_ell"
+  module: "shell"
   params:
-    module: "shell"
     command: |
       if [ -f "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" ]; then
           cp "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
@@ -44,8 +44,8 @@
 - name: "coa-gen-efi-img"
   description: "Generazione immagine FAT per EFI"
   action: "oa_ell"
+  module: "shell"
   params:
-    module: "shell"
     command: |
       dd if=/dev/zero of=/home/eggs/isodir/EFI/BOOT/efi.img bs=1M count=12
       mkfs.vfat /home/eggs/isodir/EFI/BOOT/efi.img
@@ -57,14 +57,13 @@
 
 {{ end }}
 
-
 {{ define "ell_live_menus" }}
 # 3.1 -- ASSETS: SPLASH SCREEN ---
 - name: "coa-copy-splash-grub"
   description: "Copia splash screen per GRUB"
   action: "oa_ell"
+  module: "copy"
   params:
-    module: "copy"
     src: "/etc/oa-tools.d/brain.d/assets/splash.png"
     dest: "/home/eggs/isodir/boot/grub/splash.png"
     ignore_missing: true
@@ -72,6 +71,7 @@
 - name: "coa-copy-splash-isolinux"
   description: "Copia splash screen per ISOLINUX"
   action: "oa_ell"
+  module: "copy"
   params:
     module: "copy"
     src: "/etc/oa-tools.d/brain.d/assets/splash.png"
@@ -83,8 +83,8 @@
 - name: "coa-copy-font-assets"
   description: "Copia font GRUB da assets (fallback)"
   action: "oa_ell"
+  module: "copy"
   params:
-    module: "copy"
     src: "/etc/oa-tools.d/brain.d/assets/unicode.pf2"
     dest: "/home/eggs/isodir/boot/grub/font.pf2"
     ignore_missing: true
@@ -93,8 +93,8 @@
 - name: "coa-copy-font-sys"
   description: "Copia font GRUB dal sistema"
   action: "oa_ell"
+  module: "copy"
   params:
-    module: "copy"
     src: "/usr/share/grub/unicode.pf2"
     dest: "/home/eggs/isodir/boot/grub/font.pf2"
     ignore_missing: true
@@ -103,8 +103,8 @@
 - name: "coa-grub-menu-main"
   description: "Generazione dinamica GRUB.cfg principale"
   action: "oa_ell"
+  module: "template"
   params:
-    module: "template"
     dest: "/home/eggs/isodir/boot/grub/grub.cfg"
     content: |
       set timeout=5
@@ -160,8 +160,8 @@
 - name: "coa-isolinux-menu"
   description: "Generazione dinamica ISOLINUX.cfg"
   action: "oa_ell"
+  module: "template"
   params:
-    module: "template"
     dest: "/home/eggs/isodir/isolinux/isolinux.cfg"
     content: |
       UI vesamenu.c32
@@ -187,8 +187,8 @@
 - name: "coa-efi-trampoline"
   description: "Generazione Trampolino GRUB per EFI"
   action: "oa_ell"
+  module: "template"
   params:
-    module: "template"
     dest: "/home/eggs/isodir/EFI/BOOT/grub.cfg"
     content: |
       search --set=root --file /live/filesystem.squashfs
@@ -203,8 +203,8 @@
   description: "Remove /etc/fstab from live"
   action: "oa_ell"
   chroot: true
+  module: "template"
   params:
-    module: "template"
     dest: "/etc/fstab"
     permissions: 420 # Esadecimale 0644
     content: |
@@ -214,8 +214,8 @@
   description: "Remove /etc/crypttab from live"
   action: "oa_ell"
   chroot: true
+  module: "template"
   params:
-    module: "template"
     dest: "/etc/crypttab"
     permissions: 420 # Esadecimale 0644
     content: |
@@ -228,9 +228,9 @@
 - name: "coa-live-sudoers"
   description: "Configurazione sudoers per utente live"
   action: "oa_ell"
+  module: "template"
   chroot: true
   params:
-    module: "template"
     dest: "/etc/sudoers.d/00-live"
     permissions: 288 # Esadecimale 0440
     content: |
@@ -240,9 +240,9 @@
 - name: "coa-live-launcher"
   description: "Desktop Launcher di installazione"
   action: "oa_ell"
+  module: "template"
   chroot: true
   params:
-    module: "template"
     dest: "/usr/share/applications/install-system.desktop"
     permissions: 493 # Esadecimale 0755
     content: |
@@ -261,9 +261,9 @@
 - name: "coa-trust-agent-script"
   description: "Script per il trust dinamico del desktop launcher"
   action: "oa_ell"
+  module: "template"
   chroot: true
   params:
-    module: "template"
     dest: "/usr/local/bin/oa-trust-desktop"
     permissions: 493 # Esadecimale 0755
     content: |
@@ -301,9 +301,9 @@
 - name: "coa-trust-agent-autostart"
   description: "Innesco XDG Autostart per il trust agent"
   action: "oa_ell"
+  module: "template"
   chroot: true
   params:
-    module: "template"
     dest: "/etc/xdg/autostart/trust-installer.desktop"
     permissions: 420 # Esadecimale 0644
     content: |
@@ -313,28 +313,5 @@
       Exec=/usr/local/bin/oa-trust-desktop
       Hidden=false
       NoDisplay=true
-{{ end }}
-
-{{ define "ell-egg-icon" }}
-## 7.5 coa-eggs-icon
-- name: "coa-eggs-icon"
-  description: "Creazione Icona Uovo (SVG 3D Golden Edition)"
-  action: "oa_ell"
-  params:
-    module: "template"
-    dest: "/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
-    permissions: 0644
-    content: |
-      <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-          <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#ffe066" />
-          <stop offset="50%" stop-color="#f0ad4e" />
-          <stop offset="100%" stop-color="#b87311" />
-          </radialGradient>
-      </defs>
-      <ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
-      <path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
-      </svg>
 {{ end }}
 

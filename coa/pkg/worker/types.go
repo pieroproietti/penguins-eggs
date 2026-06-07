@@ -27,6 +27,18 @@ type ActionCopy struct {
 	} `json:"params"`
 }
 
+// Questa struct deve combaciare con la struttura del JSON generato per il task
+type ActionMksquashfs struct {
+	Name   string `json:"name"`
+	Params struct {
+		Algorithm    string `json:"algorithm"`
+		Level        string `json:"level"`
+		LiveRoot     string `json:"live_root"`
+		DestFile     string `json:"dest_file"`
+		ExcludesFile string `json:"excludes_file"`
+	} `json:"params"`
+}
+
 // Definiamo la struct con il flag Chroot
 type ActionTemplate struct {
 	Name               string `json:"name"`

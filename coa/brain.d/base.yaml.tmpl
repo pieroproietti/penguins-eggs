@@ -83,26 +83,53 @@ remaster:
 # ----------------------------------------------------------------------------
 # 7.5 coa-egg-icon
 # ----------------------------------------------------------------------------
-{{ include "ell-egg-icon" . | indent 2 }}
+  - name: "coa-eggs-icon"
+    description: "Creazione Icona Uovo (SVG 3D Golden Edition)"
+    action: "oa_ell"
+    module: "template"
+    params:
+      dest: "/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
+      permissions: 0644
+      content: |
+        <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#ffe066" />
+            <stop offset="50%" stop-color="#f0ad4e" />
+            <stop offset="100%" stop-color="#b87311" />
+            </radialGradient>
+        </defs>
+        <ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
+        <path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
+        </svg>
 
 # ----------------------------------------------------------------------------
 # 8. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
-  - name: "coa-squashfs"
-    description: "Root filesystem compression into SquashFS format"
-    action: "oa_shell"
-    run_command: |
-{{ include "core_squashfs" . | indent 6 }}
-{{ include "hook_squashfs" . | indent 6 }}
-
+  - name: "Compressione del filesystem in SquashFS"
+    action: "oa_ell"
+    module: "mksquashfs"
+    params:
+      algorithm: "zstd"
+      level: "3"
+      live_root: "/home/eggs/liveroot"
+      dest_file: "/home/eggs/isodir/live/filesystem.squashfs"
+      excludes_file: "/tmp/coa/excludes.list"
+  
 # ----------------------------------------------------------------------------
 # 9. ISO XORRISO PACKAGING
 # ----------------------------------------------------------------------------
-  - name: "coa-xorriso"
-    description: "Final hybrid ISO image generation (xorriso)"
-    action: "oa_shell"
-    run_command: |
-{{ include "core_xorriso" . | indent 6 }}
+  - name: "Generazione ISO ibrida finale"
+    action: "oa_ell"
+    module: "xorriso"
+    params:
+      output_file: "${ISO_OUTPUT}"           # Il file ISO finale
+      source_dir: "/home/eggs/isodir"        # La cartella da comprimere
+      volid: "OA_LIVE"
+      isolinux_bin: "isolinux/isolinux.bin"
+      isolinux_cat: "isolinux/boot.cat"
+      efi_img: "EFI/BOOT/efi.img"
+      isohdpfx: "/tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin"
 
 # ----------------------------------------------------------------------------
 # 10. CLEANUP

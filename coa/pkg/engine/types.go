@@ -4,22 +4,23 @@ import (
 	"coa/pkg/pilot"
 )
 
-// Task rappresenta un singolo comando atomico per il binario oa.
-// Grazie all'embedding di pilot.Step, eredita automaticamente:
-// Action, Description, RunCommand, Chroot, Path, Src, Dst, Users.
+// OATask rappresenta un singolo comando atomico per l'Engine (C o Go).
+// Grazie all'embedding di pilot.Step, eredita automaticamente i metadati
+// del piano di volo (Module, Chroot, Params, Name, ecc.).
 type OATask struct {
-	pilot.Step `json:",inline"` // Il "cuore" proveniente dallo YAML
+	pilot.Step // Campo anonimo: encoding/json lo appiattisce automaticamente! Nessun tag necessario.
 
-	// Campi tecnici specifici dell'Engine (non presenti nello YAML)
+	// --- STATO INTERNO DELL'ENGINE ---
+	// Campi tecnici iniettati a runtime, invisibili allo YAML dell'utente
 	Type       string `json:"type,omitempty"`       // Tipo di filesystem (proc, sysfs, overlay)
 	Opts       string `json:"opts,omitempty"`       // Opzioni di mount o parametri extra
 	ReadOnly   bool   `json:"readonly,omitempty"`   // Flag per i bind mount
 	PathLiveFs string `json:"pathLiveFs,omitempty"` // Il percorso di lavoro (es. /home/eggs/ovl/liveroot)
 }
 
-// OAPlan è l'array di task che il binario oa itererà.
+// OAPlan è il piano di volo completo che l'orchestratore itererà.
 type OAPlan struct {
-	Plan           []OATask `json:"plan"`
-	IsGitHubAction bool
+	Plan           []OATask             `json:"plan"`
+	IsGitHubAction bool                 `json:"is_github_action,omitempty"` // Aggiunto tag JSON per coerenza
 	Settings       pilot.RemasterConfig `json:"settings"`
 }
