@@ -10,7 +10,7 @@
 # 3. GENERAZIONE MENU DI AVVIO E BRANDING
 # ATTENZIONE: Questo blocco deve rimanere su una riga singola
 # ----------------------------------------------------------------------------
-{{ define "hook_boot_params" }}boot=live components rootwait{{ end }}
+{{ define "hook_boot_params" }}boot=live components cow_spacesize=2G{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
