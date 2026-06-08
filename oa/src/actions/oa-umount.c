@@ -29,8 +29,18 @@ int oa_umount(OA_Context *ctx) {
         return 1;
     }
 
-    const char *base_path = pathLiveFs->valuestring;
-    LOG_INFO("Inizio pulizia dei mount in: %s", base_path);
+    // ========================================================
+    // FIX: Troviamo il vero WorkPath rimuovendo "/liveroot"
+    // ========================================================
+    char base_path[PATH_SAFE];
+    snprintf(base_path, sizeof(base_path), "%s", pathLiveFs->valuestring);
+
+    char *suffix = strstr(base_path, "/liveroot");
+    if (suffix != NULL) {
+        *suffix = '\0'; // Tronca la stringa qui (es: da /home/eggs/liveroot diventa /home/eggs)
+    }
+
+    LOG_INFO("Inizio pulizia GLOBALE dei mount in: %s", base_path);
 
     FILE *fp = setmntent("/proc/mounts", "r");
     if (!fp) {
@@ -59,7 +69,7 @@ int oa_umount(OA_Context *ctx) {
         return 0;
     }
 
-    // Ordina: prima smontiamo /home/eggs/liveroot/proc, poi /home/eggs/liveroot
+    // Ordina: prima smontiamo i figli (es. /home/eggs/.overlay/lowerdir/usr), poi i padri
     qsort(mounts, count, sizeof(MountPoint), compare_mounts);
 
     int errors = 0;

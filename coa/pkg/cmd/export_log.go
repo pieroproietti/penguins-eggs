@@ -62,16 +62,14 @@ var exportLogCmd = &cobra.Command{
 		}
 
 		// Aggiungi la ricezione di TUTTI i file
-		remoteCmd += "\n# Ricevi i nuovi file (formato: dimensione|base64|EOF)\n"
+		remoteCmd += "\n# Ricevi i nuovi file\n"
 		for _, f := range validFiles {
 			remoteCmd += fmt.Sprintf(`
-# Ricevi %s
 read size
-if [ "$size" = "EOF" ]; then break; fi
-dd bs=1 count=$size 2>/dev/null | base64 -d > %s
-`, f.RemoteName, f.RemoteName)
+dd bs=1 count="$size" 2>/dev/null | base64 -d > %s
+read dummy # <-- IL FIX: Consuma il \n lasciato nel buffer da Go
+`, f.RemoteName)
 		}
-		remoteCmd += "\nread size # legge l'EOF finale"
 
 		// Crea un comando SSH con stdin pipe
 		sshCmd := exec.Command("ssh", remoteHost, remoteCmd)
@@ -90,7 +88,7 @@ dd bs=1 count=$size 2>/dev/null | base64 -d > %s
 			os.Exit(1)
 		}
 
-		// Invia ogni file codificato in base64 con un header (dimensione)
+		// Invia ogni file codificato in base64
 		for _, f := range validFiles {
 			// Leggi il file
 			fileData, err := os.ReadFile(f.LocalPath)
@@ -103,15 +101,12 @@ dd bs=1 count=$size 2>/dev/null | base64 -d > %s
 			encoded := base64.StdEncoding.EncodeToString(fileData)
 			size := len(encoded)
 
-			// Invia: prima la dimensione, poi il contenuto base64
+			// Invia: dimensione, a capo, base64, a capo
 			fmt.Fprintf(stdin, "%d\n%s\n", size, encoded)
-			utils.LogNormal("📤 Inviato %s (%d bytes)", f.RemoteName, len(fileData))
+			utils.LogNormal("📤 Inviato %s (%d bytes base64)", f.RemoteName, size)
 		}
 
-		// Invia EOF per segnalare la fine
-		fmt.Fprintf(stdin, "EOF\n")
-
-		// Chiudi stdin per segnalare la fine della trasmissione
+		// Chiudi stdin. Questo manda l'EOF nativo a SSH, non serve inviare la stringa "EOF\n"
 		stdin.Close()
 
 		// Attendi il completamento del comando SSH
