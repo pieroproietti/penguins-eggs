@@ -50,8 +50,8 @@ and generate a precise execution plan for the OA engine.`,
 		myDistro := distro.NewDistro()
 		isoName := myDistro.GetISOName()
 
-		finalPath := filepath.Join(producePath, isoName)
-		utils.LogNormal("L'uovo verrà generato in: %s", finalPath)
+		finalIsoPath := filepath.Join(producePath, isoName)
+		utils.LogNormal("L'uovo verrà generato in: %s", finalIsoPath)
 
 		// 2. PILOT: Carichiamo lo spartito dal Brain
 		profile, err := pilot.DetectAndLoad(isGitHubAction)
@@ -67,7 +67,7 @@ and generate a precise execution plan for the OA engine.`,
 			isGitHubAction,
 			true,
 			producePath,
-			finalPath,
+			finalIsoPath,
 			stopAfter,
 			debugPlan, // <--- Passiamo il flag anche all'engine
 		)

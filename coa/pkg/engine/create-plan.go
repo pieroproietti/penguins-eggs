@@ -37,9 +37,11 @@ func GeneratePlan(
 		}
 
 		currentRunCommand := strings.TrimSpace(step.RunCommand)
-		if strings.Contains(currentRunCommand, "${ISO_OUTPUT}") {
-			currentRunCommand = strings.ReplaceAll(currentRunCommand, "${ISO_OUTPUT}", finalIsoPath)
-		}
+		/*
+			if strings.Contains(currentRunCommand, "${ISO_OUTPUT}") {
+				currentRunCommand = strings.ReplaceAll(currentRunCommand, "${ISO_OUTPUT}", finalIsoPath)
+			}
+		*/
 
 		currentDescription := step.Description
 		if strings.Contains(currentDescription, "${ISO_NAME}") {
@@ -108,8 +110,8 @@ func GeneratePlan(
 			task.RunCommand = currentRunCommand
 
 			// Prima di "coa-xorriso" inseriamo "coa-dot-disk"
-			if task.Name == "coa-xorriso" {
-				task.Params["output_file"] = finalIsoPath // Passiamo il path assoluto, è più sicuro!
+			if task.Name == "xorriso" {
+				task.Params["output_file"] = finalIsoPath
 				task.Params["source_dir"] = filepath.Join(workPath, "isodir")
 
 				// 2. Ora usiamo questi valori per creare lo script .disk
