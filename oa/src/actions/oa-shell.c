@@ -52,7 +52,12 @@ int oa_shell(OA_Context *ctx) {
         if (cJSON_IsString(mode_obj) && strcmp(mode_obj->valuestring, "install") == 0) {
             snprintf(target_root, sizeof(target_root), "%s", path_obj->valuestring);
         } else {
-            snprintf(target_root, sizeof(target_root), "%s/liveroot", path_obj->valuestring);
+            // LOGICA DIFENSIVA: Aggiunge /liveroot solo se non è già presente
+            if (strstr(path_obj->valuestring, "/liveroot") != NULL) {
+                snprintf(target_root, sizeof(target_root), "%s", path_obj->valuestring);
+            } else {
+                snprintf(target_root, sizeof(target_root), "%s/liveroot", path_obj->valuestring);
+            }
         }
 
         LOG_INFO("Target chroot path resolved to: [%s]", target_root);

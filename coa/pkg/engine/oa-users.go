@@ -59,7 +59,7 @@ func oaUsers(settings pilot.RemasterConfig, step pilot.Step, workPath string) []
 			Description: fmt.Sprintf("Iniezione identità utente live (%s)", targetUser),
 			Users:       usersToInject,
 		},
-		PathLiveFs: workPath,
+		PathLiveFs: getActualLiveFs(workPath),
 	})
 
 	// Restituiamo i task generati al pianificatore principale

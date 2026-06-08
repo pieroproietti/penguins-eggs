@@ -61,13 +61,13 @@ func GeneratePlan(
 					Action:      "oa_umount",
 					Description: "Pulizia finale dei mount",
 				},
-				PathLiveFs: workPath,
+				PathLiveFs: getActualLiveFs(workPath),
 			})
 
 		case "oa-ell":
 			task := OATask{
 				Step:       step,
-				PathLiveFs: workPath,
+				PathLiveFs: getActualLiveFs(workPath),
 			}
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
@@ -104,7 +104,7 @@ func GeneratePlan(
 		default:
 			task := OATask{
 				Step:       step,
-				PathLiveFs: workPath,
+				PathLiveFs: getActualLiveFs(workPath),
 			}
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
@@ -129,7 +129,7 @@ func GeneratePlan(
 						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
 						RunCommand:  dotDiskScript,
 					},
-					PathLiveFs: workPath,
+					PathLiveFs: getActualLiveFs(workPath),
 				})
 
 				utils.LogNormal("\n[ENGINE] Iniezione metadati .disk completata per live-boot.")
@@ -185,4 +185,13 @@ func savePlan(plan OAPlan) (string, error) {
 	}
 
 	return fullPath, nil
+}
+
+// Aggiungi questa funzione nel tuo file Go
+func getActualLiveFs(workPath string) string {
+	// Se finisce per /liveroot, è già corretto, altrimenti lo aggiungiamo
+	if strings.HasSuffix(workPath, "/liveroot") {
+		return workPath
+	}
+	return filepath.Join(workPath, "liveroot")
 }

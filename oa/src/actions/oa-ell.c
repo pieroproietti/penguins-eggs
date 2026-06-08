@@ -1,11 +1,6 @@
 /*
  * src/actions/oa-ell.c
  * Remastering core: The Declarative-to-Imperative Bridge
- * oa: eggs in my dialect🥚🥚
- * * oa-ell.c (Il Sottocomando): Il braccio destro nativo. Richiama il package interno
- * di Go (coa ell) passandogli la singola azione tramite STDIN.
- * * Author: Piero Proietti <piero.proietti@gmail.com>
- * License: GPL-3.0-or-later
  */
 
 #include "oa.h"
@@ -16,7 +11,8 @@
 #include <stdio.h>
 
 /**
- * @brief Invia un task JSON al sottocomando 'coa ell' tramite Standard Input.
+ * @brief Invia un task JSON al sottocomando 'coa ell' tramite Standard Input,
+ * iniettando dinamicamente il resolved_target_root per le operazioni in chroot.
  */
 int oa_ell(OA_Context *ctx) {
     cJSON *name_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "name");
@@ -24,35 +20,50 @@ int oa_ell(OA_Context *ctx) {
     
     LOG_INFO("ell Exec: Routing task [%s] to 'coa ell'", task_name);
 
-    // 1. Risolviamo il path target come in oa_shell, ma invece di entrare
-    //    nel chroot da C, iniettiamo il risultato nel JSON per il Go.
+    // ==========================================
+    // FIX: Cerca prima nel task, poi nella root!
+    // ==========================================
     cJSON *path_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
     if (!path_obj) {
         path_obj = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
     }
+    
+    // 2. Controllo se il task richiede chroot
+    cJSON *chroot_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "chroot");
+    int needs_chroot = cJSON_IsBool(chroot_obj) && cJSON_IsTrue(chroot_obj);
 
-    if (path_obj && cJSON_IsString(path_obj)) {
+    if (needs_chroot) {
+        if (!path_obj || !cJSON_IsString(path_obj)) {
+            LOG_ERR("oa_ell: Task [%s] richiede chroot ma 'pathLiveFs' non è impostato né nel task né globale!", task_name);
+            return 1;
+        }
+
         char target_root[PATH_SAFE];
         cJSON *mode_obj = cJSON_GetObjectItemCaseSensitive(ctx->root, "mode");
 
+        // Logica difensiva per la costruzione del path
         if (cJSON_IsString(mode_obj) && strcmp(mode_obj->valuestring, "install") == 0) {
             snprintf(target_root, sizeof(target_root), "%s", path_obj->valuestring);
         } else {
-            snprintf(target_root, sizeof(target_root), "%s/liveroot", path_obj->valuestring);
+            if (strstr(path_obj->valuestring, "/liveroot") != NULL) {
+                snprintf(target_root, sizeof(target_root), "%s", path_obj->valuestring);
+            } else {
+                snprintf(target_root, sizeof(target_root), "%s/liveroot", path_obj->valuestring);
+            }
         }
         
-        // Magia dell'incapsulamento: Go troverà la chiave "resolved_target_root" pronta all'uso!
         cJSON_AddStringToObject(ctx->task, "resolved_target_root", target_root);
+        LOG_INFO("oa_ell: Chroot rilevato, target_root iniettato: %s", target_root);
     }
-
-    // 2. Estraiamo la singola azione in formato testuale (Unformatted per risparmiare overhead)
+    
+    // 3. Serializzazione
     char *json_payload = cJSON_PrintUnformatted(ctx->task);
     if (!json_payload) {
         LOG_ERR("oa_ell: Fallimento nella generazione del JSON payload.");
         return 1;
     }
 
-    // 3. Creazione del canale di comunicazione (Pipe)
+    // 4. Comunicazione via Pipe
     int pfd[2];
     if (pipe(pfd) == -1) {
         perror("oa_ell pipe failed");
@@ -60,7 +71,6 @@ int oa_ell(OA_Context *ctx) {
         return 1;
     }
 
-    // 4. Esecuzione fork
     pid_t pid = fork();
     if (pid < 0) {
         perror("oa_ell fork failed");
@@ -70,42 +80,29 @@ int oa_ell(OA_Context *ctx) {
         return 1;
     }
 
-    if (pid == 0) { 
-        // PROCESSO FIGLIO
-        close(pfd[1]); 
-
-        // Sostituisce lo STDIN standard del processo con la nostra Pipe
+    if (pid == 0) { // PROCESSO FIGLIO
+        close(pfd[1]);
         dup2(pfd[0], STDIN_FILENO);
         close(pfd[0]);
 
-        // 1. Usiamo il path assoluto per evitare dubbi
-        // 2. Usiamo execle per passare esplicitamente l'ambiente (environ)
         extern char **environ;
         execle("/usr/bin/coa", "coa", "ell", (char *)NULL, environ);
         
-        // Se arriviamo qui, c'è un errore grave
         perror("oa_ell: execle('/usr/bin/coa ell') failed");
-        _exit(1); 
+        _exit(1);
     }
 
-    // PROCESSO PADRE (Il ciclo principale C)
-    close(pfd[0]); // Chiude il lato lettura
-
-    // Inietta il payload JSON nel tubo
+    // PROCESSO PADRE
+    close(pfd[0]);
     ssize_t to_write = strlen(json_payload);
     if (write(pfd[1], json_payload, to_write) != to_write) {
-        LOG_ERR("oa_ell: Attenzione, scrittura del payload incompleta o interrotta.");
+        LOG_ERR("oa_ell: Scrittura payload incompleta.");
     }
-    
-    // Passaggio Fondamentale: Chiudendo il lato di scrittura, si invia il segnale
-    // EOF (End of File) a Go, dicendogli che il JSON è finito e può iniziare a processarlo.
-    close(pfd[1]); 
+    close(pfd[1]);
     free(json_payload);
 
-    // Rimane in attesa del codice di uscita di Go
     int status;
     waitpid(pid, &status, 0);
-
     int exit_code = WIFEXITED(status) ? WEXITSTATUS(status) : 1;
 
     if (exit_code != 0) {

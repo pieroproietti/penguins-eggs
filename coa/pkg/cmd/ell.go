@@ -131,11 +131,13 @@ func handleXorriso(payload []byte) error {
 }
 
 func handleShell(payload []byte) error {
+	// 1. Definiamo la struttura che mappa ESATTAMENTE il JSON inviato dal C
 	var config struct {
 		Chroot bool `json:"chroot"`
-		Params struct {
-			Command  string `json:"command"`
-			RootPath string `json:"root_path"`
+		// Mapping del campo iniettato dal C
+		ResolvedTargetRoot string `json:"resolved_target_root"`
+		Params             struct {
+			Command string `json:"command"`
 		} `json:"params"`
 	}
 
@@ -145,11 +147,13 @@ func handleShell(payload []byte) error {
 
 	finalCmd := config.Params.Command
 
+	// 2. Usiamo il campo corretto per il chroot
 	if config.Chroot {
-		if config.Params.RootPath == "" {
-			return fmt.Errorf("chroot richiesto ma root_path mancante")
+		if config.ResolvedTargetRoot == "" {
+			return fmt.Errorf("chroot richiesto ma resolved_target_root mancante")
 		}
-		finalCmd = fmt.Sprintf("chroot %s /bin/bash -c %q", config.Params.RootPath, finalCmd)
+		// Esecuzione in chroot
+		finalCmd = fmt.Sprintf("chroot %s /bin/bash -c %q", config.ResolvedTargetRoot, finalCmd)
 	}
 
 	cmd := exec.Command("bash", "-c", finalCmd)
@@ -157,7 +161,7 @@ func handleShell(payload []byte) error {
 	cmd.Stderr = os.Stderr
 
 	if config.Chroot {
-		fmt.Printf("📦 Esecuzione script in chroot (%s)...\n", config.Params.RootPath)
+		fmt.Printf("📦 Esecuzione script in chroot (%s)...\n", config.ResolvedTargetRoot)
 	} else {
 		fmt.Println("💻 Esecuzione script shell locale...")
 	}

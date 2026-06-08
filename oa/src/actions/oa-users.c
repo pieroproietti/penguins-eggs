@@ -18,6 +18,7 @@ int oa_users(OA_Context *ctx) {
     cJSON *pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
     if (!pathLiveFs) pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
     
+    
     cJSON *users = cJSON_GetObjectItemCaseSensitive(ctx->task, "users");
     if (!users) users = cJSON_GetObjectItemCaseSensitive(ctx->root, "users");
     
@@ -30,7 +31,15 @@ int oa_users(OA_Context *ctx) {
     }
 
     char liveroot[PATH_SAFE], p_path[PATH_SAFE], s_path[PATH_SAFE], g_path[PATH_SAFE];
-    snprintf(liveroot, sizeof(liveroot), "%s/liveroot", pathLiveFs->valuestring);
+    // Invece di forzare la concatenazione, controlliamo prima
+    if (strstr(pathLiveFs->valuestring, "/liveroot") != NULL) {
+        // Il path ha già "/liveroot", usiamolo così com'è
+        snprintf(liveroot, sizeof(liveroot), "%s", pathLiveFs->valuestring);
+    } else {
+        // Il path NON ha "/liveroot", aggiungiamolo noi
+        snprintf(liveroot, sizeof(liveroot), "%s/liveroot", pathLiveFs->valuestring);
+    }    
+    //snprintf(liveroot, sizeof(liveroot), "%s/liveroot", pathLiveFs->valuestring);
     snprintf(p_path, sizeof(p_path), "%s/etc/passwd", liveroot);
     snprintf(s_path, sizeof(s_path), "%s/etc/shadow", liveroot);
     snprintf(g_path, sizeof(g_path), "%s/etc/group", liveroot);

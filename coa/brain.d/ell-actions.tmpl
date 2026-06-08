@@ -4,43 +4,32 @@
 # ==============================================================================
 
 {{ define "ell_bootloaders" }}
-# --- 2.1. PREPARAZIONE STRUTTURA ---
-- name: "create-bootloader-dirs"
-  description: "Creazione directory bootloader"
-  action: "oa_ell"
-  module: "shell"
-  params:
-    command: "mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT"
-
-# --- 2.2. COPIA ASSETS BIOS ---
-- name: "copy-isolinux"
-  description: "Copia binari ISOLINUX"
-  action: "oa_ell"
-  module: "copy"
-  params:
-    src: "/tmp/coa/bootloaders/ISOLINUX/isolinux.bin"
-    dest: "/home/eggs/isodir/isolinux/isolinux.bin"
-    ignore_missing: true
-
-- name: "copy-syslinux-modules"
-  description: "Copia moduli SYSLINUX"
-  action: "oa_ell"
-  module: "shell"
-  params:
-    command: "cp /tmp/coa/bootloaders/syslinux/modules/bios/*.c32 /home/eggs/isodir/isolinux/ 2>/dev/null || true"
-
-# --- 2.3. LOGICA EFI ---
-- name: "copy-efi-binary"
-  description: "Copia binario EFI"
+# --- 2.1 PREPARAZIONE E COPIA BOOTLOADER ---
+- name: "prepare-bootloader"
+  description: "Crea directory e copia assets bootloader (BIOS/UEFI)"
   action: "oa_ell"
   module: "shell"
   params:
     command: |
+      # 1. Creazione struttura directory
+      mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
+
+      # 2. Copia binari e moduli BIOS/Legacy (ISOLINUX/SYSLINUX)
+      cp -f /tmp/coa/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/
+      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/boot.cat /home/eggs/isodir/isolinux/
+      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/chain.c32 /home/eggs/isodir/isolinux/
+      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/isohdpfx.bin /home/eggs/isodir/isolinux/
+      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/ldlinux.c32 /home/eggs/isodir/isolinux/
+      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/libcom32.c32 /home/eggs/isodir/isolinux/
+      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/libutil.c32 /home/eggs/isodir/isolinux/
+      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/vesamenu.c32 /home/eggs/isodir/isolinux/
+
+      # 3. Copia binario UEFI
       if [ -f "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" ]; then
-          cp "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
+          cp -f "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
       fi
 
-# --- 2.4. GENERAZIONE EFI.IMG ---
+# --- 2.2. GENERAZIONE EFI.IMG ---
 - name: "gen-efi.img"
   description: "Generazione immagine FAT per EFI"
   action: "oa_ell"
@@ -58,48 +47,27 @@
 {{ end }}
 
 {{ define "ell_live_menus" }}
-# 3.1 -- ASSETS: SPLASH SCREEN ---
-- name: "copy-splash-grub"
-  description: "Copia splash screen per GRUB"
+# --- 3. PREPARAZIONE ASSETS: SPLASH E FONT ---
+- name: "copy-assets"
+  description: "Copia splash screen e configurazione font GRUB/ISOLINUX"
   action: "oa_ell"
-  module: "copy"
+  module: "shell"
   params:
-    src: "/etc/oa-tools.d/brain.d/assets/splash.png"
-    dest: "/home/eggs/isodir/boot/grub/splash.png"
-    ignore_missing: true
+    command: |
+      # 1. Copia Splash Screen (con ignoranza dei file mancanti)
+      [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ] && cp -f /etc/oa-tools.d/brain.d/assets/splash.png /home/eggs/isodir/boot/grub/splash.png
+      [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ] && cp -f /etc/oa-tools.d/brain.d/assets/splash.png /home/eggs/isodir/isolinux/splash.png
 
-- name: "copy-splash-isolinux"
-  description: "Copia splash screen per ISOLINUX"
-  action: "oa_ell"
-  module: "copy"
-  params:
-    module: "copy"
-    src: "/etc/oa-tools.d/brain.d/assets/splash.png"
-    dest: "/home/eggs/isodir/isolinux/splash.png"
-    ignore_missing: true
+      # 2. Gestione Font GRUB
+      # Priorità 1: Se esiste quello di sistema, usa quello.
+      # Priorità 2: Se non c'è quello di sistema, prova quello negli assets.
+      if [ -f "/usr/share/grub/unicode.pf2" ]; then
+          cp -f /usr/share/grub/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
+      elif [ -f "/etc/oa-tools.d/brain.d/assets/unicode.pf2" ]; then
+          cp -f /etc/oa-tools.d/brain.d/assets/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
+      fi
 
-# 3.2 -- ASSETS: FONT UNICODE ---
-# Priorità 2 (Fallback): Copia dagli assets
-- name: "copy-assets-fonts"
-  description: "Copia font GRUB da assets (fallback)"
-  action: "oa_ell"
-  module: "copy"
-  params:
-    src: "/etc/oa-tools.d/brain.d/assets/unicode.pf2"
-    dest: "/home/eggs/isodir/boot/grub/font.pf2"
-    ignore_missing: true
-
-# 3.3. Priorità 1 (Principale): Copia dal sistema (sovrascrive se esiste)
-- name: "copy-system-fonts"
-  description: "Copia font GRUB dal sistema"
-  action: "oa_ell"
-  module: "copy"
-  params:
-    src: "/usr/share/grub/unicode.pf2"
-    dest: "/home/eggs/isodir/boot/grub/font.pf2"
-    ignore_missing: true
-
-# 3.4. --- TEMPLATES: GENERAZIONE MENU ---
+# 3.1. --- TEMPLATES: GENERAZIONE MENU ---
 - name: "create-grub-menu-main"
   description: "Generazione dinamica GRUB.cfg principale"
   action: "oa_ell"
@@ -156,7 +124,7 @@
           initrd /live/initrd.img
       }
 
-# 3.5 -- GENERAZIONE MENU ISOLINUX
+# 3.2 -- GENERAZIONE MENU ISOLINUX
 - name: "create-isolinux.cfg"
   description: "Generazione isolinux.cfg"
   action: "oa_ell"
@@ -183,7 +151,7 @@
           APPEND {{ template "hook_boot_params" . }} toram
           INITRD /live/initrd.img
 
-# 3.6 -- GENERAZIONE TRAMPOLINE GRUB
+# 3.3 -- GENERAZIONE TRAMPOLINE GRUB
 - name: "create-efi-grub-trampoline"
   description: "Generazione Trampolino GRUB per EFI"
   action: "oa_ell"
@@ -196,33 +164,21 @@
       configfile $prefix/grub.cfg
 {{ end }}
 
-
 ## -- 4.1 sanitize host
 {{ define "ell_sanitize_host" }}
-- name: "sanitize-fstab"
-  description: "Remove /etc/fstab from live"
+- name: "sanitize-system-files"
+  description: "Sanitizzazione fstab e crypttab per il sistema live"
   action: "oa_ell"
-  chroot: true
-  module: "template"
+  module: "shell"
+  chroot: false
   params:
-    dest: "/etc/fstab"
-    permissions: 420 # Esadecimale 0644
-    content: |
-      # UNCONFIGURED FSTAB FOR LIVE SYSTEM
-
-- name: "sanitize-crypttab"
-  description: "Remove /etc/crypttab from live"
-  action: "oa_ell"
-  chroot: true
-  module: "template"
-  params:
-    dest: "/etc/crypttab"
-    permissions: 420 # Esadecimale 0644
-    content: |
-      # UNCONFIGURED CRYPTTAB FOR LIVE SYSTEM
-{{ end }}
-
+    command: |
+      # Operiamo direttamente sul path noto
+      echo "# UNCONFIGURED FSTAB" > /home/eggs/liveroot/etc/fstab
+      echo "# UNCONFIGURED CRYPTTAB" > /home/eggs/liveroot/etc/crypttab
+      chmod 644 /home/eggs/liveroot/etc/fstab /home/eggs/liveroot/etc/crypttab{{ end }}
 {{ define "ell_enable_live" }}
+
 ## 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
 # 7.1. Configurazione Sudoers (Senza password)
 - name: "conf-live-sudoers"
