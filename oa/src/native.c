@@ -137,53 +137,47 @@ int run_native_users(cJSON *task) {
 }
 
 int run_native_umount(cJSON *task) {
-    const char *resolved_root = get_json_string(task, "live_root", "");
-
-    if (strlen(resolved_root) == 0) {
-        fprintf(stderr, "[oa-native] Errore: 'resolved_target_root' mancante per il cleanup.\n");
-        return -1;
+    // Ora leggiamo "work_dir" (es. /home/eggs) invece di "live_root"
+    const char *work_dir = get_json_string(task, "work_dir", "");
+    if (strlen(work_dir) == 0) {
+        fprintf(stderr, "❌ [oa-native] Errore: 'work_dir' mancante per il cleanup.\n");
+        return 1;
     }
 
-    printf("🧹 [oa-native] Avvio smontaggio in: %s\n", resolved_root);
+    char path[4096];
 
-    const char *mount_points[] = {
-        "/tmp", "/run", "/dev/pts", "/dev", "/sys", "/proc",
-        "/var", "/usr", "/srv", "/root", "/opt", "/lib64", 
-        "/lib", "/sbin", "/bin", NULL
-    };
-
-    char target[PATH_SAFE];
-    int errors = 0;
-
-    for (int i = 0; mount_points[i] != NULL; i++) {
-        snprintf(target, sizeof(target), "%s%s", resolved_root, mount_points[i]);
-        if (access(target, F_OK) == 0) {
-            if (umount2(target, MNT_DETACH) == 0) {
-                printf("   -> Smontato: %s\n", target);
-            } else {
-                if (errno != ENOENT && errno != EINVAL) {
-                    fprintf(stderr, "   [!] Impossibile smontare %s (errno: %d)\n", target, errno);
-                    errors++;
-                }
-            }
-        }
+    // 1. Smontiamo le API di sistema in liveroot
+    const char *api_mounts[] = {"dev/pts", "dev", "proc", "sys", "run", "tmp"};
+    for (int i = 0; i < 6; i++) {
+        snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, api_mounts[i]);
+        umount2(path, MNT_DETACH);
     }
 
-    cJSON *params = cJSON_GetObjectItemCaseSensitive(task, "params");
-    const char *overlay_path = get_json_string(params, "overlay_path", "");
-    
-    if (strlen(overlay_path) > 0) {
-        printf("   -> Pulizia overlay: %s\n", overlay_path);
-        char rm_cmd[PATH_SAFE + 32];
-        snprintf(rm_cmd, sizeof(rm_cmd), "rm -rf %s", overlay_path);
-        system(rm_cmd);
+    // 2. Smontiamo gli overlay uniti in liveroot
+    const char *ovl_mounts[] = {"usr", "var"};
+    for (int i = 0; i < 2; i++) {
+        snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, ovl_mounts[i]);
+        umount2(path, MNT_DETACH);
     }
 
-    if (errors > 0) {
-        printf("⚠️  [oa-native] Cleanup terminato con %d avvisi.\n", errors);
-    } else {
-        printf("✅ [oa-native] Cleanup completato.\n");
+    // 3. Smontiamo i bind mount standard in liveroot
+    const char *bind_mounts[] = {"opt", "root", "srv"};
+    for (int i = 0; i < 3; i++) {
+        snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, bind_mounts[i]);
+        umount2(path, MNT_DETACH);
     }
+
+    // 4. Smontiamo i lowerdir dentro .overlay
+    for (int i = 0; i < 2; i++) {
+        snprintf(path, sizeof(path), "%s/.overlay/lowerdir/%s", work_dir, ovl_mounts[i]);
+        umount2(path, MNT_DETACH);
+    }
+
+    // 5. Infine, smontiamo la liveroot stessa se necessario
+    snprintf(path, sizeof(path), "%s/liveroot", work_dir);
+    umount2(path, MNT_DETACH);
+
+    printf("✅ [oa-native] Smontaggio di sicurezza completato per: %s\n", work_dir);
     return 0;
 }
 

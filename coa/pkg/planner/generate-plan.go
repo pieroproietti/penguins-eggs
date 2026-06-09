@@ -32,7 +32,7 @@ func GeneratePlan(
 	// Ora iteriamo su profile.Remaster
 	for _, step := range profile.Remaster {
 
-		if hitBreakpoint && step.Name != "coa-cleanup" {
+		if hitBreakpoint && step.Name != "cleanup" {
 			continue
 		}
 
@@ -52,16 +52,17 @@ func GeneratePlan(
 		case "oa_mount_logic":
 			plan.Plan = append(plan.Plan, mountLogic(workPath, isGitHubAction)...)
 
-		case "oa_users":
+		case "users":
 			plan.Plan = append(plan.Plan, oaUsers(plan.Settings, step, workPath)...)
 
-		case "oa_umount":
+		case "umount":
 			plan.Plan = append(plan.Plan, OATask{
 				Step: parser.Step{
-					Module:      "oa_umount",
-					Description: "Pulizia finale dei mount",
+					Name:        "cleanup",
+					Description: "cleanup build",
+					Module:      "umount",
 				},
-				LiveRoot: getActualLiveFs(workPath),
+				WorkDir: 	  workPath,
 			})
 
 		case "oa-ell":
@@ -109,6 +110,8 @@ func GeneratePlan(
 
 			// 2. Accodiamo FINALMENTE l'azione originale (squashfs, xorriso o altro)
 			plan.Plan = append(plan.Plan, task)
+
+
 		}
 
 		if stopAfter != "" && step.Name == stopAfter {
@@ -116,6 +119,24 @@ func GeneratePlan(
 			hitBreakpoint = true
 		}
 	}
+
+	for i, task := range plan.Plan {
+		// Se il YAML aveva previsto una WorkDir (qualsiasi essa sia), la sovrascriviamo d'autorità
+		if task.WorkDir != "" {
+			plan.Plan[i].WorkDir  = workPath
+		}
+		
+		// Se il YAML aveva previsto una LiveRoot, la sovrascriviamo con il percorso esatto
+		if task.LiveRoot != "" {
+			plan.Plan[i].LiveRoot = fmt.Sprintf("%s/liveroot", workPath)
+		}
+
+		// (Opzionale) Manteniamo la sicurezza sul chroot
+		if task.Chroot && task.LiveRoot == "" {
+			plan.Plan[i].LiveRoot = fmt.Sprintf("%s/liveroot", workPath)
+		}
+	}
+
 
 	// =========================================================================
 	// INTERCETTAZIONE DEBUG JSON

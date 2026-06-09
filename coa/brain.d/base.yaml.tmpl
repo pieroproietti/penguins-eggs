@@ -80,6 +80,7 @@ remaster:
   - name: autologin-gui
     description: "Creazione di autologin per utente live"
     action: "oa_ell"
+    module: "shell"
     params:
       user: "live"
       is_gui: true
@@ -138,8 +139,8 @@ remaster:
     action: "oa_ell"
     module: "xorriso"
     params:
-      output_file: "INJECTED_BY_ENGINE"
-      source_dir: "INJECTED_BY_ENGINE"
+      output_file: "INJECTED_BY_PLANNER"
+      source_dir: "INJECTED_BY_PLANNER"
       isolinux_bin: "isolinux/isolinux.bin"
       isolinux_cat: "isolinux/boot.cat"
       efi_img: "EFI/BOOT/efi.img"
@@ -149,9 +150,9 @@ remaster:
 # 10. CLEANUP
 # ----------------------------------------------------------------------------
   - name: "cleanup"
-    description: "Environment unmounting and cleanup"
+    description: "unmount on the plan"
     module: "umount"
-    ResolvedTargetRoot: "/home/eggs/liveroot"
+    work_dir: "INJECTED_BY_PLANNER"
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

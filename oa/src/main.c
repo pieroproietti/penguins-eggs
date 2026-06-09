@@ -69,13 +69,13 @@ int main(int argc, char **argv) {
 
         // --- LA TUA MANIGLIA DI EMERGENZA ---
         if (strcmp(argv[1], "cleanup") == 0) {
-            const char *target_root = (argc > 2) ? argv[2] : "/home/eggs/liveroot";
-            printf("🚨 [oa-main] Modalità EMERGENZA: Avvio smontaggio su %s\n", target_root);
+            // Se non passi parametri, usa /home/eggs di default, NON liveroot
+            const char *target_dir = (argc > 2) ? argv[2] : "/home/eggs";
+            printf("🚨 [oa-main] Modalità EMERGENZA: Avvio smontaggio su %s\n", target_dir);
 
-            // Costruiamo un finto task JSON "al volo" e lo diamo in pasto al motore!
             cJSON *task = cJSON_CreateObject();
             cJSON_AddStringToObject(task, "module", "umount");
-            cJSON_AddStringToObject(task, "live_root", target_root); // <--- CORRETTO QUI
+            cJSON_AddStringToObject(task, "work_dir", target_dir); // <--- Nuova chiave!
             cJSON_AddObjectToObject(task, "params"); 
 
             int res = dispatch_task(task);
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
 
             return (res == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
-
+        
         // Se l'argomento non è un comando speciale, proviamo a leggerlo come file JSON
         json_data = read_file(argv[1]);
         if (!json_data) {

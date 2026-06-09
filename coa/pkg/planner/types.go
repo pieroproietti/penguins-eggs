@@ -15,6 +15,7 @@ type OATask struct {
 	Type       string `json:"type,omitempty"`       // Tipo di filesystem (proc, sysfs, overlay)
 	Opts       string `json:"opts,omitempty"`       // Opzioni di mount o parametri extra
 	ReadOnly   bool   `json:"readonly,omitempty"`   // Flag per i bind mount
+	WorkDir  string   `json:"work_dir,omitempty"` // <--- Nuovo campo	
 	LiveRoot string   `json:"live_root,omitempty"`  // Go vede LiveRoot, il C vedrà live_root
 }
 
