@@ -15,7 +15,7 @@ type OATask struct {
 	Type       string `json:"type,omitempty"`       // Tipo di filesystem (proc, sysfs, overlay)
 	Opts       string `json:"opts,omitempty"`       // Opzioni di mount o parametri extra
 	ReadOnly   bool   `json:"readonly,omitempty"`   // Flag per i bind mount
-	PathLiveFs string `json:"pathLiveFs,omitempty"` // Il percorso di lavoro (es. /home/eggs/ovl/liveroot)
+	LiveRoot string   `json:"live_root,omitempty"`  // Go vede LiveRoot, il C vedrà live_root
 }
 
 // OAPlan è il piano di volo completo che l'orchestratore itererà.

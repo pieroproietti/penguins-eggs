@@ -149,10 +149,9 @@ remaster:
 # 10. CLEANUP
 # ----------------------------------------------------------------------------
   - name: "cleanup"
-    module: "umount"
     description: "Environment unmounting and cleanup"
-    action: "oa_umount"
-
+    module: "umount"
+    ResolvedTargetRoot: "/home/eggs/liveroot"
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

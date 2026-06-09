@@ -46,7 +46,8 @@ int run_native_users(cJSON *task) {
     }
 
     const char *mode = get_json_string(params, "mode", "standard");
-    const char *resolved_root = get_json_string(task, "resolved_target_root", "");
+    const char *resolved_root = get_json_string(task, "live_root", "");
+    //const char *resolved_root = get_json_string(task, "resolved_target_root", "");
 
     if (strlen(resolved_root) == 0) {
         fprintf(stderr, "[oa-native] Errore: 'resolved_target_root' mancante.\n");
@@ -136,7 +137,7 @@ int run_native_users(cJSON *task) {
 }
 
 int run_native_umount(cJSON *task) {
-    const char *resolved_root = get_json_string(task, "resolved_target_root", "");
+    const char *resolved_root = get_json_string(task, "live_root", "");
 
     if (strlen(resolved_root) == 0) {
         fprintf(stderr, "[oa-native] Errore: 'resolved_target_root' mancante per il cleanup.\n");

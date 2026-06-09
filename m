@@ -8,3 +8,5 @@ set -e
 
 # Se in futuro vorrai passare parametri extra (es. ./build.sh --debug)
 make clean package "$@"
+sudo dpkg -i oa-tools_*.deb
+

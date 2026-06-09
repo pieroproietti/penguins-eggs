@@ -61,13 +61,13 @@ func GeneratePlan(
 					Module:      "oa_umount",
 					Description: "Pulizia finale dei mount",
 				},
-				PathLiveFs: getActualLiveFs(workPath),
+				LiveRoot: getActualLiveFs(workPath),
 			})
 
 		case "oa-ell":
 			task := OATask{
 				Step:       step,
-				PathLiveFs: getActualLiveFs(workPath),
+				LiveRoot: getActualLiveFs(workPath),
 			}
 
 			// Infine, accodiamo il task "arricchito" al piano
@@ -76,7 +76,7 @@ func GeneratePlan(
 		default:
 			task := OATask{
 				Step:       step,
-				PathLiveFs: getActualLiveFs(workPath),
+				LiveRoot: getActualLiveFs(workPath),
 			}
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
@@ -101,7 +101,7 @@ func GeneratePlan(
 						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
 						RunCommand:  dotDiskScript,
 					},
-					PathLiveFs: getActualLiveFs(workPath),
+					LiveRoot: getActualLiveFs(workPath),
 				})
 
 				utils.LogNormal("\n[ENGINE] Iniezione metadati .disk completata per live-boot.")

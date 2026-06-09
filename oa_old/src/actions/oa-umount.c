@@ -21,11 +21,11 @@ int compare_mounts(const void *a, const void *b) {
  * @brief Smonta ricorsivamente tutto ciò che appartiene al progetto
  */
 int oa_umount(OA_Context *ctx) {
-    cJSON *pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
-    if (!pathLiveFs) pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
+    cJSON *LiveRoot = cJSON_GetObjectItemCaseSensitive(ctx->task, "LiveRoot");
+    if (!LiveRoot) LiveRoot = cJSON_GetObjectItemCaseSensitive(ctx->root, "LiveRoot");
     
-    if (!cJSON_IsString(pathLiveFs)) {
-        LOG_ERR("oa_umount: pathLiveFs non specificato");
+    if (!cJSON_IsString(LiveRoot)) {
+        LOG_ERR("oa_umount: LiveRoot non specificato");
         return 1;
     }
 
@@ -33,7 +33,7 @@ int oa_umount(OA_Context *ctx) {
     // FIX: Troviamo il vero WorkPath rimuovendo "/liveroot"
     // ========================================================
     char base_path[PATH_SAFE];
-    snprintf(base_path, sizeof(base_path), "%s", pathLiveFs->valuestring);
+    snprintf(base_path, sizeof(base_path), "%s", LiveRoot->valuestring);
 
     char *suffix = strstr(base_path, "/liveroot");
     if (suffix != NULL) {

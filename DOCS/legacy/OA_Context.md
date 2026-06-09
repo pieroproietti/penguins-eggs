@@ -14,10 +14,10 @@ typedef struct {
 ```
 
 ## The "Cascade Lookup" Pattern
-The dual-pointer architecture of `OA_Context` solves the problem of parameter scoping. When an action module (e.g., `action_squash` or `action_initrd`) needs a parameter like `pathLiveFs`, it employs a cascade lookup strategy:
+The dual-pointer architecture of `OA_Context` solves the problem of parameter scoping. When an action module (e.g., `action_squash` or `action_initrd`) needs a parameter like `LiveRoot`, it employs a cascade lookup strategy:
 
 1.  **Local Scope (`ctx->task`)**: The action first checks if the parameter is explicitly defined inside the current task block. This allows for granular overrides for specific steps in the pipeline (e.g., passing unique arguments to `action_run`).
-2.  **Global Scope (`ctx->root`)**: If the parameter is not found locally, the action automatically falls back to the root JSON object. This prevents redundancy in the `plan.json`, as universal variables like `pathLiveFs` only need to be declared once at the top level.
+2.  **Global Scope (`ctx->root`)**: If the parameter is not found locally, the action automatically falls back to the root JSON object. This prevents redundancy in the `plan.json`, as universal variables like `LiveRoot` only need to be declared once at the top level.
 
 ## Lifecycle and Routing
 The context is instantiated inside `src/main.c` within the `execute_verb` function, acting as a traffic controller for the engine.
@@ -32,15 +32,15 @@ Action modules across `src/actions/` uniformly apply this context to extract dat
 ```c
 int action_example(OA_Context *ctx) {
     // 1. Attempt to fetch parameter from the local task 
-    cJSON *pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
+    cJSON *LiveRoot = cJSON_GetObjectItemCaseSensitive(ctx->task, "LiveRoot");
     
     // 2. Fallback to the global root if not found locally
-    if (!pathLiveFs) {
-        pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
+    if (!LiveRoot) {
+        LiveRoot = cJSON_GetObjectItemCaseSensitive(ctx->root, "LiveRoot");
     }
 
     // 3. Validate the extracted data before proceeding 
-    if (!cJSON_IsString(pathLiveFs)) {
+    if (!cJSON_IsString(LiveRoot)) {
         return 1;
     }
     

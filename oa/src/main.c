@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
             return EXIT_SUCCESS;
         }
 
+
         // --- LA TUA MANIGLIA DI EMERGENZA ---
         if (strcmp(argv[1], "cleanup") == 0) {
             const char *target_root = (argc > 2) ? argv[2] : "/home/eggs/liveroot";
@@ -74,8 +75,8 @@ int main(int argc, char **argv) {
             // Costruiamo un finto task JSON "al volo" e lo diamo in pasto al motore!
             cJSON *task = cJSON_CreateObject();
             cJSON_AddStringToObject(task, "module", "umount");
-            cJSON_AddStringToObject(task, "resolved_target_root", target_root);
-            cJSON_AddObjectToObject(task, "params"); // Params vuoto per evitare crash
+            cJSON_AddStringToObject(task, "live_root", target_root); // <--- CORRETTO QUI
+            cJSON_AddObjectToObject(task, "params"); 
 
             int res = dispatch_task(task);
             cJSON_Delete(task);

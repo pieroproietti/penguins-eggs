@@ -340,7 +340,7 @@ Ho sistemato il Changelog includendo tutti i punti chiave discussi. Buona semina
 ## [0.2.0] - 2026-04-01
 
 ### Added
-- **Anti-Recursion Shield (Inception Fix)**: Implemented a global `tmpfs` mask in `action_prepare.c` to hide the working directory (`pathLiveFs`) from `mksquashfs` and `nftw`. This definitively prevents infinite filesystem loops when the workspace is located inside a bind-mounted host directory (like `/home`).
+- **Anti-Recursion Shield (Inception Fix)**: Implemented a global `tmpfs` mask in `action_prepare.c` to hide the working directory (`LiveRoot`) from `mksquashfs` and `nftw`. This definitively prevents infinite filesystem loops when the workspace is located inside a bind-mounted host directory (like `/home`).
 - **Native Group Injection**: Added the `yocto_add_user_to_groups` helper in `oa-yocto.c` to natively append the live user to secondary groups (e.g., `sudo`, `cdrom`) directly into `/etc/group`, completely bypassing host binaries.
 - **Skeleton Population**: `action_users` now correctly populates the live user's home directory by copying hidden configuration files from `/etc/skel` and applying recursive ownership.
 

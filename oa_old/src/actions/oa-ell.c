@@ -23,9 +23,9 @@ int oa_ell(OA_Context *ctx) {
     // ==========================================
     // FIX: Cerca prima nel task, poi nella root!
     // ==========================================
-    cJSON *path_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
+    cJSON *path_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "LiveRoot");
     if (!path_obj) {
-        path_obj = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
+        path_obj = cJSON_GetObjectItemCaseSensitive(ctx->root, "LiveRoot");
     }
     
     // 2. Controllo se il task richiede chroot
@@ -34,7 +34,7 @@ int oa_ell(OA_Context *ctx) {
 
     if (needs_chroot) {
         if (!path_obj || !cJSON_IsString(path_obj)) {
-            LOG_ERR("oa_ell: Task [%s] richiede chroot ma 'pathLiveFs' non è impostato né nel task né globale!", task_name);
+            LOG_ERR("oa_ell: Task [%s] richiede chroot ma 'LiveRoot' non è impostato né nel task né globale!", task_name);
             return 1;
         }
 
