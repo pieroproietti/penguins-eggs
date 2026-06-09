@@ -1,7 +1,7 @@
-package engine
+package planner
 
 import (
-	"coa/pkg/pilot"
+	"coa/pkg/parser"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -23,20 +23,20 @@ func expandMountLogic(basePath string, isGitHubAction bool) []OATask {
 	}
 	for _, d := range baseDirs {
 		tasks = append(tasks, OATask{
-			Step: pilot.Step{Action: "oa_mkdir", Path: d, Description: "Setup base path"},
+			Step: parser.Step{Action: "oa_mkdir", Path: d, Description: "Setup base path"},
 		})
 	}
 
 	// 2. COPIE FISICHE: Necessarie per rendere il chroot funzionale e bootabile
-	tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_cp", Src: "/etc", Dst: liveroot, Description: "Copia fisica /etc"}})
-	tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_cp", Src: "/boot", Dst: liveroot, Description: "Copia fisica /boot"}})
+	tasks = append(tasks, OATask{Step: parser.Step{Action: "oa_cp", Src: "/etc", Dst: liveroot, Description: "Copia fisica /etc"}})
+	tasks = append(tasks, OATask{Step: parser.Step{Action: "oa_cp", Src: "/boot", Dst: liveroot, Description: "Copia fisica /boot"}})
 
 	// Copia dei symlink del kernel
 	for _, link := range []string{"vmlinuz", "initrd.img", "vmlinuz.old", "initrd.img.old"} {
 		src := "/" + link
 		if _, err := os.Lstat(src); err == nil {
 			tasks = append(tasks, OATask{
-				Step: pilot.Step{
+				Step: parser.Step{
 					Action:      "oa_cp",
 					Src:         src,
 					Dst:         filepath.Join(liveroot, link),
@@ -57,7 +57,7 @@ func expandMountLogic(basePath string, isGitHubAction bool) []OATask {
 				if err == nil {
 					cmd := fmt.Sprintf("ln -sf %s %s", target, filepath.Join(liveroot, e))
 					tasks = append(tasks, OATask{
-						Step: pilot.Step{
+						Step: parser.Step{
 							Action:      "oa_shell",
 							Description: "Replica Usrmerge symlink: " + e,
 							RunCommand:  cmd,
@@ -67,7 +67,7 @@ func expandMountLogic(basePath string, isGitHubAction bool) []OATask {
 			} else {
 				// Cartella reale, bind mount classico
 				tasks = append(tasks, OATask{
-					Step: pilot.Step{
+					Step: parser.Step{
 						Action:      "oa_bind",
 						Src:         src,
 						Dst:         filepath.Join(liveroot, e),
@@ -87,20 +87,20 @@ func expandMountLogic(basePath string, isGitHubAction bool) []OATask {
 		merged := filepath.Join(liveroot, ovlDir)
 
 		// Creiamo i rami dell'overlay
-		tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_mkdir", Path: lower}})
-		tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_mkdir", Path: upper}})
-		tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_mkdir", Path: work}})
+		tasks = append(tasks, OATask{Step: parser.Step{Action: "oa_mkdir", Path: lower}})
+		tasks = append(tasks, OATask{Step: parser.Step{Action: "oa_mkdir", Path: upper}})
+		tasks = append(tasks, OATask{Step: parser.Step{Action: "oa_mkdir", Path: work}})
 
 		// Bind della directory originale su lower (ReadOnly)
 		tasks = append(tasks, OATask{
-			Step:     pilot.Step{Action: "oa_bind", Src: "/" + ovlDir, Dst: lower},
+			Step:     parser.Step{Action: "oa_bind", Src: "/" + ovlDir, Dst: lower},
 			ReadOnly: true, // Campo tecnico di OATask
 		})
 
 		// Mount Overlay finale
 		opts := "lowerdir=" + lower + ",upperdir=" + upper + ",workdir=" + work
 		tasks = append(tasks, OATask{
-			Step: pilot.Step{
+			Step: parser.Step{
 				Action:      "oa_mount_generic",
 				Src:         "overlay",
 				Dst:         merged,
@@ -113,15 +113,15 @@ func expandMountLogic(basePath string, isGitHubAction bool) []OATask {
 
 	// 5. API FILESYSTEMS
 	tasks = append(tasks, OATask{
-		Step: pilot.Step{Action: "oa_mount_generic", Src: "proc", Dst: filepath.Join(liveroot, "proc")},
+		Step: parser.Step{Action: "oa_mount_generic", Src: "proc", Dst: filepath.Join(liveroot, "proc")},
 		Type: "proc",
 	})
 	tasks = append(tasks, OATask{
-		Step: pilot.Step{Action: "oa_mount_generic", Src: "sys", Dst: filepath.Join(liveroot, "sys")},
+		Step: parser.Step{Action: "oa_mount_generic", Src: "sys", Dst: filepath.Join(liveroot, "sys")},
 		Type: "sysfs",
 	})
-	tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_bind", Src: "/dev", Dst: filepath.Join(liveroot, "dev"), Description: "API FS: dev"}})
-	tasks = append(tasks, OATask{Step: pilot.Step{Action: "oa_bind", Src: "/run", Dst: filepath.Join(liveroot, "run"), Description: "API FS: run"}})
+	tasks = append(tasks, OATask{Step: parser.Step{Action: "oa_bind", Src: "/dev", Dst: filepath.Join(liveroot, "dev"), Description: "API FS: dev"}})
+	tasks = append(tasks, OATask{Step: parser.Step{Action: "oa_bind", Src: "/run", Dst: filepath.Join(liveroot, "run"), Description: "API FS: run"}})
 
 	// 6. tmpfs
 	tmpPath := filepath.Join(liveroot, "tmp")
@@ -132,7 +132,7 @@ func expandMountLogic(basePath string, isGitHubAction bool) []OATask {
 	}
 
 	tasks = append(tasks, OATask{
-		Step: pilot.Step{
+		Step: parser.Step{
 			Action:      "oa_shell",
 			Description: "API FS: tmp (Sticky Bit + Tmpfs)",
 			RunCommand:  runCmd,

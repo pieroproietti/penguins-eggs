@@ -1,4 +1,4 @@
-package pilot
+package parser
 
 // Profile rappresenta la struttura completa del file YAML
 type Profile struct {

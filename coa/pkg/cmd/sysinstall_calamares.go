@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"coa/pkg/calamares"
-	"coa/pkg/pilot"
+	"coa/pkg/parser"
 	"coa/pkg/utils"
 	"os"
 
@@ -26,9 +26,9 @@ var calamaresSubCmd = &cobra.Command{
 func RunCalamaresInstaller(oaVersion string) {
 	utils.LogNormal("%s[sysinstall]%s Preparazione motori...", utils.ColorCyan, utils.ColorReset)
 
-	// 1. Caricamento del profilo tramite il Pilot
+	// 1. Caricamento del profilo tramite il parser
 	IsGitHubAction := false
-	profile, err := pilot.DetectAndLoad(IsGitHubAction)
+	profile, err := parser.DetectAndLoad(IsGitHubAction)
 	if err != nil {
 		utils.LogError("Impossibile caricare il profilo: %v", err)
 		os.Exit(1)

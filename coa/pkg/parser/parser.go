@@ -1,4 +1,4 @@
-package pilot
+package parser
 
 import (
 	"bytes"

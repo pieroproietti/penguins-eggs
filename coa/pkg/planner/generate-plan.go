@@ -1,4 +1,4 @@
-package engine
+package planner
 
 import (
 	"encoding/json"
@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"coa/pkg/pilot"
+	"coa/pkg/parser"
 	"coa/pkg/utils"
 )
 
 // GeneratePlan converte lo YAML in JSON.
 func GeneratePlan(
-	profile *pilot.Profile,
+	profile *parser.Profile,
 	familyID string,
 	isGitHubAction bool,
 	isRemaster bool,
@@ -48,17 +48,17 @@ func GeneratePlan(
 			currentDescription = strings.ReplaceAll(currentDescription, "${ISO_NAME}", filepath.Base(finalIsoPath))
 		}
 
-		switch step.Action {
+		switch step.Module {
 		case "oa_mount_logic":
-			plan.Plan = append(plan.Plan, expandMountLogic(workPath, isGitHubAction)...)
+			plan.Plan = append(plan.Plan, mountLogic(workPath, isGitHubAction)...)
 
 		case "oa_users":
 			plan.Plan = append(plan.Plan, oaUsers(plan.Settings, step, workPath)...)
 
 		case "oa_umount":
 			plan.Plan = append(plan.Plan, OATask{
-				Step: pilot.Step{
-					Action:      "oa_umount",
+				Step: parser.Step{
+					Module:      "oa_umount",
 					Description: "Pulizia finale dei mount",
 				},
 				PathLiveFs: getActualLiveFs(workPath),
@@ -68,34 +68,6 @@ func GeneratePlan(
 			task := OATask{
 				Step:       step,
 				PathLiveFs: getActualLiveFs(workPath),
-			}
-			task.Description = currentDescription
-			task.RunCommand = currentRunCommand
-
-			// 1. Controlliamo se ci sono effettivamente dei parametri passati dal profile
-			if len(step.Params) > 0 {
-
-				// 2. Estraiamo un parametro specifico in modo sicuro
-				// L'idioma "comma ok" ci protegge dai crash se la chiave non esiste
-				if val, exists := step.Params["script_path"]; exists {
-
-					// 3. Facciamo il casting (type assertion) al tipo che ci aspettiamo
-					if scriptPath, isString := val.(string); isString {
-						// Ora sappiamo per certo che scriptPath è una stringa valida
-						// Possiamo iniettarlo nel comando o manipolare il task
-						task.RunCommand = fmt.Sprintf("%s %s", currentRunCommand, scriptPath)
-						utils.LogNormal("\n[ENGINE] Parametro 'script_path' iniettato in oa-ell: %s", scriptPath)
-					} else {
-						utils.LogWarning("\n[ENGINE] Il parametro 'script_path' non è una stringa valida!")
-					}
-				}
-
-				// Puoi fare lo stesso per parametri booleani, interi, ecc.
-				if val, exists := step.Params["force_execution"]; exists {
-					if force, isBool := val.(bool); isBool && force {
-						utils.LogNormal("\n[ENGINE] Esecuzione forzata abilitata per oa-ell")
-					}
-				}
 			}
 
 			// Infine, accodiamo il task "arricchito" al piano
@@ -123,7 +95,7 @@ func GeneratePlan(
 				dotDiskScript := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
 				// 1. Accodiamo lo script per creare la cartella .disk AL PIANO
 				plan.Plan = append(plan.Plan, OATask{
-					Step: pilot.Step{
+					Step: parser.Step{
 						Action:      "oa_shell",
 						Name:        "coa-dot-disk",
 						Description: "Creazione metadati .disk (Standard Debian per live-boot)",

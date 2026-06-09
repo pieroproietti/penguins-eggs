@@ -1,13 +1,13 @@
-package engine
+package planner
 
 import (
-	"coa/pkg/pilot"
+	"coa/pkg/parser"
 	"coa/pkg/utils"
 	"fmt"
 )
 
 // oaUsers crea e restituisce i task necessari per configurare l'utente live
-func oaUsers(settings pilot.RemasterConfig, step pilot.Step, workPath string) []OATask {
+func oaUsers(settings parser.RemasterConfig, step parser.Step, workPath string) []OATask {
 	var tasks []OATask
 
 	// 1. Utente dinamico (fallback su "live")
@@ -25,7 +25,7 @@ func oaUsers(settings pilot.RemasterConfig, step pilot.Step, workPath string) []
 
 	// Inseriamo il primo task nella NOSTRA lista locale "tasks"
 	tasks = append(tasks, OATask{
-		Step: pilot.Step{
+		Step: parser.Step{
 			Action:      "oa_shell",
 			Description: fmt.Sprintf("Creazione home directory per l'utente %s", targetUser),
 			RunCommand:  skelCmd,
@@ -35,7 +35,7 @@ func oaUsers(settings pilot.RemasterConfig, step pilot.Step, workPath string) []
 	usersToInject := step.Users
 	if len(usersToInject) == 0 {
 		// Iniettiamo l'utente on-the-fly con la password appena hashata
-		usersToInject = []pilot.User{
+		usersToInject = []parser.User{
 			{
 				Login:    targetUser,
 				Password: targetPassword,
@@ -54,7 +54,7 @@ func oaUsers(settings pilot.RemasterConfig, step pilot.Step, workPath string) []
 
 	// Inseriamo il secondo task nella NOSTRA lista locale "tasks"
 	tasks = append(tasks, OATask{
-		Step: pilot.Step{
+		Step: parser.Step{
 			Action:      "oa_users",
 			Description: fmt.Sprintf("Iniezione identità utente live (%s)", targetUser),
 			Users:       usersToInject,

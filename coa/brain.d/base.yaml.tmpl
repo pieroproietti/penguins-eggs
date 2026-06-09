@@ -20,7 +20,6 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "oa-mount-logic"
     description: "Chroot environment and mount point preparation"
-    action: "oa_mount_logic"
     module: "oa_mount_logic"
 
 # ----------------------------------------------------------------------------
@@ -150,6 +149,7 @@ remaster:
 # 10. CLEANUP
 # ----------------------------------------------------------------------------
   - name: "cleanup"
+    module: "umount"
     description: "Environment unmounting and cleanup"
     action: "oa_umount"
 

@@ -1,6 +1,8 @@
+// worker/autologin.go
 package worker
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -8,16 +10,30 @@ import (
 	"strings"
 )
 
-// RunAutologin coordina le configurazioni per i vari Display Manager
-func RunAutologin(config ActionAutologinGui) error {
-	root := config.ResolvedTargetRoot
-	user := config.Params.User // <-- Estrazione pulita e tipizzata!
-
-	if user == "" {
-		user = "pippo" // Manteniamo il fallback di sicurezza, fa sempre comodo
+// RunAutologin coordina le configurazioni per i vari Display Manager.
+// Ora riceve i byte grezzi dal dispatcher e li decodifica in autonomia.
+func RunAutologin(payload []byte) error {
+	// 1. Struttura locale, niente più dipendenze globali dal planner
+	var config struct {
+		ResolvedTargetRoot string `json:"resolved_target_root"`
+		Params             struct {
+			User string `json:"user"`
+		} `json:"params"`
 	}
 
-	fmt.Printf("🥚 [oa-ell] Esecuzione coa-autologin-gui per utente '%s'\n", user)
+	// 2. Unmarshal del pacco ricevuto
+	if err := json.Unmarshal(payload, &config); err != nil {
+		return fmt.Errorf("errore parsing JSON per modulo autologin-gui: %w", err)
+	}
+
+	root := config.ResolvedTargetRoot
+	user := config.Params.User
+
+	if user == "" {
+		user = "pippo" // Fallback di sicurezza
+	}
+
+	fmt.Printf("📦 [worker] Esecuzione autologin-gui per utente '%s'\n", user)
 
 	// 1. Rimuove la password e sblocca l'utente nel chroot
 	fmt.Println(" -> Sblocco utente (passwd/usermod)...")
