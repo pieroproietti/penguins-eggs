@@ -93,18 +93,17 @@ func GeneratePlan(
 				sourceDir := task.Params["source_dir"].(string)
 
 				// Creazione script .disk (usiamo i valori appena iniettati)
-				dotDiskScript := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
-				// 1. Accodiamo lo script per creare la cartella .disk AL PIANO
+				scriptContent := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
 				plan.Plan = append(plan.Plan, OATask{
-					Step: parser.Step{
-						Action:      "oa_shell",
+					Step: parser.Step{  // <--- I campi vanno dentro 'Step'!
 						Name:        "coa-dot-disk",
 						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
-						RunCommand:  dotDiskScript,
+						Module:      "shell",
+						Params: map[string]interface{}{
+							"command": scriptContent,
+						},
 					},
-					LiveRoot: getActualLiveFs(workPath),
 				})
-
 				utils.LogNormal("\n[ENGINE] Iniezione metadati .disk completata per live-boot.")
 			}
 

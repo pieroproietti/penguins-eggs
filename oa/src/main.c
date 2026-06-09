@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "cJSON.h"
+#include "logger.h"
 
 extern int dispatch_task(cJSON *task);
 
@@ -101,6 +102,11 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
+    // ==================================
+    // log solo se facciamo un plan
+    // ==================================
+    oa_init_log("/var/log/oa-tools.log");
+
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {
         const char *error_ptr = cJSON_GetErrorPtr();
@@ -144,6 +150,11 @@ int main(int argc, char **argv) {
     free(json_data);
 
     printf("\n🏁 [oa-main] Esecuzione completata. Successi: %d, Errori: %d\n", success_count, error_count);
-
+    
+    
+    // ==================================
+    // chiusura log 
+    // ==================================
+    oa_close_log();    
     return (error_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

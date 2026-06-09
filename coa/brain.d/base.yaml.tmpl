@@ -38,6 +38,7 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "Indentity"
     description: "Live user injection and password sanitization"
+    module: "users"
     action: "oa_users"
 
 # ----------------------------------------------------------------------------
@@ -149,10 +150,10 @@ remaster:
 # ----------------------------------------------------------------------------
 # 10. CLEANUP
 # ----------------------------------------------------------------------------
-  - name: "cleanup"
-    description: "unmount on the plan"
-    module: "umount"
-    work_dir: "INJECTED_BY_PLANNER"
+#  - name: "cleanup"
+#    description: "unmount on the plan"
+#    module: "umount"
+#    work_dir: "INJECTED_BY_PLANNER"
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS
