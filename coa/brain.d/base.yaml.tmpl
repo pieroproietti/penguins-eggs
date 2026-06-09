@@ -51,20 +51,24 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "coa-initrd"
     description: "Live environment-specific Initramfs generation"
-    action: "oa_shell"
+    action: "oa_ell"
+    module: "shell"
     chroot: true
-    run_command: |
-{{ include "hook_initramfs_cmd" . | indent 6 }}
-
+    params:
+      command: |
+{{ include "hook_initramfs_cmd" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
 # 6. KERNEL AND PRIVILEGE EXTRACTION
 # ----------------------------------------------------------------------------
-  - name: "coa-kernel-copy"
+  - name: "kernel-copy"
     description: "Dynamic kernel and initrd copy to ISO root"
-    action: "oa_shell"
-    run_command: |
-{{ include "core_kernel_copy" . | indent 6 }}
+    action: "oa_ell"
+    module: "shell"
+    chroot: false
+    params:
+      command: |
+{{ include "core_kernel_copy" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
 # 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
@@ -72,9 +76,9 @@ remaster:
 {{ include "ell_enable_live" . | indent 2 }}
 
 # ----------------------------------------------------------------------------
-# 7.1 coa-autologin-gui
+# 7.1 autologin-gui
 # ----------------------------------------------------------------------------
-  - name: coa-autologin-gui
+  - name: autologin-gui
     description: "Creazione di autologin per utente live"
     action: "oa_ell"
     params:
@@ -82,9 +86,9 @@ remaster:
       is_gui: true
 
 # ----------------------------------------------------------------------------
-# 7.5 coa-egg-icon
+# 7.5 egg-icon
 # ----------------------------------------------------------------------------
-  - name: "coa-eggs-icon"
+  - name: "eggs-icon"
     description: "Creazione Icona Uovo (SVG 3D Golden Edition)"
     action: "oa_ell"
     module: "template"
@@ -122,10 +126,11 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "hook_squashfs"
     description: "Hard link to /home/eggs/isodir/live/filesystem.squashfs in arch, fedora, manjaro"
-    action: "oa_shell"
+    action: "oa_ell"
+    module: "shell"
     chroot: false
-    run_command: |
-{{ include "hook_squashfs" . | indent 6 }}
+    params:
+{{ include "hook_squashfs" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
 # 9. ISO XORRISO PACKAGING
@@ -155,6 +160,8 @@ remaster:
 install:
   - name: "coa-finalize"
     description: "Target finalization and host bootloader regeneration"
-    action: "oa_shell"
-    run_command: |
-{{ include "core_finalize" . | indent 6 }}
+    action: "oa_ell"
+    module: "shell"
+    params: 
+      command: |
+{{ include "core_finalize" . | indent 8 }}

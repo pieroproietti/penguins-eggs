@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 
 	"github.com/spf13/cobra"
 )
@@ -70,7 +69,7 @@ func init() {
 // routeModule instrada il payload verso la funzione handler corretta
 func routeModule(route, name string, payload []byte) error {
 	switch route {
-	case "coa-autologin-gui":
+	case "autologin-gui":
 		return handleAutologin(payload)
 	case "copy":
 		return handleCopy(payload)
@@ -82,8 +81,6 @@ func routeModule(route, name string, payload []byte) error {
 		return handleTemplate(payload)
 	case "xorriso":
 		return handleXorriso(payload) // <-- Aggiunto il router per l'ISO!
-	case "test-ell":
-		return handleTestEll(name, payload)
 	default:
 		return fmt.Errorf("Azione '%s' non ancora implementata in oa-ell", name)
 	}
@@ -131,57 +128,6 @@ func handleXorriso(payload []byte) error {
 }
 
 func handleShell(payload []byte) error {
-	// 1. Definiamo la struttura che mappa ESATTAMENTE il JSON inviato dal C
-	var config struct {
-		Chroot bool `json:"chroot"`
-		// Mapping del campo iniettato dal C
-		ResolvedTargetRoot string `json:"resolved_target_root"`
-		Params             struct {
-			Command string `json:"command"`
-		} `json:"params"`
-	}
-
-	if err := json.Unmarshal(payload, &config); err != nil {
-		return fmt.Errorf("errore parsing JSON: %w", err)
-	}
-
-	finalCmd := config.Params.Command
-
-	// 2. Usiamo il campo corretto per il chroot
-	if config.Chroot {
-		if config.ResolvedTargetRoot == "" {
-			return fmt.Errorf("chroot richiesto ma resolved_target_root mancante")
-		}
-		// Esecuzione in chroot
-		finalCmd = fmt.Sprintf("chroot %s /bin/bash -c %q", config.ResolvedTargetRoot, finalCmd)
-	}
-
-	cmd := exec.Command("bash", "-c", finalCmd)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if config.Chroot {
-		fmt.Printf("📦 Esecuzione script in chroot (%s)...\n", config.ResolvedTargetRoot)
-	} else {
-		fmt.Println("💻 Esecuzione script shell locale...")
-	}
-
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("esecuzione comando fallita: %w", err)
-	}
-	return nil
-}
-
-func handleTestEll(name string, payload []byte) error {
-	var task map[string]interface{}
-	json.Unmarshal(payload, &task)
-	prettyJSON, _ := json.MarshalIndent(task, "", "  ")
-
-	fmt.Println("\n=========================================")
-	fmt.Println("🥚 [coa ell] RISVEGLIO ESECUZIONE NATIVA (DEBUG MODE)")
-	fmt.Printf("Azione ricevuta: %s\n", name)
-	fmt.Println("-----------------------------------------")
-	fmt.Println(string(prettyJSON))
-	fmt.Println("=========================================\n")
+	worker.RunShell(payload)
 	return nil
 }

@@ -2,15 +2,13 @@
 # 🌀 MODULO DEBIAN / UBUNTU
 # ==============================================================================
 # ----------------------------------------------------------------------------
-# 0. GRUPPO AMMINISTRATORE (sudo vs wheel)
-# ----------------------------------------------------------------------------
-{{ define "admin_group" }}sudo{{ end }}
 
 # ----------------------------------------------------------------------------
-# 3. GENERAZIONE MENU DI AVVIO E BRANDING
-# ATTENZIONE: Questo blocco deve rimanere su una riga singola
+# DECLARATIVE COSTANTS 
 # ----------------------------------------------------------------------------
+{{ define "admin_group" }}sudo{{ end }}
 {{ define "hook_boot_params" }}boot=live components cow_spacesize=2G{{ end }}
+
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE

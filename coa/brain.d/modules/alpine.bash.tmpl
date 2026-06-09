@@ -1,15 +1,11 @@
 # ==============================================================================
 # ⛰️ MODULO ALPINE LINUX
 # ==============================================================================
-# ----------------------------------------------------------------------------
-# 0. GRUPPO AMMINISTRATORE (sudo vs wheel)
-# ----------------------------------------------------------------------------
-{{ define "admin_group" }}wheel{{ end }}
 
 # ----------------------------------------------------------------------------
-# 3. GENERAZIONE MENU DI AVVIO E BRANDING
-# ATTENZIONE: Questo blocco deve rimanere su una riga singola
+# DECLARATIVE COSTANTS 
 # ----------------------------------------------------------------------------
+{{ define "admin_group" }}wheel{{ end }}
 {{ define "hook_boot_params" }}modules=loop,squashfs,sd-mod,usb-storage alpinelivelabel=OA_LIVE alpinelivesquashfs=filesystem.squashfs cow_spacesize=2G quiet{{ end }}
 
 # ----------------------------------------------------------------------------

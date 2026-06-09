@@ -1,14 +1,11 @@
 # ==============================================================================
 # 🦎 MODULO OPENSUSE SLOWROLL
 # ==============================================================================
-# ----------------------------------------------------------------------------
-# 0. GRUPPO AMMINISTRATORE (SUSE usa wheel esattamente come Fedora)
-# ----------------------------------------------------------------------------
-{{ define "admin_group" }}wheel{{ end }}
 
 # ----------------------------------------------------------------------------
-# 3. GENERAZIONE MENU DI AVVIO E BRANDING (Logica Dracut standard per Live)
+# DECLARATIVE COSTANTS 
 # ----------------------------------------------------------------------------
+{{ define "admin_group" }}wheel{{ end }}
 {{ define "hook_boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image selinux=0 cow_spacesize=2G{{ end }}
 
 # ----------------------------------------------------------------------------
