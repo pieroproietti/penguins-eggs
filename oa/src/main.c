@@ -112,6 +112,7 @@ int main(int argc, char **argv) {
         const char *error_ptr = cJSON_GetErrorPtr();
         fprintf(stderr, "❌ [oa-main] Errore di parsing JSON: %s\n", error_ptr ? error_ptr : "sconosciuto");
         free(json_data);
+        oa_close_log(); // <--- AGGIUNTO QUI
         return EXIT_FAILURE;
     }
 
@@ -120,11 +121,12 @@ int main(int argc, char **argv) {
         fprintf(stderr, "❌ [oa-main] Formato JSON non valido: array 'plan' mancante.\n");
         cJSON_Delete(root);
         free(json_data);
+        oa_close_log(); // <--- AGGIUNTO QUI
         return EXIT_FAILURE;
     }
 
     int total_tasks = cJSON_GetArraySize(plan_array);
-    printf("🚀 [oa-main] Ricevuto piano con %d task. Avvio esecuzione...\n", total_tasks);
+    LOG_INFO("🚀 [oa-main] Ricevuto piano con %d task. Avvio esecuzione...\n", total_tasks);
 
     int success_count = 0;
     int error_count = 0;
@@ -149,7 +151,7 @@ int main(int argc, char **argv) {
     cJSON_Delete(root);
     free(json_data);
 
-    printf("\n🏁 [oa-main] Esecuzione completata. Successi: %d, Errori: %d\n", success_count, error_count);
+    LOG_INFO("\n🏁 [oa-main] Esecuzione completata. Successi: %d, Errori: %d\n", success_count, error_count);
     
     
     // ==================================
@@ -158,3 +160,7 @@ int main(int argc, char **argv) {
     oa_close_log();    
     return (error_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+
+
+
