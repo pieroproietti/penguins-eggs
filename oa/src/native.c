@@ -10,6 +10,7 @@
 #include <crypt.h>
 
 #include "cJSON.h"
+#include "logger.h"
 #include "oa-yocto.h"
 
 #ifndef PATH_SAFE
@@ -41,16 +42,16 @@ static const char* get_json_string(cJSON *obj, const char *key, const char *fall
 int run_native_users(cJSON *task) {
     cJSON *params = cJSON_GetObjectItemCaseSensitive(task, "params");
     if (!params) {
-        fprintf(stderr, "[oa-native] Errore: 'params' mancante in users.\n");
+        // CORRETTO: rimosso stderr e \n
+        LOG_ERR("[oa-native] Errore: 'params' mancante in users.");
         return -1;
     }
 
     const char *mode = get_json_string(params, "mode", "standard");
     const char *resolved_root = get_json_string(task, "live_root", "");
-    //const char *resolved_root = get_json_string(task, "resolved_target_root", "");
 
     if (strlen(resolved_root) == 0) {
-        fprintf(stderr, "[oa-native] Errore: 'resolved_target_root' mancante.\n");
+        LOG_ERR("[oa-native] Errore: 'live_root' mancante.");
         return -1;
     }
 
@@ -59,10 +60,10 @@ int run_native_users(cJSON *task) {
     snprintf(s_path, sizeof(s_path), "%s/etc/shadow", resolved_root);
     snprintf(g_path, sizeof(g_path), "%s/etc/group", resolved_root);
 
-    printf("👤 [oa-native] Gestione utenti (Mode: %s) su root: %s\n", mode, resolved_root);
+    LOG_INFO("👤 [oa-native] Gestione utenti (Mode: %s) su root: %s", mode, resolved_root);
 
     if (strcmp(mode, "clone") != 0 && strcmp(mode, "crypted") != 0) {
-        printf("   -> Pulizia utenti host (sanitize)...\n");
+        LOG_INFO("   -> Pulizia utenti host (sanitize)...");
         yocto_sanitize_file(p_path, OE_UID_HUMAN_MIN, OE_UID_HUMAN_MAX);
         yocto_sanitize_shadow(s_path, p_path);
         yocto_sanitize_file(g_path, OE_UID_HUMAN_MIN, OE_UID_HUMAN_MAX);
@@ -74,7 +75,7 @@ int run_native_users(cJSON *task) {
         FILE *fs = fopen(s_path, "a");
         
         if (!fp || !fs) { 
-            fprintf(stderr, "[oa-native] Errore fatale: Impossibile aprire i DB in %s/etc/\n", resolved_root);
+            LOG_ERR("[oa-native] Errore fatale: Impossibile aprire i DB in %s/etc/", resolved_root);
             if(fp) fclose(fp); 
             if(fs) fclose(fs); 
             return -1;
@@ -88,7 +89,7 @@ int run_native_users(cJSON *task) {
             
             if (strlen(login) == 0) continue;
 
-            printf("   -> Iniezione utente: '%s' home='%s'\n", login, home);
+            LOG_INFO("   -> Iniezione utente: '%s' home='%s'", login, home);
 
             char *final_pass = (char *)pass;
             if (strlen(pass) > 0 && pass[0] != '$') {
@@ -100,15 +101,16 @@ int run_native_users(cJSON *task) {
 
             FILE *fg = fopen(g_path, "a");
             if (fg) {
+                // CORRETTO: Questo deve scrivere nel file /etc/group, NON loggare!
                 fprintf(fg, "%s:x:%d:\n", login, OE_UID_HUMAN_MIN);
                 fclose(fg);
             } else {
-                fprintf(stderr, "      [!] Impossibile creare gruppo primario.\n");
+                LOG_ERR("      [!] Impossibile creare gruppo primario.");
             }
 
             cJSON *groups_obj = cJSON_GetObjectItemCaseSensitive(u, "groups");
             if (cJSON_IsArray(groups_obj)) {
-                printf("   -> Aggiunta a gruppi secondari...\n");
+                LOG_INFO("   -> Aggiunta a gruppi secondari...");
                 yocto_add_user_to_groups(g_path, login, groups_obj);
             }
 
@@ -116,7 +118,8 @@ int run_native_users(cJSON *task) {
             snprintf(full_home, sizeof(full_home), "%s%s", resolved_root, home);
             
             if (mkdir(full_home, 0755) != 0 && errno != EEXIST) {
-                fprintf(stderr, "      [!] Warning: mkdir fallita per %s (errno: %d)\n", full_home, errno);
+                // Sostituito fprintf con LOG_WARN
+                LOG_WARN("      [!] Warning: mkdir fallita per %s (errno: %d)", full_home, errno);
             }
 
             char home_cmd[PATH_SAFE * 2];
@@ -125,22 +128,20 @@ int run_native_users(cJSON *task) {
                      resolved_root, full_home, OE_UID_HUMAN_MIN, OE_UID_HUMAN_MIN, full_home);
             
             if (system(home_cmd) != 0) {
-                fprintf(stderr, "      [!] Errore setup home per '%s'\n", login);
+                LOG_ERR("      [!] Errore setup home per '%s'", login);
             }
         }
         fclose(fp);
         fclose(fs);
     }
-    
-    printf("✅ [oa-native] Utenti configurati con successo.\n");
+    LOG_INFO("✅ [oa-native] Utenti configurati con successo.");
     return 0;
 }
 
 int run_native_umount(cJSON *task) {
-    // Ora leggiamo "work_dir" (es. /home/eggs) invece di "live_root"
     const char *work_dir = get_json_string(task, "work_dir", "");
     if (strlen(work_dir) == 0) {
-        fprintf(stderr, "❌ [oa-native] Errore: 'work_dir' mancante per il cleanup.\n");
+        LOG_ERR("❌ [oa-native] Errore: 'work_dir' mancante per il cleanup.");
         return 1;
     }
 
@@ -177,7 +178,7 @@ int run_native_umount(cJSON *task) {
     snprintf(path, sizeof(path), "%s/liveroot", work_dir);
     umount2(path, MNT_DETACH);
 
-    printf("✅ [oa-native] Smontaggio di sicurezza completato per: %s\n", work_dir);
+    LOG_INFO("✅ [oa-native] Smontaggio di sicurezza completato per: %s", work_dir);
     return 0;
 }
 
@@ -193,6 +194,6 @@ int run_native(const char *module, cJSON *task) {
         return run_native_umount(task);
     }
 
-    fprintf(stderr, "❌ [oa-native] Modulo nativo sconosciuto in C: %s\n", module);
+    LOG_ERR("❌ [oa-native] Modulo nativo sconosciuto in C: %s", module);
     return -1;
 }

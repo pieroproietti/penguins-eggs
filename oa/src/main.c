@@ -67,16 +67,14 @@ int main(int argc, char **argv) {
             return EXIT_SUCCESS;
         }
 
-
         // --- LA TUA MANIGLIA DI EMERGENZA ---
         if (strcmp(argv[1], "cleanup") == 0) {
-            // Se non passi parametri, usa /home/eggs di default, NON liveroot
             const char *target_dir = (argc > 2) ? argv[2] : "/home/eggs";
             printf("🚨 [oa-main] Modalità EMERGENZA: Avvio smontaggio su %s\n", target_dir);
 
             cJSON *task = cJSON_CreateObject();
             cJSON_AddStringToObject(task, "module", "umount");
-            cJSON_AddStringToObject(task, "work_dir", target_dir); // <--- Nuova chiave!
+            cJSON_AddStringToObject(task, "work_dir", target_dir); 
             cJSON_AddObjectToObject(task, "params"); 
 
             int res = dispatch_task(task);
@@ -110,23 +108,23 @@ int main(int argc, char **argv) {
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {
         const char *error_ptr = cJSON_GetErrorPtr();
-        fprintf(stderr, "❌ [oa-main] Errore di parsing JSON: %s\n", error_ptr ? error_ptr : "sconosciuto");
+        LOG_ERR("❌ [oa-main] Errore di parsing JSON: %s", error_ptr ? error_ptr : "sconosciuto");
         free(json_data);
-        oa_close_log(); // <--- AGGIUNTO QUI
+        oa_close_log(); 
         return EXIT_FAILURE;
     }
 
     cJSON *plan_array = cJSON_GetObjectItemCaseSensitive(root, "plan");
     if (!cJSON_IsArray(plan_array)) {
-        fprintf(stderr, "❌ [oa-main] Formato JSON non valido: array 'plan' mancante.\n");
+        LOG_ERR("❌ [oa-main] Formato JSON non valido: array 'plan' mancante.");
         cJSON_Delete(root);
         free(json_data);
-        oa_close_log(); // <--- AGGIUNTO QUI
+        oa_close_log(); 
         return EXIT_FAILURE;
     }
 
     int total_tasks = cJSON_GetArraySize(plan_array);
-    LOG_INFO("🚀 [oa-main] Ricevuto piano con %d task. Avvio esecuzione...\n", total_tasks);
+    LOG_INFO("🚀 [oa-main] Ricevuto piano con %d task. Avvio esecuzione...", total_tasks);
 
     int success_count = 0;
     int error_count = 0;
@@ -136,14 +134,15 @@ int main(int argc, char **argv) {
         cJSON *name_item = cJSON_GetObjectItemCaseSensitive(task, "name");
         const char *task_name = cJSON_IsString(name_item) ? name_item->valuestring : "Sconosciuto";
 
-        printf("\n========================================\n");
-        printf("▶ Esecuzione Task: %s\n", task_name);
-        printf("========================================\n");
+        LOG_INFO("========================================");
+        LOG_INFO("▶ Esecuzione Task: %s", task_name);
+        LOG_INFO("========================================");
 
         if (dispatch_task(task) == 0) {
             success_count++;
         } else {
-            fprintf(stderr, "⚠️  [oa-main] Il task '%s' ha fallito.\n", task_name);
+            // CORRETTO: rimosso stderr e \n
+            LOG_ERR("⚠️  [oa-main] Il task '%s' ha fallito.", task_name);
             error_count++;
         }
     }
@@ -151,8 +150,7 @@ int main(int argc, char **argv) {
     cJSON_Delete(root);
     free(json_data);
 
-    LOG_INFO("\n🏁 [oa-main] Esecuzione completata. Successi: %d, Errori: %d\n", success_count, error_count);
-    
+    LOG_INFO("🏁 [oa-main] Esecuzione completata. Successi: %d, Errori: %d", success_count, error_count);
     
     // ==================================
     // chiusura log 
@@ -160,7 +158,3 @@ int main(int argc, char **argv) {
     oa_close_log();    
     return (error_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-
-
-
-

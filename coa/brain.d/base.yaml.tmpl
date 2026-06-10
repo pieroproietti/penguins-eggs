@@ -49,11 +49,12 @@ remaster:
 # ----------------------------------------------------------------------------
 # 5. LIVE INITRAMFS
 # ----------------------------------------------------------------------------
-  - name: "coa-initrd"
+  - name: "initramfs"
     description: "Live environment-specific Initramfs generation"
     action: "oa_ell"
     module: "shell"
     chroot: true
+    live_root: "INJECTED_BY_PLANNER"
     params:
       command: |
 {{ include "hook_initramfs_cmd" . | indent 8 }}

@@ -19,16 +19,22 @@ func oaUsers(settings parser.RemasterConfig, step parser.Step, workPath string) 
 	// 2. Hashiamo la password in Go!
 	targetPassword := hashPassword(settings.Password)
 
+// ... (prima parte del file inalterata) ...
+
 	// 3. Creiamo i percorsi dinamici per la home directory
 	homeDir := fmt.Sprintf("/home/%s", targetUser)
 	skelCmd := fmt.Sprintf("mkdir -p %s/liveroot%s && cp -a %s/liveroot/etc/skel/. %s/liveroot%s/", workPath, homeDir, workPath, workPath, homeDir)
 
 	// Inseriamo il primo task nella NOSTRA lista locale "tasks"
+	// CORREZIONE: Usiamo Module "shell" e Params "command"
 	tasks = append(tasks, OATask{
 		Step: parser.Step{
-			Action:      "oa_shell",
+			Name:        "create-live-home", // Aggiunto il nome che mancava!
+			Module:      "shell",
 			Description: fmt.Sprintf("Creazione home directory per l'utente %s", targetUser),
-			RunCommand:  skelCmd,
+			Params: map[string]interface{}{
+				"command": skelCmd,
+			},
 		},
 	})
 
@@ -53,11 +59,15 @@ func oaUsers(settings parser.RemasterConfig, step parser.Step, workPath string) 
 	}
 
 	// Inseriamo il secondo task nella NOSTRA lista locale "tasks"
+	// CORREZIONE: Usiamo Module "users" e spostiamo "users" dentro i Params
 	tasks = append(tasks, OATask{
 		Step: parser.Step{
-			Action:      "oa_users",
+			Name:        "inject-live-users", // Aggiunto il nome che mancava!
+			Module:      "users",
 			Description: fmt.Sprintf("Iniezione identità utente live (%s)", targetUser),
-			Users:       usersToInject,
+			Params: map[string]interface{}{
+				"users": usersToInject, // Il motore C lo cercherà qui dentro!
+			},
 		},
 		LiveRoot: getActualLiveFs(workPath),
 	})

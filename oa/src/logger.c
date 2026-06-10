@@ -26,6 +26,11 @@ void oa_close_log() {
 }
 
 void oa_log(const char *level, const char *file, int line, const char *fmt, ...) {
+    // Silenziamo i warning del compilatore per le variabili non più usate nella stampa
+    (void)level;
+    (void)file;
+    (void)line;
+
     va_list args;
     va_start(args, fmt);
 
@@ -34,17 +39,14 @@ void oa_log(const char *level, const char *file, int line, const char *fmt, ...)
     vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
 
-    // Estraiamo solo il nome del file
-    const char *short_file = strrchr(file, '/');
-    short_file = short_file ? short_file + 1 : file;
+    // 1. STAMPA SU CONSOLE (SOLO IL MESSAGGIO NUDO E CRUDO)
+    fprintf(stdout, "%s\n", buffer);
+    fflush(stdout); // Forza lo svuotamento immediato
 
-    // 1. STAMPA SU CONSOLE
-    fprintf(stdout, "[oa] [%s] %s:%d - %s\n", level, short_file, line, buffer);
-    fflush(stdout);
-
-    // 2. STAMPA SU FILE
+    // 2. STAMPA SU FILE (SOLO IL MESSAGGIO NUDO E CRUDO)
     if (oa_log_file) {
-        fprintf(oa_log_file, "[oa] [%s] %s:%d - %s\n", level, short_file, line, buffer);
-        fflush(oa_log_file);
+        fprintf(oa_log_file, "%s\n", buffer);
+        fflush(oa_log_file); // Forza la scrittura immediata su disco
     }
 }
+

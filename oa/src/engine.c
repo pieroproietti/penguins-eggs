@@ -4,7 +4,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <errno.h>     // <--- Aggiunto per leggere il codice di errore
 #include "cJSON.h"
+#include "logger.h"    // <--- Aggiunto l'header del log
 
 // Dichiariamo le funzioni esterne (che vivono in native.c)
 extern int run_native(const char *module, cJSON *task);
@@ -25,14 +27,16 @@ int run_go_worker(cJSON *task) {
 
     int pipefd[2];
     if (pipe(pipefd) == -1) {
-        perror("[oa-engine] Errore creazione pipe");
+        // Sostituito perror con LOG_ERR + errno
+        LOG_ERR("[oa-engine] Errore creazione pipe (errno: %d)", errno);
         free(payload);
         return -1;
     }
 
     pid_t pid = fork();
     if (pid == -1) {
-        perror("[oa-engine] Errore fork");
+        // Sostituito perror con LOG_ERR + errno
+        LOG_ERR("[oa-engine] Errore fork (errno: %d)", errno);
         free(payload);
         return -1;
     }
@@ -46,12 +50,13 @@ int run_go_worker(cJSON *task) {
         close(pipefd[0]);
         close(pipefd[1]);
 
-        // Eseguiamo il binario Go (coa ell). Assicurati che il path sia corretto.
-        // execlp cerca "coa" nel $PATH. Se è altrove, metti il path assoluto.
-        execlp("coa", "coa", "ell", NULL);
+        // Eseguiamo il binario Go avvolto nella shell per usare 'tee'.
+        // '2>&1' unisce eventuali errori (stderr) allo standard output.
+        // 'tee -a' stampa a video e accoda (append) al nostro log.
+        execlp("sh", "sh", "-c", "coa ell 2>&1 | tee -a /var/log/oa-tools.log", NULL);
 
         // Se execlp fallisce, il programma arriva qui
-        perror("❌ [oa-engine] Errore esecuzione 'coa ell'");
+        LOG_ERR("❌ [oa-engine] Errore esecuzione 'coa ell' tramite sh (errno: %d)", errno);
         exit(EXIT_FAILURE);
     } else {
         // --- PROCESSO PADRE (Motore C) ---
@@ -61,7 +66,7 @@ int run_go_worker(cJSON *task) {
         // Scriviamo l'intero JSON nella pipe
         write(pipefd[1], payload, strlen(payload));
         
-        // Chiudendo il lato di scrittura, mandiamo un segnale di EOF al figlio (fondamentale per fargli capire che il JSON è finito)
+        // Chiudendo il lato di scrittura, mandiamo un segnale di EOF al figlio
         close(pipefd[1]);
 
         // Aspettiamo che il worker Go finisca il suo lavoro
@@ -73,7 +78,8 @@ int run_go_worker(cJSON *task) {
         if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
             return 0; // Successo
         } else {
-            fprintf(stderr, "❌ [oa-engine] Il worker Go ha restituito un errore.\n");
+            // Rimosso fprintf e \n
+            LOG_ERR("❌ [oa-engine] Il worker Go ha restituito un errore.");
             return -1;
         }
     }
@@ -83,17 +89,20 @@ int run_go_worker(cJSON *task) {
 int dispatch_task(cJSON *task) {
     cJSON *mod_item = cJSON_GetObjectItemCaseSensitive(task, "module");
     if (!cJSON_IsString(mod_item)) {
-        fprintf(stderr, "[oa-engine] Errore: 'module' mancante nel task.\n");
+        // Rimosso fprintf e \n
+        LOG_ERR("[oa-engine] Errore: 'module' mancante nel task.");
         return -1;
     }
     
     const char *module = mod_item->valuestring;
 
     if (is_native_module(module)) {
-        printf("⚙️  [oa-engine] Esecuzione nativa modulo: %s\n", module);
+        // Rimosso printf e \n
+        LOG_INFO("⚙️  [oa-engine] Esecuzione nativa modulo: %s", module);
         return run_native(module, task);
     } else {
-        printf("🔀 [oa-engine] Delega modulo '%s' al worker Go...\n", module);
+        // Rimosso printf e \n
+        LOG_INFO("🔀 [oa-engine] Delega modulo '%s' al worker Go...", module);
         return run_go_worker(task);
     }
 }
