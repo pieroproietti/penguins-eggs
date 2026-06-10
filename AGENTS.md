@@ -142,3 +142,18 @@ Always suggest these native commands over ad-hoc Bash workarounds or generic scr
      - `utils.ExecCapture("command")`: To execute and return the output as a `string` for parsing (replaces `bytes.Buffer` boilerplate).
    * **Exception:** You may use raw `os/exec` ONLY if advanced, multi-stage stream manipulation (like chaining `StdinPipe` / `StdoutPipe` across multiple concurrent processes) is strictly required.
    
+
+### LINK 
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_CI.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_COMMANDS.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_INSTALLER.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_PKG_PLANNER.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_PKG_PARSER.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_PROXMOX-md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_UNIVERSAL_STRATEGY.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_VAGRANT.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/CONTEXT.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/OA_ARCHITECTURE.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/OA.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/README.md
