@@ -55,6 +55,9 @@ command: "echo 'Nessun hook squashfs necessario per la famiglia Debian.' || true
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
 {{ define "hook_install_logic" }}
+#!/bin/bash
+set -e
+rm -f /etc/sudoers.d/00-live
 # Applichiamo il fix anche sul sistema installato prima di generare l'initramfs
 echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
 update-initramfs -u

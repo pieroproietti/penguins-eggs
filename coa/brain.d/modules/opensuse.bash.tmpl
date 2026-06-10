@@ -35,6 +35,9 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squash
 # 🎯 CALAMARES INSTALLER HOOKS (La vera nuova strategia)
 # ==============================================================================
 {{ define "hook_install_logic" }}
+#!/bin/bash
+set -e
+rm -f /etc/sudoers.d/00-live
 # SUSE non usa BLSCFG di default come Fedora, ma rigeneriamo dracut sul ferro
 dracut -f --regenerate-all
 

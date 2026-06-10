@@ -47,6 +47,9 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/a
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
 {{ define "hook_install_logic" }}
+#!/bin/bash
+set -e
+rm -f /etc/sudoers.d/00-live
 mkinitcpio -P
 if [ -d /sys/firmware/efi ]; then
       grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck

@@ -8,10 +8,3 @@
 if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
 if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
 {{ end }}
-
-{{ define "core_finalize" }}
-#!/bin/bash
-set -e
-rm -f /etc/sudoers.d/00-live
-{{ include "hook_install_logic" . | indent 6 }}
-{{ end }}

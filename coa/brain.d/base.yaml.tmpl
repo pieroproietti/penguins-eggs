@@ -166,4 +166,4 @@ install:
     module: "shell"
     params: 
       command: |
-{{ include "core_finalize" . | indent 8 }}
+{{ include "hook_install_logic" . | indent 8 }}

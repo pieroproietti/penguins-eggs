@@ -133,6 +133,9 @@ INITRD_PATH="/home/eggs/liveroot/boot/initramfs-oa-tools"
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
 {{ define "hook_install_logic" }}
+#!/bin/bash
+set -e
+rm -f /etc/sudoers.d/00-live
 # 1. Rigeneriamo l'initramfs pulito per il sistema installato sul disco
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
