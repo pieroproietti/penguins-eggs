@@ -46,8 +46,8 @@ static int fortified_bind_mount(const char *src, const char *tgt, unsigned long 
  * main
  */
 int oa_mount(OA_Context *ctx) {
-    cJSON *path_item = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
-    if (!path_item) path_item = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
+    cJSON *path_item = cJSON_GetObjectItemCaseSensitive(ctx->task, "LiveRoot");
+    if (!path_item) path_item = cJSON_GetObjectItemCaseSensitive(ctx->root, "LiveRoot");
     cJSON *mode_item = cJSON_GetObjectItemCaseSensitive(ctx->task, "mode");
     if (!mode_item) mode_item = cJSON_GetObjectItemCaseSensitive(ctx->root, "mode");
 

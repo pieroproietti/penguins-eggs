@@ -20,7 +20,6 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "oa-mount-logic"
     description: "Chroot environment and mount point preparation"
-    action: "oa_mount_logic"
     module: "oa_mount_logic"
 
 # ----------------------------------------------------------------------------
@@ -39,6 +38,7 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "Indentity"
     description: "Live user injection and password sanitization"
+    module: "users"
     action: "oa_users"
 
 # ----------------------------------------------------------------------------
@@ -49,11 +49,12 @@ remaster:
 # ----------------------------------------------------------------------------
 # 5. LIVE INITRAMFS
 # ----------------------------------------------------------------------------
-  - name: "coa-initrd"
+  - name: "initramfs"
     description: "Live environment-specific Initramfs generation"
     action: "oa_ell"
     module: "shell"
     chroot: true
+    live_root: "INJECTED_BY_PLANNER"
     params:
       command: |
 {{ include "hook_initramfs_cmd" . | indent 8 }}
@@ -81,6 +82,7 @@ remaster:
   - name: autologin-gui
     description: "Creazione di autologin per utente live"
     action: "oa_ell"
+    module: "autologin-gui"
     params:
       user: "live"
       is_gui: true
@@ -139,8 +141,8 @@ remaster:
     action: "oa_ell"
     module: "xorriso"
     params:
-      output_file: "INJECTED_BY_ENGINE"
-      source_dir: "INJECTED_BY_ENGINE"
+      output_file: "INJECTED_BY_PLANNER"
+      source_dir: "INJECTED_BY_PLANNER"
       isolinux_bin: "isolinux/isolinux.bin"
       isolinux_cat: "isolinux/boot.cat"
       efi_img: "EFI/BOOT/efi.img"
@@ -149,10 +151,10 @@ remaster:
 # ----------------------------------------------------------------------------
 # 10. CLEANUP
 # ----------------------------------------------------------------------------
-  - name: "cleanup"
-    description: "Environment unmounting and cleanup"
-    action: "oa_umount"
-
+#  - name: "cleanup"
+#    description: "unmount on the plan"
+#    module: "umount"
+#    work_dir: "INJECTED_BY_PLANNER"
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS
@@ -164,4 +166,4 @@ install:
     module: "shell"
     params: 
       command: |
-{{ include "core_finalize" . | indent 8 }}
+{{ include "hook_install_logic" . | indent 8 }}

@@ -10,24 +10,7 @@
   action: "oa_ell"
   module: "shell"
   params:
-    command: |
-      # 1. Creazione struttura directory
-      mkdir -p /home/eggs/isodir/live /home/eggs/isodir/isolinux /home/eggs/isodir/boot/grub /home/eggs/isodir/EFI/BOOT
-
-      # 2. Copia binari e moduli BIOS/Legacy (ISOLINUX/SYSLINUX)
-      cp -f /tmp/coa/bootloaders/ISOLINUX/isolinux.bin /home/eggs/isodir/isolinux/
-      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/boot.cat /home/eggs/isodir/isolinux/
-      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/chain.c32 /home/eggs/isodir/isolinux/
-      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/isohdpfx.bin /home/eggs/isodir/isolinux/
-      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/ldlinux.c32 /home/eggs/isodir/isolinux/
-      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/libcom32.c32 /home/eggs/isodir/isolinux/
-      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/libutil.c32 /home/eggs/isodir/isolinux/
-      cp -f /tmp/coa/bootloaders/syslinux/modules/bios/vesamenu.c32 /home/eggs/isodir/isolinux/
-
-      # 3. Copia binario UEFI
-      if [ -f "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" ]; then
-          cp -f "/tmp/coa/bootloaders/grub/x86_64-efi/monolithic/grubx64.efi" /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI
-      fi
+    command: "/etc/oa-tools.d/scripts/prepare-bootloader.sh /home/eggs/isodir /tmp/coa/bootloaders"
 
 # --- 2.2. GENERAZIONE EFI.IMG ---
 - name: "generate-efi.img"
@@ -46,6 +29,7 @@
 
 {{ end }}
 
+
 {{ define "ell_live_menus" }}
 # --- 3. PREPARAZIONE ASSETS: SPLASH E FONT ---
 - name: "copy-assets"
@@ -59,109 +43,20 @@
       [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ] && cp -f /etc/oa-tools.d/brain.d/assets/splash.png /home/eggs/isodir/isolinux/splash.png
 
       # 2. Gestione Font GRUB
-      # Priorità 1: Se esiste quello di sistema, usa quello.
-      # Priorità 2: Se non c'è quello di sistema, prova quello negli assets.
       if [ -f "/usr/share/grub/unicode.pf2" ]; then
           cp -f /usr/share/grub/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
       elif [ -f "/etc/oa-tools.d/brain.d/assets/unicode.pf2" ]; then
           cp -f /etc/oa-tools.d/brain.d/assets/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
       fi
 
-# 3.1. --- TEMPLATES: GENERAZIONE MENU ---
-- name: "create-grub-menu-main"
-  description: "Generazione dinamica GRUB.cfg principale"
+# 3.1. --- GENERAZIONE MENU DI BOOT (Heredoc Script) ---
+- name: "generate-boot-menus"
+  description: "Generazione dinamica GRUB, ISOLINUX e trampolino EFI"
   action: "oa_ell"
-  module: "template"
-  params:
-    dest: "/home/eggs/isodir/boot/grub/grub.cfg"
-    content: |
-      set timeout=5
-      set default=2
-
-      insmod efi_gop
-      insmod efi_uga
-      insmod all_video
-      insmod gfxterm
-      insmod png
-      insmod part_gpt
-      insmod part_msdos
-      insmod fat
-      insmod iso9660
-
-      search --no-floppy --set=root --label OA_LIVE
-
-      if loadfont /boot/grub/font.pf2; then
-          set gfxmode=auto
-          terminal_output gfxterm
-      fi
-
-      background_image /boot/grub/splash.png
-
-      # ==========================================
-      # COLORI MENU PRINCIPALE
-      # ==========================================
-      set menu_color_normal=white/black
-      set menu_color_highlight=white/blue
-
-      # ==========================================
-      # COLORI EDITOR E TERMINALE
-      # ==========================================
-      set color_normal=white/black
-      set color_highlight=white/blue
-
-      menuentry "--- oa-tools ---" {
-          true
-      }
-      menuentry "" {
-          true
-      }
-      menuentry "Start [[ osRelease "PRETTY_NAME" ]]" {
-          linux /live/vmlinuz {{ template "hook_boot_params" . }}
-          initrd /live/initrd.img
-      }
-      menuentry "Start [[ osRelease "PRETTY_NAME" ]] - RAM mode" {
-          linux /live/vmlinuz {{ template "hook_boot_params" . }} toram
-          initrd /live/initrd.img
-      }
-
-# 3.2 -- GENERAZIONE MENU ISOLINUX
-- name: "create-isolinux.cfg"
-  description: "Generazione isolinux.cfg"
-  action: "oa_ell"
-  module: "template"
-  params:
-    dest: "/home/eggs/isodir/isolinux/isolinux.cfg"
-    content: |
-      UI vesamenu.c32
-      TIMEOUT 50
-      DEFAULT live
-
-      MENU BACKGROUND splash.png
-      MENU TITLE oa-tools
-
-      LABEL live
-          MENU LABEL Start [[ osRelease "PRETTY_NAME" ]]
-          LINUX /live/vmlinuz
-          APPEND {{ template "hook_boot_params" . }}
-          INITRD /live/initrd.img
-
-      LABEL ram
-          MENU LABEL Start [[ osRelease "PRETTY_NAME" ]] - RAM mode
-          LINUX /live/vmlinuz
-          APPEND {{ template "hook_boot_params" . }} toram
-          INITRD /live/initrd.img
-
-# 3.3 -- GENERAZIONE TRAMPOLINE GRUB
-- name: "create-efi-grub-trampoline"
-  description: "Generazione Trampolino GRUB per EFI"
-  action: "oa_ell"
-  module: "template"
-  params:
-    dest: "/home/eggs/isodir/EFI/BOOT/grub.cfg"
-    content: |
-      search --set=root --file /live/filesystem.squashfs
-      set prefix=($root)/boot/grub
-      configfile $prefix/grub.cfg
+  module: "shell"
+  chroot: false
+  "params": 
+    "command": "/etc/oa-tools.d/scripts/generate-menus.sh \"/home/eggs/isodir\" \"boot=live components cow_spacesize=2G\""
 {{ end }}
 
 ## -- 4.1 sanitize host
@@ -213,45 +108,16 @@
       Terminal=false
       Categories=System;
 
-# 7.3. Trust Agent (Script Bash dinamico creato da YAML)
+# 7.3. Trust Agent (Copying the script to liveroot)
 - name: "trust-agent-script"
-  description: "Script per il trust dinamico del desktop launcher"
+  description: "Copia dello script per il trust dinamico del desktop launcher"
   action: "oa_ell"
-  module: "template"
-  chroot: true
+  module: "shell"
+  chroot: false 
   params:
-    dest: "/usr/local/bin/oa-trust-desktop"
-    permissions: 493 # Esadecimale 0755
-    content: |
-      #!/bin/bash
-      # Trova la cartella Desktop corretta (Scrivania, Desktop, Bureau...)
-      DESKTOP_DIR="$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")"
-      mkdir -p "$DESKTOP_DIR"
-      
-      LAUNCHER_SRC="/usr/share/applications/install-system.desktop"
-      LAUNCHER_DEST="$DESKTOP_DIR/install-system.desktop"
-      
-      if [ -f "$LAUNCHER_SRC" ]; then
-          cp "$LAUNCHER_SRC" "$LAUNCHER_DEST"
-          chmod +x "$LAUNCHER_DEST"
-      fi
-      
-      # Attesa del caricamento dell'ambiente grafico
-      for i in {1..15}; do
-          if pgrep -x xfdesktop >/dev/null || pgrep -x nautilus >/dev/null || pgrep -x nemo >/dev/null || pgrep -x caja >/dev/null || pgrep -f ding >/dev/null || pgrep -x plasmashell >/dev/null || pgrep -x pcmanfm >/dev/null || pgrep -x pcmanfm-qt >/dev/null; then
-              break
-          fi
-          sleep 1
-      done
-      sleep 2
-      
-      # Applica il trust
-      if ! pgrep -x plasmashell > /dev/null; then
-          if [ -f "$LAUNCHER_DEST" ]; then
-              gio set "$LAUNCHER_DEST" metadata::trusted yes 2>/dev/null
-              gio set "$LAUNCHER_DEST" metadata::xfce-exe-checksum "$(sha256sum "$LAUNCHER_DEST" | awk '{print $1}')" 2>/dev/null
-          fi
-      fi
+    command: |
+      cp /etc/oa-tools.d/scripts/oa-trust-desktop.sh /home/eggs/liveroot/usr/local/bin/oa-trust-desktop
+      chmod 755 /home/eggs/liveroot/usr/local/bin/oa-trust-desktop
 
 # 7.4. Trust Agent Autostart
 - name: "trust-agent-autostart"
@@ -270,4 +136,3 @@
       Hidden=false
       NoDisplay=true
 {{ end }}
-

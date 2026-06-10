@@ -1,162 +1,160 @@
-#include "oa.h"
-#include <sys/mount.h> 
+// src/main.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "cJSON.h"
+#include "logger.h"
 
-// Prototipi
-int oa_mkdir(OA_Context *ctx);
-int oa_bind(OA_Context *ctx);
-int oa_cp(OA_Context *ctx);
-int oa_mount_generic(OA_Context *ctx);
-int oa_umount(OA_Context *ctx);
-int oa_shell(OA_Context *ctx);
-int oa_users(OA_Context *ctx);
+extern int dispatch_task(cJSON *task);
 
-char *read_file(const char *filename) {
-    FILE *f = fopen(filename, "rb");
-    if (!f) {
-        LOG_ERR("IO_ERROR: Impossibile aprire il piano di volo '%s' (errno: %d - %s)", 
-                filename, errno, strerror(errno));
-        return NULL;
-    }
+// Lettura da STDIN
+char* read_stdin() {
+    size_t capacity = 4096;
+    size_t size = 0;
+    char *buffer = malloc(capacity);
+    if (!buffer) return NULL;
 
-    fseek(f, 0, SEEK_END);
-    long len = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    char *data = malloc(len + 1);
-    if (data) {
-        fread(data, 1, len, f);
-        data[len] = '\0';
-    } else {
-        LOG_ERR("MEM_ERROR: Impossibile allocare %ld bytes per il file '%s'", len, filename);
-    }
-    
-    fclose(f);
-    return data;
-}
-
-int execute_verb(cJSON *root, cJSON *task) {
-    if (!task) return 1;
-
-    cJSON *action_item = cJSON_GetObjectItemCaseSensitive(task, "action");
-    if (!cJSON_IsString(action_item)) {
-        char *dump = cJSON_PrintUnformatted(task);
-        LOG_ERR("CRASH PARSER: Il task non ha la chiave 'action'! Dump JSON: %s", dump);
-        free(dump);
-        return 1;
-    }
-
-    const char *action_name = action_item->valuestring;
-    OA_Context ctx = { .root = root, .task = task };
-
-    cJSON *description = cJSON_GetObjectItemCaseSensitive(task, "description");
-    if (cJSON_IsString(description)) {
-        printf("[coa] %s\n", description->valuestring);
-        if (oa_log_file) {
-            fprintf(oa_log_file, "[coa] %s\n", description->valuestring);
-            fflush(oa_log_file);
-        }
-    }
-
-    // LOG_INFO(">>> Invocazione modulo interno: %s", action_name);
-
-    int res = 1;
-    if (strcmp(action_name, "oa_umount") == 0) {
-        res = oa_umount(&ctx);
-    } else if (strcmp(action_name, "oa_shell") == 0) {
-        res = oa_shell(&ctx);
-    } else if (strcmp(action_name, "oa_ell") == 0) {
-        res = oa_ell(&ctx); // coa l'oa!
-    } else if (strcmp(action_name, "shell") == 0) {
-        // Gestione unificata dell'azione ignorata
-        LOG_INFO("Azione 'shell' ignorata dal core C (competenza di Go).");
-        res = 0; 
-    } else if (strcmp(action_name, "oa_users") == 0) {
-        res = oa_users(&ctx);
-    } else if (strcmp(action_name, "oa_mkdir") == 0) {
-        res = oa_mkdir(&ctx);
-    } else if (strcmp(action_name, "oa_bind") == 0) {
-        res = oa_bind(&ctx);
-    } else if (strcmp(action_name, "oa_cp") == 0) {
-        res = oa_cp(&ctx);
-    } else if (strcmp(action_name, "oa_mount_generic") == 0) {
-        res = oa_mount_generic(&ctx);
-    } else {
-        LOG_ERR("Comando sconosciuto: %s", action_name);
-        res = 1;
-    }
-
-    if (res != 0) {
-        LOG_ERR("CRASH INTERNO: Il modulo C '%s' ha restituito errore %d!", action_name, res);
-    }
-    
-    return res;
-}
-
-void print_help(const char *prog_name) {
-    printf("oa engine v%s - Il motore operativo di coa\n\n", OA_VERSION);
-    printf("USO:\n");
-    printf("  %s <percorso_piano.json>  Esegue il piano di volo specificato\n", prog_name);
-    printf("  %s cleanup                Forza lo smontaggio di emergenza\n", prog_name);
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        print_help(argv[0]);
-        return 1;
-    }
-
-    if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
-        print_help(argv[0]);
-        return 0;
-    }
-
-    oa_init_log("/var/log/oa-tools.log");
-    
-    if (strcmp(argv[1], "cleanup") == 0) {
-        LOG_INFO("Comando diretto ricevuto: Esecuzione cleanup...");
-        umount2("/home/eggs/liveroot/dev/pts", MNT_DETACH);
-        umount2("/home/eggs/liveroot/dev", MNT_DETACH);
-        umount2("/home/eggs/liveroot/proc", MNT_DETACH);
-        umount2("/home/eggs/liveroot/sys", MNT_DETACH);
-        umount2("/home/eggs/liveroot/run", MNT_DETACH);
-        umount2("/home/eggs/liveroot", MNT_DETACH);
-        LOG_INFO("Smontaggio di emergenza completato.");
-        oa_close_log();
-        return 0;
-    }
-
-    char *json_data = read_file(argv[1]);
-    if (!json_data) {
-        oa_close_log();
-        return 1; 
-    }
-
-    cJSON *json = cJSON_Parse(json_data);
-    if (!json) {
-        LOG_ERR("JSON_ERROR: Parsing fallito per '%s'.", argv[1]);
-        free(json_data);
-        oa_close_log();
-        return 1;
-    }
-
-    cJSON *plan = cJSON_GetObjectItemCaseSensitive(json, "plan");
-    int status = 0;
-
-    if (cJSON_IsArray(plan)) {
-        cJSON *task;
-        cJSON_ArrayForEach(task, plan) {
-            if ((status = execute_verb(json, task)) != 0) {
-                LOG_ERR("Esecuzione interrotta. Task fallito.");
-                break;
+    int c;
+    while ((c = fgetc(stdin)) != EOF) {
+        if (size + 1 >= capacity) {
+            capacity *= 2;
+            char *new_buffer = realloc(buffer, capacity);
+            if (!new_buffer) {
+                free(buffer);
+                return NULL;
             }
+            buffer = new_buffer;
+        }
+        buffer[size++] = c;
+    }
+    buffer[size] = '\0';
+    return buffer;
+}
+
+// Lettura da FILE
+char* read_file(const char *filename) {
+    FILE *f = fopen(filename, "rb");
+    if (!f) return NULL;
+    
+    fseek(f, 0, SEEK_END);
+    long length = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    
+    char *buffer = malloc(length + 1);
+    if (buffer) {
+        size_t read_bytes = fread(buffer, 1, length, f);
+        buffer[read_bytes] = '\0';
+    }
+    fclose(f);
+    return buffer;
+}
+
+int main(int argc, char **argv) {
+    char *json_data = NULL;
+
+    // Controllo argomenti CLI
+    if (argc > 1) {
+        if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
+            printf("oa-ng (Next Generation Orchestrator) v1.0\n");
+            return EXIT_SUCCESS;
+        }
+        
+        if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
+            printf("Uso:\n");
+            printf("  oa <plan.json>          Esegue i task da file\n");
+            printf("  cat plan.json | oa      Esegue i task da STDIN\n");
+            printf("  oa cleanup [percorso]   Esegue uno smontaggio d'emergenza\n");
+            return EXIT_SUCCESS;
+        }
+
+        // --- LA TUA MANIGLIA DI EMERGENZA ---
+        if (strcmp(argv[1], "cleanup") == 0) {
+            const char *target_dir = (argc > 2) ? argv[2] : "/home/eggs";
+            printf("🚨 [oa-main] Modalità EMERGENZA: Avvio smontaggio su %s\n", target_dir);
+
+            cJSON *task = cJSON_CreateObject();
+            cJSON_AddStringToObject(task, "module", "umount");
+            cJSON_AddStringToObject(task, "work_dir", target_dir); 
+            cJSON_AddObjectToObject(task, "params"); 
+
+            int res = dispatch_task(task);
+            cJSON_Delete(task);
+
+            return (res == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+        }
+        
+        // Se l'argomento non è un comando speciale, proviamo a leggerlo come file JSON
+        json_data = read_file(argv[1]);
+        if (!json_data) {
+            fprintf(stderr, "❌ [oa-main] Impossibile aprire il file JSON o comando sconosciuto: %s\n", argv[1]);
+            return EXIT_FAILURE;
         }
     } else {
-        status = execute_verb(json, json);
+        // Nessun argomento: leggiamo dallo Standard Input
+        json_data = read_stdin();
     }
 
-    cJSON_Delete(json);
+    if (!json_data || strlen(json_data) == 0) {
+        fprintf(stderr, "❌ [oa-main] Nessun piano JSON ricevuto in input.\n");
+        if (json_data) free(json_data);
+        return EXIT_FAILURE;
+    }
+
+    // ==================================
+    // log solo se facciamo un plan
+    // ==================================
+    oa_init_log("/var/log/oa-tools.log");
+
+    cJSON *root = cJSON_Parse(json_data);
+    if (!root) {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        LOG_ERR("❌ [oa-main] Errore di parsing JSON: %s", error_ptr ? error_ptr : "sconosciuto");
+        free(json_data);
+        oa_close_log(); 
+        return EXIT_FAILURE;
+    }
+
+    cJSON *plan_array = cJSON_GetObjectItemCaseSensitive(root, "plan");
+    if (!cJSON_IsArray(plan_array)) {
+        LOG_ERR("❌ [oa-main] Formato JSON non valido: array 'plan' mancante.");
+        cJSON_Delete(root);
+        free(json_data);
+        oa_close_log(); 
+        return EXIT_FAILURE;
+    }
+
+    int total_tasks = cJSON_GetArraySize(plan_array);
+    LOG_INFO("🚀 [oa-main] Ricevuto piano con %d task. Avvio esecuzione...", total_tasks);
+
+    int success_count = 0;
+    int error_count = 0;
+
+    cJSON *task = NULL;
+    cJSON_ArrayForEach(task, plan_array) {
+        cJSON *name_item = cJSON_GetObjectItemCaseSensitive(task, "name");
+        const char *task_name = cJSON_IsString(name_item) ? name_item->valuestring : "Sconosciuto";
+
+        LOG_INFO("========================================");
+        LOG_INFO("▶ Esecuzione Task: %s", task_name);
+        LOG_INFO("========================================");
+
+        if (dispatch_task(task) == 0) {
+            success_count++;
+        } else {
+            // CORRETTO: rimosso stderr e \n
+            LOG_ERR("⚠️  [oa-main] Il task '%s' ha fallito.", task_name);
+            error_count++;
+        }
+    }
+
+    cJSON_Delete(root);
     free(json_data);
-    LOG_INFO("Esecuzione completata con status: %d", status);
-    oa_close_log();
-    return status;
+
+    LOG_INFO("🏁 [oa-main] Esecuzione completata. Successi: %d, Errori: %d", success_count, error_count);
+    
+    // ==================================
+    // chiusura log 
+    // ==================================
+    oa_close_log();    
+    return (error_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

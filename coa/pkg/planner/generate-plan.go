@@ -1,4 +1,4 @@
-package engine
+package planner
 
 import (
 	"encoding/json"
@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"coa/pkg/pilot"
+	"coa/pkg/parser"
 	"coa/pkg/utils"
 )
 
 // GeneratePlan converte lo YAML in JSON.
 func GeneratePlan(
-	profile *pilot.Profile,
+	profile *parser.Profile,
 	familyID string,
 	isGitHubAction bool,
 	isRemaster bool,
@@ -32,7 +32,7 @@ func GeneratePlan(
 	// Ora iteriamo su profile.Remaster
 	for _, step := range profile.Remaster {
 
-		if hitBreakpoint && step.Name != "coa-cleanup" {
+		if hitBreakpoint && step.Name != "cleanup" {
 			continue
 		}
 
@@ -48,54 +48,27 @@ func GeneratePlan(
 			currentDescription = strings.ReplaceAll(currentDescription, "${ISO_NAME}", filepath.Base(finalIsoPath))
 		}
 
-		switch step.Action {
+		switch step.Module {
 		case "oa_mount_logic":
-			plan.Plan = append(plan.Plan, expandMountLogic(workPath, isGitHubAction)...)
+			plan.Plan = append(plan.Plan, mountLogic(workPath, isGitHubAction)...)
 
-		case "oa_users":
+		case "users":
 			plan.Plan = append(plan.Plan, oaUsers(plan.Settings, step, workPath)...)
 
-		case "oa_umount":
+		case "umount":
 			plan.Plan = append(plan.Plan, OATask{
-				Step: pilot.Step{
-					Action:      "oa_umount",
-					Description: "Pulizia finale dei mount",
+				Step: parser.Step{
+					Name:        "cleanup",
+					Description: "cleanup build",
+					Module:      "umount",
 				},
-				PathLiveFs: getActualLiveFs(workPath),
+				WorkDir: 	  workPath,
 			})
 
 		case "oa-ell":
 			task := OATask{
 				Step:       step,
-				PathLiveFs: getActualLiveFs(workPath),
-			}
-			task.Description = currentDescription
-			task.RunCommand = currentRunCommand
-
-			// 1. Controlliamo se ci sono effettivamente dei parametri passati dal profile
-			if len(step.Params) > 0 {
-
-				// 2. Estraiamo un parametro specifico in modo sicuro
-				// L'idioma "comma ok" ci protegge dai crash se la chiave non esiste
-				if val, exists := step.Params["script_path"]; exists {
-
-					// 3. Facciamo il casting (type assertion) al tipo che ci aspettiamo
-					if scriptPath, isString := val.(string); isString {
-						// Ora sappiamo per certo che scriptPath è una stringa valida
-						// Possiamo iniettarlo nel comando o manipolare il task
-						task.RunCommand = fmt.Sprintf("%s %s", currentRunCommand, scriptPath)
-						utils.LogNormal("\n[ENGINE] Parametro 'script_path' iniettato in oa-ell: %s", scriptPath)
-					} else {
-						utils.LogWarning("\n[ENGINE] Il parametro 'script_path' non è una stringa valida!")
-					}
-				}
-
-				// Puoi fare lo stesso per parametri booleani, interi, ecc.
-				if val, exists := step.Params["force_execution"]; exists {
-					if force, isBool := val.(bool); isBool && force {
-						utils.LogNormal("\n[ENGINE] Esecuzione forzata abilitata per oa-ell")
-					}
-				}
+				LiveRoot: getActualLiveFs(workPath),
 			}
 
 			// Infine, accodiamo il task "arricchito" al piano
@@ -104,7 +77,7 @@ func GeneratePlan(
 		default:
 			task := OATask{
 				Step:       step,
-				PathLiveFs: getActualLiveFs(workPath),
+				LiveRoot: getActualLiveFs(workPath),
 			}
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
@@ -120,23 +93,24 @@ func GeneratePlan(
 				sourceDir := task.Params["source_dir"].(string)
 
 				// Creazione script .disk (usiamo i valori appena iniettati)
-				dotDiskScript := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
-				// 1. Accodiamo lo script per creare la cartella .disk AL PIANO
+				scriptContent := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
 				plan.Plan = append(plan.Plan, OATask{
-					Step: pilot.Step{
-						Action:      "oa_shell",
+					Step: parser.Step{  // <--- I campi vanno dentro 'Step'!
 						Name:        "coa-dot-disk",
 						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
-						RunCommand:  dotDiskScript,
+						Module:      "shell",
+						Params: map[string]interface{}{
+							"command": scriptContent,
+						},
 					},
-					PathLiveFs: getActualLiveFs(workPath),
 				})
-
 				utils.LogNormal("\n[ENGINE] Iniezione metadati .disk completata per live-boot.")
 			}
 
 			// 2. Accodiamo FINALMENTE l'azione originale (squashfs, xorriso o altro)
 			plan.Plan = append(plan.Plan, task)
+
+
 		}
 
 		if stopAfter != "" && step.Name == stopAfter {
@@ -144,6 +118,24 @@ func GeneratePlan(
 			hitBreakpoint = true
 		}
 	}
+
+	for i, task := range plan.Plan {
+		// Se il YAML aveva previsto una WorkDir (qualsiasi essa sia), la sovrascriviamo d'autorità
+		if task.WorkDir != "" {
+			plan.Plan[i].WorkDir  = workPath
+		}
+		
+		// Se il YAML aveva previsto una LiveRoot, la sovrascriviamo con il percorso esatto
+		if task.LiveRoot != "" {
+			plan.Plan[i].LiveRoot = fmt.Sprintf("%s/liveroot", workPath)
+		}
+
+		// (Opzionale) Manteniamo la sicurezza sul chroot
+		if task.Chroot && task.LiveRoot == "" {
+			plan.Plan[i].LiveRoot = fmt.Sprintf("%s/liveroot", workPath)
+		}
+	}
+
 
 	// =========================================================================
 	// INTERCETTAZIONE DEBUG JSON

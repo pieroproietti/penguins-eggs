@@ -23,9 +23,9 @@ int oa_shell(OA_Context *ctx) {
 
     // ---> IL FIX È QUI <---
     // Cerca prima nel task, poi fai fallback sulla root globale
-    cJSON *path_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
+    cJSON *path_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "LiveRoot");
     if (!path_obj) {
-        path_obj = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
+        path_obj = cJSON_GetObjectItemCaseSensitive(ctx->root, "LiveRoot");
     }
 
     if (!cJSON_IsString(cmd_obj)) {
@@ -41,7 +41,7 @@ int oa_shell(OA_Context *ctx) {
 
     if (use_chroot) {
         if (!cJSON_IsString(path_obj)) {
-            LOG_ERR("oa_shell: pathLiveFs richiesto per il chroot.");
+            LOG_ERR("oa_shell: LiveRoot richiesto per il chroot.");
             return 1;
         }
 

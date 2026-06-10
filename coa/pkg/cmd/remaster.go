@@ -1,14 +1,13 @@
 package cmd
 
 import (
-	// <--- Aggiunto per intercettare pilot.ErrDebugMode
 	"os"
 	"os/exec"
 	"path/filepath"
 
 	"coa/pkg/distro"
-	"coa/pkg/engine"
-	"coa/pkg/pilot"
+	"coa/pkg/parser"
+	"coa/pkg/planner"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -26,7 +25,7 @@ var remasterCmd = &cobra.Command{
 	Short: "Start a system remastering flight (ISO production)",
 	Long: `The 'remaster' command orchestrates the creation of a bootable live ISO. 
 It uses the new Coala architecture to read the agnostic Brain profile 
-and generate a precise execution plan for the OA engine.`,
+and generate a precise execution plan for the OA planner.`,
 	Example: `  # Start a standard ISO remastering
   sudo ./coa remaster --mode standard
   
@@ -53,27 +52,12 @@ and generate a precise execution plan for the OA engine.`,
 		finalIsoPath := filepath.Join(producePath, isoName)
 		utils.LogNormal("L'uovo verrà generato in: %s", finalIsoPath)
 
-		// 2. PILOT: Carichiamo lo spartito dal Brain
-		profile, err := pilot.DetectAndLoad(isGitHubAction)
+		// 2. PARSER: Carichiamo lo spartito dal Brain
+		profile, err := parser.DetectAndLoad(isGitHubAction)
 		if err != nil {
 			utils.Fatal("Impossibile caricare il Brain Profile: %v", err)
 		}
 		utils.LogSuccess("Spartito caricato con successo.")
-
-		// 3. ENGINE: Generiamo il piano JSON per oa
-		planPath, err := engine.GeneratePlan(
-			profile, // <-- L'intero oggetto che contiene Settings e Remaster
-			myDistro.FamilyID,
-			isGitHubAction,
-			true,
-			producePath,
-			finalIsoPath,
-			stopAfter,
-			debugPlan, // <--- Passiamo il flag anche all'engine
-		)
-		if err != nil {
-			utils.Fatal("Impossibile generare il piano di volo: %v", err)
-		}
 
 		// RECUPERO BOOTLOADERS
 		utils.LogNormal("Recupero bootloaders (penguins-bootloaders)...")
@@ -81,7 +65,22 @@ and generate a precise execution plan for the OA engine.`,
 
 		// GENERAZIONE EXCLUSIONI
 		utils.LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
-		engine.GenerateExcludeList(produceMode, isGitHubAction)
+		planner.GenerateExcludeList(produceMode, isGitHubAction)
+
+		// 3. planner: Generiamo il piano JSON per oa
+		planPath, err := planner.GeneratePlan(
+			profile, // <-- L'intero oggetto che contiene Settings e Remaster
+			myDistro.FamilyID,
+			isGitHubAction,
+			true,
+			producePath,
+			finalIsoPath,
+			stopAfter,
+			debugPlan, // <--- Passiamo il flag anche all'planner
+		)
+		if err != nil {
+			utils.Fatal("Impossibile generare il piano di volo: %v", err)
+		}
 
 		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il JSON appena generato
 		utils.LogNormal("Passaggio dei comandi al motore OA...")

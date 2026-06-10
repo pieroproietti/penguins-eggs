@@ -15,8 +15,8 @@
  */
 int oa_users(OA_Context *ctx) {
     // 1. Lookup dei percorsi e parametri
-    cJSON *pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->task, "pathLiveFs");
-    if (!pathLiveFs) pathLiveFs = cJSON_GetObjectItemCaseSensitive(ctx->root, "pathLiveFs");
+    cJSON *LiveRoot = cJSON_GetObjectItemCaseSensitive(ctx->task, "LiveRoot");
+    if (!LiveRoot) LiveRoot = cJSON_GetObjectItemCaseSensitive(ctx->root, "LiveRoot");
     
     
     cJSON *users = cJSON_GetObjectItemCaseSensitive(ctx->task, "users");
@@ -25,21 +25,21 @@ int oa_users(OA_Context *ctx) {
     cJSON *mode_item = cJSON_GetObjectItemCaseSensitive(ctx->task, "mode");
     const char *mode = cJSON_IsString(mode_item) ? mode_item->valuestring : "standard";
 
-    if (!cJSON_IsString(pathLiveFs)) {
-        LOG_ERR("oa_users: pathLiveFs mancante o non valido nel JSON");
+    if (!cJSON_IsString(LiveRoot)) {
+        LOG_ERR("oa_users: LiveRoot mancante o non valido nel JSON");
         return 1;
     }
 
     char liveroot[PATH_SAFE], p_path[PATH_SAFE], s_path[PATH_SAFE], g_path[PATH_SAFE];
     // Invece di forzare la concatenazione, controlliamo prima
-    if (strstr(pathLiveFs->valuestring, "/liveroot") != NULL) {
+    if (strstr(LiveRoot->valuestring, "/liveroot") != NULL) {
         // Il path ha già "/liveroot", usiamolo così com'è
-        snprintf(liveroot, sizeof(liveroot), "%s", pathLiveFs->valuestring);
+        snprintf(liveroot, sizeof(liveroot), "%s", LiveRoot->valuestring);
     } else {
         // Il path NON ha "/liveroot", aggiungiamolo noi
-        snprintf(liveroot, sizeof(liveroot), "%s/liveroot", pathLiveFs->valuestring);
+        snprintf(liveroot, sizeof(liveroot), "%s/liveroot", LiveRoot->valuestring);
     }    
-    //snprintf(liveroot, sizeof(liveroot), "%s/liveroot", pathLiveFs->valuestring);
+    //snprintf(liveroot, sizeof(liveroot), "%s/liveroot", LiveRoot->valuestring);
     snprintf(p_path, sizeof(p_path), "%s/etc/passwd", liveroot);
     snprintf(s_path, sizeof(s_path), "%s/etc/shadow", liveroot);
     snprintf(g_path, sizeof(g_path), "%s/etc/group", liveroot);

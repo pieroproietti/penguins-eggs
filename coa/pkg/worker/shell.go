@@ -12,7 +12,7 @@ func RunShell(payload []byte) error {
 	// 1. Definiamo la struttura che mappa il JSON inviato dal C
 	var config struct {
 		Chroot             bool   `json:"chroot"`
-		ResolvedTargetRoot string `json:"resolved_target_root"`
+		LiveRoot string `json:"live_root,omitempty"`
 		Params             struct {
 			Command string `json:"command"`
 		} `json:"params"`
@@ -32,13 +32,13 @@ func RunShell(payload []byte) error {
 
 	// 2. Logica di creazione del file temporaneo (Host vs Chroot)
 	if config.Chroot {
-		if config.ResolvedTargetRoot == "" {
-			return fmt.Errorf("chroot richiesto ma resolved_target_root mancante")
+		if config.LiveRoot == "" {
+			return fmt.Errorf("chroot richiesto ma live_root mancante")
 		}
 
 		// Se siamo in chroot, il file DEVE esistere fisicamente all'interno del chroot
 		// Usiamo la cartella /tmp del liveroot
-		chrootTmpDir := filepath.Join(config.ResolvedTargetRoot, "tmp")
+		chrootTmpDir := filepath.Join(config.LiveRoot, "tmp")
 		os.MkdirAll(chrootTmpDir, 1777) // Assicuriamoci che /tmp esista nel chroot
 
 		tmpFile, err := os.CreateTemp(chrootTmpDir, "oa-shell-*.sh")
@@ -73,9 +73,9 @@ func RunShell(payload []byte) error {
 	// 4. Esecuzione del comando
 	var cmd *exec.Cmd
 	if config.Chroot {
-		fmt.Printf("📦 Esecuzione script in chroot (%s)...\n", config.ResolvedTargetRoot)
+		fmt.Printf("📦 Esecuzione script in chroot (%s)...\n", config.LiveRoot)
 		// Eseguiamo chroot passando il percorso "interno" dello script
-		cmd = exec.Command("chroot", config.ResolvedTargetRoot, "/bin/bash", execPath)
+		cmd = exec.Command("chroot", config.LiveRoot, execPath)
 	} else {
 		fmt.Println("💻 Esecuzione script shell locale...")
 		cmd = exec.Command("bash", execPath)

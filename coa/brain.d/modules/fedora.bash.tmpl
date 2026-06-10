@@ -36,6 +36,9 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squash
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
 {{ define "hook_install_logic" }}
+#!/bin/bash
+set -e
+rm -f /etc/sudoers.d/00-live
 sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
 if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then
       echo "GRUB_ENABLE_BLSCFG=false" >> /etc/default/grub

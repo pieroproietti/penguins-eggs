@@ -42,6 +42,6 @@ L'Engine agisce da template engine, sostituendo "al volo" variabili come `${ISO_
 *   **Il Breakpoint (`stopAfter`):** Se è attivo un breakpoint, l'Engine cicla fino al task richiesto, imposta `hitBreakpoint = true` e da quel momento *scarta* tutti i task successivi[cite: 29]. Tuttavia, fa un'eccezione vitale: inserisce sempre e comunque il task `coa-cleanup` alla fine, per garantire che l'host non rimanga impiccato da mountpoint orfani[cite: 29].
 
 ### C. La Magia dell'Embedding (Il package `types`)
-Nel file `types.go`, l'Engine definisce la `OATask`[cite: 30]. Invece di riscrivere tutti i campi, usa l'embedding di Go (`pilot.Step json:",inline"`). Questo significa che il task "eredita" automaticamente l'azione, il comando e gli utenti dallo YAML originale[cite: 30], a cui l'Engine aggiunge solo i campi tecnici necessari al binario C (come `Type`, `Opts` e `PathLiveFs`)[cite: 30].
+Nel file `types.go`, l'Engine definisce la `OATask`[cite: 30]. Invece di riscrivere tutti i campi, usa l'embedding di Go (`pilot.Step json:",inline"`). Questo significa che il task "eredita" automaticamente l'azione, il comando e gli utenti dallo YAML originale[cite: 30], a cui l'Engine aggiunge solo i campi tecnici necessari al binario C (come `Type`, `Opts` e `LiveRoot`)[cite: 30].
 
 Questa struttura JSON, una volta salvata tramite `savePlan()`, è il pacchetto perfetto che il binario C caricherà ed eseguirà alla lettera.

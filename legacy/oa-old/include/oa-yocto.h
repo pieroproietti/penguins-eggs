@@ -8,14 +8,6 @@
 #ifndef OA_YOCTO_H
 #define OA_YOCTO_H
 
-#ifndef PATH_SAFE
-#define PATH_SAFE 4096
-#endif
-
-#ifndef OE_UID_HUMAN_MIN
-#define OE_UID_HUMAN_MIN 1000
-#endif
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,10 +15,7 @@
 
 // --- Definizioni per gli utenti standard (OE-Core) ---
 #define OE_UID_HUMAN_MIN 1000
-#ifndef OE_UID_HUMAN_MAX
-#define OE_UID_HUMAN_MAX 59999
-#endif
-
+#define OE_UID_HUMAN_MAX 60000
 
 // --- Prototipi delle funzioni ---
 

@@ -1,4 +1,27 @@
 # Changelog - oa-tools
+
+## Release Notes: oa-tools v0.8.6 - "The Logic Tractor" 2026-06-10
+
+### Overview
+This release marks a fundamental shift in the development lifecycle of `oa-tools`. We have transitioned from a monolithic, script-based approach to a highly orchestrated, multi-layered architecture. By separating high-level planning from mechanical execution, we have transformed the build process into a robust, predictable pipeline.
+
+### The Architectural Shift
+In developing this version, we embraced a design philosophy rooted in the separation of concerns:
+
+* **The Declarative Layer (JSON/Plan):** We now define *what* the system should achieve through a declarative JSON-based plan. This is the "knowledge" of the build—a high-level map that remains agnostic of the underlying implementation details.
+* **The Orchestration Layer (Go):** This acts as the "Logic Tractor." It parses the high-level plan and translates it into specific, deterministic actions. By isolating the logic from the mechanics, we have eliminated the fragility of tightly coupled scripts, ensuring that the control flow remains consistent regardless of the environment.
+* **The Mechanical Layer (Bash/C):** This layer handles the "heavy lifting." By delegating the execution to focused, modular Bash scripts, we have replaced complex inline templating with clean, testable, and reliable procedures.
+
+### Key Technical Achievements
+* **Decoupled Orchestration:** Moving from hardcoded logic to a modular, plan-driven execution model has drastically reduced build failures and increased system observability.
+* **Universal Bootloader Logic:** We have standardized the bootloader installation process. By injecting a unified, self-contained installation script (`oa-bootloader.sh`) into the target chroot, we successfully resolved the long-standing cross-compatibility issues between BIOS/Legacy and UEFI systems.
+* **Atomic Cleanup:** Through the integration of the final cleanup phase directly into the deployment logic, we have ensured that no live artifacts persist in the installed environment. The system is now as clean as a fresh, official distribution install, with zero manual overhead.
+
+### Reflection
+Building this system has been an exercise in structural engineering. Just as modern intelligent systems rely on the separation of data, logic, and execution, `oa-tools` now follows these fundamental laws. The "Logic Tractor" no longer struggles with the "hoe"—the separation of the orchestrator from the machinery has granted us a level of scalability and stability that was previously unattainable.
+
+This release is not just a collection of bug fixes; it is the foundation for a professional-grade build infrastructure.
+
 ## Release v0.8.5: The Declarative Evolution 🚀 2026-06-06
 This release marks a fundamental architectural milestone for the framework. We have successfully transitioned from a heavily imperative Bash-scripted workflow to a clean, highly robust **declarative YAML orchestration** model. 
 
@@ -340,7 +363,7 @@ Ho sistemato il Changelog includendo tutti i punti chiave discussi. Buona semina
 ## [0.2.0] - 2026-04-01
 
 ### Added
-- **Anti-Recursion Shield (Inception Fix)**: Implemented a global `tmpfs` mask in `action_prepare.c` to hide the working directory (`pathLiveFs`) from `mksquashfs` and `nftw`. This definitively prevents infinite filesystem loops when the workspace is located inside a bind-mounted host directory (like `/home`).
+- **Anti-Recursion Shield (Inception Fix)**: Implemented a global `tmpfs` mask in `action_prepare.c` to hide the working directory (`LiveRoot`) from `mksquashfs` and `nftw`. This definitively prevents infinite filesystem loops when the workspace is located inside a bind-mounted host directory (like `/home`).
 - **Native Group Injection**: Added the `yocto_add_user_to_groups` helper in `oa-yocto.c` to natively append the live user to secondary groups (e.g., `sudo`, `cdrom`) directly into `/etc/group`, completely bypassing host binaries.
 - **Skeleton Population**: `action_users` now correctly populates the live user's home directory by copying hidden configuration files from `/etc/skel` and applying recursive ownership.
 
