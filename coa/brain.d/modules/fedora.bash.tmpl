@@ -8,6 +8,9 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
+#!/bin/bash
+set -e
+# fedora: distro_initramfs_cmd
 dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-fedora.img
 {{ end }}
 
@@ -15,6 +18,9 @@ dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-fedora.
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}
+#!/bin/bash
+set -e
+# fedora: distro_hook_squashfs
 mkdir -p /home/eggs/isodir/LiveOS
 timeout=10
 while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
@@ -30,6 +36,7 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squash
 {{ define "distro_hook_install_logic" }}
 #!/bin/bash
 set -e
+# fedora: distro_hook_install_logic
 rm -f /etc/sudoers.d/00-live
 sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
 if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then

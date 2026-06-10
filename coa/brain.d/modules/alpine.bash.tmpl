@@ -12,6 +12,9 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
+#!/bin/bash
+set -e
+# alpine: distro_initramfs_cmd
 INIT_FILE="/usr/share/mkinitfs/initramfs-init"
 
 # 1. Creazione fisica della patch (con Modprobe forzati e Mount Move)
@@ -126,6 +129,7 @@ mkinitfs -c /etc/mkinitfs/live.conf -o /boot/initramfs-oa-tools $KVER
 {{ define "distro_hook_install_logic" }}
 #!/bin/bash
 set -e
+# alpine: distro_hook_install_logic
 rm -f /etc/sudoers.d/00-live
 # 1. Rigeneriamo l'initramfs pulito per il sistema installato sul disco
 KVER=$(ls -1 /lib/modules/ | head -n 1)

@@ -233,6 +233,7 @@ remaster:
     module: "shell"
     chroot: false
     params:
+      command: |
 {{ include "distro_hook_squashfs" . | indent 8 }}
 
 # ----------------------------------------------------------------------------

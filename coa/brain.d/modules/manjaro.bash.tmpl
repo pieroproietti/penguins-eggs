@@ -12,6 +12,9 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
+#!/bin/bash
+set -e
+# manjaro: distro_initramfs_cmd
 mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
 cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
@@ -26,6 +29,9 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}
+#!/bin/bash
+set -e
+# manjaro: distro_hook_squashfs
 mkdir -p /home/eggs/isodir/manjaro/x86_64
 timeout=10
 while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
@@ -41,6 +47,7 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_6
 {{ define "distro_hook_install_logic" }}
 #!/bin/bash
 set -e
+# manjaro: distro_hook_install_logic
 rm -f /etc/sudoers.d/00-live
 mkinitcpio -P
 if [ -d /sys/firmware/efi ]; then

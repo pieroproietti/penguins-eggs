@@ -12,6 +12,9 @@
 # 5. INITRAMFS LIVE (Cambia il nome dell'immagine finale)
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
+#!/bin/bash
+set -e
+# opensuse: distro_initramfs_cmd
 dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensuse.img
 {{ end }}
 
@@ -19,6 +22,9 @@ dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensus
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS (Struttura LiveOS dracut identica)
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}
+#!/bin/bash
+set -e
+# opensuse: distro_hook_squashfs
 mkdir -p /home/eggs/isodir/LiveOS
 ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
 {{ end }}
@@ -29,6 +35,7 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squash
 {{ define "distro_hook_install_logic" }}
 #!/bin/bash
 set -e
+# opensuse: distro_hook_install_logic
 rm -f /etc/sudoers.d/00-live
 # SUSE non usa BLSCFG di default come Fedora, ma rigeneriamo dracut sul ferro
 dracut -f --regenerate-all

@@ -9,7 +9,6 @@
 {{ define "distro_admin_group" }}sudo{{ end }}
 {{ define "distro_boot_params" }}boot=live components cow_spacesize=2G{{ end }}
 
-
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
@@ -30,6 +29,7 @@ command: "echo 'Nessun hook squashfs necessario per la famiglia Debian.' || true
 # ==============================================================================
 {{ define "distro_hook_install_logic" }}
 #!/bin/bash
+# debian: distro_hook_install_logic
 set -e
 rm -f /etc/sudoers.d/00-live
 # Applichiamo il fix anche sul sistema installato prima di generare l'initramfs
