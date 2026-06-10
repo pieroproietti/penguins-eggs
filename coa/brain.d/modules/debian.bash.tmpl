@@ -47,10 +47,9 @@ INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "resc
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
-{{ define "hook_squashfs" }}
-# mkdir -p /home/eggs/isodir/casper
-# ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/casper/filesystem.squashfs
-{{ end }}
+{{ define "hook_squashfs" -}}
+command: "echo 'Nessun hook squashfs necessario per la famiglia Debian.' || true"
+{{ end -}}
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

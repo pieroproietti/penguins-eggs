@@ -15,7 +15,7 @@ func RunCopy(payload []byte) error {
 	// Questo elimina il bisogno di avere mega-struct globali in giro per il progetto
 	var config struct {
 		Chroot             bool   `json:"chroot"`
-		ResolvedTargetRoot string `json:"resolved_target_root"`
+		LiveRoot string `json:"live_root,omitempty"`
 		Params             struct {
 			Src           string      `json:"src"`
 			Dest          string      `json:"dest"`
@@ -40,11 +40,11 @@ func RunCopy(payload []byte) error {
 	// 3. Routing Intelligente del Percorso di Destinazione
 	var dest string
 	if config.Chroot {
-		if config.ResolvedTargetRoot == "" {
-			return fmt.Errorf("chroot richiesto ma resolved_target_root mancante")
+		if config.LiveRoot == "" {
+			return fmt.Errorf("chroot richiesto ma live_root mancante")
 		}
 		// Destinazione DENTRO il chroot
-		dest = filepath.Join(config.ResolvedTargetRoot, config.Params.Dest)
+		dest = filepath.Join(config.LiveRoot)
 	} else {
 		// Destinazione SULL'HOST (es. /home/eggs/isodir/...)
 		dest = config.Params.Dest

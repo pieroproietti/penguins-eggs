@@ -59,6 +59,14 @@ and generate a precise execution plan for the OA planner.`,
 		}
 		utils.LogSuccess("Spartito caricato con successo.")
 
+		// RECUPERO BOOTLOADERS
+		utils.LogNormal("Recupero bootloaders (penguins-bootloaders)...")
+		utils.EnsureBootloaders("/tmp/coa/bootloaders")
+
+		// GENERAZIONE EXCLUSIONI
+		utils.LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
+		planner.GenerateExcludeList(produceMode, isGitHubAction)
+
 		// 3. planner: Generiamo il piano JSON per oa
 		planPath, err := planner.GeneratePlan(
 			profile, // <-- L'intero oggetto che contiene Settings e Remaster
@@ -73,14 +81,6 @@ and generate a precise execution plan for the OA planner.`,
 		if err != nil {
 			utils.Fatal("Impossibile generare il piano di volo: %v", err)
 		}
-
-		// RECUPERO BOOTLOADERS
-		utils.LogNormal("Recupero bootloaders (penguins-bootloaders)...")
-		utils.EnsureBootloaders("/tmp/coa/bootloaders")
-
-		// GENERAZIONE EXCLUSIONI
-		utils.LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
-		planner.GenerateExcludeList(produceMode, isGitHubAction)
 
 		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il JSON appena generato
 		utils.LogNormal("Passaggio dei comandi al motore OA...")

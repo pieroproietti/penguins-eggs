@@ -15,7 +15,7 @@ func RunScript(payload []byte) error {
 	// 1. Definiamo la struttura locale
 	var config struct {
 		Chroot             bool   `json:"chroot"`
-		ResolvedTargetRoot string `json:"resolved_target_root"`
+		LiveRoot string `json:"live_root,omitempty"`
 		Params             struct {
 			Src  string   `json:"src"`  // Il percorso del file sull'host (es. "scripts/setup.sh")
 			Args []string `json:"args"` // Argomenti opzionali da passare allo script
@@ -43,12 +43,12 @@ func RunScript(payload []byte) error {
 
 	// 4. Logica di iniezione (Host vs Chroot)
 	if config.Chroot {
-		if config.ResolvedTargetRoot == "" {
-			return fmt.Errorf("chroot richiesto ma resolved_target_root mancante")
+		if config.LiveRoot == "" {
+			return fmt.Errorf("chroot richiesto ma live_root mancante")
 		}
 
 		// Creiamo /tmp nel chroot se non esiste
-		chrootTmpDir := filepath.Join(config.ResolvedTargetRoot, "tmp")
+		chrootTmpDir := filepath.Join(config.LiveRoot, "tmp")
 		os.MkdirAll(chrootTmpDir, 1777)
 
 		// Creiamo il file dentro il chroot
@@ -87,7 +87,7 @@ func RunScript(payload []byte) error {
 	if config.Chroot {
 		fmt.Printf("📦 [worker] Iniezione ed esecuzione script '%s' in chroot...\n", src)
 		// Costruiamo gli argomenti: chroot <root> /bin/bash /tmp/script.sh [args...]
-		args := []string{config.ResolvedTargetRoot, "/bin/bash", execPath}
+		args := []string{config.LiveRoot, "/bin/bash", execPath}
 		if len(config.Params.Args) > 0 {
 			args = append(args, config.Params.Args...)
 		}

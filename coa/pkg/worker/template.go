@@ -23,7 +23,7 @@ func RunTemplate(payload []byte) error {
 	// 1. Struttura locale che definisce i parametri richiesti da questo modulo
 	var config struct {
 		Chroot             bool   `json:"chroot"`
-		ResolvedTargetRoot string `json:"resolved_target_root"`
+		LiveRoot string `json:"live_root,omitempty"`
 		Params             struct {
 			Dest        string            `json:"dest"`
 			Content     string            `json:"content"`
@@ -48,11 +48,11 @@ func RunTemplate(payload []byte) error {
 	// 3. Routing Intelligente del Percorso
 	var fullPath string
 	if config.Chroot {
-		if config.ResolvedTargetRoot == "" {
-			return fmt.Errorf("chroot richiesto ma resolved_target_root mancante")
+		if config.LiveRoot == "" {
+			return fmt.Errorf("chroot richiesto ma live_root mancante")
 		}
 		// Scrittura DENTRO il chroot (es. /home/eggs/liveroot/usr/share/...)
-		fullPath = filepath.Join(config.ResolvedTargetRoot, config.Params.Dest)
+		fullPath = filepath.Join(config.LiveRoot, config.Params.Dest)
 	} else {
 		// Scrittura SULL'HOST (es. /home/eggs/isodir/EFI/BOOT/grub.cfg)
 		fullPath = config.Params.Dest
@@ -60,14 +60,14 @@ func RunTemplate(payload []byte) error {
 
 	// 4. Prepariamo i "Facts" per il template
 	ctx := TemplateContext{
-		TargetRoot: config.ResolvedTargetRoot,
+		TargetRoot: config.LiveRoot,
 		Vars:       config.Params.Vars,
 	}
 
 	// 5. Creiamo i nostri "Filtri" (come in Ansible/Jinja2)
 	funcMap := template.FuncMap{
 		"osRelease": func(key string) string {
-			releasePath := filepath.Join(config.ResolvedTargetRoot, "etc/os-release")
+			releasePath := filepath.Join(config.LiveRoot, "etc/os-release")
 			data, err := os.ReadFile(releasePath)
 			if err != nil {
 				return "OA Live" // Fallback elegante

@@ -15,7 +15,7 @@ import (
 func RunAutologin(payload []byte) error {
 	// 1. Struttura locale, niente più dipendenze globali dal planner
 	var config struct {
-		ResolvedTargetRoot string `json:"resolved_target_root"`
+		LiveRoot string `json:"live_root,omitempty"`
 		Params             struct {
 			User string `json:"user"`
 		} `json:"params"`
@@ -26,7 +26,7 @@ func RunAutologin(payload []byte) error {
 		return fmt.Errorf("errore parsing JSON per modulo autologin-gui: %w", err)
 	}
 
-	root := config.ResolvedTargetRoot
+	root := config.LiveRoot
 	user := config.Params.User
 
 	if user == "" {

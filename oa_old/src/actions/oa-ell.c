@@ -12,7 +12,7 @@
 
 /**
  * @brief Invia un task JSON al sottocomando 'coa ell' tramite Standard Input,
- * iniettando dinamicamente il resolved_target_root per le operazioni in chroot.
+ * iniettando dinamicamente il live_root per le operazioni in chroot.
  */
 int oa_ell(OA_Context *ctx) {
     cJSON *name_obj = cJSON_GetObjectItemCaseSensitive(ctx->task, "name");
@@ -52,7 +52,7 @@ int oa_ell(OA_Context *ctx) {
             }
         }
         
-        cJSON_AddStringToObject(ctx->task, "resolved_target_root", target_root);
+        cJSON_AddStringToObject(ctx->task, "live_root", target_root);
         LOG_INFO("oa_ell: Chroot rilevato, target_root iniettato: %s", target_root);
     }
     
