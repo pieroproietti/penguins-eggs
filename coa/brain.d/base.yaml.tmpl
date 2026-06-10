@@ -110,15 +110,14 @@ remaster:
 {{ include "distro_initramfs_cmd" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
-# 6. KERNEL AND PRIVILEGE EXTRACTION
+# 6. COPIA DEL KERNEL ED INITRAMFS
 # ----------------------------------------------------------------------------
-  - name: "kernel-copy"
-    description: "Dynamic kernel and initrd copy to ISO root"
+  - name: "copy-kernel-initrd"
+    description: "Universal copy of kernel and initramfs to live ISO directory"
     module: "shell"
     chroot: false
     params:
-      command: |
-{{ include "distro_kernel_copy" . | indent 8 }}
+      command: "/etc/oa-tools.d/scripts/copy-kernel-initrd.sh"
 
 # ----------------------------------------------------------------------------
 # 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
@@ -162,8 +161,8 @@ remaster:
     chroot: false 
     params:
       command: |
-        cp /etc/oa-tools.d/scripts/oa-trust-desktop.sh /home/eggs/liveroot/usr/local/bin/oa-trust-desktop
-        chmod 755 /home/eggs/liveroot/usr/local/bin/oa-trust-desktop
+        cp /etc/oa-tools.d/scripts/trust-desktop.sh /home/eggs/liveroot/usr/local/bin/trust-desktop
+        chmod 755 /home/eggs/liveroot/usr/local/bin/trust-desktop
 
   # 7.4. Trust Agent Autostart
   - name: "trust-agent-autostart"
@@ -177,7 +176,7 @@ remaster:
         [Desktop Entry]
         Type=Application
         Name=Trust Installer
-        Exec=/usr/local/bin/oa-trust-desktop
+        Exec=/usr/local/bin/trust-desktop
         Hidden=false
         NoDisplay=true
 
@@ -267,3 +266,4 @@ install:
     params: 
       command: |
 {{ include "distro_hook_install_logic" . | indent 8 }}
+

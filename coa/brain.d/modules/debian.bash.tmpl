@@ -14,36 +14,8 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
-# 1. Forziamo l'initramfs a includere la maggior parte dei moduli
-sed -i 's/^MODULES=.*/MODULES=most/' /etc/initramfs-tools/initramfs.conf
-
-# 2. Iniettiamo i moduli essenziali forzandone il caricamento immediato (Early Load).
-# Aggiunti i moduli per: CD-ROM (sr_mod, cdrom), File System Live (iso9660, squashfs, overlay, loop)
-for mod in fat vfat nls_cp437 nls_iso8859-1 nls_utf8 loop squashfs overlay iso9660 cdrom sr_mod; do
-    if ! grep -q "^${mod}$" /etc/initramfs-tools/modules; then
-        echo "$mod" >> /etc/initramfs-tools/modules
-    fi
-done
-
-# (Opzionale ma consigliato per Ubuntu)
-# Assicuriamoci che initramfs-tools legga le modifiche
-depmod -a $(ls /lib/modules/ | head -n 1) 2>/dev/null || true
-
-# 3. Forziamo Debian a non cercare dischi di swap fantasma (evita timeout di 30s al boot)
-echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
-
-# 4. Rigeneriamo l'initramfs
-update-initramfs -u -k all
-{{ end }}
-
-# ----------------------------------------------------------------------------
-# 6. ESTRAZIONE KERNEL E PRIVILEGI
-# ----------------------------------------------------------------------------
-{{ define "distro_kernel_copy" }}
-KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "rescue" | head -n 1)
-INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initrd* 2>/dev/null | grep -v "rescue" | head -n 1)
-if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
-if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
+# Nessuna operazione necessaria.
+true
 {{ end }}
 
 # ----------------------------------------------------------------------------

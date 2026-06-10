@@ -23,16 +23,6 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 {{ end }}
 
 # ----------------------------------------------------------------------------
-# 6. ESTRAZIONE KERNEL E PRIVILEGI
-# ----------------------------------------------------------------------------
-{{ define "distro_kernel_copy" }}
-KERNEL_PATH=$(ls /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | head -n 1)
-INITRD_PATH=$(ls /home/eggs/liveroot/boot/initramfs-*.img 2>/dev/null | grep -v fallback | head -n 1)
-if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
-if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
-{{ end }}
-
-# ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}

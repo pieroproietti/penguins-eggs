@@ -12,16 +12,6 @@ dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-fedora.
 {{ end }}
 
 # ----------------------------------------------------------------------------
-# 6. ESTRAZIONE KERNEL E PRIVILEGI
-# ----------------------------------------------------------------------------
-{{ define "distro_kernel_copy" }}
-KERNEL_PATH=$(ls -v /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "rescue" | tail -n 1)
-INITRD_PATH="/home/eggs/liveroot/boot/initramfs-fedora.img"
-if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
-if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
-{{ end }}
-
-# ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}

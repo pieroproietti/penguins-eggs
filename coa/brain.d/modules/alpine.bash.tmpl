@@ -113,17 +113,6 @@ KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -c /etc/mkinitfs/live.conf -o /boot/initramfs-oa-tools $KVER
 {{ end }}
 
-
-# ----------------------------------------------------------------------------
-# 6. ESTRAZIONE KERNEL E PRIVILEGI
-# ----------------------------------------------------------------------------
-{{ define "distro_kernel_paths" }}
-KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "\.old" | head -n 1)
-INITRD_PATH="/home/eggs/liveroot/boot/initramfs-oa-tools"
-if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
-if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
-{{ end }}
-
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
