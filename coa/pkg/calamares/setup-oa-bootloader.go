@@ -39,6 +39,11 @@ fi
 
 update-grub
 echo "oa-bootloader: Installazione GRUB completata."
+echo "oa-bootloader: Pulizia artefatti live..."
+rm -f /usr/local/bin/oa-trust-desktop
+rm -f /etc/xdg/autostart/trust-installer.desktop
+rm -f /usr/share/applications/install-system.desktop
+rm -f /etc/sudoers.d/00-live
 `
 
 	err := os.WriteFile(stagingDir+"/oa-bootloader.sh", []byte(scriptContent), 0755)

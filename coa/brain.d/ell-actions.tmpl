@@ -29,6 +29,7 @@
 
 {{ end }}
 
+
 {{ define "ell_live_menus" }}
 # --- 3. PREPARAZIONE ASSETS: SPLASH E FONT ---
 - name: "copy-assets"
@@ -54,12 +55,8 @@
   action: "oa_ell"
   module: "shell"
   chroot: false
-  params:
-    command: |
-      /etc/oa-tools.d/scripts/generate-menus.sh \
-      "/home/eggs/isodir" \
-      "[[ osRelease "PRETTY_NAME" ]]" \
-      "{{ template "hook_boot_params" . }}"
+  "params": 
+    "command": "/etc/oa-tools.d/scripts/generate-menus.sh \"/home/eggs/isodir\" \"boot=live components cow_spacesize=2G\""
 {{ end }}
 
 ## -- 4.1 sanitize host

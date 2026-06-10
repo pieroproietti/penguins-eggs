@@ -2,8 +2,11 @@
 set -e
 
 ISODIR="$1"
-PRETTY_NAME="$2"
-BOOT_PARAMS="$3"
+# Estrae il PRETTY_NAME da /etc/os-release
+PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+BOOT_PARAMS="$2"
+
+echo "Generazione menu per: $PRETTY_NAME"
 
 if [ -z "$ISODIR" ] || [ -z "$PRETTY_NAME" ]; then
     echo "Errore: Parametri ISODIR o PRETTY_NAME mancanti."
