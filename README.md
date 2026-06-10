@@ -86,3 +86,19 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
 
 ---
 *Created with passion by Piero Proietti.*
+
+### Link
+### LINK 
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_CI.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_COMMANDS.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_INSTALLER.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_PKG_PLANNER.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_PKG_PARSER.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_PROXMOX-md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_UNIVERSAL_STRATEGY.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA_VAGRANT.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/COA.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/CONTEXT.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/OA_ARCHITECTURE.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/OA.md
+- https://github.com/pieroproietti/oa-tools/blob/main/DOCS/README.md
