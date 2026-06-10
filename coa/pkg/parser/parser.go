@@ -78,14 +78,12 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	// 5. RENDERING DEI TEMPLATE (La Nuova Architettura a 4 Pilastri)
 	// =========================================================================
 	basePath := filepath.Join(baseDir, "base.yaml.tmpl")
-	scriptsPath := filepath.Join(baseDir, "scripts.tmpl")        // Il dominio imperativo (Bash)
-	ellActionsPath := filepath.Join(baseDir, "ell-actions.tmpl") // Il dominio dichiarativo (YAML/Go)
 
 	// Assumiamo che i moduli siano nella sottocartella 'modules' e abbiano estensione .tmpl
 	modulePath := filepath.Join(baseDir, "modules", moduleFile)
 
 	// Log aggiornato per mostrare la quadrupla fusione
-	utils.LogNormal("%s[pilot]%s Compilazione: scripts.tmpl + ell-actions.tmpl + %s + base.yaml.tmpl", utils.ColorCyan, utils.ColorReset, moduleFile)
+	utils.LogNormal("%s[parser]%s Compilazione: base.yaml.tmpl + %s", utils.ColorCyan, utils.ColorReset, moduleFile)
 
 	// Context da passare al template
 	ctx := TemplateContext{
@@ -112,7 +110,8 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	})
 
 	// 5.1 Parsiamo i file (Iniettiamo l'intero arsenale nel motore di Go)
-	_, err = tmpl.ParseFiles(scriptsPath, ellActionsPath, modulePath, basePath)
+	//_, err = tmpl.ParseFiles(scriptsPath, ellActionsPath, modulePath, basePath)
+	_, err = tmpl.ParseFiles(basePath, modulePath)
 	if err != nil {
 		return nil, fmt.Errorf("errore nel parsing dei template: %v", err)
 	}

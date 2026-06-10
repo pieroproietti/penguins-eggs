@@ -49,7 +49,7 @@ func GeneratePlan(
 		}
 
 		switch step.Module {
-		case "oa_mount_logic":
+		case "mount_logic":
 			plan.Plan = append(plan.Plan, mountLogic(workPath, isGitHubAction)...)
 
 		case "users":

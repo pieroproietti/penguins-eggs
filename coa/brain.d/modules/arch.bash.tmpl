@@ -5,13 +5,13 @@
 # ----------------------------------------------------------------------------
 # DECLARATIVE COSTANTS 
 # ----------------------------------------------------------------------------
-{{ define "admin_group" }}wheel{{ end }}
-{{ define "hook_boot_params" }}archisobasedir=arch archisolabel=OA_LIVE cow_spacesize=2G{{ end }}
+{{ define "distro_admin_group" }}wheel{{ end }}
+{{ define "distro_boot_params" }}archisobasedir=arch archisolabel=OA_LIVE cow_spacesize=2G{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
-{{ define "hook_initramfs_cmd" }}
+{{ define "distro_initramfs_cmd" }}
 mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
 cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
@@ -25,15 +25,17 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 # ----------------------------------------------------------------------------
 # 6. ESTRAZIONE KERNEL E PRIVILEGI
 # ----------------------------------------------------------------------------
-{{ define "hook_kernel_paths" }}
+{{ define "distro_kernel_copy" }}
 KERNEL_PATH=$(ls -1 /home/eggs/liveroot/boot/vmlinuz-* 2>/dev/null | grep -v "fallback" | head -n 1)
 INITRD_PATH=$(ls -1 /home/eggs/liveroot/boot/initramfs* 2>/dev/null | grep -v "fallback" | head -n 1)
+if [ -n "$KERNEL_PATH" ]; then cp "$KERNEL_PATH" /home/eggs/isodir/live/vmlinuz; fi
+if [ -n "$INITRD_PATH" ]; then cp "$INITRD_PATH" /home/eggs/isodir/live/initrd.img; fi
 {{ end }}
 
 # ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
-{{ define "hook_squashfs" }}
+{{ define "distro_hook_squashfs" }}
 mkdir -p /home/eggs/isodir/arch/x86_64
 timeout=10
 while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
@@ -46,7 +48,7 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/a
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS
 # ==============================================================================
-{{ define "hook_install_logic" }}
+{{ define "distro_hook_install_logic" }}
 #!/bin/bash
 set -e
 rm -f /etc/sudoers.d/00-live
