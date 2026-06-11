@@ -6,7 +6,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"time"
+
+	"coa/pkg/krill/engine"
 
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -27,6 +28,14 @@ const (
 	StateSummary
 	StateInstall
 )
+
+// kbdLayouts sono i layout XKB proposti dal selettore; 'us' è il
+// default sicuro, gli altri si raggiungono con ←/→.
+var kbdLayouts = []string{
+	"us", "it", "de", "fr", "es", "gb", "pt", "br", "latam", "ru",
+	"pl", "nl", "be", "ch", "at", "se", "no", "fi", "dk", "cz",
+	"sk", "hu", "ro", "tr", "gr", "ua", "jp",
+}
 
 // Campi della schermata Users (gli indici 0..4 sono i textinput)
 const (
@@ -58,11 +67,14 @@ var (
 	stepBoxStyle = lipgloss.NewStyle().Width(15).Border(lipgloss.NormalBorder(), false, true, false, false).MarginRight(2)
 )
 
-type tickMsg time.Time
+// Messaggi dell'installazione reale: eventi di progresso e fine corsa.
+type installEventMsg engine.Event
+type installDoneMsg struct{ err error }
 
 // --- IL MODELLO GLOBALE ---
 type model struct {
 	state appState
+	cfg   *InstallerConfig
 
 	// Dimensioni del terminale (aggiornate da tea.WindowSizeMsg)
 	termWidth  int
@@ -77,14 +89,15 @@ type model struct {
 	language string
 	arch     string
 
-	// Keyboard
-	kbdModel   string
-	kbdLayout  string
-	kbdVariant string
-	kbdOptions string
+	// Keyboard: selettore del layout, 'us' come default sicuro
+	kbdModel string
+	kbdIdx   int
 
-	// Network (sola lettura: la rete del sistema live)
-	network NetworkInfo
+	// Network: dhcp (eredita dal live) o indirizzo statico editabile
+	network   NetworkInfo
+	netStatic bool
+	netFocus  int // 0 = selettore dhcp/static, 1.. = campi statici
+	netInputs []textinput.Model // address, netmask, gateway, dns
 
 	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
 	diskBios  string
@@ -106,11 +119,14 @@ type model struct {
 	sumRegion string
 	sumZone   string
 
-	// Install
-	installMsg string
-	percent    float64
-	spinner    spinner.Model
-	progress   progress.Model
+	// Install (guidata dagli eventi dell'engine)
+	installMsg  string
+	percent     float64
+	installCh   chan tea.Msg
+	installDone bool
+	installErr  error
+	spinner     spinner.Model
+	progress    progress.Model
 }
 
 // initialModel costruisce il modello a partire dalla configurazione
@@ -154,8 +170,22 @@ func initialModel(cfg *InstallerConfig) model {
 	inputs[fieldRootPass].Placeholder = "empty = same as user"
 	inputs[fieldHostname].SetValue(cfg.DefaultHostname())
 
+	network := DetectNetwork()
+	netInputs := make([]textinput.Model, 4)
+	for i := range netInputs {
+		netInputs[i] = textinput.New()
+		netInputs[i].Prompt = ""
+		netInputs[i].CharLimit = 40
+		netInputs[i].Width = 22
+	}
+	netInputs[0].SetValue(network.Address)
+	netInputs[1].SetValue(orDefault(network.Netmask, "255.255.255.0"))
+	netInputs[2].SetValue(network.Gateway)
+	netInputs[3].SetValue(orDefault(network.Dns, "8.8.8.8"))
+
 	return model{
 		state:       StateWelcome,
+		cfg:         cfg,
 		appName:     "krill",
 		productName: orDefault(cfg.Branding.Strings.ProductName, "Linux"),
 		version:     orDefault(cfg.Branding.Strings.Version, "n/a"),
@@ -163,12 +193,11 @@ func initialModel(cfg *InstallerConfig) model {
 		language: DetectLanguage(),
 		arch:     runtime.GOARCH,
 
-		kbdModel:   kbd.Model,
-		kbdLayout:  kbd.Layout,
-		kbdVariant: orDefault(kbd.Variant, "None"),
-		kbdOptions: orDefault(kbd.Options, "None"),
+		kbdModel: kbd.Model,
+		kbdIdx:   0, // kbdLayouts[0] = "us", il default voluto
 
-		network: DetectNetwork(),
+		network:   network,
+		netInputs: netInputs,
 
 		diskBios:  cfg.FirmwareLabel(),
 		diskMode:  "Erase disk",
@@ -186,7 +215,7 @@ func initialModel(cfg *InstallerConfig) model {
 		sumRegion: region,
 		sumZone:   zone,
 
-		installMsg: "Copying filesystem...",
+		installMsg: "Starting installation...",
 		percent:    0.0,
 		spinner:    s,
 		progress:   progress.New(progress.WithSolidFill("#C59B27")),
@@ -226,11 +255,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		// 'q' esce ovunque tranne dove si digita del testo
-		if key == "q" && m.state != StateUsers {
+		// e mentre l'installazione è in corso
+		installing := m.state == StateInstall && !m.installDone
+		typing := m.state == StateUsers || m.state == StateNetwork
+		if key == "q" && !typing && !installing {
 			return m, tea.Quit
 		}
 
 		switch m.state {
+		case StateKeyboard:
+			return m.updateKeyboard(key)
+		case StateNetwork:
+			return m.updateNetwork(msg)
 		case StateDisk:
 			return m.updateDisk(key)
 		case StateUsers:
@@ -240,26 +276,36 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				switch m.state {
 				case StateWelcome:
 					m.state = StateKeyboard
-				case StateKeyboard:
-					m.state = StateNetwork
-				case StateNetwork:
-					m.state = StateDisk
 				case StateSummary:
+					// Senza login o password non si parte:
+					// torniamo alla schermata Users
+					if m.userInputs[fieldLogin].Value() == "" || m.userInputs[fieldUserPass].Value() == "" {
+						m.state = StateUsers
+						return m, m.focusUser(fieldUserPass)
+					}
 					m.state = StateInstall
-					return m, tick()
+					return m, m.startInstall()
 				}
 			}
 		}
 
-	case tickMsg:
-		if m.state == StateInstall {
-			if m.percent >= 1.0 {
-				m.installMsg = "Installation Complete!"
-				return m, nil
-			}
-			m.percent += 0.015
-			return m, tick()
+	case installEventMsg:
+		m.installMsg = msg.Message
+		if msg.Total > 0 {
+			m.percent = float64(msg.Index) / float64(msg.Total)
 		}
+		return m, waitInstall(m.installCh)
+
+	case installDoneMsg:
+		m.installDone = true
+		m.installErr = msg.err
+		if msg.err == nil {
+			m.percent = 1.0
+			m.installMsg = "Installation Complete!"
+		} else {
+			m.installMsg = msg.err.Error()
+		}
+		return m, nil
 
 	case spinner.TickMsg:
 		var cmd tea.Cmd
@@ -268,6 +314,66 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, nil
+}
+
+// updateKeyboard gestisce il selettore del layout di tastiera.
+func (m model) updateKeyboard(key string) (tea.Model, tea.Cmd) {
+	switch key {
+	case "left":
+		m.kbdIdx = cycle(m.kbdIdx, -1, len(kbdLayouts))
+	case "right":
+		m.kbdIdx = cycle(m.kbdIdx, 1, len(kbdLayouts))
+	case "enter":
+		m.state = StateNetwork
+	}
+	return m, nil
+}
+
+// updateNetwork gestisce il selettore dhcp/static e i campi statici.
+func (m model) updateNetwork(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch msg.String() {
+	case "enter":
+		m.state = StateDisk
+		return m, nil
+	case "tab", "down":
+		return m, m.focusNet(m.netFocus + 1)
+	case "shift+tab", "up":
+		return m, m.focusNet(m.netFocus - 1)
+	case "left", "right":
+		if m.netFocus == 0 {
+			m.netStatic = !m.netStatic
+			if !m.netStatic {
+				return m, m.focusNet(0)
+			}
+			return m, nil
+		}
+	}
+	if m.netStatic && m.netFocus > 0 {
+		i := m.netFocus - 1
+		var cmd tea.Cmd
+		m.netInputs[i], cmd = m.netInputs[i].Update(msg)
+		return m, cmd
+	}
+	return m, nil
+}
+
+// focusNet sposta il focus tra i campi della schermata Network.
+// Con dhcp l'unico campo raggiungibile è il selettore.
+func (m *model) focusNet(idx int) tea.Cmd {
+	count := 1
+	if m.netStatic {
+		count = 1 + len(m.netInputs)
+	}
+	m.netFocus = cycle(idx, 0, count)
+	var cmd tea.Cmd
+	for i := range m.netInputs {
+		if m.netStatic && m.netFocus == i+1 {
+			cmd = m.netInputs[i].Focus()
+		} else {
+			m.netInputs[i].Blur()
+		}
+	}
+	return cmd
 }
 
 // updateDisk naviga i selettori della schermata Disk.
@@ -383,11 +489,13 @@ func (m model) View() string {
 	finalView := lipgloss.JoinVertical(lipgloss.Center, title, mainWindow)
 
 	footer := "\nPress 'q' to quit."
-	if m.state == StateUsers {
+	if m.state == StateUsers || m.state == StateNetwork {
 		footer = "\nPress Ctrl+C to quit."
 	}
 	if m.state != StateInstall {
 		footer += " | Press 'Enter' to continue."
+	} else if !m.installDone {
+		footer = "\nInstallation in progress — do not power off."
 	}
 
 	return "\n" + finalView + "\n" + footer + "\n"
@@ -419,26 +527,50 @@ func (m model) viewWelcome() string {
 
 func (m model) viewKeyboard() string {
 	stepsView := renderSteps(2)
-	modelTxt := fmt.Sprintf("Model:   %s", cyanText.Render(m.kbdModel))
-	layoutTxt := fmt.Sprintf("Layout:  %s", cyanText.Render(m.kbdLayout))
-	variantTxt := fmt.Sprintf("Variant: %s", cyanText.Render(m.kbdVariant))
-	optionsTxt := fmt.Sprintf("Options: %s", cyanText.Render(m.kbdOptions))
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, modelTxt, layoutTxt, variantTxt, optionsTxt)
+	modelTxt := fmt.Sprintf("  Model : %s", cyanText.Render(m.kbdModel))
+	layoutTxt := fmt.Sprintf("%sLayout: %s", cyanText.Render("→ "), cyanText.Render("‹ "+kbdLayouts[m.kbdIdx]+" ›"))
+	help := "\n←/→ change layout ('us' is the safe default)"
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, modelTxt, layoutTxt, help)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
 }
 
 func (m model) viewNetwork() string {
 	stepsView := renderSteps(3)
 	n := m.network
-	ifaceTxt := fmt.Sprintf("interface: %s", greenText.Render(orDefault(n.Iface, "none")))
-	typeTxt := fmt.Sprintf("type     : %s", greenText.Render(n.Type))
-	addrTxt := fmt.Sprintf("address  : %s", greenText.Render(orDefault(n.Address, "n/a")))
-	maskTxt := fmt.Sprintf("netmask  : %s", greenText.Render(orDefault(n.Netmask, "n/a")))
-	gwTxt := fmt.Sprintf("gateway  : %s", greenText.Render(orDefault(n.Gateway, "n/a")))
-	domTxt := fmt.Sprintf("domain   : %s", greenText.Render(n.Domain))
-	dnsTxt := fmt.Sprintf("dns      : %s", greenText.Render(orDefault(n.Dns, "n/a")))
-	noteTxt := "\nDetected from the live system: the installed system will inherit it."
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, ifaceTxt, typeTxt, addrTxt, maskTxt, gwTxt, domTxt, dnsTxt, noteTxt)
+
+	typeVal := "dhcp"
+	if m.netStatic {
+		typeVal = "static"
+	}
+	typeMarker := "  "
+	if m.netFocus == 0 {
+		typeMarker = cyanText.Render("→ ")
+	}
+
+	rows := []string{
+		fmt.Sprintf("  %-10s: %s", "interface", greenText.Render(orDefault(n.Iface, "eth0"))),
+		fmt.Sprintf("%s%-10s: %s", typeMarker, "type", cyanText.Render("‹ "+typeVal+" ›")),
+	}
+
+	if m.netStatic {
+		labels := []string{"address", "netmask", "gateway", "dns"}
+		for i, label := range labels {
+			marker := "  "
+			if m.netFocus == i+1 {
+				marker = cyanText.Render("→ ")
+			}
+			rows = append(rows, fmt.Sprintf("%s%-10s: %s", marker, label, m.netInputs[i].View()))
+		}
+		rows = append(rows, "\n↑/↓ move between fields | type to edit")
+	} else {
+		rows = append(rows,
+			fmt.Sprintf("  %-10s: %s", "address", greenText.Render(orDefault(n.Address, "n/a"))),
+			fmt.Sprintf("  %-10s: %s", "dns", greenText.Render(orDefault(n.Dns, "n/a"))),
+			"\nDetected from the live system: the installed system will inherit it.",
+			"←/→ on 'type' to switch to a static address")
+	}
+
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, rows...)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
 }
 
@@ -514,13 +646,20 @@ func (m model) viewSummary() string {
 	row3 := fmt.Sprintf("Set timezone to %s/%s", greenText.Render(m.sumRegion), greenText.Render(m.sumZone))
 	row4 := fmt.Sprintf("The system language will be set to %s", greenText.Render(m.language))
 	row5 := fmt.Sprintf("Numbers and date locale will be set to %s", greenText.Render(m.language))
-	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(m.kbdLayout))
+	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(kbdLayouts[m.kbdIdx]))
 	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(m.swapTypes[m.swapIdx]))
+	row8 := "Network: " + greenText.Render("dhcp")
+	if m.netStatic {
+		row8 = fmt.Sprintf("Network: %s on %s gw %s",
+			greenText.Render("static "+m.netInputs[0].Value()),
+			greenText.Render(orDefault(m.network.Iface, "eth0")),
+			greenText.Render(m.netInputs[2].Value()))
+	}
 
 	eraseWarning := "Erase all data on disk"
 	msgBox := redBgWhiteText.Render("installation device: " + device)
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, "", eraseWarning, msgBox)
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, row8, "", eraseWarning, msgBox)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
 }
 
@@ -535,21 +674,119 @@ func maskPassword(pass string) string {
 func (m model) viewInstall() string {
 	stepsView := renderSteps(7)
 	header := fmt.Sprintf("Installing: %s\n", cyanText.Render(m.productName))
+
 	spin := m.spinner.View()
-	if m.percent >= 1.0 {
-		spin = "✓"
+	stepMsg := cyanText.Render(m.installMsg)
+	if m.installDone {
+		if m.installErr != nil {
+			spin = "✗"
+			stepMsg = redBgWhiteText.Render(m.installMsg)
+		} else {
+			spin = "✓"
+		}
 	}
-	stepInfo := fmt.Sprintf("Step: %s %s\n", cyanText.Render(m.installMsg), spin)
+
+	stepInfo := fmt.Sprintf("Step: %s %s\n", stepMsg, spin)
 	progBar := m.progress.ViewAs(m.percent)
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, header, stepInfo, progBar)
+	hint := ""
+	if m.installDone && m.installErr != nil {
+		hint = "\n\nSee /var/log/krill.log for details."
+	}
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, header, stepInfo, progBar, hint)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
 }
 
-// --- UTILITY ---
-func tick() tea.Cmd {
-	return tea.Tick(time.Millisecond*100, func(t time.Time) tea.Msg {
-		return tickMsg(t)
-	})
+// --- AVVIO DELL'INSTALLAZIONE REALE ---
+
+// startInstall costruisce il piano dalle scelte dell'interfaccia e lancia
+// l'engine in una goroutine; gli eventi arrivano alla TUI dal canale.
+func (m *model) startInstall() tea.Cmd {
+	m.installCh = make(chan tea.Msg, 8)
+	ch := m.installCh
+	plan := m.buildPlan()
+	go func() {
+		err := engine.Run(plan, func(ev engine.Event) {
+			ch <- installEventMsg(ev)
+		})
+		ch <- installDoneMsg{err: err}
+		close(ch)
+	}()
+	return waitInstall(ch)
+}
+
+// waitInstall attende il prossimo evento dell'engine.
+func waitInstall(ch chan tea.Msg) tea.Cmd {
+	return func() tea.Msg {
+		return <-ch
+	}
+}
+
+// buildPlan traduce il modello della TUI nel piano per l'engine.
+func (m *model) buildPlan() *engine.Plan {
+	cfg := m.cfg
+
+	instances := make(map[string]string)
+	for _, inst := range cfg.Settings.Instances {
+		instances[inst.Id] = inst.Config
+	}
+
+	// networkcfg è un modulo solo-Krill (Calamares non configura la rete):
+	// lo inseriamo dopo 'users' senza toccare il settings.conf condiviso.
+	exec := insertAfter(cfg.Settings.Exec(), "users", "networkcfg")
+
+	netType := "dhcp"
+	if m.netStatic {
+		netType = "static"
+	}
+
+	return &engine.Plan{
+		ConfigRoot: cfg.Root,
+		Exec:       exec,
+		Instances:  instances,
+
+		Device:    m.disks[m.diskIdx].Path,
+		TableType: orDefault(cfg.Partition.DefaultPartitionTableType, "msdos"),
+		FsType:    m.fsTypes[m.fsIdx],
+		Swap:      m.swapTypes[m.swapIdx],
+
+		Fullname:  m.userInputs[fieldFullname].Value(),
+		Login:     m.userInputs[fieldLogin].Value(),
+		UserPass:  m.userInputs[fieldUserPass].Value(),
+		RootPass:  m.userInputs[fieldRootPass].Value(),
+		Hostname:  m.userInputs[fieldHostname].Value(),
+		Autologin: m.userAuto,
+		Shell:     cfg.Users.User.Shell,
+		Groups:    cfg.Users.DefaultGroups,
+
+		Language:  m.language,
+		Region:    m.sumRegion,
+		Zone:      m.sumZone,
+		KbdModel:  m.kbdModel,
+		KbdLayout: kbdLayouts[m.kbdIdx],
+
+		NetIface:   orDefault(m.network.Iface, "eth0"),
+		NetType:    netType,
+		NetAddress: m.netInputs[0].Value(),
+		NetNetmask: m.netInputs[1].Value(),
+		NetGateway: m.netInputs[2].Value(),
+		NetDns:     m.netInputs[3].Value(),
+
+		UnpackSource: cfg.SquashfsSource(),
+		RemoveUser:   cfg.Removeuser.Username,
+	}
+}
+
+// insertAfter inserisce module subito dopo after nella sequenza;
+// se after non c'è, la sequenza resta invariata.
+func insertAfter(seq []string, after, module string) []string {
+	for i, name := range seq {
+		if name == after {
+			out := append([]string{}, seq[:i+1]...)
+			out = append(out, module)
+			return append(out, seq[i+1:]...)
+		}
+	}
+	return seq
 }
 
 // Run è l'entry point pubblico per invocare l'installer da linea di comando.

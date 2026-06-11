@@ -52,6 +52,10 @@ unpack:
     destination: ""
 `))
 
+	mustWrite(t, filepath.Join(root, "modules", "removeuser.conf"), []byte(`---
+username: live
+`))
+
 	return root
 }
 
@@ -88,6 +92,9 @@ func TestLoadInstallerConfig(t *testing.T) {
 	}
 	if got := cfg.Users.SudoersGroup; got != "sudo" {
 		t.Errorf("sudoersGroup = %q", got)
+	}
+	if got := cfg.Removeuser.Username; got != "live" {
+		t.Errorf("removeuser = %q", got)
 	}
 
 	// La sequenza exec del settings.conf reale deve contenere i moduli chiave

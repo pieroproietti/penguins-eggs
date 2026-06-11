@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var krillUnattended bool
+
 // krillSubCmd definisce il sottocomando 'coa sysinstall krill'
 var krillSubCmd = &cobra.Command{
 	Use:   "krill",
@@ -16,17 +18,26 @@ var krillSubCmd = &cobra.Command{
 		// Manteniamo la coerenza dei permessi, installare un sistema richiede root
 		CheckSudoRequirements("sysinstall krill", true)
 
-		runKrillInstaller()
+		runKrillInstaller(krillUnattended)
 	},
 }
 
-// runKrillInstaller prepara la configurazione e avvia il motore Bubble Tea.
-func runKrillInstaller() {
+// runKrillInstaller prepara la configurazione e avvia Krill (TUI o unattended).
+func runKrillInstaller(unattended bool) {
 	// Pipeline unica di preparazione (condivisa con Calamares):
 	// Krill leggerà la configurazione generata in /etc/oa-tools.d/installer.d/
 	if err := prepareInstallerEnvironment(AppVersion); err != nil {
 		utils.LogError("%v", err)
 		os.Exit(1)
+	}
+
+	if unattended {
+		if err := krill.RunUnattended(); err != nil {
+			utils.LogError("Installazione unattended fallita: %v", err)
+			os.Exit(1)
+		}
+		utils.LogNormal("%s[Krill]%s Installazione unattended completata.", utils.ColorGreen, utils.ColorReset)
+		os.Exit(0)
 	}
 
 	utils.LogNormal("%s[Krill]%s Avvio dell'installatore TUI in corso...", utils.ColorCyan, utils.ColorReset)
@@ -42,6 +53,8 @@ func runKrillInstaller() {
 }
 
 func init() {
+	krillSubCmd.Flags().BoolVar(&krillUnattended, "unattended", false,
+		"installazione non interattiva con i default (ATTENZIONE: cancella il primo disco)")
 	// Appendiamo il comando a sysinstallCmd
 	sysinstallCmd.AddCommand(krillSubCmd)
 }

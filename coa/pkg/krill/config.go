@@ -87,6 +87,11 @@ type UsersConf struct {
 	} `yaml:"hostname"`
 }
 
+// RemoveuserConf rispecchia modules/removeuser.conf: l'utente live da rimuovere.
+type RemoveuserConf struct {
+	Username string `yaml:"username"`
+}
+
 // UnpackfsConf rispecchia modules/unpackfs.conf: da dove copiare il filesystem.
 type UnpackfsConf struct {
 	Unpack []struct {
@@ -100,12 +105,13 @@ type UnpackfsConf struct {
 
 // InstallerConfig raccoglie tutta la configurazione letta dalla directory.
 type InstallerConfig struct {
-	Root      string
-	Settings  Settings
-	Branding  Branding
-	Partition PartitionConf
-	Users     UsersConf
-	Unpackfs  UnpackfsConf
+	Root       string
+	Settings   Settings
+	Branding   Branding
+	Partition  PartitionConf
+	Users      UsersConf
+	Unpackfs   UnpackfsConf
+	Removeuser RemoveuserConf
 
 	// Warnings raccoglie i file opzionali mancanti o malformati:
 	// non bloccano l'avvio della TUI ma vanno mostrati all'utente.
@@ -130,6 +136,7 @@ func LoadInstallerConfig(root string) (*InstallerConfig, error) {
 	cfg.loadOptional(filepath.Join(root, "modules", "partition.conf"), &cfg.Partition)
 	cfg.loadOptional(filepath.Join(root, "modules", "users.conf"), &cfg.Users)
 	cfg.loadOptional(filepath.Join(root, "modules", "unpackfs.conf"), &cfg.Unpackfs)
+	cfg.loadOptional(filepath.Join(root, "modules", "removeuser.conf"), &cfg.Removeuser)
 
 	return cfg, nil
 }
