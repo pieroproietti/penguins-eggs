@@ -3,6 +3,7 @@ package krill
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -33,11 +34,14 @@ var (
 	greenText      = lipgloss.NewStyle().Foreground(lipgloss.Color("#00FF00"))
 	redBgWhiteText = lipgloss.NewStyle().Background(lipgloss.Color("#FF0000")).Foreground(lipgloss.Color("#FFFFFF"))
 
+	// La larghezza reale viene impostata in View() sulla base del terminale
+	// (tea.WindowSizeMsg); 75 è solo il minimo per non spezzare le scritte.
 	windowStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			Width(75).
 			Height(11).
 			Padding(0, 1)
+
+	minWindowWidth = 75
 
 	stepBoxStyle = lipgloss.NewStyle().Width(15).Border(lipgloss.NormalBorder(), false, true, false, false).MarginRight(2)
 )
@@ -47,6 +51,10 @@ type tickMsg time.Time
 // --- IL MODELLO GLOBALE ---
 type model struct {
 	state appState
+
+	// Dimensioni del terminale (aggiornate da tea.WindowSizeMsg)
+	termWidth  int
+	termHeight int
 
 	// Globale
 	appName     string
@@ -99,24 +107,35 @@ type model struct {
 	progress   progress.Model
 }
 
-func initialModel() model {
+// initialModel costruisce il modello a partire dalla configurazione
+// generata dalla pipeline (la stessa di Calamares) e dal sistema live.
+func initialModel(cfg *InstallerConfig) model {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
+	kbd := DetectKeyboard()
+	liveUser := DetectLiveUser()
+	region, zone := DetectTimezone()
+
+	device := DetectInstallDevice()
+	if device == "" {
+		device = "/dev/sda"
+	}
+
 	return model{
 		state:       StateWelcome,
 		appName:     "krill",
-		productName: "DEBIAN GNU/LINUX 13",
-		version:     "13.0",
+		productName: orDefault(cfg.Branding.Strings.ProductName, "Linux"),
+		version:     orDefault(cfg.Branding.Strings.Version, "n/a"),
 
-		language: "en_US.UTF-8",
+		language: DetectLanguage(),
 		arch:     runtime.GOARCH,
 
-		kbdModel:   "pc105",
-		kbdLayout:  "it",
-		kbdVariant: "None",
-		kbdOptions: "None",
+		kbdModel:   kbd.Model,
+		kbdLayout:  kbd.Layout,
+		kbdVariant: orDefault(kbd.Variant, "None"),
+		kbdOptions: orDefault(kbd.Options, "None"),
 
 		netIface:       "eth0",
 		netAddressType: "dhcp",
@@ -126,28 +145,36 @@ func initialModel() model {
 		netDomain:      "localdomain",
 		netDns:         "8.8.8.8",
 
-		diskBios:       "UEFI",
-		diskDevice:     "/dev/nvme0n1",
+		diskBios:       cfg.FirmwareLabel(),
+		diskDevice:     device,
 		diskMode:       "Erase disk",
-		diskFsType:     "ext4",
-		diskSwapChoice: "small",
-		diskMessage:    "installation device: /dev/nvme0n1",
+		diskFsType:     orDefault(cfg.Partition.DefaultFileSystemType, "ext4"),
+		diskSwapChoice: orDefault(cfg.Partition.InitialSwapChoice, "none"),
+		diskMessage:    "installation device: " + device,
 
-		userFullname: "Piero Proietti",
-		userLogin:    "piero",
+		userFullname: liveUser,
+		userLogin:    liveUser,
 		userPass:     "******",
 		rootPass:     "******",
-		userHostname: "krill-system",
+		userHostname: cfg.DefaultHostname(),
 		userAuto:     true,
 
-		sumRegion: "Europe",
-		sumZone:   "Rome",
+		sumRegion: region,
+		sumZone:   zone,
 
 		installMsg: "Copying filesystem...",
 		percent:    0.0,
 		spinner:    s,
 		progress:   progress.New(progress.WithSolidFill("#C59B27")),
 	}
+}
+
+// orDefault restituisce fallback quando value è vuoto.
+func orDefault(value, fallback string) string {
+	if value == "" {
+		return fallback
+	}
+	return value
 }
 
 // --- INIT ---
@@ -158,6 +185,15 @@ func (m model) Init() tea.Cmd {
 // --- UPDATE ---
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+
+	case tea.WindowSizeMsg:
+		m.termWidth = msg.Width
+		m.termHeight = msg.Height
+		// La barra di avanzamento segue la finestra: togliamo lo spazio
+		// occupato dalla colonna degli step, bordi e padding.
+		if barWidth := msg.Width - 28; barWidth > 20 {
+			m.progress.Width = barWidth
+		}
 
 	case tea.KeyMsg:
 		if msg.String() == "q" || msg.String() == "ctrl+c" {
@@ -223,7 +259,13 @@ func (m model) View() string {
 		insideBox = m.viewInstall()
 	}
 
-	mainWindow := windowStyle.Render(insideBox)
+	// Massimizziamo la finestra sulla larghezza del terminale
+	// (il bordo occupa 2 colonne), senza scendere sotto il minimo.
+	width := m.termWidth - 2
+	if width < minWindowWidth {
+		width = minWindowWidth
+	}
+	mainWindow := windowStyle.Width(width).Render(insideBox)
 	finalView := lipgloss.JoinVertical(lipgloss.Center, title, mainWindow)
 
 	footer := "\nPress 'q' to quit."
@@ -355,12 +397,17 @@ func tick() tea.Cmd {
 }
 
 // Run è l'entry point pubblico per invocare l'installer da linea di comando.
-// Leggerà la configurazione yaml e avvierà l'interfaccia TUI.
+// Legge la configurazione generata dalla pipeline e avvia l'interfaccia TUI.
 func Run() error {
-	// Qui in futuro potrai inserire la logica per leggere /etc/penguins-eggs.d/krill/settings.conf
-	// e passare i dati reali alla funzione initialModel() al posto di quelli finti.
+	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
+	if err != nil {
+		return fmt.Errorf("configurazione installer non trovata in %s: %w", DefaultConfigRoot, err)
+	}
+	for _, w := range cfg.Warnings {
+		fmt.Fprintf(os.Stderr, "[krill] attenzione: %s\n", w)
+	}
 
-	m := initialModel()
+	m := initialModel(cfg)
 
 	// Inizializziamo il programma usando l'AltScreen per non sporcare la history del terminale
 	p := tea.NewProgram(m, tea.WithAltScreen())
