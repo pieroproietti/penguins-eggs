@@ -1,12 +1,39 @@
 #!/bin/sh
-
-# Il paracadute fondamentale per la CI: 
-# se 'make' fallisce, lo script si interrompe e restituisce errore.
-# Senza questo, se make fallisce, lo script potrebbe restituire '0' (successo) 
-# e GitHub ti darebbe una spunta verde falsa!
+set -e
+make clean package "$@"
+#!/bin/sh
 set -e
 
-# Se in futuro vorrai passare parametri extra (es. ./build.sh --debug)
 make clean package "$@"
-sudo dpkg -i oa-tools_*.deb
+
+# rileva la distro
+. /etc/os-release
+
+case "$ID" in
+    debian|ubuntu|linuxmint|devuan)
+        sudo dpkg -i oa-tools_*.deb
+        ;;
+    arch|manjaro)
+        sudo pacman -U --noconfirm oa-tools_*.pkg.tar.zst
+        ;;
+    fedora)
+        sudo dnf install -y oa-tools_*.rpm
+        ;;
+    opensuse*|sles)
+        sudo zypper install -y oa-tools_*.rpm
+        ;;
+    alpine)
+        sudo apk add --allow-untrusted oa-tools_*.apk
+        ;;
+    *)
+        # fallback su LIKE_ID
+        case "$ID_LIKE" in
+            *debian*) sudo dpkg -i oa-tools_*.deb ;;
+            *arch*)   sudo pacman -U --noconfirm oa-tools_*.pkg.tar.zst ;;
+            *fedora*|*rhel*) sudo dnf install -y oa-tools_*.rpm ;;
+            *) echo "Distro non supportata: $ID"; exit 1 ;;
+        esac
+        ;;
+esac
+
 
