@@ -20,8 +20,15 @@ var krillSubCmd = &cobra.Command{
 	},
 }
 
-// runKrillInstaller ora avvia il vero motore Bubble Tea.
+// runKrillInstaller prepara la configurazione e avvia il motore Bubble Tea.
 func runKrillInstaller() {
+	// Pipeline unica di preparazione (condivisa con Calamares):
+	// Krill leggerà la configurazione generata in /etc/oa-tools.d/installer.d/
+	if err := prepareInstallerEnvironment(AppVersion); err != nil {
+		utils.LogError("%v", err)
+		os.Exit(1)
+	}
+
 	utils.LogNormal("%s[Krill]%s Avvio dell'installatore TUI in corso...", utils.ColorCyan, utils.ColorReset)
 
 	// Invochiamo la vera interfaccia Go!

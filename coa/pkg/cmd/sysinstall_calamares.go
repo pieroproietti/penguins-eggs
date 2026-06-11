@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"coa/pkg/calamares"
-	"coa/pkg/parser"
 	"coa/pkg/utils"
 	"os"
 
@@ -22,67 +21,19 @@ var calamaresSubCmd = &cobra.Command{
 }
 
 // RunCalamaresInstaller coordina la preparazione e il lancio di Calamares
-// 👈 CORRETTO: rimossa la parentesi di troppo alla fine
 func RunCalamaresInstaller(oaVersion string) {
-	utils.LogNormal("%s[sysinstall]%s Preparazione motori...", utils.ColorCyan, utils.ColorReset)
-
-	// 1. Caricamento del profilo tramite il parser
-	IsGitHubAction := false
-	profile, err := parser.DetectAndLoad(IsGitHubAction)
-	if err != nil {
-		utils.LogError("Impossibile caricare il profilo: %v", err)
+	// 1. Pipeline unica di preparazione (condivisa con Krill)
+	if err := prepareInstallerEnvironment(oaVersion); err != nil {
+		utils.LogError("%v", err)
 		os.Exit(1)
 	}
 
-	// 2. Fase Preparazione (Scrive gli script in /tmp/coa)
-	if err := calamares.SetupOABootloader(profile); err != nil {
-		utils.LogError("Errore preparazione script: %v", err)
-		return
-	}
-
-	// 3. Fase di setuto (Pulisce /etc, estrae asse)
-	if err := calamares.Setup(); err != nil {
-		utils.LogError("Calamares ha riscontrato un problema: %v", err)
-		return
-	}
-
-	// 4. Configurazione DINAMICA
-	// partition.conf
-	if err := calamares.PreparePartitionConf(); err != nil {
-		utils.LogError("Errore configurazione partition.conf: %v", err)
-	}
-
-	// mount.conf
-	if err := calamares.PrepareMountConf(); err != nil {
-		utils.LogError("Errore configurazione mount.conf: %v", err)
-	}
-
-	// users.conf
-	if err := calamares.PrepareUserConf(); err != nil {
-		utils.LogError("Errore configurazione users.conf: %v", err)
-	}
-
-	// displaymanager.conf
-	if err := calamares.PrepareDisplaymanagerConf(); err != nil {
-		utils.LogError("Errore configurazione displaymanager.conf: %v", err)
-	}
-
-	// removeusers.conf
-	if err := calamares.PrepareRemoveuserConf(); err != nil {
-		utils.LogError("Errore creazione removeuser.conf: %v", err)
-	}
-
-	// branding.desc
-	if err := calamares.PrepareBrandingDesc(oaVersion); err != nil {
-		utils.LogError("Errore creazione branding.desc: %v", err)
-	}
-
-	// qmlSymlink
+	// 2. qmlSymlink: serve solo all'interfaccia grafica
 	if err := calamares.PrepareQmlSymlink(); err != nil {
 		utils.LogError("Errore creazione link QML: %v", err)
 	}
 
-	// 5. LAUNCH: Calamares parte e trova la pappa pronta
+	// 3. LAUNCH: Calamares parte e trova la pappa pronta
 	if err := calamares.Launch(); err != nil {
 		utils.LogError("L'installatore si è chiuso con un errore: %v", err)
 	}
