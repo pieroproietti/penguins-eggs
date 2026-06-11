@@ -27,9 +27,9 @@ The installation interface adapts dynamically. Thanks to mathematical containers
 
 ---
 
-## 2. The Template Architecture: Logic vs Dialect
+## 2. The Template Architecture
 
-The universal strategy is made possible by a templating system (Go `text/template`) living in `brain.d`, which separates the **logic** from the **dialect**:
+The universal strategy is made possible by a templating system (Go `text/template`) living in `brain.d`:
 
 ### A. `base.yaml.tmpl` (the declarative DNA)
 The source of truth. Here we define the abstract characteristics of the system:
