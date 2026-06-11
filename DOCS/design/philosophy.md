@@ -21,7 +21,7 @@ The definitive architecture embraces the *Unix Philosophy*, splitting responsibi
 
 The ecosystem rests on three logical roles, physically implemented in just two executables (`coa` and `oa`):
 
-#### A. The Pure Planner: `coa build` (Go)
+#### A. The Pure Planner (Go)
 
 * **Role:** it is the Mind. Its sole purpose is to translate the user's wishes (YAML) into a rigorous, formal state.
 * **What it does:** it reads `base.yaml`, applies the overrides from `custom.yaml` and generates a "Single Source of Truth" file: `oa-plan.json`.
@@ -33,11 +33,11 @@ The ecosystem rests on three logical roles, physically implemented in just two e
 * **What it does:** it is fed `oa-plan.json`. It builds the execution tree and drives the time loop step by step.
 * **Philosophy:** it keeps root privileges and works close to the metal. When it meets a pure system action (`chroot`, `mount`, user manipulation) it uses its C system calls. It is a single, cohesive block, blind to the overall plan but infallible at its specific task.
 
-#### C. The Specialized Craftsman: `elle` (Go, integrated as `coa elle`)
+#### C. The Specialized Craftsman: `ell` (Go, integrated as `coa ell`)
 
 * **Role:** it is the high-level Technician. It definitively replaces the use of Bash scripts for complex operations.
 * **What it does:** it is a hidden subcommand of the main Go executable (*Multi-call binary* pattern, like Git or Docker). When the foreman `oa` (C) has to perform a complex operation such as generating a SquashFS filesystem or an ISO, it no longer launches `/bin/bash`, but performs a system call towards:
-  `coa elle --plan oa-plan.json --action coa-squashfs`
+  `coa ell --plan oa-plan.json --module squashfs`
 * **Philosophy:** it exploits Go's native power for fast I/O, safe typing and granular error handling (e.g. invoking `mksquashfs` natively via `os/exec`), then returns control to the C daemon.
 
 ### 3. Advantages of the Model (the "Strangler" Pattern)
@@ -45,7 +45,7 @@ The ecosystem rests on three logical roles, physically implemented in just two e
 This architecture does not require rewriting everything from scratch overnight; it allows a gentle transition:
 
 1. **Logistic stability:** the end user keeps downloading just the two original binaries. The directory tree stays clean.
-2. **Cognitive and semantic advantage:** the calls follow a natural grammar (Subject + Verb -> `coa elle`, `git commit`), making the logs clear and the intent self-documenting.
+2. **Cognitive and semantic advantage:** the calls follow a natural grammar (Subject + Verb -> `coa ell`, `git commit`), making the logs clear and the intent self-documenting.
 3. **Death of the sub-shells:** the Bash initialization cost and the risks tied to character escaping are eliminated. Everything becomes typed and traceable (instant fail-fast at the first error).
 
 ### 4. The Operational Workflow
@@ -53,7 +53,7 @@ This architecture does not require rewriting everything from scratch overnight; 
 1. **Planning:** `coa` -> YAML -> JSON.
 2. **Handover:** `coa` launches `oa`, passing it the JSON.
 3. **Mixed execution:** `oa` iterates over the JSON:
-   * Low-level action -> `oa` executes it in C.
-   * High-level action -> `oa` natively invokes `coa elle` (Go).
+   * Low-level modules -> `oa` executes it in C (users, umount)
+   * High-level modules -> `oa` natively invokes `coa ell` (Go).
 
 ***Software is like an organism: it does not evolve by destroying its own DNA, but by specializing its cells for ever more focused tasks.***
