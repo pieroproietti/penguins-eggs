@@ -10,6 +10,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -25,6 +26,17 @@ const (
 	StateUsers
 	StateSummary
 	StateInstall
+)
+
+// Campi della schermata Users (gli indici 0..4 sono i textinput)
+const (
+	fieldFullname = iota
+	fieldLogin
+	fieldUserPass
+	fieldRootPass
+	fieldHostname
+	fieldAutologin
+	userFieldCount
 )
 
 // --- STILI ---
@@ -71,30 +83,24 @@ type model struct {
 	kbdVariant string
 	kbdOptions string
 
-	// Network
-	netIface       string
-	netAddressType string
-	netAddress     string
-	netNetmask     string
-	netGateway     string
-	netDomain      string
-	netDns         string
+	// Network (sola lettura: la rete del sistema live)
+	network NetworkInfo
 
-	// Disk
-	diskBios       string
-	diskDevice     string
-	diskMode       string
-	diskFsType     string
-	diskSwapChoice string
-	diskMessage    string
+	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
+	diskBios  string
+	diskMode  string
+	disks     []DiskInfo
+	diskIdx   int
+	fsTypes   []string
+	fsIdx     int
+	swapTypes []string
+	swapIdx   int
+	diskField int
 
-	// Users
-	userFullname string
-	userLogin    string
-	userPass     string
-	rootPass     string
-	userHostname string
-	userAuto     bool
+	// Users: campi di testo editabili più il checkbox autologin
+	userInputs []textinput.Model
+	userFocus  int
+	userAuto   bool
 
 	// Summary
 	sumRegion string
@@ -118,10 +124,35 @@ func initialModel(cfg *InstallerConfig) model {
 	liveUser := DetectLiveUser()
 	region, zone := DetectTimezone()
 
-	device := DetectInstallDevice()
-	if device == "" {
-		device = "/dev/sda"
+	disks := DetectDisks()
+	if len(disks) == 0 {
+		disks = []DiskInfo{{Path: "/dev/sda", Size: "?"}}
 	}
+
+	fsTypes := cfg.Partition.AvailableFileSystemTypes
+	if len(fsTypes) == 0 {
+		fsTypes = []string{"ext4"}
+	}
+
+	swapTypes := cfg.Partition.UserSwapChoices
+	if len(swapTypes) == 0 {
+		swapTypes = []string{"none", "small", "suspend", "file"}
+	}
+
+	inputs := make([]textinput.Model, 5)
+	for i := range inputs {
+		inputs[i] = textinput.New()
+		inputs[i].Prompt = ""
+		inputs[i].CharLimit = 64
+		inputs[i].Width = 30
+	}
+	inputs[fieldFullname].SetValue(liveUser)
+	inputs[fieldLogin].SetValue(liveUser)
+	inputs[fieldUserPass].EchoMode = textinput.EchoPassword
+	inputs[fieldUserPass].Placeholder = "choose a password"
+	inputs[fieldRootPass].EchoMode = textinput.EchoPassword
+	inputs[fieldRootPass].Placeholder = "empty = same as user"
+	inputs[fieldHostname].SetValue(cfg.DefaultHostname())
 
 	return model{
 		state:       StateWelcome,
@@ -137,27 +168,20 @@ func initialModel(cfg *InstallerConfig) model {
 		kbdVariant: orDefault(kbd.Variant, "None"),
 		kbdOptions: orDefault(kbd.Options, "None"),
 
-		netIface:       "eth0",
-		netAddressType: "dhcp",
-		netAddress:     "192.168.1.100",
-		netNetmask:     "255.255.255.0",
-		netGateway:     "192.168.1.1",
-		netDomain:      "localdomain",
-		netDns:         "8.8.8.8",
+		network: DetectNetwork(),
 
-		diskBios:       cfg.FirmwareLabel(),
-		diskDevice:     device,
-		diskMode:       "Erase disk",
-		diskFsType:     orDefault(cfg.Partition.DefaultFileSystemType, "ext4"),
-		diskSwapChoice: orDefault(cfg.Partition.InitialSwapChoice, "none"),
-		diskMessage:    "installation device: " + device,
+		diskBios:  cfg.FirmwareLabel(),
+		diskMode:  "Erase disk",
+		disks:     disks,
+		diskIdx:   0,
+		fsTypes:   fsTypes,
+		fsIdx:     indexOf(fsTypes, orDefault(cfg.Partition.DefaultFileSystemType, "ext4")),
+		swapTypes: swapTypes,
+		swapIdx:   indexOf(swapTypes, orDefault(cfg.Partition.InitialSwapChoice, "none")),
 
-		userFullname: liveUser,
-		userLogin:    liveUser,
-		userPass:     "******",
-		rootPass:     "******",
-		userHostname: cfg.DefaultHostname(),
-		userAuto:     true,
+		userInputs: inputs,
+		userFocus:  fieldFullname,
+		userAuto:   true,
 
 		sumRegion: region,
 		sumZone:   zone,
@@ -179,7 +203,7 @@ func orDefault(value, fallback string) string {
 
 // --- INIT ---
 func (m model) Init() tea.Cmd {
-	return m.spinner.Tick
+	return tea.Batch(m.spinner.Tick, textinput.Blink)
 }
 
 // --- UPDATE ---
@@ -196,25 +220,34 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.KeyMsg:
-		if msg.String() == "q" || msg.String() == "ctrl+c" {
+		key := msg.String()
+
+		if key == "ctrl+c" {
+			return m, tea.Quit
+		}
+		// 'q' esce ovunque tranne dove si digita del testo
+		if key == "q" && m.state != StateUsers {
 			return m, tea.Quit
 		}
 
-		if msg.String() == "enter" {
-			switch m.state {
-			case StateWelcome:
-				m.state = StateKeyboard
-			case StateKeyboard:
-				m.state = StateNetwork
-			case StateNetwork:
-				m.state = StateDisk
-			case StateDisk:
-				m.state = StateUsers
-			case StateUsers:
-				m.state = StateSummary
-			case StateSummary:
-				m.state = StateInstall
-				return m, tick()
+		switch m.state {
+		case StateDisk:
+			return m.updateDisk(key)
+		case StateUsers:
+			return m.updateUsers(msg)
+		default:
+			if key == "enter" {
+				switch m.state {
+				case StateWelcome:
+					m.state = StateKeyboard
+				case StateKeyboard:
+					m.state = StateNetwork
+				case StateNetwork:
+					m.state = StateDisk
+				case StateSummary:
+					m.state = StateInstall
+					return m, tick()
+				}
 			}
 		}
 
@@ -235,6 +268,87 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, nil
+}
+
+// updateDisk naviga i selettori della schermata Disk.
+func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
+	switch key {
+	case "up", "shift+tab":
+		m.diskField = cycle(m.diskField, -1, 3)
+	case "down", "tab":
+		m.diskField = cycle(m.diskField, 1, 3)
+	case "left", "right":
+		delta := 1
+		if key == "left" {
+			delta = -1
+		}
+		switch m.diskField {
+		case 0:
+			m.diskIdx = cycle(m.diskIdx, delta, len(m.disks))
+		case 1:
+			m.fsIdx = cycle(m.fsIdx, delta, len(m.fsTypes))
+		case 2:
+			m.swapIdx = cycle(m.swapIdx, delta, len(m.swapTypes))
+		}
+	case "enter":
+		m.state = StateUsers
+		return m, m.focusUser(fieldFullname)
+	}
+	return m, nil
+}
+
+// updateUsers gestisce i campi di testo e il checkbox autologin.
+func (m model) updateUsers(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch msg.String() {
+	case "enter":
+		m.state = StateSummary
+		return m, nil
+	case "tab", "down":
+		return m, m.focusUser(m.userFocus + 1)
+	case "shift+tab", "up":
+		return m, m.focusUser(m.userFocus - 1)
+	case " ":
+		if m.userFocus == fieldAutologin {
+			m.userAuto = !m.userAuto
+			return m, nil
+		}
+	}
+	if m.userFocus < len(m.userInputs) {
+		var cmd tea.Cmd
+		m.userInputs[m.userFocus], cmd = m.userInputs[m.userFocus].Update(msg)
+		return m, cmd
+	}
+	return m, nil
+}
+
+// focusUser sposta il focus tra i campi della schermata Users.
+// Nota: muta i textinput in place, per questo il receiver è un puntatore.
+func (m *model) focusUser(idx int) tea.Cmd {
+	m.userFocus = cycle(idx, 0, userFieldCount)
+	var cmd tea.Cmd
+	for i := range m.userInputs {
+		if i == m.userFocus {
+			cmd = m.userInputs[i].Focus()
+		} else {
+			m.userInputs[i].Blur()
+		}
+	}
+	return cmd
+}
+
+// cycle incrementa idx di delta restando nell'intervallo [0, n).
+func cycle(idx, delta, n int) int {
+	return (idx + delta + n) % n
+}
+
+// indexOf restituisce la posizione di value in list, 0 se assente.
+func indexOf(list []string, value string) int {
+	for i, v := range list {
+		if v == value {
+			return i
+		}
+	}
+	return 0
 }
 
 // --- VIEW GLOBALE ---
@@ -269,6 +383,9 @@ func (m model) View() string {
 	finalView := lipgloss.JoinVertical(lipgloss.Center, title, mainWindow)
 
 	footer := "\nPress 'q' to quit."
+	if m.state == StateUsers {
+		footer = "\nPress Ctrl+C to quit."
+	}
 	if m.state != StateInstall {
 		footer += " | Press 'Enter' to continue."
 	}
@@ -312,68 +429,107 @@ func (m model) viewKeyboard() string {
 
 func (m model) viewNetwork() string {
 	stepsView := renderSteps(3)
-	ifaceTxt := fmt.Sprintf("interface: %s", greenText.Render(m.netIface))
-	typeTxt := fmt.Sprintf("type     : %s", greenText.Render(m.netAddressType))
-	addrTxt := fmt.Sprintf("address  : %s", greenText.Render(m.netAddress))
-	maskTxt := fmt.Sprintf("netmask  : %s", greenText.Render(m.netNetmask))
-	gwTxt := fmt.Sprintf("gateway  : %s", greenText.Render(m.netGateway))
-	domTxt := fmt.Sprintf("domain   : %s", greenText.Render(m.netDomain))
-	dnsTxt := fmt.Sprintf("dns      : %s", greenText.Render(m.netDns))
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, ifaceTxt, typeTxt, addrTxt, maskTxt, gwTxt, domTxt, dnsTxt)
+	n := m.network
+	ifaceTxt := fmt.Sprintf("interface: %s", greenText.Render(orDefault(n.Iface, "none")))
+	typeTxt := fmt.Sprintf("type     : %s", greenText.Render(n.Type))
+	addrTxt := fmt.Sprintf("address  : %s", greenText.Render(orDefault(n.Address, "n/a")))
+	maskTxt := fmt.Sprintf("netmask  : %s", greenText.Render(orDefault(n.Netmask, "n/a")))
+	gwTxt := fmt.Sprintf("gateway  : %s", greenText.Render(orDefault(n.Gateway, "n/a")))
+	domTxt := fmt.Sprintf("domain   : %s", greenText.Render(n.Domain))
+	dnsTxt := fmt.Sprintf("dns      : %s", greenText.Render(orDefault(n.Dns, "n/a")))
+	noteTxt := "\nDetected from the live system: the installed system will inherit it."
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, ifaceTxt, typeTxt, addrTxt, maskTxt, gwTxt, domTxt, dnsTxt, noteTxt)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
 }
 
 func (m model) viewDisk() string {
 	stepsView := renderSteps(4)
 
-	row1 := fmt.Sprintf("BIOS: %s Installation device: %s", cyanText.Render(m.diskBios), cyanText.Render(m.diskDevice))
-	row2 := fmt.Sprintf("Installation mode: %s", cyanText.Render(m.diskMode))
-	row3 := fmt.Sprintf("Filesystem: %s", cyanText.Render(m.diskFsType))
-	row4 := fmt.Sprintf("User swap choice: %s", cyanText.Render(m.diskSwapChoice))
+	device := m.disks[m.diskIdx]
+	row1 := fmt.Sprintf("BIOS: %s | Installation mode: %s", cyanText.Render(m.diskBios), cyanText.Render(m.diskMode))
+	row2 := m.selectorRow(0, "Installation device", fmt.Sprintf("%s (%s)", device.Path, device.Size))
+	row3 := m.selectorRow(1, "Filesystem", m.fsTypes[m.fsIdx])
+	row4 := m.selectorRow(2, "User swap choice", m.swapTypes[m.swapIdx])
+	help := "\n↑/↓ select field | ←/→ change value"
 
 	warning1 := "(*) this will erase all data currently present on the"
-	warning2 := m.diskMessage
+	warning2 := "installation device: " + device.Path
 	warningBox := lipgloss.JoinVertical(lipgloss.Left, redBgWhiteText.Render(warning1), redBgWhiteText.Render(warning2))
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, "", warningBox)
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, "", row2, row3, row4, help, "", warningBox)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+}
+
+// selectorRow disegna un campo a scelta multipla della schermata Disk,
+// evidenziando quello su cui si trova il focus.
+func (m model) selectorRow(field int, label, value string) string {
+	marker := "  "
+	if m.diskField == field {
+		marker = cyanText.Render("→ ")
+	}
+	return fmt.Sprintf("%s%-20s: %s", marker, label, cyanText.Render("‹ "+value+" ›"))
 }
 
 func (m model) viewUsers() string {
 	stepsView := renderSteps(5)
 
-	fullTxt := fmt.Sprintf("fullname     : %s", cyanText.Render(m.userFullname))
-	loginTxt := fmt.Sprintf("login        : %s", cyanText.Render(m.userLogin))
-	passTxt := fmt.Sprintf("user password: %s", cyanText.Render(m.userPass))
-	rootTxt := fmt.Sprintf("root password: %s", cyanText.Render(m.rootPass))
-	hostTxt := fmt.Sprintf("hostname     : %s", cyanText.Render(m.userHostname))
-
-	autoTxt := ""
-	if m.userAuto {
-		autoTxt = cyanText.Render("[ ]") // Come da tua logica originale
-	} else {
-		autoTxt = cyanText.Render("[x] ")
+	labels := []string{"fullname", "login", "user password", "root password", "hostname"}
+	var rows []string
+	for i, label := range labels {
+		marker := "  "
+		if m.userFocus == i {
+			marker = cyanText.Render("→ ")
+		}
+		rows = append(rows, fmt.Sprintf("%s%-13s: %s", marker, label, m.userInputs[i].View()))
 	}
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, fullTxt, loginTxt, passTxt, "", rootTxt, hostTxt, autoTxt)
+	checkbox := "[x]"
+	if !m.userAuto {
+		checkbox = "[ ]"
+	}
+	marker := "  "
+	if m.userFocus == fieldAutologin {
+		marker = cyanText.Render("→ ")
+	}
+	rows = append(rows, fmt.Sprintf("%s%s autologin (space to toggle)", marker, cyanText.Render(checkbox)))
+	rows = append(rows, "\n↑/↓ move between fields | type to edit")
+
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, rows...)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
 }
 
 func (m model) viewSummary() string {
 	stepsView := renderSteps(6)
 
+	login := m.userInputs[fieldLogin].Value()
+	hostname := m.userInputs[fieldHostname].Value()
+	device := m.disks[m.diskIdx].Path
+
 	row1 := fmt.Sprintf("Installing %s", greenText.Render(m.productName))
-	row2 := fmt.Sprintf("%s/%s pwd root %s hostname %s", greenText.Render(m.userLogin), greenText.Render(m.userPass), greenText.Render(m.rootPass), greenText.Render(m.userHostname))
+	row2 := fmt.Sprintf("User %s pwd %s root pwd %s hostname %s",
+		greenText.Render(login),
+		greenText.Render(maskPassword(m.userInputs[fieldUserPass].Value())),
+		greenText.Render(maskPassword(m.userInputs[fieldRootPass].Value())),
+		greenText.Render(hostname))
 	row3 := fmt.Sprintf("Set timezone to %s/%s", greenText.Render(m.sumRegion), greenText.Render(m.sumZone))
 	row4 := fmt.Sprintf("The system language will be set to %s", greenText.Render(m.language))
 	row5 := fmt.Sprintf("Numbers and date locale will be set to %s", greenText.Render(m.language))
 	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(m.kbdLayout))
+	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(m.swapTypes[m.swapIdx]))
 
 	eraseWarning := "Erase all data on disk"
-	msgBox := redBgWhiteText.Render(m.diskMessage)
+	msgBox := redBgWhiteText.Render("installation device: " + device)
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, "", eraseWarning, msgBox)
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, "", eraseWarning, msgBox)
 	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+}
+
+// maskPassword nasconde la password nel riepilogo, segnalando se è vuota.
+func maskPassword(pass string) string {
+	if pass == "" {
+		return "(empty!)"
+	}
+	return strings.Repeat("*", len(pass))
 }
 
 func (m model) viewInstall() string {

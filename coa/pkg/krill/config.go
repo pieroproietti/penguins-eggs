@@ -8,6 +8,7 @@ package krill
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -196,19 +197,95 @@ func sanitizeHostname(s string) string {
 // Dati che non stanno nella configurazione perché in Calamares
 // li raccoglie la GUI: qui servono come default per le schermate.
 
-// DetectInstallDevice restituisce il primo disco fisico disponibile.
-func DetectInstallDevice() string {
-	out, err := exec.Command("lsblk", "-dno", "NAME,TYPE").Output()
+// DiskInfo descrive un disco fisico candidato all'installazione.
+type DiskInfo struct {
+	Path string
+	Size string
+}
+
+// DetectDisks restituisce i dischi fisici disponibili (esclusi loop e zram).
+func DetectDisks() []DiskInfo {
+	out, err := exec.Command("lsblk", "-dno", "NAME,SIZE,TYPE").Output()
 	if err != nil {
-		return ""
+		return nil
 	}
+	var disks []DiskInfo
 	for _, line := range strings.Split(string(out), "\n") {
 		fields := strings.Fields(line)
-		if len(fields) == 2 && fields[1] == "disk" && !strings.HasPrefix(fields[0], "zram") {
-			return "/dev/" + fields[0]
+		if len(fields) == 3 && fields[2] == "disk" && !strings.HasPrefix(fields[0], "zram") {
+			disks = append(disks, DiskInfo{Path: "/dev/" + fields[0], Size: fields[1]})
 		}
 	}
-	return ""
+	return disks
+}
+
+// NetworkInfo descrive la rete corrente del sistema live. La TUI la mostra
+// in sola lettura: l'installazione eredita la configurazione del live.
+type NetworkInfo struct {
+	Iface   string
+	Type    string
+	Address string
+	Netmask string
+	Gateway string
+	Domain  string
+	Dns     string
+}
+
+// DetectNetwork legge interfaccia e rotta di default, indirizzo e DNS.
+func DetectNetwork() NetworkInfo {
+	info := NetworkInfo{Type: "dhcp", Domain: "localdomain"}
+
+	if out, err := exec.Command("ip", "route", "show", "default").Output(); err == nil {
+		fields := strings.Fields(string(out))
+		for i, f := range fields {
+			if f == "via" && i+1 < len(fields) {
+				info.Gateway = fields[i+1]
+			}
+			if f == "dev" && i+1 < len(fields) {
+				info.Iface = fields[i+1]
+			}
+		}
+	}
+
+	if info.Iface != "" {
+		if out, err := exec.Command("ip", "-4", "-o", "addr", "show", "dev", info.Iface).Output(); err == nil {
+			fields := strings.Fields(string(out))
+			for i, f := range fields {
+				if f == "inet" && i+1 < len(fields) {
+					if addr, mask, ok := splitCidr(fields[i+1]); ok {
+						info.Address = addr
+						info.Netmask = mask
+					}
+				}
+			}
+		}
+	}
+
+	if data, err := os.ReadFile("/etc/resolv.conf"); err == nil {
+		for _, line := range strings.Split(string(data), "\n") {
+			fields := strings.Fields(line)
+			if len(fields) >= 2 {
+				switch fields[0] {
+				case "nameserver":
+					if info.Dns == "" {
+						info.Dns = fields[1]
+					}
+				case "search", "domain":
+					info.Domain = fields[1]
+				}
+			}
+		}
+	}
+	return info
+}
+
+// splitCidr separa "192.168.1.100/24" in indirizzo e netmask puntata.
+func splitCidr(cidr string) (addr, mask string, ok bool) {
+	ip, ipnet, err := net.ParseCIDR(cidr)
+	if err != nil || ip.To4() == nil {
+		return "", "", false
+	}
+	return ip.String(), net.IP(ipnet.Mask).String(), true
 }
 
 // KeyboardInfo descrive la tastiera corrente del sistema live.
