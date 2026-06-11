@@ -63,7 +63,7 @@ This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution
 | `builder` | Generates the native coa/oa packages (.deb, PKGBUILD, .rpm) for each distribution. |
 | `bleach` | Cleanup routines for the various distributions. |
 | `tailor` | The tailor managing the wardrobe (costumes). |
-| `worker` | Task execution support delegated by the C engine (`coa ell`). |
+| `worker` | The Go modules executed on behalf of the C engine (`coa ell`). → [ell.md](./ell.md) |
 | `context` | The structured `RuntimeContext` passed across packages. |
 | `assets` | Embedded assets (calamares-base configuration and more). |
 | `repo` | Management of the official package repository. |

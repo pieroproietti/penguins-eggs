@@ -1,47 +1,67 @@
-# ⚙️ The Engineer: `planner` (Plan Translation and Compilation)
+# ⚙️ The Engineer: `planner` (Plan Compilation)
 
-The `planner` package is the vital bridge between the YAML abstraction (read by the `parser`) and the raw syscalls of the C binary (`oa`). Its main job is to take the user's intentions and compile them into a rigorous JSON format, acting as a JIT (Just-In-Time) "compiler" right before execution.
+The `planner` package is the bridge between the abstraction of the Brain (rendered by the `parser`) and the executors (`oa` in C, `coa ell` in Go). Its job is to compile the user's intentions into the *Single Source of Truth*: `/tmp/coa/oa-plan.json`, a JIT "compiler" running right before takeoff.
 
-This package executes no command on the system: it *prepares the ground* so that the C engine can do so without errors.
-
----
-
-## 🏗️ 1. The Logical Expansion: `expandMountLogic()`
-
-When the parser meets the abstract action `oa_mount_logic` in the YAML, the planner springs into action. That single directive is dynamically exploded into a complex sequence of low-level mount points:
-
-1.  **Structure setup:** generates the `oa_mkdir` tasks that create the staging tree (`liveroot`, `upperdir`, `lowerdir`, …).
-2.  **Physical copies:** emits `oa_cp` tasks to clone vital host trees such as `/etc` and `/boot`, including the dynamic copy of the kernel symlinks (`vmlinuz`, `initrd.img`).
-3.  **The Usrmerge fix:** for the base directories (`/bin`, `/sbin`, `/lib`) it inspects the host with `os.Lstat`. If the directory is actually a *symlink* (the Usrmerge scenario, common on Debian/Ubuntu), it emits an `oa_shell` task replicating the link; if it is a real directory, it emits an `oa_bind`.
-4.  **Dynamic OverlayFS:** for `/usr` and `/var` it instructs the C engine to build an Overlay filesystem, mounting the host directory as a read-only `lowerdir` and providing an `upperdir` and `workdir` for writability in the live environment.
-5.  **API filesystems:** maps the essential virtual mounts (`proc`, `sys`, `dev`, `run`).
-6.  **Chroot fix (`/tmp`):** issues a dedicated command mounting `/tmp` as an in-RAM `tmpfs`, forcing `1777` permissions (sticky bit) for safety and chroot compatibility.
+This package executes no command on the system: it *prepares the ground* so that the engines can work without surprises.
 
 ---
 
-## 🧹 2. Data Safety: `GenerateExcludeList()`
+## 🧱 1. The Task Format: `OATask` (the embedding trick)
 
-This function is the "privacy and performance filter". It generates `/tmp/coa/excludes.list`, which tells the `mksquashfs` compressor what *not* to include in the final ISO:
+In `types.go` the planner defines `OATask` by **embedding** `parser.Step` as an anonymous field: thanks to JSON flattening, the task automatically inherits `name`, `module`, `chroot` and `params` from the Brain, and the planner only adds the technical fields the engines need at runtime:
 
-*   **The "double tap":** virtual APIs are excluded in two passes (e.g. `run/*` and `run/.??*`) so that no hidden host file slips in. A prime target is `var/tmp/.??*`, which removes heavy hidden temporary files.
-*   **Caches and network:** removes package manager caches (`apt/*.bin`, `pacman/pkg/*`, `dnf/*`) and sensitive network data (`NetworkManager/system-connections/*`, host SSH keys).
-*   **User privacy (mode):** with `--mode standard` the `root/*` folder is razed; with `clone` the user data survives but shell histories (`.bash_history`, `.zsh_history`) and trash bins (`.local/share/Trash/*`) are still purged.
-*   **Custom exclusions:** if the user provides `/etc/oa-tools.d/exclusion.list`, the planner reads it, sanitizes the paths and appends the custom rules to the output file.
+* `work_dir` — the workspace root (e.g. `/home/eggs`), used by the native `umount` module;
+* `live_root` — the resolved live filesystem path (`<work_dir>/liveroot`), used by `users` and by every chrooted Go worker;
+* `type`, `opts`, `readonly` — legacy mount metadata kept for the transition.
+
+The full plan (`OAPlan`) wraps the task array together with the `settings` and the `is_github_action` flag.
 
 ---
 
-## ⚙️ 3. The JIT Compiler: `GeneratePlan()`
+## ⚙️ 2. The Compiler: `GeneratePlan()`
 
-This is the planner's "main" function. It accepts the array of `parser.Step` structs and converts it into a JSON file saved at `/tmp/coa/oa-plan.json`.
+`GeneratePlan()` iterates over `profile.Remaster` and switches on each step's `module`. Most steps pass through untouched — the planner just injects `live_root` — but a few modules are *expanded*:
 
-### A. Variable resolution
-The planner acts as a template engine, substituting on the fly variables such as `${ISO_OUTPUT}` with the real path computed in Go, and `${ISO_NAME}` with the target file name.
+### `mount_logic` → environment bootstrap
+The single abstract directive becomes one `shell` task invoking `/etc/oa-tools.d/scripts/bootstrap-liveroot.sh <work_dir> <is_github_action>`, the script that builds the whole staging tree (liveroot, overlays, bind mounts, API filesystems).
 
-### B. Complex actions
-*   **`oa_users`:** the planner prepares the `oa_shell` task copying the user skeleton from `/etc/skel`. It then reads the users declared in the YAML, retrieves the host user's groups through `utils.GetUserGroups()` and injects them into the live profile. If the YAML defines no users, a predefined "lifebelt" is used (user `live` with an encrypted password).
-*   **The breakpoint (`stopAfter`):** if a breakpoint is active, the planner loops up to the requested task, sets `hitBreakpoint = true` and from that moment *discards* all subsequent tasks. It makes one vital exception, though: it always appends the `coa-cleanup` task at the end, guaranteeing the host is never left hanging with orphaned mount points.
+### `users` → two concrete tasks (`oa-users.go`)
+1. **`create-live-home`** (`shell`): creates the home directory and populates it from `/etc/skel`.
+2. **`inject-live-users`** (`users`, native C): injects the identities. The live user comes from `settings` (fallback `live`); the password is hashed **in Go** by `hashPassword()` — already-hashed values (`$6$…`) pass through, plaintext is hashed with `openssl passwd -6`, and an empty password falls back to the default `eggs` hash. The groups of the host user are mirrored onto the live user via `utils.GetUserGroups()`.
 
-### C. The embedding trick (the `types` file)
-In `types.go` the planner defines the `OATask`. Instead of rewriting all the fields, it uses Go embedding (`parser.Step json:",inline"`): the task automatically "inherits" the action, the command and the users from the original YAML, and the planner only adds the technical fields the C binary needs (such as `Type`, `Opts` and `LiveRoot`).
+### `umount` → the guaranteed cleanup
+Compiled into the `cleanup` task carrying `work_dir`, executed natively by the C engine.
 
-This JSON structure, once written by `savePlan()`, is the perfect package that the C binary will load and execute to the letter.
+### `xorriso` → parameter injection + `.disk` metadata
+The planner resolves `params.output_file` (the final ISO path computed from the distro identity) and `params.source_dir` (`<work_dir>/isodir`). Right before it, a **`coa-dot-disk`** shell task is inserted: it generates the `.disk` metadata directory (info, UUID from the kernel, timestamp) following the Debian live-boot standard.
+
+### 🛑 The breakpoint (`--stop-after`)
+If a breakpoint is set, once the named step has been compiled the planner *discards* every subsequent step — with one vital exception: the `cleanup` task is always kept, guaranteeing the host is never left with orphaned mounts. The environment stops mid-flight, mounted and ready for manual inspection.
+
+### 🔧 The normalization pass
+After the loop, a final pass enforces coherence: every task that declares a `work_dir` gets the real workspace path, every task that declares (or needs, because `chroot: true`) a `live_root` gets `<work_dir>/liveroot`. The Brain never has to spell out absolute paths.
+
+### 🐞 `--debug`
+With the debug flag, the plan is pretty-printed to the terminal and `coa` exits without remastering — the fastest way to inspect exactly what `oa` would receive.
+
+The result is written by `savePlan()` to `/tmp/coa/oa-plan.json`.
+
+---
+
+## 🧹 3. Data Safety: `GenerateExcludeList()`
+
+Called by `remaster` before planning, it generates `/tmp/coa/excludes.list` — what `mksquashfs` must *not* put into the ISO:
+
+* **Virtual and temporary filesystems:** `dev`, `proc`, `sys`, `run`, `tmp`, `var/tmp` (including hidden files via the `.??*` pattern), plus the workspace itself (`home/eggs/.overlay`, `home/eggs/isodir`, previous `*.iso`).
+* **System identity:** `etc/fstab`, `etc/mtab`, host SSH keys (`etc/ssh/ssh_host_*`), saved network connections (`NetworkManager/system-connections/*` and its `secret_key`), persistent udev rules, swapfile.
+* **Package caches:** `apt` archives and the heavy `*.bin` indexes, `pacman/pkg`, `dnf`.
+* **The Debian cryptdisks hack:** a single wildcard (`etc/rc*.d/*cryptdisks*`) — `mksquashfs -wildcards` does the scanning, no Go code needed.
+* **Privacy by `--mode`:** in `standard` mode `root/*` (hidden files included) is razed; in `clone`/`crypted` user data survives but shell histories, trash bins and browser caches are still purged.
+* **GitHub Actions slimming:** on a runner, `usr`, `var` and `opt` are stripped — the structural smoketest exercises the whole chain (mksquashfs, xorriso, umount) in minutes, producing a non-functional but valid ISO.
+* **User exclusions:** `/etc/oa-tools.d/custom.exclude.list`, if present, is sanitized (comments skipped, leading slashes removed) and appended.
+
+---
+
+### 💡 Pro insight
+
+The planner is the last point where *decisions* are made. Downstream of `oa-plan.json` there is only execution: `oa` walks the array and routes each task by `module` — natively in C or to `coa ell`. If something behaves unexpectedly, `coa remaster --debug` shows you the exact contract handed to the engines.
