@@ -20,17 +20,14 @@
 > Millennial civilizations and sovereign nations are being razed to the ground by the same logic of dominance that has stained human history for centuries. From the Middle East to Ukraine, we are witnessing the destruction of our common heritage. No modern ideology or national interest can justify these crimes. 
 > 
 > **Silence is complicity, stop the massacre.**
-
-## oa-tools: 🐧A Next-Generation Linux Remastering Suite
-
-Welcome to **oa-tools**, the next step in the evolution of [penguins-eggs](https://github.com/pieroproietti/penguins-eggs). This monorepo introduces a split-responsibility architecture engineered for high-performance system remastering. By leveraging our [Universal Strategy](./DOCS/COA_UNIVERSAL_STRATEGY.md) *oa-tools* guarantees absolute portability across distributions.
-
-Under the hood, the project is powered by two distinct entities: **oa** (the workhorse handling the heavy lifting) and **coa** (the orchestrator managing the workflow).
-
-**coa** is the only component you interact with directly, while **oa** is used by **coa** to execute its JSON-based remastering plans. To provide maximum flexibility, you can interact with the system interchangeably using the new `coa` command or the legacy `eggs` alias.
-
-[![Donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 ---
+### 🥚 oa-tools - A Next-Generation Remastering Suite
+After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [oa-tools](https://github.com/pieroproietti/oa-tools).
+oa-tools is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
+The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. oa-tools already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
+
+[![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
+
 
 ## 🏗 oa-tools Architecture
 
@@ -87,6 +84,5 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
 ---
 *Created with passion by Piero Proietti.*
 
-### Link
-### LINK 
-- https://github.com/pieroproietti/oa-tools/blob/main/
+### blog
+* [https://penguins-eggs.net](https://penguins-eggs.net)
