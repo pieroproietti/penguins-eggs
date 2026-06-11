@@ -81,6 +81,13 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
 
 [![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
 
+
+## Star History
+
+This project collects stars, look to the sky... contribute!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/oa-tools&type=Date)](https://star-history.com/#pieroproietti/oa-tools&Date)
+
 ---
 *Created with passion by Piero Proietti.*
 
