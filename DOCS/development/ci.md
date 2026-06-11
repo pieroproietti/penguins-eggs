@@ -49,8 +49,9 @@ By excluding the massive weight of `usr` and `var` directories without altering 
 
 The actual end-to-end validation of the remastering infrastructure is delegated to full virtualization environments under the complete control of the developer:
 
+* **Proxmox VE (current setup):** end-to-end remastering runs on self-hosted runners backed by KVM virtual machines with "pristine" snapshots, one per tested family (Alpine/apk, Arch/pacman, Debian/apt, Fedora/dnf). See [proxmox.md](./proxmox.md).
 * **Local Development VMs (Debian/Ubuntu):** Where the kernel is real and root privileges are effective.
-* **Vagrant:** The ideal target for automated full-build testing. Inside a Vagrant box, the operating system runs on a proper hypervisor (VirtualBox/QEMU) with a native kernel, allowing `oa_mount_logic` and `oa_shell` in a chroot environment to operate exactly as they would on physical hardware.
+* **Vagrant (legacy local lab):** Inside a Vagrant box, the operating system runs on a proper hypervisor (VirtualBox/QEMU) with a native kernel, allowing `oa_mount_logic` and `oa_shell` in a chroot environment to operate exactly as they would on physical hardware. See [vagrant.md](./vagrant.md).
 
 In these native environments, the framework activates biological sensors (e.g., detecting specific paths or users) to calibrate the behavior of the flight plan (such as favoring fast SquashFS compression during development).
 

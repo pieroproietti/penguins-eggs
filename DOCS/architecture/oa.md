@@ -1,54 +1,53 @@
-# 🦾 Il braccio C: `oa`
+# 🦾 The C Arm: `oa`
 
-Se `coa` è la mente che progetta il "piano di volo" analizzando i file YAML, il binario **`oa`** è il braccio che esegue fisicamente il lavoro a basso livello. 
+If `coa` is the mind that designs the "flight plan" by analyzing the YAML files, the **`oa`** binary is the arm that physically performs the low-level work.
 
-Il motore C riceve il piano sotto forma di un file JSON parsato tramite `cJSON`. La funzione cuore del sistema è `execute_verb`, che estrae la chiave `action` da ogni task e la instrada verso il modulo C nativo competente.
+The C engine receives the plan as a JSON file parsed with `cJSON`. The heart of the system is the `execute_verb` function, which extracts the `action` key from each task and routes it to the competent native C module.
 
 ---
 
-## 🎛️ Tabella delle Azioni Native (C-Core)
+## 🎛️ Native Action Table (C-Core)
 
-Di seguito le azioni operative mappate dal router interno `execute_verb`[cite: 6]:
+The operational actions mapped by the internal `execute_verb` router:
 
-| Azione JSON | Funzione C | Ruolo e Funzionamento |
+| JSON action | C function | Role |
 | :--- | :--- | :--- |
-| `oa_mkdir` | `oa_mkdir()` | Crea la directory specificata usando `mkdir -p` per garantire la catena di percorsi[cite: 7]. |
-| `oa_bind` | `oa_bind()` | Esegue un bind mount (`MS_BIND | MS_REC`). Assicura l'isolamento fortificando il mount con `MS_PRIVATE` e supporta la modalità read-only (`MS_RDONLY`)[cite: 7]. |
-| `oa_cp` | `oa_cp()` | Effettua copie fisiche usando `cp -a` per preservare rigorosamente permessi, symlink e timestamp originali[cite: 7]. |
-| `oa_mount_generic`| `oa_mount_generic()`| Crea al volo la directory di destinazione e invoca la syscall `mount()` per filesystem virtuali (proc, sysfs, overlay)[cite: 7]. |
-| `oa_shell` | `oa_shell()` | Esegue comandi shell. Può girare sull'host tramite `system()` o entrare in modalità `chroot` usando `fork()`, `chroot()` e `execl()`[cite: 9]. |
-| `oa_users` | `oa_users()` | Gestisce le identità: rimuove (sanitize) gli utenti host e inietta l'utente live (Purge & Inject)[cite: 11, 12]. |
-| `oa_umount` | `oa_umount()` | Legge `/proc/mounts`, individua tutto ciò che appartiene al progetto e lo smonta partendo dal percorso più profondo[cite: 10]. |
+| `oa_mkdir` | `oa_mkdir()` | Creates the given directory `mkdir -p` style, guaranteeing the full path chain. |
+| `oa_bind` | `oa_bind()` | Performs a bind mount (`MS_BIND \| MS_REC`). Hardens the mount with `MS_PRIVATE` for isolation and supports read-only mode (`MS_RDONLY`). |
+| `oa_cp` | `oa_cp()` | Physical copies in `cp -a` fashion, rigorously preserving permissions, symlinks and original timestamps. |
+| `oa_mount_generic` | `oa_mount_generic()` | Creates the destination directory on the fly and invokes the `mount()` syscall for virtual filesystems (proc, sysfs, overlay). |
+| `oa_shell` | `oa_shell()` | Executes shell commands, either on the host via `system()` or inside a `chroot` using `fork()`, `chroot()` and `execl()`. |
+| `oa_users` | `oa_users()` | Identity management: removes (sanitizes) the host users and injects the live user (Purge & Inject). |
+| `oa_umount` | `oa_umount()` | Reads `/proc/mounts`, finds everything belonging to the project and unmounts it starting from the deepest path. |
 
 ---
 
-## 🔬 Deep Dive: I Moduli Operativi
+## 🔬 Deep Dive: The Operational Modules
 
-### 1. Il Passpartout: `oa_shell`
-Questo modulo è il ponte perfetto tra l'orchestratore e il sistema. Legge i parametri `run_command` e `chroot`[cite: 9].
-*   **Motore Bimodale**: Se il target è il sistema da installare (`mode="install"`), il target root è `LiveRoot`, altrimenti punta a `LiveRoot/liveroot`[cite: 9].
-*   **Chroot Nativo**: Per eseguire comandi isolati, genera un processo figlio con `fork()`, usa la syscall `chroot()` e posiziona l'ambiente su `/` con `chdir("/")` prima di lanciare `/bin/sh -c`[cite: 9]. Il processo padre attende la fine dell'esecuzione catturando l'exit code[cite: 9].
+### 1. The passepartout: `oa_shell`
+This module is the perfect bridge between the orchestrator and the system. It reads the `run_command` and `chroot` parameters.
+*   **Bimodal engine:** if the target is the system being installed (`mode="install"`), the target root is `LiveRoot`; otherwise it points to `LiveRoot/liveroot`.
+*   **Native chroot:** to run isolated commands, it spawns a child with `fork()`, uses the `chroot()` syscall and pins the environment to `/` with `chdir("/")` before launching `/bin/sh -c`. The parent waits for completion and captures the exit code.
 
-### 2. Gestione Identità: `oa_users`
-Un modulo in stile Yocto Project per la sicurezza e la privacy. Opera in due fasi:
-*   **Purge (Sanitize)**: Se la modalità non è "clone" o "crypted", ripulisce i file `/etc/passwd`, `/etc/shadow` e `/etc/group` dell'ambiente live rimuovendo gli ID degli utenti umani (host)[cite: 12].
-*   **Inject**: Legge l'array JSON `users` e inietta le nuove identità nativamente. Utilizza `crypt()` con il salt `$6$oa$` per generare password in SHA-512 se non sono già hash[cite: 12]. Inoltre, implementa un fix per i sistemi Debian creando esplicitamente il gruppo primario (GID) per l'utente[cite: 12]. Infine, popola la home directory copiando i file da `/etc/skel`[cite: 12].
+### 2. Identity management: `oa_users`
+A Yocto-Project-style module for security and privacy. It works in two phases:
+*   **Purge (sanitize):** unless the mode is "clone" or "crypted", it scrubs the live environment's `/etc/passwd`, `/etc/shadow` and `/etc/group`, removing the IDs of the human (host) users.
+*   **Inject:** reads the JSON `users` array and injects the new identities natively. It uses `crypt()` with the `$6$oa$` salt to produce SHA-512 passwords when they are not already hashes. It also implements a fix for Debian systems by explicitly creating the user's primary group (GID), and finally populates the home directory from `/etc/skel`.
 
-### 3. L'Infrastruttura di Mount
-La magia dietro la velocità di `oa` sta nell'usare syscall C dirette al posto di script bash.
-*   **Isolamento**: Il comando `oa_bind` prima esegue il mount ricorsivo, poi se richiesto ri-monta in `MS_RDONLY`, e infine lo blinda con `MS_PRIVATE`[cite: 7]. 
-*   **OverlayFS**: I mount virtuali più complessi, come quelli per unire `lowerdir` e `upperdir` sulle directory `usr` e `var`, sono gestiti passingando opzioni strutturate direttamente alla syscall `mount()`[cite: 8]. La directory `/tmp` viene gestita montando un `tmpfs` con permessi rigidi `mode=1777`[cite: 8].
+### 3. The mount infrastructure
+The magic behind `oa`'s speed lies in using direct C syscalls instead of bash scripts.
+*   **Isolation:** `oa_bind` first performs the recursive mount, then remounts `MS_RDONLY` if requested, and finally locks it down with `MS_PRIVATE`.
+*   **OverlayFS:** the more complex virtual mounts — joining `lowerdir` and `upperdir` over `usr` and `var` — are handled by passing structured options straight to the `mount()` syscall. `/tmp` is handled by mounting a `tmpfs` with strict `mode=1777` permissions.
 
-### 4. Smart Umount e Cleanup di Emergenza
-La stabilità dell'host dipende dalla corretta pulizia.
-*   **La via pulita (`oa_umount`)**: Apre `/proc/mounts`, filtra i mount point che iniziano con la root del progetto, li inserisce in un array e li ordina per lunghezza decrescente[cite: 10]. Questo garantisce che i path più annidati (es. `.../liveroot/proc`) vengano smontati prima delle directory genitore[cite: 10]. Utilizza il flag `MNT_DETACH` (lazy unmount) per forzare la chiusura senza bloccare il sistema[cite: 10].
-*   **La via dura (Emergency Cleanup)**: Se l'eseguibile C viene invocato passando direttamente l'argomento `cleanup` (es. `oa cleanup`), il `main` ignora il parser JSON ed esegue una raffica rapida di `umount2(..., MNT_DETACH)` su path hardcoded fondamentali per liberare l'host istantaneamente in caso di crash fatali[cite: 6].
+### 4. Smart umount and emergency cleanup
+Host stability depends on correct cleanup.
+*   **The clean way (`oa_umount`):** opens `/proc/mounts`, filters the mount points starting with the project root, collects them in an array and sorts them by decreasing length. This guarantees the most nested paths (e.g. `.../liveroot/proc`) are unmounted before their parents. It uses `MNT_DETACH` (lazy unmount) to force the release without blocking the system.
+*   **The hard way (emergency cleanup):** if the C executable is invoked with the bare `cleanup` argument (`oa cleanup`), `main` skips the JSON parser entirely and fires a rapid burst of `umount2(..., MNT_DETACH)` on fundamental hardcoded paths, freeing the host instantly after fatal crashes. This is what `coa destroy` relies on.
 
 ### 5. Plan execution
-Questo è un esempio di ciò che oa riceve da coa: un piano completo di rimasterizzazione in JSON,
+Below is an example of what `oa` receives from `coa`: a complete remastering plan in JSON.
 
-Perchè JSON e non il più leggibile YAML: perchè è un piano che deve essere eseguito in c ed è molto più leggero scriverlo ed eseguirlo in JSON.
-
+Why JSON instead of the more readable YAML? Because this plan has to be executed in C, and it is much lighter to write and execute as JSON.
 ```
 {
   "plan": [
