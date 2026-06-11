@@ -6,18 +6,18 @@
 
 - ✅ Remastering working on all six families: Alpine, Arch, Debian, Fedora, Manjaro, openSUSE (and derivatives).
 - ✅ Graphical installer: Calamares (Alpine included).
-- ✅ TUI installer: Krill (see open point 1).
+- ✅ TUI installer: Krill, rewritten in Go with Bubbletea — installs for real, verified in VM on both BIOS and UEFI (June 2026). Interactive wizard plus `--unattended` mode for headless installs. See [installer.md](./installer.md) for the implemented architecture.
 - ❌ Clone with user data (`--mode clone`).
 - ❌ Encrypted clone (`--mode crypted`).
 
 ## Open Points
 
-### 1. Krill — TUI installer
-- In penguins-eggs it was written in TypeScript; it must be rewritten in Go.
-- Candidate library: **Bubbletea** (charmbracelet) for the multi-step wizard.
-- Priority target: **server sysadmins** (headless, no Calamares).
-- The installation logic already lives in the `install:` block of the YAML profile — Krill can be a TUI frontend that collects parameters and then executes the same plan.
-- Full design: [installer.md](./installer.md).
+### 1. Krill — remaining refinements
+The rewrite is done (`coa/pkg/krill` + `coa/pkg/krill/engine`); what remains:
+- **Automatic dispatcher**: `coa sysinstall` without subcommand should detect the environment (display server + calamares binary) and pick the GUI or the TUI by itself, as per the original design.
+- **btrfs subvolumes**: the engine currently mounts btrfs flat; the `@/@home/@cache/@log` layout described in `mount.conf` is not applied yet.
+- **TUI polish**: the static-address fields arrive prefilled and cursor editing can be confusing — add a quick clear (ctrl+u) or select-all-on-focus. The Welcome screen wording "version oa-tools vX" is ambiguous (it is the oa-tools version, not the OS one).
+- **displaymanager autologin** covers lightdm/sddm/gdm; other DMs are silently skipped.
 
 ### 2. Multi-architecture detection
 The `Arch` field in `distro` uses `runtime.GOARCH`; it should use `uname -m` before the multi-arch porting:

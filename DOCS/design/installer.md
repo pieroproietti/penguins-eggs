@@ -1,62 +1,117 @@
-# Design Doc — `sysinstall`: Architecture & Design
+# `sysinstall`: Architecture of the Unified Installer
 
-> **Status: design document.** This describes the target architecture for the unified installer. The `dispatcher` and `krill` packages already exist in the codebase; the remaining phases are tracked in the [roadmap](./roadmap.md).
-
-This document defines the architecture, goals and structure of the unified `sysinstall` package inside `oa-tools`.
+> **Status: implemented** (June 2026). This document describes the architecture
+> as it exists in the codebase. The original design draft proposed the same
+> "one engine, two faces" vision; what changed during implementation is noted
+> in the [History](#history) section.
 
 ## 1. The Vision: One Engine, Two Faces
-The goal of `sysinstall` is to make the installation process completely agnostic with respect to the user interface, in line with our **Universal Strategy**. Instead of maintaining two separate flows for graphical and terminal installation, the system uses a single "brain" orchestrating the operation, dynamically deciding which "face" to show the user based on the execution environment.
+
+The installation process is agnostic with respect to the user interface, in
+line with our **Universal Strategy**. A single preparation pipeline produces
+the configuration; then one of two "faces" consumes it:
 
 * **GUI (Graphical User Interface):** delegated to **Calamares**.
-* **TUI (Text User Interface):** delegated to **Krill** (the native console mode of `oa-tools`).
+* **TUI (Text User Interface):** **Krill**, native Go (Bubbletea), aimed
+  primarily at server sysadmins installing headless via console, serial or ssh.
 
 ## 2. The Single Source of Truth
-To avoid divergence, both Calamares and Krill must read exactly the same configuration files.
-We abandon the fragmentation of the standard directories and centralize everything in:
-`/etc/oa-tools/installer.d/`
 
-This directory contains the `.conf` files (YAML-compatible syntax):
-* `settings.conf`: the master file defining the module sequence (`show`, `exec`).
-* `branding.desc`: logos, names (e.g. `VOL_ID`) and support URLs.
-* `modules/*.conf`: the specific configurations for partitioning, user creation, network, etc.
-
-**Golden rule:** if a user or a template modifies `settings.conf`, the change is instantly reflected in both installers.
-
-## 3. The Execution Flow (The Dispatcher)
-When the installation command is launched (`coa sysinstall` or the legacy `eggs sysinstall`), the dispatcher acts as an intelligent selector:
-
-1.  **Environment check:** verifies the presence of an active display server (X11 or Wayland).
-2.  **Binary check:** verifies that the `calamares` executable is in `$PATH`.
-3.  **Routing:**
-    * **If GUI available && Calamares present:** launches `calamares -d -c /etc/oa-tools/installer.d/settings.conf`.
-    * **If no GUI || Calamares missing (fallback):** runs the internal routine launching the **Krill** text interface, with the same configuration path.
-
-## 4. Go Package Architecture
-The source code is structured with a plugin design separating the reading logic from the presentation:
+The contract between the two worlds is the **finished configuration
+directory**:
 
 ```
-sysinstall/
-├── engine/        # Parser for the .conf/.yaml files. Builds the InstallationPlan.
-├── adapters/
-│   ├── calamares/ # Wrapper launching the C++ process and passing it symlinks/config.
-│   └── krill/     # Native Go TUI implementation (terminal interfaces).
-└── modules/       # The actual executive logic for Krill (e.g. run_partition, run_users).
+/etc/oa-tools.d/installer.d/
+├── settings.conf        # the module sequence (show / exec) and instances
+├── branding/eggs/       # branding.desc: product name, version, URLs
+└── modules/*.conf       # partition, mount, users, unpackfs, removeuser, ...
 ```
 
-### 4.1 Krill as a "Calamares-Core-Runner"
-Krill is not an independent installer but a textual interpreter of Calamares:
-* It reads `settings.conf`.
-* It ignores the purely aesthetic modules (e.g. animated `welcome` slides).
-* It maps the logical Calamares modules onto its own Go functions (e.g. when it meets `- partition` in the `exec` phase, Krill launches its own interaction logic with `parted`/`sfdisk`).
+The preparation pipeline (`prepareInstallerEnvironment` in `pkg/cmd`) runs
+**always and once**, regardless of the chosen face: it loads the YAML profile,
+inspects the live system (firmware, available filesystems, live user, display
+manager, squashfs location) and writes the directory above. From that point on:
 
-## 5. Development Roadmap
+* **Calamares** is launched with `-c /etc/oa-tools.d/installer.d/` and does
+  its own thing with its own C++/Python modules.
+* **Krill** parses the same files (`pkg/krill/config.go`) and executes the
+  same logical sequence with its own Go modules (`pkg/krill/engine`).
 
-1.  **Phase 1 — Repository unification:** rename the currently isolated packages into `sysinstall`.
-2.  **Phase 2 — The base parser (`engine`):** write the Go structs needed to parse `settings.conf` and `branding.desc`.
-3.  **Phase 3 — The logical switch (`dispatcher`):** the logic deciding whether to start Calamares or Krill. *(A `dispatcher` package exists in the codebase.)*
-4.  **Phase 4 — Krill UI:** read the sequence (`InstallationPlan`) and build the corresponding TUI screens. Candidate library: **Bubbletea** (charmbracelet).
-5.  **Phase 5 — Krill execution:** connect the TUI modules to the system commands performing the physical installation.
+**Golden rule:** every per-distro difference (squashfs path, UEFI vs BIOS,
+live user to remove, available filesystems) is baked into the generated
+`.conf` files. Krill inherits it for free, with no parallel logic to keep in
+sync. If a module is added to `settings.conf`, both installers see it.
 
-## Starting Point
+## 3. Krill as a "Calamares-Core-Runner"
 
-The existing `calamares` package is used in two ways (configuration generation on the live system and bootloader preparation, see `prepare_oa_bootloader.go`); the unification described above starts from there.
+Krill is not an independent installer but a textual interpreter of the
+Calamares configuration:
+
+* It reads `settings.conf` and flattens the `exec` sequence.
+* It maps each logical module onto a Go function in `pkg/krill/engine`:
+  `partition` (sfdisk + mkfs), `mount`, `unpackfs` (unsquashfs), `machineid`,
+  `fstab`, `locale` (+ timezone), `keyboard`, `users`, `displaymanager`,
+  `removeuser`, `umount`.
+* **`shellprocess@*` modules run verbatim**: the same `.conf` files and shell
+  scripts that Calamares executes (bootloader included) are run by Krill in
+  chroot, with the same `-` prefix convention for tolerated failures. Nothing
+  is rewritten.
+* Purely aesthetic modules (`welcome` slides, qml) are ignored.
+
+Two implementation tricks worth knowing:
+
+1. **The target mount point is `/tmp/calamares-root-krill`** on purpose: the
+   existing bridge script `oa-prepare-target.sh` locates the target by
+   globbing `/tmp/calamares-root-*`, so the bootloader scripts work unchanged
+   under both installers.
+2. **`networkcfg` is a Krill-only module** (Calamares does not configure the
+   network at all). It is inserted into the exec sequence *after* `users` by
+   Krill itself (`buildPlan`), without touching the shared `settings.conf`.
+   With a static address it writes whatever the target understands: an
+   ifupdown stanza, a NetworkManager keyfile, a systemd-networkd unit.
+
+Everything the engine does is logged, command by command, to
+`/var/log/krill.log`.
+
+## 4. Package Layout
+
+```
+pkg/cmd/
+├── sysinstall.go            # 'coa sysinstall' (parent command)
+├── sysinstall_prepare.go    # the shared preparation pipeline
+├── sysinstall_calamares.go  # GUI face: qml symlink + launch
+└── sysinstall_krill.go      # TUI face (+ --unattended flag)
+
+pkg/calamares/               # config generators (Prepare*) + Launch
+pkg/krill/
+├── config.go                # reader of the finished configuration + live detection
+├── krill.go                 # Bubbletea wizard (7 steps)
+├── unattended.go            # non-interactive install, same defaults as the TUI
+└── engine/                  # the executors (one Go module per logical step)
+```
+
+## 5. Modes of Use
+
+```bash
+sudo coa sysinstall calamares           # GUI
+sudo coa sysinstall krill               # TUI wizard
+sudo coa sysinstall krill --unattended  # no questions: live-user defaults,
+                                        # password 'evolution', first disk,
+                                        # 10-second abort countdown
+```
+
+The automatic dispatcher (`coa sysinstall` with no subcommand choosing the
+face by detecting X11/Wayland and the calamares binary) is designed but not
+yet implemented — see the [roadmap](./roadmap.md).
+
+## History
+
+The original draft of this document proposed that Krill parse `settings.conf`
+directly — which is what was built — but also imagined a separate `sysinstall/`
+package tree with `engine/`, `adapters/` and a standalone dispatcher. In
+practice the configuration generators grew naturally inside `pkg/calamares`,
+the shared pipeline was extracted into `pkg/cmd`, and Krill (reader + TUI +
+engine) lives under `pkg/krill`. The decisive simplification was recognizing
+that the **finished configuration directory is the only contract needed**
+between the GUI and the TUI: since oa-tools generates those files itself,
+Krill re-reading them is not duplication but the cheapest possible interface.
