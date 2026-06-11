@@ -1,59 +1,64 @@
-# CI Architecture in oa-tools (Smoketest vs CI Theater)
+# ⚙️ CI Architecture: Hammers & Furnace
 
-> "The Master said: 'To know what you know and what you do not know, that is true knowledge.' Do not force the machine to simulate what the heavens forbid." — *The Way of the Code*
+The CI of `oa-tools` is split into two pipelines with complementary jobs, both living in `.github/workflows/`:
 
-This document outlines the philosophy and technical considerations guiding Continuous Integration (CI) within the `oa-tools` monorepo (`oa` in C, `coa` in Go).
+| Pipeline | Workflow | Where it runs | What it produces |
+| :--- | :--- | :--- | :--- |
+| 🔨 **Hammers** | `hammers.yml` | GitHub-hosted runners (containers) | Native packages (`.deb`, `.apk`, `.pkg.tar.zst`, `.rpm`) |
+| 🏭 **Furnace** | `furnace.yml` | Self-hosted runner + Proxmox VE | Bootable ISO images via `coa remaster` |
 
-## The Context: System Software vs Web Applications
-
-The vast majority of CI/CD platforms (such as GitHub Actions, GitLab CI, etc.) are designed for web applications or generic user-space software. In those environments, tests orchestrate isolated, hardened Docker containers devoid of special privileges.
-
-`oa-tools` is a **low-level remastering framework**. To fulfill its duty, it must:
-1. Manipulate file systems directly.
-2. Execute complex bind mounts (`/proc`, `/sys`, `/dev`) inside a `liveroot`.
-3. Invoke `chroot` operations.
-4. Interact directly with the host's Linux Kernel primitives.
-
-## The Failure of "CI Theater"
-
-Attempting to emulate the entire remastering flight plan (up to SquashFS creation and final ISO generation via `xorriso`) within standard GitHub Actions containers encounters insurmountable security restrictions at the host kernel level of the runners.
-
-Forcing the pipeline into these blind environments leads to:
-* Systematic failures of the internal chroot shell (`oa_shell` exit code 1) due to partial or dummy mounts.
-* The introduction of a massive amount of "fake" conditional logic inside the plan YAMLs (e.g., `{{ if .IsGitHubAction }}`) just to satisfy the GitHub validator.
-
-Wasting time writing artificial code to bypass CI restrictions adds zero value to the project. **The quality of system software is tested on the road, not in a test tube.**
-
-## The Strategy: The Radical Smoketest
-
-To overcome this, the CI on GitHub Actions has been stripped down to its core, implementing a pure **Smoketest** focused on code structure and syntax health rather than standard deployment simulation.
-
-The workflow on `ubuntu-latest` executes everything:
-1. **C Compilation (`oa`):** Verifies that the GCC toolchain compiles the core without syntax or linking errors.
-2. **Go Compilation (`coa`):** Verifies that the Go compiler resolves dependencies and handles types correctly.
-3. **Complete Remastering Flow:** Inside the execution plan, we applied a surgical bypass:
-
-```go
-if isGitHubAction {
-	excludes = append(excludes,
-		"home/runner/work",
-		"usr",
-		"var",
-	)
-}
-```
-
-By excluding the massive weight of `usr` and `var` directories without altering the workflow logic, the pipeline executes the *entire* chain—including `mksquashfs` and `xorriso`—producing a non-functional but structurally valid ISO image in less than two minutes. This proves that the codebase is structurally sound, free of major regressions, and that the internal `oa_umount` module successfully cleans up all 12 system mounts.
-
-## The True Testing Ground: Vagrant and Real Virtualization
-
-The actual end-to-end validation of the remastering infrastructure is delegated to full virtualization environments under the complete control of the developer:
-
-* **Proxmox VE (current setup):** end-to-end remastering runs on self-hosted runners backed by KVM virtual machines with "pristine" snapshots, one per tested family (Alpine/apk, Arch/pacman, Debian/apt, Fedora/dnf). See [proxmox.md](./proxmox.md).
-* **Local Development VMs (Debian/Ubuntu):** Where the kernel is real and root privileges are effective.
-* **Vagrant (legacy local lab):** Inside a Vagrant box, the operating system runs on a proper hypervisor (VirtualBox/QEMU) with a native kernel, allowing `oa_mount_logic` and `oa_shell` in a chroot environment to operate exactly as they would on physical hardware. See [vagrant.md](./vagrant.md).
-
-In these native environments, the framework activates biological sensors (e.g., detecting specific paths or users) to calibrate the behavior of the flight plan (such as favoring fast SquashFS compression during development).
+The split follows a simple observation: **packaging** is user-space work and runs happily inside GitHub's containers, while **remastering** needs a real kernel, real mounts and real root — things a hardened CI container cannot provide. Trying to fake the full remaster flow on GitHub runners only produces "CI theater": artificial bypass logic that adds zero value. The quality of system software is tested on the road, not in a test tube.
 
 ---
-*"Nature does not hurry, yet everything is accomplished." From a couch in Rome, while Sinner dismantled Ruud.*
+
+## 🔨 Hammers: the Packaging Matrix
+
+Runs on every push and pull request to `main` (plus manual dispatch). A `fail-fast: false` matrix spins up one container per target distribution:
+
+| Distro | Image | Package |
+| :--- | :--- | :--- |
+| Alpine | `alpine:latest` | `.apk` (via `abuild`) |
+| Arch | `archlinux:latest` | `.pkg.tar.zst` |
+| Manjaro | `manjarolinux/base:latest` | `.pkg.tar.zst` |
+| Debian | `debian:bookworm` | `.deb` |
+| Fedora | `fedora:latest` | `.rpm` |
+| openSUSE | `opensuse/tumbleweed` | `.rpm` |
+
+Each leg of the matrix performs the same ritual:
+
+1. **Workshop setup:** installs the native toolchain (GCC, Go, make, the distro's packaging tools) and creates the unprivileged `artisan` user.
+2. **Checkout & build:** full-history checkout (tags included, used for versioning), then `make` compiles both `oa` (C) and `coa` (Go).
+3. **Native packaging:** `make package` runs as `artisan` and drives the distro-specific packager (`abuild`, `makepkg`-style, `dpkg`, `rpmbuild`).
+4. **Live install test:** the freshly built package is installed on the running container — a real smoke test of the package metadata and file layout.
+5. **Artifact upload:** the package is published as a GitHub artifact (`oa-tools-<distro>`, 7-day retention).
+
+Hammers therefore answers the question: *does the codebase compile and package cleanly on every supported family?*
+
+---
+
+## 🏭 Furnace: Remastering on Real Iron
+
+Triggered manually (`workflow_dispatch`), Furnace runs on a **self-hosted runner** that orchestrates the Proxmox VE host (**father**). Each matrix entry maps a distribution to a dedicated KVM virtual machine with a pristine snapshot:
+
+| Distro | VMID | Snapshot |
+| :--- | :--- | :--- |
+| Alpine | 301 | `virgin` |
+| Arch | 302 | `virgin` |
+| Debian | 303 | `virgin` |
+| Fedora | 304 | `virgin` |
+
+> **Why only these four?** CLI editions of Manjaro are hard to source, and openSUSE support is currently lagging behind. The Furnace matrix will grow as those gaps close.
+
+The flight plan of each job:
+
+1. **Secrets (air-gapped):** credentials are sourced from `/etc/p4/secrets.env` on the runner itself — never stored on GitHub — and masked in the logs with `::add-mask::`.
+2. **Rollback & boot:** the VM is rolled back to its `virgin` snapshot and started (`qm rollback` + `qm start` on father). Every run begins from an identical, uncontaminated system.
+3. **Dynamic IP discovery:** the VM's MAC address is read live from `qm config`, then a fast ARP sweep over the local subnet locates the assigned IP — no static leases required.
+4. **Wait for SSH:** the job polls until the guest's SSH daemon answers.
+5. **Install & remaster:** the latest released package for that distro is downloaded from GitHub Releases, installed natively, then `sudo coa remaster` bakes the ISO on a real kernel with real mounts.
+6. **Export:** the resulting ISO is shipped to the Proxmox storage (`export iso --clean`, which also prunes older versions on the server).
+7. **Shutdown:** the VM is powered off (`if: always()`), leaving the hypervisor clean even on failure.
+
+Furnace therefore answers the question: *does the full remastering chain actually produce a bootable ISO on every supported family?*
+
+For the host/guest configuration behind this setup (VirtFS, QEMU Guest Agent, snapshots), see [proxmox.md](./proxmox.md). The older local lab based on Vagrant is documented in [vagrant.md](./vagrant.md).
