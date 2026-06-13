@@ -18,11 +18,28 @@ true
 {{ end }}
 
 # ----------------------------------------------------------------------------
+# 6. COPY KERNEL/INITRD
+# ----------------------------------------------------------------------------
+{{ define "distro_copy_kernel_cmd" }}
+#!/bin/bash
+set -e
+# debian: distro_copy_kernel_cmd
+
+KERNEL_VERSION=$(uname -r)
+echo "-> Copia Kernel Debian/Ubuntu ($KERNEL_VERSION)..."
+
+cp "/boot/vmlinuz-$KERNEL_VERSION" /home/eggs/isodir/live/vmlinuz
+cp "/boot/initrd.img-$KERNEL_VERSION" /home/eggs/isodir/live/initrd.img
+{{ end }}
+
+# ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" -}}
 command: "echo 'Nessun hook squashfs necessario per la famiglia Debian.' || true"
 {{ end -}}
+
+
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS

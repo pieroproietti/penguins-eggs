@@ -9,11 +9,10 @@ import (
 )
 
 func RunShell(payload []byte) error {
-	// 1. Definiamo la struttura che mappa il JSON inviato dal C
 	var config struct {
-		Chroot             bool   `json:"chroot"`
+		Chroot   bool   `json:"chroot"`
 		LiveRoot string `json:"live_root,omitempty"`
-		Params             struct {
+		Params   struct {
 			Command string `json:"command"`
 		} `json:"params"`
 	}
@@ -22,71 +21,82 @@ func RunShell(payload []byte) error {
 		return fmt.Errorf("errore parsing JSON: %w", err)
 	}
 
-	scriptContent := config.Params.Command
-	if scriptContent == "" {
+	if config.Params.Command == "" {
 		return fmt.Errorf("nessun comando specificato nel parametro 'command'")
 	}
 
-	var tmpFilePath string // Il percorso reale del file sul sistema host
-	var execPath string    // Il percorso che bash userà per leggerlo (diverso se in chroot)
+	// 'set -e' blocca lo script al primo errore
+	scriptContent := "set -e\n\n" + config.Params.Command
 
-	// 2. Logica di creazione del file temporaneo (Host vs Chroot)
+	var tmpFilePath string // Percorso fisico sull'host
+	var execPath string    // Percorso logico per la shell (interno o esterno)
+
+	// 1. Logica della directory ".oa-tools" nella home di root
 	if config.Chroot {
 		if config.LiveRoot == "" {
 			return fmt.Errorf("chroot richiesto ma live_root mancante")
 		}
 
-		// Se siamo in chroot, il file DEVE esistere fisicamente all'interno del chroot
-		// Usiamo la cartella /tmp del liveroot
-		chrootTmpDir := filepath.Join(config.LiveRoot, "tmp")
-		os.MkdirAll(chrootTmpDir, 1777) // Assicuriamoci che /tmp esista nel chroot
+		// Percorso HOST: /home/eggs/root-livefs/root/.oa-tools
+		chrootWorkDir := filepath.Join(config.LiveRoot, "root", ".oa-tools")
+		
+		// Creiamo la directory con permessi restrittivi (solo root accede)
+		os.MkdirAll(chrootWorkDir, 0700) 
 
-		tmpFile, err := os.CreateTemp(chrootTmpDir, "oa-shell-*.sh")
+		tmpFile, err := os.CreateTemp(chrootWorkDir, "shell-*.sh")
 		if err != nil {
-			return fmt.Errorf("impossibile creare script temporaneo nel chroot: %w", err)
+			return fmt.Errorf("impossibile creare script in %s: %w", chrootWorkDir, err)
 		}
 		tmpFilePath = tmpFile.Name()
 		tmpFile.WriteString(scriptContent)
 		tmpFile.Close()
 
-		// Il percorso che il bash chrootato vedrà sarà /tmp/nomefile.sh
-		execPath = "/tmp/" + filepath.Base(tmpFilePath)
+		// Percorso CHROOT (quello che vede bash): /root/.oa-tools/shell-XXX.sh
+		execPath = "/root/.oa-tools/" + filepath.Base(tmpFilePath)
+
 	} else {
-		// Esecuzione locale standard
-		tmpFile, err := os.CreateTemp("", "oa-shell-*.sh")
+		// Esecuzione locale standard sull'host (assumiamo che oa-tools giri da root)
+		hostWorkDir := "/root/.oa-tools"
+		os.MkdirAll(hostWorkDir, 0700)
+
+		tmpFile, err := os.CreateTemp(hostWorkDir, "shell-*.sh")
 		if err != nil {
-			return fmt.Errorf("impossibile creare script temporaneo locale: %w", err)
+			return fmt.Errorf("impossibile creare script in %s: %w", hostWorkDir, err)
 		}
 		tmpFilePath = tmpFile.Name()
 		tmpFile.WriteString(scriptContent)
 		tmpFile.Close()
 
-		execPath = tmpFilePath // Host e bash vedono lo stesso percorso
+		execPath = tmpFilePath
 	}
 
-	// 3. Assicuriamoci di pulire il file alla fine dell'esecuzione
+	// Pulizia chirurgica: rimuoviamo solo il file alla fine. 
+	// La cartella .oa-tools può restare, fungerà da cache operativa.
 	defer os.Remove(tmpFilePath)
 
-	// Rendiamo il file eseguibile
-	os.Chmod(tmpFilePath, 0755)
-
-	// 4. Esecuzione del comando
 	var cmd *exec.Cmd
+
+	// 2. Rilevamento interprete ed esecuzione
 	if config.Chroot {
-		fmt.Printf("📦 Esecuzione script in chroot (%s)...\n", config.LiveRoot)
-		// Eseguiamo chroot passando il percorso "interno" dello script
-		cmd = exec.Command("chroot", config.LiveRoot, execPath)
+		// Controllo salvavita: c'è bash? Altrimenti usiamo sh (per Alpine)
+		shellPath := "/bin/sh"
+		if _, err := os.Stat(filepath.Join(config.LiveRoot, "bin", "bash")); err == nil {
+			shellPath = "/bin/bash"
+		}
+
+		fmt.Printf("📦 [worker shell] Esecuzione in chroot (via %s)...\n", shellPath)
+		cmd = exec.Command("chroot", config.LiveRoot, shellPath, execPath)
 	} else {
-		fmt.Println("💻 Esecuzione script shell locale...")
+		fmt.Println("💻 [worker shell] Esecuzione locale...")
 		cmd = exec.Command("bash", execPath)
 	}
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	// 5. Avvio e cattura dell'errore
+	// 3. Avvio
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("esecuzione script fallita (verifica la sintassi bash): %w", err)
+		return fmt.Errorf("esecuzione shell fallita (codice %s): %w", config.Params.Command, err)
 	}
 
 	return nil

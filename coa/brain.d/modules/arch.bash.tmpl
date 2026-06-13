@@ -1,5 +1,5 @@
 # ==============================================================================
-# 🏹 MODULO ARCH LINUX
+# 🏹 MODULO ARCH LINUX (arch.bash.tmpl)
 # ==============================================================================
 
 # ----------------------------------------------------------------------------
@@ -15,14 +15,55 @@
 #!/bin/bash
 set -e
 # arch: distro_initramfs_cmd
-mv /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
+
+# 1. Verifica la presenza di archiso (Senza questo, mkinitcpio fallisce)
+if ! pacman -Qs archiso > /dev/null; then
+    echo "[ERRORE FATALE] Il pacchetto 'archiso' non è installato nel chroot."
+    echo "mkinitcpio fallirà perché non troverà gli hook. Interruzione."
+    exit 1
+fi
+
+echo "-> Preparazione mkinitcpio.conf per ambiente Live..."
+
+# 2. Backup sicuro tramite copia
+cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
+
+# 3. TRAP: Garantisce il ripristino del file originale in qualsiasi caso (successo o errore)
+trap 'mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf; echo "-> mkinitcpio.conf originale ripristinato."' EXIT
+
+# 4. Iniezione della configurazione Live
 cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
-HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs block filesystems keyboard keymap consolefont filesystems fsck)
+HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs block filesystems keyboard keymap consolefont fsck)
 COMPRESSION="zstd"      
 EOF
+
+# 5. Generazione
+echo "-> Esecuzione mkinitcpio -P..."
 mkinitcpio -P
-mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
+{{ end }}
+
+# ----------------------------------------------------------------------------
+# 6. COPY KERNEL/INITRD
+# ----------------------------------------------------------------------------
+{{ define "distro_copy_kernel_cmd" }}
+#!/bin/bash
+set -e
+# arch: distro_copy_kernel_cmd
+
+KERNEL_VERSION=$(uname -r)
+echo "-> Copia Kernel Arch/Derivate ($KERNEL_VERSION)..."
+
+PKGBASE_FILE="/lib/modules/$KERNEL_VERSION/pkgbase"
+if [ ! -f "$PKGBASE_FILE" ]; then
+    echo "[ERRORE] File pkgbase mancante!"
+    exit 1
+fi
+
+PKG_NAME=$(cat "$PKGBASE_FILE")
+
+cp "/boot/vmlinuz-$PKG_NAME" /home/eggs/isodir/live/vmlinuz
+cp "/boot/initramfs-$PKG_NAME.img" /home/eggs/isodir/live/initrd.img
 {{ end }}
 
 # ----------------------------------------------------------------------------
@@ -32,13 +73,25 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 #!/bin/bash
 set -e
 # arch: distro_hook_squashfs
+
+echo "-> Preparazione struttura Arch ISO (airootfs.sfs)..."
 mkdir -p /home/eggs/isodir/arch/x86_64
+
+# Attesa attiva per il file squashfs
 timeout=10
 while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
     sleep 1
     timeout=$((timeout-1))
 done
+
+if [ ! -f /home/eggs/isodir/live/filesystem.squashfs ]; then
+    echo "[ERRORE] filesystem.squashfs non trovato dopo il timeout!"
+    exit 1
+fi
+
+# Creazione dell'hardlink richiesto dagli script di boot di archiso
 ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/airootfs.sfs
+echo "-> Hardlink airootfs.sfs creato con successo."
 {{ end }}
 
 # ==============================================================================
@@ -48,13 +101,25 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/a
 #!/bin/bash
 set -e
 # arch: distro_hook_install_logic
+
+echo "-> Esecuzione hook post-installazione (Calamares)..."
+
+# Pulizia dei permessi sudo della sessione live
 rm -f /etc/sudoers.d/00-live
+
+# Rigenerazione dell'initramfs per l'hardware target (senza gli hook di archiso)
 mkinitcpio -P
+
+# Installazione dinamica del Bootloader (UEFI vs Legacy)
 if [ -d /sys/firmware/efi ]; then
-      grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
+    echo "-> Rilevato sistema UEFI, installazione GRUB EFI..."
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
 else
-      TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
-      grub-install --target=i386-pc --recheck "$TARGET_DISK"
+    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    echo "-> Rilevato sistema BIOS/Legacy, installazione GRUB su $TARGET_DISK..."
+    grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
+
 grub-mkconfig -o /boot/grub/grub.cfg
+echo "-> Bootloader configurato."
 {{ end }}

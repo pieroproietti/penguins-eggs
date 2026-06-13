@@ -117,7 +117,8 @@ remaster:
     module: "shell"
     chroot: false
     params:
-      command: "/etc/oa-tools.d/scripts/copy-kernel-initrd.sh"
+      command: |
+{{ include "distro_copy_kernel_cmd" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
 # 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER

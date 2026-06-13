@@ -19,6 +19,33 @@ dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensus
 {{ end }}
 
 # ----------------------------------------------------------------------------
+# 6. COPY KERNEL/INITRD
+# ----------------------------------------------------------------------------
+{{ define "distro_copy_kernel_cmd" }}
+#!/bin/bash
+set -e
+# opensuse: distro_copy_kernel_cmd
+
+KERNEL_VERSION=$(uname -r)
+echo "-> Copia Kernel openSUSE ($KERNEL_VERSION)..."
+
+KERNEL_SRC="/boot/vmlinuz-$KERNEL_VERSION"
+INITRD_SRC="/boot/initrd-$KERNEL_VERSION"
+
+# Controllo di sicurezza
+if [ ! -f "$KERNEL_SRC" ] || [ ! -f "$INITRD_SRC" ]; then
+    echo "[ERRORE FATALE] Impossibile trovare i file di boot per openSUSE ($KERNEL_VERSION) in /boot!"
+    exit 1
+fi
+
+# Copia nella isodir
+cp "$KERNEL_SRC" /home/eggs/isodir/live/vmlinuz
+cp "$INITRD_SRC" /home/eggs/isodir/live/initrd.img
+
+echo "-> Copia completata con successo."
+{{ end }}
+
+# ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS (Struttura LiveOS dracut identica)
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}

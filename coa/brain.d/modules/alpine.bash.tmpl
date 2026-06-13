@@ -117,6 +117,38 @@ mkinitfs -c /etc/mkinitfs/live.conf -o /boot/initramfs-oa-tools $KVER
 {{ end }}
 
 # ----------------------------------------------------------------------------
+# 6. COPY KERNEL/INITRD
+# ----------------------------------------------------------------------------
+{{ define "distro_copy_kernel_cmd" }}
+#!/bin/bash
+set -e
+# alpine: distro_copy_kernel_cmd
+
+KERNEL_VERSION=$(uname -r)
+
+# Estrae tutto ciò che c'è dopo l'ultimo trattino (es: lts, virt, edge)
+FLAVOR="${KERNEL_VERSION##*-}"
+
+echo "-> Copia Kernel Alpine (Versione: $KERNEL_VERSION, Flavor: $FLAVOR)..."
+
+KERNEL_SRC="/boot/vmlinuz-$FLAVOR"
+INITRD_SRC="/boot/initramfs-$FLAVOR"
+
+# Controllo di sicurezza
+if [ ! -f "$KERNEL_SRC" ] || [ ! -f "$INITRD_SRC" ]; then
+    echo "[ERRORE FATALE] Impossibile trovare i file di boot per Alpine ($FLAVOR) in /boot!"
+    exit 1
+fi
+
+# Copia nella isodir
+cp "$KERNEL_SRC" /home/eggs/isodir/live/vmlinuz
+cp "$INITRD_SRC" /home/eggs/isodir/live/initrd.img
+
+echo "-> Copia completata con successo."
+{{ end }}
+
+
+# ----------------------------------------------------------------------------
 # 8. COMPRESSIONE FILESYSTEM.SQUASHFS
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}
