@@ -29,27 +29,26 @@ func RouteTask(payload []byte) error {
 	// 2. Lo switch passa direttamente i byte crudi. I worker faranno un SECONDO Unmarshal,
 	// ma questa volta usando le loro struct specifiche e complete.
 	switch envelope.Module {
+	case "autologin-gui":
+		return worker.RunAutologin(payload)
+
+	case "copy":
+		return worker.RunCopy(payload)
+
+	case "mksquashfs":
+		return worker.RunMksquashfs(payload)
+
+	case "script":
+		return worker.RunScript(payload)
+
 	case "shell":
 		return worker.RunShell(payload)
 
 	case "template":
 		return worker.RunTemplate(payload)
 
-	case "script":
-		return worker.RunScript(payload)
-
-	case "copy":
-		return worker.RunCopy(payload)
-
-	case "autologin-gui":
-		return worker.RunAutologin(payload)
-
-	case "mksquashfs":
-		return worker.RunMksquashfs(payload)
-
 	case "xorriso":
 		return worker.RunXorriso(payload)
-
 	default:
 		return fmt.Errorf("dispatcher: modulo sconosciuto '%s'", envelope.Module)
 	}
