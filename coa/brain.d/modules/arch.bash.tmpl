@@ -5,8 +5,7 @@
 # ----------------------------------------------------------------------------
 # DECLARATIVE COSTANTS 
 # ----------------------------------------------------------------------------
-{{ define "distro_admin_group" }}wheel{{ end }}
-{{ define "distro_boot_params" }}archisobasedir=arch archisolabel=OA_LIVE cow_spacesize=2G{{ end }}
+{{- define "distro_boot_params" -}}archisobasedir=arch archisolabel=OA_LIVE cow_spacesize=2G{{- end -}}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
@@ -16,31 +15,36 @@
 set -e
 # arch: distro_initramfs_cmd
 
-# 1. Verifica la presenza di archiso (Senza questo, mkinitcpio fallisce)
 if ! pacman -Qs archiso > /dev/null; then
-    echo "[ERRORE FATALE] Il pacchetto 'archiso' non è installato nel chroot."
-    echo "mkinitcpio fallirà perché non troverà gli hook. Interruzione."
+    echo "[ERRORE FATALE] archiso non installato."
     exit 1
 fi
 
-echo "-> Preparazione mkinitcpio.conf per ambiente Live..."
+echo "-> Preparazione mkinitcpio.conf per Live..."
 
-# 2. Backup sicuro tramite copia
 cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
+mkdir -p /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
+[ "$(ls -A /etc/mkinitcpio.conf.d/ 2>/dev/null)" ] && mv /etc/mkinitcpio.conf.d/*.conf /etc/mkinitcpio.conf.d.bak/
+[ "$(ls -A /usr/lib/mkinitcpio.conf.d/ 2>/dev/null)" ] && mv /usr/lib/mkinitcpio.conf.d/*.conf /usr/lib/mkinitcpio.conf.d.bak/
 
-# 3. TRAP: Garantisce il ripristino del file originale in qualsiasi caso (successo o errore)
-trap 'mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf; echo "-> mkinitcpio.conf originale ripristinato."' EXIT
+trap '
+mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
+[ "$(ls -A /etc/mkinitcpio.conf.d.bak/ 2>/dev/null)" ] && mv /etc/mkinitcpio.conf.d.bak/*.conf /etc/mkinitcpio.conf.d/
+[ "$(ls -A /usr/lib/mkinitcpio.conf.d.bak/ 2>/dev/null)" ] && mv /usr/lib/mkinitcpio.conf.d.bak/*.conf /usr/lib/mkinitcpio.conf.d/
+rm -rf /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
+' EXIT
 
-# 4. Iniezione della configurazione Live
 cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
 HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs block filesystems keyboard keymap consolefont fsck)
 COMPRESSION="zstd"      
 EOF
 
-# 5. Generazione
-echo "-> Esecuzione mkinitcpio -P..."
-mkinitcpio -P
+KERNEL_VERSION=$(uname -r)
+
+# IL FIX È QUI: Nome file univoco e inequivocabile
+echo "-> Generazione initramfs live univoco..."
+mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
 {{ end }}
 
 # ----------------------------------------------------------------------------
@@ -51,19 +55,37 @@ mkinitcpio -P
 set -e
 # arch: distro_copy_kernel_cmd
 
+LIVEROOT="/home/eggs/liveroot"
+ISODIR="/home/eggs/isodir"
+
 KERNEL_VERSION=$(uname -r)
 echo "-> Copia Kernel Arch/Derivate ($KERNEL_VERSION)..."
 
-PKGBASE_FILE="/lib/modules/$KERNEL_VERSION/pkgbase"
+PKGBASE_FILE="$LIVEROOT/lib/modules/$KERNEL_VERSION/pkgbase"
 if [ ! -f "$PKGBASE_FILE" ]; then
-    echo "[ERRORE] File pkgbase mancante!"
+    echo "[ERRORE] File pkgbase mancante in $PKGBASE_FILE!"
     exit 1
 fi
 
 PKG_NAME=$(cat "$PKGBASE_FILE")
 
-cp "/boot/vmlinuz-$PKG_NAME" /home/eggs/isodir/live/vmlinuz
-cp "/boot/initramfs-$PKG_NAME.img" /home/eggs/isodir/live/initrd.img
+# 1. Copia del Kernel
+echo "-> Copia vmlinuz-$PKG_NAME..."
+cp "$LIVEROOT/boot/vmlinuz-$PKG_NAME" "$ISODIR/live/vmlinuz"
+
+# 2. Copia dell'initramfs inequivocabile
+if [ ! -f "$LIVEROOT/boot/oa-initrd.img" ]; then
+    echo "[ERRORE FATALE] oa-initrd.img non trovato in $LIVEROOT/boot!"
+    exit 1
+fi
+
+echo "-> Copia oa-initrd.img..."
+cp "$LIVEROOT/boot/oa-initrd.img" "$ISODIR/live/initrd.img"
+
+# 3. Pulizia della scena del crimine dal chroot
+rm -f "$LIVEROOT/boot/initramfs-oa-initrd.img"
+
+echo "-> Copia blindata completata con successo."
 {{ end }}
 
 # ----------------------------------------------------------------------------

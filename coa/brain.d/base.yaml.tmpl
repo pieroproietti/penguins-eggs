@@ -66,14 +66,16 @@ remaster:
             cp -f /etc/oa-tools.d/brain.d/assets/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
         fi
 
-  # 3.1. --- GENERAZIONE MENU DI BOOT (Heredoc Script) ---
+# 3.1. --- GENERAZIONE MENU DI BOOT (Modulo Script) ---
   - name: "generate-boot-menus"
     description: "Generazione dinamica GRUB, ISOLINUX e trampolino EFI"
-    module: "shell"
+    module: "script"
     chroot: false
-    "params": 
-      "command": "/etc/oa-tools.d/scripts/generate-menus.sh \"/home/eggs/isodir\" \"boot=live components cow_spacesize=2G\""
-
+    params:
+      src: "/etc/oa-tools.d/scripts/generate-menus.sh"
+      args:
+        - "/home/eggs/isodir"
+        - '{{ template "distro_boot_params" . }}'
 
 # ----------------------------------------------------------------------------
 # 4. USER IDENTITY

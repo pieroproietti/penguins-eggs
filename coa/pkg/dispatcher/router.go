@@ -38,8 +38,8 @@ func RouteTask(payload []byte) error {
 	case "mksquashfs":
 		return worker.RunMksquashfs(payload)
 
-	// case "script":
-	// 		return worker.RunScript(payload)
+	case "script":
+		return worker.RunScript(payload)
 
 	case "shell":
 		return worker.RunShell(payload)
