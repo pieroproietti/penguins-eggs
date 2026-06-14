@@ -91,5 +91,6 @@ This project collects stars, look to the sky... contribute!
 ---
 *Created with passion by Piero Proietti.*
 
-### blog
+### blog ed AI
 * [https://penguins-eggs.net](https://penguins-eggs.net)
+* [llvm.txt](https://penguins-eggs.net/llvm.txt)
