@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"coa/pkg/parser"

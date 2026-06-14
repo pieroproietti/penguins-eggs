@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"coa/pkg/calamares"
+	"coa/pkg/sysinstall/common"
 	"coa/pkg/parser"
 	"coa/pkg/utils"
 )
@@ -24,43 +24,43 @@ func prepareInstallerEnvironment(oaVersion string) error {
 	}
 
 	// 2. Fase Preparazione (Scrive gli script in /tmp/coa)
-	if err := calamares.SetupOABootloader(profile); err != nil {
+	if err := sysinstall.SetupOABootloader(profile); err != nil {
 		return fmt.Errorf("errore preparazione script: %v", err)
 	}
 
 	// 3. Fase di setup (Pulisce /etc, estrae asset)
-	if err := calamares.Setup(); err != nil {
+	if err := sysinstall.Setup(); err != nil {
 		return fmt.Errorf("errore setup ambiente installer: %v", err)
 	}
 
 	// 4. Configurazione DINAMICA
 	// partition.conf
-	if err := calamares.PreparePartitionConf(); err != nil {
+	if err := sysinstall.PreparePartitionConf(); err != nil {
 		utils.LogError("Errore configurazione partition.conf: %v", err)
 	}
 
 	// mount.conf
-	if err := calamares.PrepareMountConf(); err != nil {
+	if err := sysinstall.PrepareMountConf(); err != nil {
 		utils.LogError("Errore configurazione mount.conf: %v", err)
 	}
 
 	// users.conf
-	if err := calamares.PrepareUserConf(); err != nil {
+	if err := sysinstall.PrepareUserConf(); err != nil {
 		utils.LogError("Errore configurazione users.conf: %v", err)
 	}
 
 	// displaymanager.conf
-	if err := calamares.PrepareDisplaymanagerConf(); err != nil {
+	if err := sysinstall.PrepareDisplaymanagerConf(); err != nil {
 		utils.LogError("Errore configurazione displaymanager.conf: %v", err)
 	}
 
 	// removeusers.conf
-	if err := calamares.PrepareRemoveuserConf(); err != nil {
+	if err := sysinstall.PrepareRemoveuserConf(); err != nil {
 		utils.LogError("Errore creazione removeuser.conf: %v", err)
 	}
 
 	// branding.desc
-	if err := calamares.PrepareBrandingDesc(oaVersion); err != nil {
+	if err := sysinstall.PrepareBrandingDesc(oaVersion); err != nil {
 		utils.LogError("Errore creazione branding.desc: %v", err)
 	}
 

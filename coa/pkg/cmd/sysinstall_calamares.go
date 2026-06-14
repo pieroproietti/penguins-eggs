@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	"coa/pkg/calamares"
+	"coa/pkg/sysinstall/common"
+	"coa/pkg/sysinstall/calamares"
 	"coa/pkg/utils"
 	"os"
 
@@ -34,7 +35,7 @@ func RunCalamaresInstaller(oaVersion string) {
 	}
 
 	// 3. LAUNCH: Calamares parte e trova la pappa pronta
-	if err := calamares.Launch(); err != nil {
+	if err := sysinstall.Launch(); err != nil {
 		utils.LogError("L'installatore si è chiuso con un errore: %v", err)
 	}
 }

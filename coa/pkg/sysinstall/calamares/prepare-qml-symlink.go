@@ -1,6 +1,7 @@
 package calamares
 
 import (
+	"coa/pkg/sysinstall/common"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,7 +10,7 @@ import (
 // prepareQmlSymlink assicura che Calamares trovi la cartella QML
 // dove se l'aspetta (accanto al file di configurazione custom).
 func PrepareQmlSymlink() error {
-	configDir := oaInstallerRoot
+	configDir := sysinstall.InstallerDRoot
 	source := "/usr/share/calamares/qml"
 	target := filepath.Join(configDir, "qml")
 

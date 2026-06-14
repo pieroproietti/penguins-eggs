@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ username: %s
 `, liveUser, liveUser)
 
 	// 3. Definiamo il percorso.
-	targetPath := oaInstallerRoot + "/modules/removeuser.conf"
+	targetPath := InstallerDRoot + "/modules/removeuser.conf"
 
 	err := os.MkdirAll(filepath.Dir(targetPath), 0755)
 	if err != nil {

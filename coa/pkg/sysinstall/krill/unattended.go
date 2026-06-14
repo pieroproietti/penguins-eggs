@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"coa/pkg/krill/engine"
+	"coa/pkg/sysinstall/krill/engine"
 )
 
 // UnattendedPassword è la password di default delle installazioni

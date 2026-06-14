@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"coa/pkg/krill/engine"
+	"coa/pkg/sysinstall/krill/engine"
 
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/spinner"

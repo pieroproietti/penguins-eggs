@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"coa/pkg/krill" // <-- Aggiungi l'import del tuo nuovo pacchetto Krill
+	"coa/pkg/sysinstall/krill" // <-- Aggiungi l'import del tuo nuovo pacchetto Krill
 	"coa/pkg/utils"
 	"os"
 

@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"fmt"
@@ -108,7 +108,7 @@ lvm:
   enable: false
 `, currentDate, dialect, tableType, availableFSYaml, layoutYaml, btrfsSubvolumes)
 
-	targetPath := oaInstallerRoot + "/modules/partition.conf"
-	os.MkdirAll(oaInstallerRoot+"/modules", 0755)
+	targetPath := InstallerDRoot + "/modules/partition.conf"
+	os.MkdirAll(InstallerDRoot+"/modules", 0755)
 	return os.WriteFile(targetPath, []byte(config), 0644)
 }

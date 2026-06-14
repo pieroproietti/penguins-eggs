@@ -13,7 +13,7 @@
 ## Open Points
 
 ### 1. Krill — remaining refinements
-The rewrite is done (`coa/pkg/krill` + `coa/pkg/krill/engine`); what remains:
+The rewrite is done (`coa/pkg/sysinstall/krill` + `coa/pkg/sysinstall/krill/engine`); what remains:
 - **Automatic dispatcher**: `coa sysinstall` without subcommand should detect the environment (display server + calamares binary) and pick the GUI or the TUI by itself, as per the original design.
 - **btrfs subvolumes**: the engine currently mounts btrfs flat; the `@/@home/@cache/@log` layout described in `mount.conf` is not applied yet.
 - **TUI polish**: the static-address fields arrive prefilled and cursor editing can be confusing — add a quick clear (ctrl+u) or select-all-on-focus. The Welcome screen wording "version oa-tools vX" is ambiguous (it is the oa-tools version, not the OS one).

@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"fmt"
@@ -75,10 +75,10 @@ mountOptions:
       - noatime
 `, btrfsOptions)
 
-	targetPath := oaInstallerRoot + "/modules/mount.conf"
+	targetPath := InstallerDRoot + "/modules/mount.conf"
 
 	// Assicuriamoci che la directory esista
-	if err := os.MkdirAll(oaInstallerRoot+"/modules", 0755); err != nil {
+	if err := os.MkdirAll(InstallerDRoot+"/modules", 0755); err != nil {
 		return err
 	}
 

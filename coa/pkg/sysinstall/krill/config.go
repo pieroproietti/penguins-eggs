@@ -18,7 +18,7 @@ import (
 )
 
 // DefaultConfigRoot è la directory generata dalla pipeline di preparazione.
-// Deve coincidere con oaInstallerRoot del pacchetto calamares.
+// Deve coincidere con InstallerDRoot del pacchetto calamares.
 const DefaultConfigRoot = "/etc/oa-tools.d/installer.d"
 
 // --- STRUTTURE DEI FILE (formato Calamares) ---

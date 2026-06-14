@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"fmt"
@@ -99,7 +99,7 @@ hostname:
   template: "oa-${product}"
 `, yamlGroups, adminGroup)
 
-	targetPath := oaInstallerRoot + "/modules/users.conf"
+	targetPath := InstallerDRoot + "/modules/users.conf"
 	os.MkdirAll(filepath.Dir(targetPath), 0755)
 
 	return os.WriteFile(targetPath, []byte(config), 0644)

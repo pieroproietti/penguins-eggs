@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"fmt"
@@ -21,9 +21,9 @@ func Setup() error {
 	logCalamares("Generazione ambiente Evolution Edition...")
 
 	// Pulizia e preparazione directory
-	os.RemoveAll(oaInstallerRoot)
+	os.RemoveAll(InstallerDRoot)
 
-	if err := assets.ExtractCalamares(oaInstallerRoot); err != nil {
+	if err := assets.ExtractCalamares(InstallerDRoot); err != nil {
 		return fmt.Errorf("errore estrazione asset: %v", err)
 	}
 

@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"fmt"
@@ -47,7 +47,7 @@ executable: "%s"
 showAll: true
 `, dmName, dmName, dmName)
 
-	targetPath := oaInstallerRoot + "/modules/displaymanager.conf"
+	targetPath := InstallerDRoot + "/modules/displaymanager.conf"
 	os.MkdirAll(filepath.Dir(targetPath), 0755)
 	return os.WriteFile(targetPath, []byte(config), 0644)
 }

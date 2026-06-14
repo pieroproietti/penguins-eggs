@@ -1,4 +1,4 @@
-package calamares
+package sysinstall
 
 import (
 	"bufio"
@@ -108,7 +108,7 @@ welcomeStyleCalamares: true
 	)
 
 	// 4. Scrittura del file
-	targetDir := oaInstallerRoot + "/branding/eggs"
+	targetDir := InstallerDRoot + "/branding/eggs"
 	targetPath := filepath.Join(targetDir, "branding.desc")
 
 	if err := os.MkdirAll(targetDir, 0755); err != nil {
