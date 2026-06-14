@@ -25,7 +25,7 @@ func initWorkspace() error {
 	dirs := []string{
 		"modules",
 		"branding/eggs",
-		"qml", // <--- IL FIX PER L'ERRORE FATAL SUL QML
+		"qml",
 	}
 
 	for _, d := range dirs {
