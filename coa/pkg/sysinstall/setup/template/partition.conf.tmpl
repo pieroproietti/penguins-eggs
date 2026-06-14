@@ -1,0 +1,41 @@
+---
+# partition.conf - Generato dinamicamente il {{ .Date }}
+# Dialetto: {{ .Dialect }} | Stile Architettura "KIRO/Dubois"
+
+defaultPartitionTableType: {{ .TableType }}
+defaultFileSystemType:  "ext4"
+availableFileSystemTypes: {{ .AvailableFS }}
+
+# Deleghiamo la creazione dell'EFI al motore automatico di Calamares
+efi:
+    mountPoint:         "/boot/efi"
+    recommendedSize:    300MiB
+    minimumSize:        32MiB
+    label:              "efi"
+
+userSwapChoices:
+    - none
+    - small
+    - suspend
+    - file
+
+swapPartitionName:      swap
+luksGeneration:         luks1
+drawNestedPartitions:   false
+alwaysShowPartitionLabels: true
+initialPartitioningChoice: none
+initialSwapChoice: none
+
+lvm:
+    enable: false
+
+{{ if .HasBtrfs }}# Regole di subvolume essenziali per BTRFS
+btrfs:
+  - mountPoint: /
+    subvolume: /@
+  - mountPoint: /home
+    subvolume: /@home
+  - mountPoint: /var/cache
+    subvolume: /@cache
+  - mountPoint: /var/log
+    subvolume: /@log{{ end }}

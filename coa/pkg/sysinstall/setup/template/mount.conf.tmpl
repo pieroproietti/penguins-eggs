@@ -1,0 +1,57 @@
+---
+# mount.conf - Generato dinamicamente il {{ .Date }}
+# Filosofia: https://penguins-eggs.net/blog/eggs-bananas
+
+extraMounts:
+  - device: proc
+    fs: proc
+    mountPoint: /proc
+  - device: sys
+    fs: sysfs
+    mountPoint: /sys
+  - device: /dev
+    mountPoint: /dev
+    options:
+      - bind
+  - device: tmpfs
+    fs: tmpfs
+    mountPoint: /run
+  - device: /run/udev
+    mountPoint: /run/udev
+    options:
+      - bind
+  - device: efivarfs
+    fs: efivarfs
+    mountPoint: /sys/firmware/efi/efivars
+    efi: true
+
+btrfsSubvolumes:
+  - mountPoint: /
+    subvolume: /@
+  - mountPoint: /home
+    subvolume: /@home
+  - mountPoint: /var/cache
+    subvolume: /@cache
+  - mountPoint: /var/log
+    subvolume: /@log
+  - mountPoint: /.snapshots
+    subvolume: /@snapshots
+
+btrfsSwapSubvol: /@swap
+
+mountOptions:
+  - filesystem: default
+    options:
+      - defaults
+  - filesystem: efi
+    options:
+      - defaults
+      - umask=0077
+  - filesystem: btrfs
+    options:
+      - defaults{{ if not .IsBIOS }}
+      - compress=zstd:1{{ end }}
+  - filesystem: btrfs_swap
+    options:
+      - defaults
+      - noatime

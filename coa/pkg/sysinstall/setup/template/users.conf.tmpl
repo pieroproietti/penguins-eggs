@@ -1,0 +1,41 @@
+---
+# users.conf - Generato dinamicamente il {{ .Date }}
+# OA-Tools: Configurazione Universale Dinamica
+# Password: Approccio "Libertario" totale per Eggs & Bananas
+
+defaultGroups:
+{{- range .Groups }}
+  - {{ . }}
+{{- end }}
+
+sudoersGroup:    {{ .AdminGroup }}
+sudoersConfigureWithGroup: false
+
+# Disabilitiamo la rimozione dell'utente live qui se usiamo il modulo specifico
+# removeLiveUser: true 
+
+# --- IL FIX PER LE PASSWORD ---
+# Permettiamo esplicitamente password deboli e lo impostiamo come default
+allowWeakPasswords: true
+allowWeakPasswordsDefault: true
+
+passwordRequirements:
+  minLength: -1
+  maxLength: -1
+  libpwquality:
+    - minlen=0
+    - minclass=0
+    - dictcheck=0  # <--- DISATTIVA IL CONTROLLO DIZIONARIO
+    - usercheck=0  # Disattiva controllo basato sul nome utente
+
+# Configurazione User & Hostname
+user:
+  shell: /bin/bash
+  forbidden_names: [ root, nobody ]
+  home_permissions: "0700"
+
+hostname:
+  location: EtcFile
+  writeHostsFile: true
+  template: "oa-${product}"
+  

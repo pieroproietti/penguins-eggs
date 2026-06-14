@@ -8,10 +8,23 @@ import (
 	"strings"
 )
 
+// BrandingConfig contiene i dati dinamici da iniettare nel template
+type BrandingConfig struct {
+	ProductName         string
+	ShortProductName    string
+	Version             string
+	VersionedName       string
+	ShortVersionedName  string
+	BootloaderEntryName string
+	ProductUrl          string
+	SupportUrl          string
+	KnownIssuesUrl      string
+	ReleaseNotesUrl     string
+}
+
 // PrepareBrandingDesc genera dinamicamente il file branding.desc leggendo os-release.
-// Riceve in input la versione di oa-tools (es. "0.7.6") da iniettare nel branding.
 func PrepareBrandingDesc(oaVersion string) error {
-	oaVersion = "oa-tools " + oaVersion
+	fullVersion := "oa-tools " + oaVersion
 
 	// 1. Carichiamo le info dal sistema (os-release)
 	osInfo := make(map[string]string)
@@ -55,65 +68,29 @@ func PrepareBrandingDesc(oaVersion string) error {
 		bugReportUrl = "https://github.com/pieroproietti/oa-tools/issues/"
 	}
 
-	// Usiamo HOME_URL come fallback per le note di rilascio se non c'è di meglio
 	releaseNotesUrl := homeUrl
 
-	config := fmt.Sprintf(`---
-componentName: eggs
+	// 4. Popoliamo la struttura per il template
+	config := BrandingConfig{
+		ProductName:         strings.ToUpper(prettyName),
+		ShortProductName:    strings.ToLower(prettyName),
+		Version:             fullVersion,
+		VersionedName:       fmt.Sprintf("%s (%s)", strings.ToLower(prettyName), fullVersion),
+		ShortVersionedName:  fmt.Sprintf("%s %s", strings.ToUpper(prettyName), fullVersion),
+		BootloaderEntryName: name,
+		ProductUrl:          homeUrl,
+		SupportUrl:          supportUrl,
+		KnownIssuesUrl:      bugReportUrl,
+		ReleaseNotesUrl:     releaseNotesUrl,
+	}
 
-images:
-  productIcon:    "eggs.png"
-  productLogo:    "eggs.png"
-  productWelcome: "welcome.png"
-
-slideshow:       "show.qml"
-slideshowAPI:    1
-
-strings:
-  productName:         "%s"
-  shortProductName:    "%s"
-  version:             "%s"
-  shortVersion:        "%s"
-  versionedName:       "%s (%s)"
-  shortVersionedName:  "%s %s"
-  bootloaderEntryName: "%s"
-  productUrl:          "%s"
-  supportUrl:          "%s"
-  knownIssuesUrl:      "%s"
-  releaseNotesUrl:     "%s"
-
-style:
-  SidebarBackground:        "#292F34"
-  sidebarBackground:        "#292F34"
-  SidebarBackgroundCurrent: "#D35400"
-  sidebarBackgroundCurrent: "#D35400"
-  SidebarText:              "#FFFFFF"
-  sidebarText:              "#FFFFFF"
-  SidebarTextCurrent:       "#292F34"
-  sidebarTextCurrent:       "#292F34"
-
-welcomeStyleCalamares: true
-`,
-		strings.ToUpper(prettyName),            // productName
-		strings.ToLower(prettyName),            // shortProductName
-		oaVersion,                              // version
-		oaVersion,                              // shortVersion
-		strings.ToLower(prettyName), oaVersion, // versionedName
-		strings.ToUpper(prettyName), oaVersion, // shortVersionedName
-		name,            // bootloaderEntryName
-		homeUrl,         // productUrl
-		supportUrl,      // supportUrl
-		bugReportUrl,    // knownIssuesUrl
-		releaseNotesUrl, // releaseNotesUrl
-	)
-
-	// 4. Scrittura del file
-	targetDir := InstallerDRoot + "/branding/eggs"
+	// 5. Scrittura del file tramite template
+	targetDir := filepath.Join(InstallerDRoot, "branding", "eggs")
 	targetPath := filepath.Join(targetDir, "branding.desc")
 
 	if err := os.MkdirAll(targetDir, 0755); err != nil {
 		return fmt.Errorf("impossibile creare la directory di branding: %v", err)
 	}
 
-	return os.WriteFile(targetPath, []byte(config), 0644)
+	return renderAndSaveEmbedded("branding.desc.tmpl", targetPath, config, 0644)
 }

@@ -1,0 +1,10 @@
+---
+# displaymanager.conf - Generato dinamicamente il {{ .Date }}
+# Rilevato: {{ .DMName }}
+
+displaymanagers:
+  - {{ .DMName }}
+
+# Configura l'autologin se l'utente lo ha richiesto nell'interfaccia
+executable: "{{ .DMName }}"
+showAll: true
