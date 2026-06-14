@@ -79,18 +79,67 @@ Everything the engine does is logged, command by command, to
 pkg/cmd/
 ├── sysinstall.go            # 'coa sysinstall' (parent command)
 ├── sysinstall_prepare.go    # the shared preparation pipeline
-├── sysinstall_calamares.go  # GUI face: qml symlink + launch
+├── sysinstall_calamares.go  # GUI face: calls setup.Run()
 └── sysinstall_krill.go      # TUI face (+ --unattended flag)
 
-pkg/calamares/               # config generators (Prepare*) + Launch
-pkg/krill/
-├── config.go                # reader of the finished configuration + live detection
-├── krill.go                 # Bubbletea wizard (7 steps)
-├── unattended.go            # non-interactive install, same defaults as the TUI
-└── engine/                  # the executors (one Go module per logical step)
+pkg/sysinstall/
+├── calamares/
+│   └── qml-symlink.go       # QML symlink helper for Calamares GUI
+├── krill/
+│   ├── config.go            # reader of the finished configuration + live detection
+│   ├── krill.go             # Bubbletea wizard (7 steps)
+│   ├── unattended.go        # non-interactive install, same defaults as the TUI
+│   └── engine/              # the executors (one Go module per logical step):
+│       ├── engine.go        #   orchestration
+│       ├── mount.go         #   mount/umount
+│       ├── network.go       #   networkcfg (Krill-only)
+│       ├── partition.go     #   sfdisk + mkfs
+│       ├── shellprocess.go  #   verbatim shellprocess@* runner
+│       ├── system.go        #   machineid, fstab, locale, keyboard
+│       └── users.go         #   user creation, displaymanager, removeuser
+└── setup/
+    ├── orchestrator.go      # buildInstaller(): cascades all generators
+    ├── run.go               # Run() entrypoint; Launch() starts Calamares
+    ├── types.go             # package-level constants (InstallerDRoot, etc.)
+    ├── workspace.go         # initWorkspace(): creates the config dir tree
+    ├── utils.go             # renderAndSaveEmbedded() template helper
+    ├── bootloader-conf.go   # shellprocess_oa_bootloader.conf generator
+    ├── bootloader-scripts.go# oa-bootloader.sh + oa-prepare-target.sh
+    ├── branding-desc.go     # branding/eggs/branding.desc
+    ├── displaymanager-conf.go
+    ├── mount-conf.go
+    ├── partition-conf.go
+    ├── removeuser-conf.go
+    ├── unpack-conf.go
+    ├── user-conf.go
+    └── template/            # Go embed templates for every .conf and .sh
 ```
 
-## 5. Modes of Use
+## 5. Bootloader Strategy
+
+The bootloader script (`oa-bootloader.sh`, generated from `bootloader.sh.tmpl`) is
+fully autonomous: it detects the environment at install time and picks the right
+loader without any hardcoded distro assumption.
+
+**Decision tree:**
+
+| Firmware | Bootloader available | Family | Action |
+|----------|----------------------|--------|--------|
+| UEFI | `bootctl` (systemd-boot) | Arch, Manjaro | Install systemd-boot; copy kernel + initrd + ucode to EFI partition; write `loader.conf` + entry |
+| UEFI | `grub-install` | any | Install GRUB EFI; run `update-grub` or `grub-mkconfig` |
+| BIOS | `grub-install` | any | Install GRUB i386-pc on target disk |
+
+**Safe mode:** if other OS entries are already present in `/boot/efi/EFI/`, the
+script adds `--no-nvram` (GRUB) or `--no-variables` (bootctl) to avoid hijacking
+the NVRAM boot order in multi-boot setups.
+
+**Debian-family fix:** before the bootloader install, `update-initramfs -u` is
+run with `RESUME=none` to strip the hibernation hook (irrelevant on a fresh
+install target).
+
+---
+
+## 6. Modes of Use
 
 ```bash
 sudo coa sysinstall calamares           # GUI
@@ -104,7 +153,7 @@ The automatic dispatcher (`coa sysinstall` with no subcommand choosing the
 face by detecting X11/Wayland and the calamares binary) is designed but not
 yet implemented — see the [roadmap](./roadmap.md).
 
-## History
+## 7. History
 
 The original draft of this document proposed that Krill parse `settings.conf`
 directly — which is what was built — but also imagined a separate `sysinstall/`
