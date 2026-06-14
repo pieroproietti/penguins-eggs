@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"coa/pkg/sysinstall/setup"
 	"coa/pkg/sysinstall/calamares"
+	"coa/pkg/sysinstall/setup"
 	"coa/pkg/utils"
 	"os"
 
@@ -30,7 +30,7 @@ func RunCalamaresInstaller(oaVersion string) {
 	}
 
 	// 2. qmlSymlink: serve solo all'interfaccia grafica
-	if err := calamares.PrepareQmlSymlink(); err != nil {
+	if err := calamares.QmlSymlink(); err != nil {
 		utils.LogError("Errore creazione link QML: %v", err)
 	}
 

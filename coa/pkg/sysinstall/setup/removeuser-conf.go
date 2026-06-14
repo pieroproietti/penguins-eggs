@@ -1,32 +1,21 @@
 package setup
 
 import (
-	"fmt"
-	"os"
 	"path/filepath"
 )
 
+// Definiamo una struct dedicata per il template
+type RemoveUserConfig struct {
+	Username string
+}
+
 func removeuserConf() error {
-	// 1. Identifichiamo l'utente da rimuovere
-	// Usiamo "live", che è il nostro standard per l'uovo
-	liveUser := "live"
-
-	// 2. Generiamo lo YAML specifico per il modulo removeuser
-	// Nota: Il modulo si aspetta semplicemente la chiave 'username'
-	config := fmt.Sprintf(`---
-# OA-Tools: Configurazione Rimozione Utente Live
-# Questo modulo assicura che l'utente '%s' non resti nel sistema installato
-
-username: %s
-`, liveUser, liveUser)
-
-	// 3. Definiamo il percorso.
-	targetPath := InstallerDRoot + "/modules/removeuser.conf"
-
-	err := os.MkdirAll(filepath.Dir(targetPath), 0755)
-	if err != nil {
-		return err
+	config := RemoveUserConfig{
+		Username: "live", // Il tuo standard per l'uovo
 	}
 
-	return os.WriteFile(targetPath, []byte(config), 0644)
+	targetPath := filepath.Join(InstallerDRoot, "modules", "removeuser.conf")
+
+	// Ora usa il motore unificato
+	return renderAndSaveEmbedded("removeuser.conf.tmpl", targetPath, config, 0644)
 }
