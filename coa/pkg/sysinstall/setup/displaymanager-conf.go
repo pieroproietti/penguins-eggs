@@ -33,7 +33,7 @@ func GetActiveDM() (string, string) {
 }
 
 // PrepareDisplaymanagerConf genera la configurazione per il login
-func PrepareDisplaymanagerConf() error {
+func displaymanagerConf() error {
 	dmName, _ := GetActiveDM()
 
 	// Se non troviamo DM, meglio non scrivere il file

@@ -12,8 +12,7 @@ type MountConfig struct {
 	IsBIOS bool // Flag per disinnescare la compressione zstd per compatibilità GRUB
 }
 
-// PrepareMountConf genera il file mount.conf dinamico
-func PrepareMountConf() error {
+func mountConf() error {
 	tableType := getPartitionTableType()
 
 	config := MountConfig{

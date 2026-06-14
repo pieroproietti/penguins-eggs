@@ -40,8 +40,8 @@ func renderAndSaveEmbedded(tmplName, outPath string, data interface{}, perm os.F
 	return os.WriteFile(outPath, buf.Bytes(), perm)
 }
 
-// SetupOABootloader genera i file necessari alla finalizzazione del sistema in staging (/tmp/coa)
-func SetupOABootloader(d *distro.Distro, stagingDir string) error {
+// bootloader genera i file necessari alla finalizzazione del sistema in staging (/tmp/coa)
+func bootloader(d *distro.Distro, stagingDir string) error {
 	if err := os.MkdirAll(stagingDir, 0755); err != nil {
 		return err
 	}

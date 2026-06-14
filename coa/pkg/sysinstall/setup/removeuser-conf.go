@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func PrepareRemoveuserConf() error {
+func removeuserConf() error {
 	// 1. Identifichiamo l'utente da rimuovere
 	// Usiamo "live", che è il nostro standard per l'uovo
 	liveUser := "live"

@@ -40,37 +40,37 @@ func Run(oaVersion string) error {
 	// 2. Fase Preparazione (Scrive gli script in /tmp/coa)
 	d := distro.NewDistro()
 	stagingDir := "/tmp/coa" 
-	if err := SetupOABootloader(d, stagingDir); err != nil {
+	if err := bootloader(d, stagingDir); err != nil {
 		return fmt.Errorf("errore durante la generazione del bootloader: %w", err)
 	}
 
 	// partition.conf
-	if err := PreparePartitionConf(); err != nil {
+	if err := partitionConf(); err != nil {
 		utils.LogError("Errore configurazione partition.conf: %v", err)
 	}
 
 	// mount.conf
-	if err := PrepareMountConf(); err != nil {
+	if err := mountConf(); err != nil {
 		utils.LogError("Errore configurazione mount.conf: %v", err)
 	}
 
 	// users.conf
-	if err := PrepareUserConf(); err != nil {
+	if err := userConf(); err != nil {
 		utils.LogError("Errore configurazione users.conf: %v", err)
 	}
 
 	// displaymanager.conf
-	if err := PrepareDisplaymanagerConf(); err != nil {
+	if err := displaymanagerConf(); err != nil {
 		utils.LogError("Errore configurazione displaymanager.conf: %v", err)
 	}
 
 	// removeusers.conf
-	if err := PrepareRemoveuserConf(); err != nil {
+	if err := removeuserConf(); err != nil {
 		utils.LogError("Errore creazione removeuser.conf: %v", err)
 	}
 
 	// branding.desc
-	if err := PrepareBrandingDesc(oaVersion); err != nil {
+	if err := brandingDesc(oaVersion); err != nil {
 		utils.LogError("Errore creazione branding.desc: %v", err)
 	}
 

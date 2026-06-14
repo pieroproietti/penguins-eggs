@@ -43,7 +43,7 @@ func GetAvailableFS() []string {
 	return available
 }
 
-func PreparePartitionConf() error {
+func partitionConf() error {
 	tableType := getPartitionTableType()
 	fsList := GetAvailableFS()
 

@@ -23,7 +23,7 @@ type BrandingConfig struct {
 }
 
 // PrepareBrandingDesc genera dinamicamente il file branding.desc leggendo os-release.
-func PrepareBrandingDesc(oaVersion string) error {
+func brandingDesc(oaVersion string) error {
 	fullVersion := "oa-tools " + oaVersion
 
 	// 1. Carichiamo le info dal sistema (os-release)

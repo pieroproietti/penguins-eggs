@@ -15,7 +15,7 @@ type UserConfig struct {
 	AdminGroup string
 }
 
-func PrepareUserConf() error {
+func userConf() error {
 	// 1. Identifichiamo l'utente live
 	liveUser := os.Getenv("SUDO_USER")
 	if liveUser == "" || liveUser == "root" {
