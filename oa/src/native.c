@@ -122,7 +122,7 @@ int run_native_users(cJSON *task) {
                 LOG_WARN("      [!] Warning: mkdir fallita per %s (errno: %d)", full_home, errno);
             }
 
-            char home_cmd[PATH_SAFE * 2];
+            char home_cmd[PATH_SAFE * 4]; // 16KB sono più che sufficienti per contenere i 3 percorsi
             snprintf(home_cmd, sizeof(home_cmd), 
                      "cp -a %s/etc/skel/. %s/ 2>/dev/null || true && chown -R %d:%d %s", 
                      resolved_root, full_home, OE_UID_HUMAN_MIN, OE_UID_HUMAN_MIN, full_home);
