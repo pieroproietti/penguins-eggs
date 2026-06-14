@@ -1,4 +1,4 @@
-package sysinstall
+package setup
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"os/exec"
 
 	"coa/pkg/assets"
+	"coa/pkg/distro"
 	"coa/pkg/utils"
 )
 
@@ -16,20 +17,63 @@ func logCalamares(format string, a ...interface{}) {
 	utils.LogNormal("%s", msg)
 }
 
-// Setup coordina la pulizia, l'estrazione e la configurazione dinamica
-func Setup() error {
+// setup.Run coordina la pulizia, l'estrazione e la configurazione dinamica
+func Run(oaVersion string) error {
 	logCalamares("Generazione ambiente Evolution Edition...")
 
-	// Pulizia e preparazione directory
+	// Rimuove tutto
 	os.RemoveAll(InstallerDRoot)
 
+	// Estrae installer.d
 	if err := assets.ExtractCalamares(InstallerDRoot); err != nil {
 		return fmt.Errorf("errore estrazione asset: %v", err)
 	}
 
+	// Crea la struttura di installer.d
 	if err := os.MkdirAll(modulesDir, 0755); err != nil {
 		return fmt.Errorf("errore creazione directory moduli: %v", err)
 	}
+
+	// =========================================================
+	// Configurazione installer
+	// =========================================================
+	// 2. Fase Preparazione (Scrive gli script in /tmp/coa)
+	d := distro.NewDistro()
+	stagingDir := "/tmp/coa" 
+	if err := SetupOABootloader(d, stagingDir); err != nil {
+		return fmt.Errorf("errore durante la generazione del bootloader: %w", err)
+	}
+
+	// partition.conf
+	if err := PreparePartitionConf(); err != nil {
+		utils.LogError("Errore configurazione partition.conf: %v", err)
+	}
+
+	// mount.conf
+	if err := PrepareMountConf(); err != nil {
+		utils.LogError("Errore configurazione mount.conf: %v", err)
+	}
+
+	// users.conf
+	if err := PrepareUserConf(); err != nil {
+		utils.LogError("Errore configurazione users.conf: %v", err)
+	}
+
+	// displaymanager.conf
+	if err := PrepareDisplaymanagerConf(); err != nil {
+		utils.LogError("Errore configurazione displaymanager.conf: %v", err)
+	}
+
+	// removeusers.conf
+	if err := PrepareRemoveuserConf(); err != nil {
+		utils.LogError("Errore creazione removeuser.conf: %v", err)
+	}
+
+	// branding.desc
+	if err := PrepareBrandingDesc(oaVersion); err != nil {
+		utils.LogError("Errore creazione branding.desc: %v", err)
+	}
+
 
 	// Qui dentro deployDynamicConfigs chiamerà anche la generazione di users.conf
 	if err := deployDynamicConfigs(); err != nil {
@@ -97,3 +141,4 @@ func findSquashfsPath() string {
 	}
 	return "/ERRORE_SQUASHFS_NON_TROVATO/filesystem.squashfs"
 }
+

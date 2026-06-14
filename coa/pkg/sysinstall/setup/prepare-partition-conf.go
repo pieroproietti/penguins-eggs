@@ -1,4 +1,4 @@
-package sysinstall
+package setup
 
 import (
 	"fmt"

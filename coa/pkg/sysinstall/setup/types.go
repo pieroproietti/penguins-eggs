@@ -1,4 +1,4 @@
-package sysinstall
+package setup
 
 // Costanti globali del pacchetto calamares
 const (

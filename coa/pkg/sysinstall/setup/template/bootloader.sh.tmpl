@@ -1,0 +1,125 @@
+#!/bin/bash
+set -e
+
+FAMILY="{{ .Family }}"
+DISTRO_ID="{{ .ID }}"
+
+echo "oa-bootloader: Avvio configurazione autonoma per OS Family: $FAMILY | OS ID: $DISTRO_ID"
+
+# 1. Rilevamento UEFI o BIOS
+IS_UEFI=0
+if [ -d /sys/firmware/efi ]; then
+    IS_UEFI=1
+    echo "oa-bootloader: Rilevato ambiente UEFI."
+else
+    echo "oa-bootloader: Rilevato ambiente BIOS/Legacy."
+fi
+
+# 2. Rilevamento Bootloader disponibili
+HAS_BOOTCTL=0
+if command -v bootctl &> /dev/null; then
+    HAS_BOOTCTL=1
+    echo "oa-bootloader: Rilevato systemd-boot (bootctl)."
+fi
+
+HAS_GRUB=0
+if command -v grub-install &> /dev/null; then
+    HAS_GRUB=1
+    echo "oa-bootloader: Rilevato GRUB."
+fi
+
+# 3. Fix specifico initramfs (Solo famiglia Debian)
+if [ "$FAMILY" = "debian" ] || [ "$FAMILY" = "ubuntu" ]; then
+    if [ -d /etc/initramfs-tools/conf.d ]; then
+        echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
+        update-initramfs -u || true
+    fi
+fi
+
+# 4. Albero Decisionale Bootloader
+if [ $IS_UEFI -eq 1 ]; then
+    # --- GESTIONE UEFI ---
+    if [ $HAS_BOOTCTL -eq 1 ] && { [ "$FAMILY" = "archlinux" ] || [ "$FAMILY" = "manjaro" ]; }; then
+        echo "oa-bootloader: Installazione systemd-boot per famiglia Arch..."
+        bootctl install
+        
+        echo "oa-bootloader: Generazione configurazione per systemd-boot..."
+        mkdir -p /boot/loader/entries
+        
+        # Estrazione dinamica file kernel/initrd
+        KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | head -n 1 | xargs basename)
+        INITRD_FILE=$(ls -1 /boot/initramfs-*.img 2>/dev/null | grep -v fallback | head -n 1 | xargs basename)
+        
+        # Estrazione dinamica microcodice (se presente)
+        UCODE_LINE=""
+        if [ -f /boot/amd-ucode.img ]; then
+            UCODE_LINE="initrd  /amd-ucode.img"
+        elif [ -f /boot/intel-ucode.img ]; then
+            UCODE_LINE="initrd  /intel-ucode.img"
+        fi
+
+        # Estrazione UUID Root da fstab
+        ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
+        
+        if [ -z "$KERNEL_FILE" ] || [ -z "$ROOT_PART" ]; then
+            echo "ERRORE: Impossibile determinare Kernel o Root UUID per systemd-boot!"
+            exit 1
+        fi
+
+        # Scrittura Entry OS
+        cat <<EOF > /boot/loader/entries/oa-linux.conf
+title   OA Linux ($DISTRO_ID)
+linux   /$KERNEL_FILE
+$UCODE_LINE
+initrd  /$INITRD_FILE
+options root=$ROOT_PART rw
+EOF
+
+        # Scrittura Loader base
+        cat <<EOF > /boot/loader/loader.conf
+default oa-linux.conf
+timeout 5
+console-mode max
+editor no
+EOF
+        echo "oa-bootloader: Entry systemd-boot generata con successo ($KERNEL_FILE su $ROOT_PART)."
+        
+    elif [ $HAS_GRUB -eq 1 ]; then
+        echo "oa-bootloader: Installazione GRUB (EFI)..."
+        grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
+        if command -v update-grub &> /dev/null; then
+            update-grub
+        else
+            grub-mkconfig -o /boot/grub/grub.cfg
+        fi
+    else
+        echo "ERRORE: Nessun bootloader (GRUB o systemd-boot) trovato nel sistema target!"
+        exit 1
+    fi
+else
+    # --- GESTIONE BIOS/LEGACY ---
+    if [ $HAS_GRUB -eq 1 ]; then
+        TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+        echo "oa-bootloader: Installazione GRUB (Legacy) su $TARGET_DISK..."
+        grub-install --target=i386-pc --recheck "$TARGET_DISK"
+        
+        if command -v update-grub &> /dev/null; then
+            update-grub
+        else
+            grub-mkconfig -o /boot/grub/grub.cfg
+        fi
+    else
+        echo "ERRORE: GRUB non installato. BIOS/Legacy richiede GRUB."
+        exit 1
+    fi
+fi
+
+# 5. Pulizia
+echo "oa-bootloader: Pulizia artefatti live..."
+rm -f /usr/local/bin/oa-trust-desktop
+rm -f /etc/xdg/autostart/trust-installer.desktop
+rm -f /usr/share/applications/install-system.desktop
+rm -f /etc/sudoers.d/00-live
+
+echo "oa-bootloader: Installazione bootloader completata."
+

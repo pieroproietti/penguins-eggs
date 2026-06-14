@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Cerchiamo la radice: prima controlliamo se l'ambiente passa $ROOT, altrimenti usiamo il fallback
+TARGET_ROOT=${ROOT}
+
+if [ -z "$TARGET_ROOT" ]; then
+    TARGET_ROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+fi
+
+if [ -z "$TARGET_ROOT" ]; then 
+    TARGET_ROOT=$(ls -d /tmp/calamares-root-* 2>/dev/null | head -n 1)
+fi
+
+echo "oa-bootloader: Operando su $TARGET_ROOT"
+
+# Copia lo script bash dinamico all'interno del sistema bersaglio
+cp /tmp/coa/oa-bootloader.sh "$TARGET_ROOT/tmp/oa-bootloader.sh"
+chmod +x "$TARGET_ROOT/tmp/oa-bootloader.sh"
+
+# Esegue lo script nella gabbia chroot
+chroot "$TARGET_ROOT" /bin/bash /tmp/oa-bootloader.sh
+
+# Rimuove le tracce
+rm -f "$TARGET_ROOT/tmp/oa-bootloader.sh"
