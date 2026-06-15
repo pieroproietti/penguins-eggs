@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"coa/pkg/sysinstall/krill" // <-- Aggiungi l'import del tuo nuovo pacchetto Krill
+	"coa/pkg/sysinstall/setup"
 	"coa/pkg/utils"
 	"os"
 
@@ -18,16 +19,14 @@ var krillSubCmd = &cobra.Command{
 		// Manteniamo la coerenza dei permessi, installare un sistema richiede root
 		CheckSudoRequirements("sysinstall krill", true)
 
-		runKrillInstaller(krillUnattended)
+		runKrillInstaller(AppVersion, krillUnattended)
 	},
 }
 
 // runKrillInstaller prepara la configurazione e avvia Krill (TUI o unattended).
-func runKrillInstaller(unattended bool) {
-	// Pipeline unica di preparazione (condivisa con Calamares):
-	// Krill leggerà la configurazione generata in /etc/oa-tools.d/installer.d/
-	if err := prepareInstallerEnvironment(AppVersion); err != nil {
-		utils.LogError("%v", err)
+func runKrillInstaller(oaVersion string, unattended bool) {
+	if err := setup.Run(AppVersion); err != nil {
+		utils.LogError("Errore setup ambiente installer: %v", err)
 		os.Exit(1)
 	}
 

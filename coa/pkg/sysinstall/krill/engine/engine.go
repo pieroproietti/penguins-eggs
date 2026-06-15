@@ -13,7 +13,7 @@ import (
 
 // DefaultTarget è il mount point del sistema in installazione.
 // Il nome imita Calamares di proposito: gli script shellprocess esistenti
-// (oa-prepare-target.sh) trovano il target cercando /tmp/calamares-root-*.
+// (oa-bridge.sh) trovano il target cercando /tmp/calamares-root-*.
 const DefaultTarget = "/tmp/calamares-root-krill"
 
 const logPath = "/var/log/krill.log"

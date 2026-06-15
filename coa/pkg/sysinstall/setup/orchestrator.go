@@ -15,17 +15,22 @@ func buildInstaller(oaVersion string) error {
 	d := distro.NewDistro()
 	utils.LogNormal("Generazione moduli e payload in corso...")
 
+	// 2. IL LINK QML! Fatto qui, è blindato.
+	if err := QmlSymlink(); err != nil {
+		return err
+	}
+
 	// 2. Chiamata in cascata agli Stampatori e ai Payload
 	tasks := []func() error{
+		func() error { return brandingDesc(oaVersion) },
+		func() error { return bootloaderScripts(d) },
 		partitionConf,
 		mountConf,
 		userConf,
 		displaymanagerConf,
 		removeuserConf,
 		unpackfsConf,
-		bootloaderConf,
-		func() error { return bootloaderScripts(d) },
-		func() error { return brandingDesc(oaVersion) },
+		shellprocessOaBootloader,
 	}
 
 	for _, task := range tasks {

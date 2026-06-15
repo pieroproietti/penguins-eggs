@@ -2,7 +2,7 @@ package setup
 
 import "path/filepath"
 
-func bootloaderConf() error {
+func shellprocessOaBootloader() error {
 	target := filepath.Join(InstallerDRoot, "modules", "shellprocess_oa_bootloader.conf")
-	return renderAndSaveEmbedded("shellprocess.conf.tmpl", target, nil, 0644)
+	return renderAndSaveEmbedded("shellprocess_oa_bootloader.tmpl", target, nil, 0644)
 }

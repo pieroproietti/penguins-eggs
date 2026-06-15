@@ -61,7 +61,7 @@ Calamares configuration:
 Two implementation tricks worth knowing:
 
 1. **The target mount point is `/tmp/calamares-root-krill`** on purpose: the
-   existing bridge script `oa-prepare-target.sh` locates the target by
+   existing bridge script `oa-bridge.sh` locates the target by
    globbing `/tmp/calamares-root-*`, so the bootloader scripts work unchanged
    under both installers.
 2. **`networkcfg` is a Krill-only module** (Calamares does not configure the
@@ -104,7 +104,7 @@ pkg/sysinstall/
     ├── workspace.go         # initWorkspace(): creates the config dir tree
     ├── utils.go             # renderAndSaveEmbedded() template helper
     ├── bootloader-conf.go   # shellprocess_oa_bootloader.conf generator
-    ├── bootloader-scripts.go# oa-bootloader.sh + oa-prepare-target.sh
+    ├── bootloader-scripts.go# oa-bootloader.sh + oa-bridge.sh
     ├── branding-desc.go     # branding/eggs/branding.desc
     ├── displaymanager-conf.go
     ├── mount-conf.go

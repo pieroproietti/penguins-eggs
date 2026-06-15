@@ -15,6 +15,6 @@ func bootloaderScripts(d *distro.Distro) error {
 	}
 
 	// Scrive il ponte
-	outBridge := filepath.Join(InstallerDRoot, "oa-prepare-target.sh")
-	return renderAndSaveEmbedded("bridge.sh.tmpl", outBridge, nil, 0755)
+	outBridge := filepath.Join(InstallerDRoot, "oa-bootloader-bridge.sh")
+	return renderAndSaveEmbedded("bootloader-bridge.sh.tmpl", outBridge, nil, 0755)
 }

@@ -1,12 +1,11 @@
 package setup
 
 import (
+	"coa/pkg/utils"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
-
-	"coa/pkg/utils"
 )
 
 // Run è l'entrypoint esposto. Genera e lancia.

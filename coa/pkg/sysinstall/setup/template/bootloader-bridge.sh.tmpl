@@ -11,14 +11,10 @@ if [ -z "$TARGET_ROOT" ]; then
     TARGET_ROOT=$(ls -d /tmp/calamares-root-* 2>/dev/null | head -n 1)
 fi
 
-echo "oa-bootloader: Operando su $TARGET_ROOT"
+echo "oa-bootloader-bridge: copia oa-bootloaade su $TARGET_ROOT"
 
-# Copia lo script bash dinamico all'interno del sistema bersaglio
-cp /tmp/coa/oa-bootloader.sh "$TARGET_ROOT/tmp/oa-bootloader.sh"
-chmod +x "$TARGET_ROOT/tmp/oa-bootloader.sh"
+# Copia lo script oa-bootloader.sh all'interno del sistema bersaglio
+cp /etc/oa-tools.d/installer.d/oa-bootloader.sh "$TARGET_ROOT/tmp/"
 
 # Esegue lo script nella gabbia chroot
 chroot "$TARGET_ROOT" /bin/bash /tmp/oa-bootloader.sh
-
-# Rimuove le tracce
-rm -f "$TARGET_ROOT/tmp/oa-bootloader.sh"
