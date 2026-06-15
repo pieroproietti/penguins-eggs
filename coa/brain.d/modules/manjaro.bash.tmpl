@@ -25,7 +25,7 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 {{ end }}
 
 # ----------------------------------------------------------------------------
-# 8. COMPRESSIONE FILESYSTEM.SQUASHFS
+# 8.1 HARDLINK TO isodir/live/filesystem.squashfs in arch, fedora, manjaro
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" }}
 #!/bin/bash

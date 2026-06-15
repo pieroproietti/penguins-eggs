@@ -12,9 +12,9 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
-# Nessuna operazione necessaria.
-true
-{{ end }}
+# debian: distro_initramfs_cmd: no need operations
+"true"
+{{ end -}}
 
 # ----------------------------------------------------------------------------
 # 6. COPY KERNEL/INITRD
@@ -32,10 +32,11 @@ cp "/boot/initrd.img-$KERNEL_VERSION" /home/eggs/isodir/live/initrd.img
 {{ end }}
 
 # ----------------------------------------------------------------------------
-# 8. COMPRESSIONE FILESYSTEM.SQUASHFS
+# 8.1 HARDLINK TO isodir/live/filesystem.squashfs in arch, fedora, manjaro
 # ----------------------------------------------------------------------------
 {{ define "distro_hook_squashfs" -}}
-command: "echo 'Nessun hook squashfs necessario per la famiglia Debian.' || true"
+# debian: distro_hook_squashfs: no need operations
+"true"
 {{ end -}}
 
 

@@ -146,13 +146,13 @@ cp "$INITRD_SRC" /home/eggs/isodir/live/initrd.img
 echo "-> Copia completata con successo."
 {{ end }}
 
-
 # ----------------------------------------------------------------------------
-# 8. COMPRESSIONE FILESYSTEM.SQUASHFS
+# 8.1 HARDLINK TO isodir/live/filesystem.squashfs in arch, fedora, manjaro
 # ----------------------------------------------------------------------------
-{{ define "distro_hook_squashfs" }}
-# Su Alpine non serve l'distro_hook_squashfs
-{{ end }}
+{{ define "distro_hook_squashfs" -}}
+# alpine: distro_hook_squashfs: no need operations
+"true"
+{{ end -}}
 
 # ==============================================================================
 # 🎯 CALAMARES INSTALLER HOOKS
