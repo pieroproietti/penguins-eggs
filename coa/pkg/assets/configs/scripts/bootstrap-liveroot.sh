@@ -18,6 +18,13 @@ for link in vmlinuz initrd.img vmlinuz.old initrd.img.old; do
     [ -e "/$link" ] && cp -a "/$link" "$LIVEROOT/$link"
 done
 
+# 2.1. SIBLING: marker persistente del mode di remaster.
+# Vive fuori da installer.d (che viene rigenerato a ogni avvio
+# dell'installer) così BuildInstaller può leggerlo per sapere se gli
+# utenti sono già clonati da /home.
+mkdir -p "$LIVEROOT/etc/oa-tools.d"
+echo "mode: $MODE" > "$LIVEROOT/etc/oa-tools.d/sibling.yaml"
+
 # 3. BIND MOUNTS E SYMLINK (USRMERGE)
 for e in bin sbin lib lib64 opt root srv; do
     SRC="/$e"
