@@ -12,10 +12,38 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// ScriptList gestisce la decodifica YAML sia da stringa singola che da array
+type ScriptList []string
+
+func (sl *ScriptList) UnmarshalYAML(value *yaml.Node) error {
+	// Caso 1: È una lista (Sequence)
+	if value.Kind == yaml.SequenceNode {
+		var list []string
+		if err := value.Decode(&list); err != nil {
+			return err
+		}
+		*sl = list
+		return nil
+	}
+
+	// Caso 2: È una stringa singola (Scalar)
+	if value.Kind == yaml.ScalarNode {
+		var single string
+		if err := value.Decode(&single); err != nil {
+			return err
+		}
+		*sl = []string{single}
+		return nil
+	}
+
+	return fmt.Errorf("il campo script deve essere una stringa o una lista di stringhe")
+}
+
+// Usiamo il tipo custom ScriptList
 type shellprocessConf struct {
-	DontChroot bool     `yaml:"dontChroot"`
-	Timeout    int      `yaml:"timeout"`
-	Script     []string `yaml:"script"`
+	DontChroot bool       `yaml:"dontChroot"`
+	Timeout    int        `yaml:"timeout"`
+	Script     ScriptList `yaml:"script"`
 }
 
 func (c *ctx) runShellprocess(id string) error {
