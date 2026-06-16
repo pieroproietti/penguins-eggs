@@ -162,8 +162,11 @@ int run_native_umount(cJSON *task) {
     }
 
     // 3. Smontiamo i bind mount standard in liveroot
-    const char *bind_mounts[] = {"opt", "root", "srv"};
-    for (int i = 0; i < 3; i++) {
+    // "home" è incluso per sicurezza: se in modalità clone/crypted è stato
+    // bind-montato, va smontato qui; se non lo è, umount2 fallisce in
+    // silenzio come per gli altri path, senza effetti collaterali.
+    const char *bind_mounts[] = {"opt", "root", "srv", "home"};
+    for (int i = 0; i < 4; i++) {
         snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, bind_mounts[i]);
         umount2(path, MNT_DETACH);
     }

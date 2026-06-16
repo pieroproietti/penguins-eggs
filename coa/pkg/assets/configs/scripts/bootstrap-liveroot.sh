@@ -1,9 +1,10 @@
 #!/bin/bash
 set -e
 
-# Argomenti: $1 = basepath (es. /home/eggs), $2 = isGitHubAction (true/false)
+# Argomenti: $1 = basepath (es. /home/eggs), $2 = isGitHubAction (true/false), $3 = mode (standard/clone/crypted)
 BASEPATH=$1
 GITHUB_ACTION=$2
+MODE=$3
 
 LIVEROOT="$BASEPATH/liveroot"
 OVERLAY="$BASEPATH/.overlay"
@@ -17,6 +18,13 @@ for link in vmlinuz initrd.img vmlinuz.old initrd.img.old; do
     [ -e "/$link" ] && cp -a "/$link" "$LIVEROOT/$link"
 done
 
+# 2.1. SIBLING: marker persistente del mode di remaster.
+# Vive fuori da installer.d (che viene rigenerato a ogni avvio
+# dell'installer) così BuildInstaller può leggerlo per sapere se gli
+# utenti sono già clonati da /home.
+mkdir -p "$LIVEROOT/etc/oa-tools.d"
+echo "mode: $MODE" > "$LIVEROOT/etc/oa-tools.d/sibling.yaml"
+
 # 3. BIND MOUNTS E SYMLINK (USRMERGE)
 for e in bin sbin lib lib64 opt root srv; do
     SRC="/$e"
@@ -29,6 +37,17 @@ for e in bin sbin lib lib64 opt root srv; do
         mount --bind "$SRC" "$DST"
     fi
 done
+
+# 3.1. BIND MOUNT DI /home IN READ-ONLY (solo mode "clone" o "crypted")
+# Gli utenti NON vanno toccati: si clona la home reale così com'è invece di
+# iniettarne una nuova via skel. --make-slave evita che il bind si propaghi
+# sulla home host: LIVEROOT vive sotto $BASEPATH che è a sua volta dentro
+# /home, quindi un bind condiviso (default) qui genererebbe un mount-bomb.
+if [ "$MODE" = "clone" ] || [ "$MODE" = "crypted" ]; then
+    mkdir -p "$LIVEROOT/home"
+    mount --bind --make-slave /home "$LIVEROOT/home"
+    mount -o remount,bind,ro "$LIVEROOT/home"
+fi
 
 # 4. OVERLAY PER USR E VAR
 for ovlDir in usr var; do
