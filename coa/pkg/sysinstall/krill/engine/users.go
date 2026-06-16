@@ -78,6 +78,12 @@ func runDisplaymanager(c *ctx) error {
 
 	// lightdm
 	if exists(c.tpath("etc", "lightdm")) {
+		// lightdm.conf (il file principale) viene letto DOPO i drop-in di
+		// lightdm.conf.d, quindi un vecchio blocco [Seat:*] ereditato dalla
+		// live (es. autologin-user=live, ormai rimosso) vincerebbe comunque
+		// sulla nostra 90-autologin.conf: lo svuotiamo prima di scriverla.
+		stripLightdmAutologinKeys(c.tpath("etc", "lightdm", "lightdm.conf"))
+
 		dir := c.tpath("etc", "lightdm", "lightdm.conf.d")
 		os.MkdirAll(dir, 0755)
 		conf := fmt.Sprintf("[Seat:*]\nautologin-user=%s\nautologin-user-timeout=0\n", login)
@@ -111,6 +117,34 @@ func runDisplaymanager(c *ctx) error {
 		}
 	}
 	return nil
+}
+
+// stripLightdmAutologinKeys rimuove le righe autologin-* dal lightdm.conf
+// principale, ovunque si trovino: i blocchi [Seat:*] residui della live
+// (es. autologin-user=live) hanno la precedenza sui drop-in di conf.d e
+// vanno eliminati, non semplicemente ignorati.
+func stripLightdmAutologinKeys(path string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return
+	}
+	keys := []string{"autologin-user=", "autologin-user-timeout=", "autologin-session=", "autologin-guest="}
+	lines := strings.Split(string(data), "\n")
+	kept := lines[:0]
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		stale := false
+		for _, k := range keys {
+			if strings.HasPrefix(trimmed, k) {
+				stale = true
+				break
+			}
+		}
+		if !stale {
+			kept = append(kept, line)
+		}
+	}
+	os.WriteFile(path, []byte(strings.Join(kept, "\n")), 0644)
 }
 
 func runRemoveuser(c *ctx) error {
