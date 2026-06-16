@@ -25,7 +25,7 @@ var krillSubCmd = &cobra.Command{
 
 // runKrillInstaller prepara la configurazione e avvia Krill (TUI o unattended).
 func runKrillInstaller(oaVersion string, unattended bool) {
-	if err := setup.Run(AppVersion); err != nil {
+	if err := setup.BuildInstaller(oaVersion); err != nil {
 		utils.LogError("Errore setup ambiente installer: %v", err)
 		os.Exit(1)
 	}

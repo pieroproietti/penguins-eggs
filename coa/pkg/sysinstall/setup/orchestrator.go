@@ -6,7 +6,7 @@ import (
 )
 
 // buildInstaller coordina la costruzione della directory di Calamares
-func buildInstaller(oaVersion string) error {
+func BuildInstaller(oaVersion string) error {
 	// 1. Inizializza il workspace
 	if err := initWorkspace(); err != nil {
 		return err
