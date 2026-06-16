@@ -47,7 +47,7 @@ and generate a precise execution plan for the OA planner.`,
 
 		// 1. Identità: Chi siamo?
 		myDistro := distro.NewDistro()
-		isoName := myDistro.GetISOName()
+		isoName := myDistro.GetISOName(produceMode)
 
 		finalIsoPath := filepath.Join(producePath, isoName)
 		utils.LogNormal("L'uovo verrà generato in: %s", finalIsoPath)

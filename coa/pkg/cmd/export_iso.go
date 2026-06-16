@@ -26,15 +26,16 @@ func init() {
 }
 
 func handleExportIso(clean bool) {
-	// 1. Otteniamo il prefisso dinamico (egg-of-distro-host-arch-)
+	// 1. Otteniamo il pattern dinamico (egg-of-distro-host*-arch-*.iso),
+	// con wildcard al posto della variante (standard/clone/crypted) così
+	// intercetta tutte le ISO della stessa coppia distro/host/arch.
 	d := distro.NewDistro()
-	prefixBase := d.GetISOPrefix()
-	isoPattern := prefixBase + "*.iso"
+	isoPattern := d.GetISOSearchPattern()
 
 	// Ricerca nel nido locale
 	allFiles, _ := filepath.Glob(filepath.Join(isoSrcDir, isoPattern))
 	if len(allFiles) == 0 {
-		utils.Fatal("Il nido è vuoto per il prefisso: %s", prefixBase)
+		utils.Fatal("Il nido è vuoto per il pattern: %s", isoPattern)
 	}
 
 	// 2. Identificazione dell'ultima ISO (basata su ModTime)
@@ -68,8 +69,8 @@ func handleExportIso(clean bool) {
 
 	// 4. Logica di Pulizia su Proxmox
 	if clean {
-		utils.LogNormal("Pulizia su Proxmox: rimozione versioni precedenti con prefisso %s", prefixBase)
-		rmCmdStr := fmt.Sprintf("rm -f %s/%s*.iso", remoteIsoPath, prefixBase)
+		utils.LogNormal("Pulizia su Proxmox: rimozione versioni precedenti con pattern %s", isoPattern)
+		rmCmdStr := fmt.Sprintf("rm -f %s/%s", remoteIsoPath, isoPattern)
 
 		// Eseguiamo silenziosamente il comando remoto tramite il socket SSH
 		sshCmd := fmt.Sprintf("ssh -o ControlPath=%s %s '%s'", socketPath, remoteUserHost, rmCmdStr)

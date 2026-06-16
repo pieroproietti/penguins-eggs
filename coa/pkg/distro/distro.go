@@ -106,18 +106,12 @@ func NewDistro() *Distro {
 	return d
 }
 
-// GetISOName genera il nome completo: egg-of-<distro>-<host>-<arch>-<data>.iso
-func (d *Distro) GetISOName() string {
-	timestamp := time.Now().Format("2006-01-02_1504")
-	prefix := d.GetISOPrefix()
-	return fmt.Sprintf("%s%s.iso", prefix, timestamp)
-}
+// identityParts raccoglie i pezzi agnostici (distro, codename, host, arch)
+// usati sia per generare il nome dell'ISO sia per il pattern di ricerca.
+func (d *Distro) identityParts() (distroName, codeName, hostName, arch string) {
+	distroName = strings.ToLower(strings.ReplaceAll(d.DistroID, " ", "-"))
 
-// GetISOPrefix genera la parte iniziale: egg-of-<distro>-<host>-<arch>-
-func (d *Distro) GetISOPrefix() string {
-	distroName := strings.ToLower(strings.ReplaceAll(d.DistroID, " ", "-"))
-
-	codeName := strings.ToLower(strings.ReplaceAll(d.CodenameID, " ", "-"))
+	codeName = strings.ToLower(strings.ReplaceAll(d.CodenameID, " ", "-"))
 	if codeName == "" {
 		codeName = strings.ToLower(strings.ReplaceAll(d.ReleaseID, " ", "-"))
 	}
@@ -128,14 +122,48 @@ func (d *Distro) GetISOPrefix() string {
 	}
 	hostName = strings.ToLower(strings.ReplaceAll(hostName, " ", "-"))
 
-	arch := d.Arch
+	arch = d.Arch
 	if arch == "" {
 		arch = runtime.GOARCH
 	}
 
-	if codeName == "" {
-		return fmt.Sprintf("egg-of-%s-%s-%s-", distroName, hostName, arch)
+	return distroName, codeName, hostName, arch
+}
+
+// GetISOName genera il nome completo: egg-of-<distro>-<host>[-variant]-<arch>-<data>.iso
+func (d *Distro) GetISOName(variant string) string {
+	timestamp := time.Now().Format("2006-01-02_1504")
+	prefix := d.GetISOPrefix(variant)
+	return fmt.Sprintf("%s%s.iso", prefix, timestamp)
+}
+
+// GetISOPrefix genera la parte iniziale: egg-of-<distro>-<host>[-variant]-<arch>-
+// variant è "clone", "crypted" o "" (standard): viene inserito subito prima
+// dell'architettura così resta intercettabile da GetISOSearchPattern.
+func (d *Distro) GetISOPrefix(variant string) string {
+	distroName, codeName, hostName, arch := d.identityParts()
+
+	variantSuffix := ""
+	if variant != "" && variant != "standard" {
+		variantSuffix = "-" + variant
 	}
 
-	return fmt.Sprintf("egg-of-%s-%s-%s-%s-", distroName, codeName, hostName, arch)
+	if codeName == "" {
+		return fmt.Sprintf("egg-of-%s-%s%s-%s-", distroName, hostName, variantSuffix, arch)
+	}
+
+	return fmt.Sprintf("egg-of-%s-%s-%s%s-%s-", distroName, codeName, hostName, variantSuffix, arch)
+}
+
+// GetISOSearchPattern genera un pattern glob che intercetta tutte le varianti
+// (standard, clone, crypted, ...) della stessa coppia distro/host/arch:
+// egg-of-<distro>-<codename>-<host>*-<arch>-*.iso
+func (d *Distro) GetISOSearchPattern() string {
+	distroName, codeName, hostName, arch := d.identityParts()
+
+	if codeName == "" {
+		return fmt.Sprintf("egg-of-%s-%s*-%s-*.iso", distroName, hostName, arch)
+	}
+
+	return fmt.Sprintf("egg-of-%s-%s-%s*-%s-*.iso", distroName, codeName, hostName, arch)
 }
