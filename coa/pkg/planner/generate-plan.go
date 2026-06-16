@@ -20,7 +20,8 @@ func GeneratePlan(
 	workPath string,
 	finalIsoPath string,
 	stopAfter string,
-	isDebug bool) (string, error) { // <--- Nuovo parametro
+	isDebug bool,
+	mode string) (string, error) { // <--- Nuovo parametro
 
 	var plan OAPlan
 
@@ -50,10 +51,17 @@ func GeneratePlan(
 
 		switch step.Module {
 		case "mount_logic":
-			plan.Plan = append(plan.Plan, mountLogic(workPath, isGitHubAction)...)
+			plan.Plan = append(plan.Plan, mountLogic(workPath, isGitHubAction, mode)...)
 
 		case "users":
-			plan.Plan = append(plan.Plan, oaUsers(plan.Settings, step, workPath)...)
+			// In modalità clone/crypted gli utenti reali arrivano già clonati
+			// tramite il bind mount di /home: il modulo "users" va saltato
+			// perché altrimenti sovrascriverebbe identità e password esistenti.
+			if mode == "clone" || mode == "crypted" {
+				utils.LogNormal("[ENGINE] Modalità '%s': utenti reali clonati da /home, salto il modulo 'users'.", mode)
+			} else {
+				plan.Plan = append(plan.Plan, oaUsers(plan.Settings, step, workPath)...)
+			}
 
 		case "umount":
 			plan.Plan = append(plan.Plan, OATask{

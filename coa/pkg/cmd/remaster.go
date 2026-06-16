@@ -77,6 +77,7 @@ and generate a precise execution plan for the OA planner.`,
 			finalIsoPath,
 			stopAfter,
 			debugPlan, // <--- Passiamo il flag anche all'planner
+			produceMode,
 		)
 		if err != nil {
 			utils.Fatal("Impossibile generare il piano di volo: %v", err)

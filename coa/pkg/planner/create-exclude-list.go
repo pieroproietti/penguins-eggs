@@ -28,6 +28,9 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		"home/eggs/.overlay/.??*", // Questo prende i file nascosti ma ignora "." e ".."
 		"home/eggs/isodir/*",
 		"home/eggs/*.iso",
+		// In mode clone/crypted /home è bind-montata in liveroot: senza questa
+		// esclusione mksquashfs si rivede ricorsivamente sotto home/eggs/liveroot.
+		"home/eggs/liveroot",
 	)
 
 	// ==========================================================
