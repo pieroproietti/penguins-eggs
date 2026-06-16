@@ -4,6 +4,7 @@ package krill
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 
@@ -54,6 +55,7 @@ var (
 	cyanText       = lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFFF"))
 	greenText      = lipgloss.NewStyle().Foreground(lipgloss.Color("#00FF00"))
 	redBgWhiteText = lipgloss.NewStyle().Background(lipgloss.Color("#FF0000")).Foreground(lipgloss.Color("#FFFFFF"))
+	dimText        = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
 
 	// La larghezza reale viene impostata in View() sulla base del terminale
 	// (tea.WindowSizeMsg); 75 è solo il minimo per non spezzare le scritte.
@@ -63,8 +65,6 @@ var (
 			Padding(0, 1)
 
 	minWindowWidth = 75
-
-	stepBoxStyle = lipgloss.NewStyle().Width(15).Border(lipgloss.NormalBorder(), false, true, false, false).MarginRight(2)
 )
 
 // Messaggi dell'installazione reale: eventi di progresso e fine corsa.
@@ -127,6 +127,12 @@ type model struct {
 	installErr  error
 	spinner     spinner.Model
 	progress    progress.Model
+
+	// Finished: stessa scelta della pagina finale di Calamares
+	// (modules/finished.conf), riavviare o uscire semplicemente.
+	restartEnabled bool
+	restartChecked bool
+	restartCommand string
 }
 
 // initialModel costruisce il modello a partire dalla configurazione
@@ -219,6 +225,10 @@ func initialModel(cfg *InstallerConfig) model {
 		percent:    0.0,
 		spinner:    s,
 		progress:   progress.New(progress.WithSolidFill("#C59B27")),
+
+		restartEnabled: cfg.Finished.RestartNowEnabled,
+		restartChecked: cfg.Finished.RestartNowChecked,
+		restartCommand: orDefault(cfg.Finished.RestartNowCommand, "reboot"),
 	}
 }
 
@@ -243,8 +253,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.termWidth = msg.Width
 		m.termHeight = msg.Height
 		// La barra di avanzamento segue la finestra: togliamo lo spazio
-		// occupato dalla colonna degli step, bordi e padding.
-		if barWidth := msg.Width - 28; barWidth > 20 {
+		// di bordi, padding ed etichetta percentuale.
+		if barWidth := msg.Width - 10; barWidth > 20 {
 			m.progress.Width = barWidth
 		}
 
@@ -272,7 +282,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case StateUsers:
 			return m.updateUsers(msg)
 		default:
-			if key == "enter" {
+			switch key {
+			case "enter":
 				switch m.state {
 				case StateWelcome:
 					m.state = StateKeyboard
@@ -285,6 +296,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 					m.state = StateInstall
 					return m, m.startInstall()
+				case StateInstall:
+					if m.installDone {
+						if m.installErr == nil && m.restartEnabled && m.restartChecked {
+							return m, runRestart(m.restartCommand)
+						}
+						return m, tea.Quit
+					}
+				}
+			case " ":
+				if m.state == StateInstall && m.installDone && m.installErr == nil && m.restartEnabled {
+					m.restartChecked = !m.restartChecked
 				}
 			}
 		}
@@ -496,23 +518,31 @@ func (m model) View() string {
 		footer += " | Press 'Enter' to continue."
 	} else if !m.installDone {
 		footer = "\nInstallation in progress — do not power off."
+	} else if m.installErr == nil && m.restartEnabled {
+		footer = "\nPress 'space' to toggle restart now | Press 'Enter' to finish."
+	} else {
+		footer = "\nPress 'Enter' to finish."
 	}
 
 	return "\n" + finalView + "\n" + footer + "\n"
 }
 
-// --- HELPER PER LA LISTA DEGLI STEP ---
+// --- HELPER PER LA BARRA DEGLI STEP ---
+// Tab orizzontale sopra il contenuto: con un terminale 80x24 una colonna
+// laterale toglie troppo spazio utile, una riga in alto no.
 func renderSteps(currentStep int) string {
-	steps := []string{"1. Welcome", "2. Keyboard", "3. Network", "4. Disk", "5. Users", "6. Summary", "7. Install"}
+	steps := []string{"Welcome", "Keyboard", "Network", "Disk", "Users", "Summary", "Install"}
 	var renderedSteps []string
 	for i, step := range steps {
 		if i+1 == currentStep {
-			renderedSteps = append(renderedSteps, cyanText.Render("-> "+step))
+			renderedSteps = append(renderedSteps, cyanText.Render(step))
 		} else {
-			renderedSteps = append(renderedSteps, "   "+step)
+			renderedSteps = append(renderedSteps, dimText.Render(step))
 		}
 	}
-	return stepBoxStyle.Render(strings.Join(renderedSteps, "\n"))
+	tabs := strings.Join(renderedSteps, "  ")
+	rule := dimText.Render(strings.Repeat("─", lipgloss.Width(tabs)))
+	return lipgloss.JoinVertical(lipgloss.Left, tabs, rule)
 }
 
 // --- COMPONENTI ---
@@ -522,7 +552,7 @@ func (m model) viewWelcome() string {
 	installingText := fmt.Sprintf("We are installing\nLinux %s version %s\non %s\n\n", cyanText.Render(m.productName), cyanText.Render(m.version), cyanText.Render(m.arch))
 	langText := fmt.Sprintf("Language: %s", m.language)
 	mainContent := lipgloss.JoinVertical(lipgloss.Left, welcomeText, installingText, langText)
-	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 func (m model) viewKeyboard() string {
@@ -531,7 +561,7 @@ func (m model) viewKeyboard() string {
 	layoutTxt := fmt.Sprintf("%sLayout: %s", cyanText.Render("→ "), cyanText.Render("‹ "+kbdLayouts[m.kbdIdx]+" ›"))
 	help := "\n←/→ change layout ('us' is the safe default)"
 	mainContent := lipgloss.JoinVertical(lipgloss.Left, modelTxt, layoutTxt, help)
-	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 func (m model) viewNetwork() string {
@@ -571,7 +601,7 @@ func (m model) viewNetwork() string {
 	}
 
 	mainContent := lipgloss.JoinVertical(lipgloss.Left, rows...)
-	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 func (m model) viewDisk() string {
@@ -589,7 +619,7 @@ func (m model) viewDisk() string {
 	warningBox := lipgloss.JoinVertical(lipgloss.Left, redBgWhiteText.Render(warning1), redBgWhiteText.Render(warning2))
 
 	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, "", row2, row3, row4, help, "", warningBox)
-	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 // selectorRow disegna un campo a scelta multipla della schermata Disk,
@@ -627,7 +657,7 @@ func (m model) viewUsers() string {
 	rows = append(rows, "\n↑/↓ move between fields | type to edit")
 
 	mainContent := lipgloss.JoinVertical(lipgloss.Left, rows...)
-	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 func (m model) viewSummary() string {
@@ -660,7 +690,7 @@ func (m model) viewSummary() string {
 	msgBox := redBgWhiteText.Render("installation device: " + device)
 
 	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, row8, "", eraseWarning, msgBox)
-	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 // maskPassword nasconde la password nel riepilogo, segnalando se è vuota.
@@ -692,8 +722,18 @@ func (m model) viewInstall() string {
 	if m.installDone && m.installErr != nil {
 		hint = "\n\nSee /var/log/krill.log for details."
 	}
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, header, stepInfo, progBar, hint)
-	return lipgloss.JoinHorizontal(lipgloss.Top, stepsView, mainContent)
+
+	restartLine := ""
+	if m.installDone && m.installErr == nil && m.restartEnabled {
+		checkbox := "[ ]"
+		if m.restartChecked {
+			checkbox = "[x]"
+		}
+		restartLine = fmt.Sprintf("\n\n%s restart now", cyanText.Render(checkbox))
+	}
+
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, header, stepInfo, progBar, hint, restartLine)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 // --- AVVIO DELL'INSTALLAZIONE REALE ---
@@ -718,6 +758,18 @@ func (m *model) startInstall() tea.Cmd {
 func waitInstall(ch chan tea.Msg) tea.Cmd {
 	return func() tea.Msg {
 		return <-ch
+	}
+}
+
+// runRestart esegue il comando di riavvio (es. "reboot") configurato in
+// finished.conf e poi chiude la TUI, stessa scelta della pagina finale
+// di Calamares quando "restart now" è selezionato.
+func runRestart(command string) tea.Cmd {
+	return func() tea.Msg {
+		if fields := strings.Fields(command); len(fields) > 0 {
+			_ = exec.Command(fields[0], fields[1:]...).Run()
+		}
+		return tea.Quit()
 	}
 }
 
