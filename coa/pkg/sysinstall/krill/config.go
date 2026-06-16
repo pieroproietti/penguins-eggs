@@ -343,16 +343,6 @@ func DetectKeyboard() KeyboardInfo {
 	return kbd
 }
 
-// DetectLiveUser restituisce l'utente live che ha lanciato il comando,
-// con la stessa logica di fallback usata da calamares.PrepareUserConf.
-func DetectLiveUser() string {
-	liveUser := os.Getenv("SUDO_USER")
-	if liveUser == "" || liveUser == "root" {
-		return "live"
-	}
-	return liveUser
-}
-
 // DetectTimezone restituisce regione e zona del sistema live.
 func DetectTimezone() (string, string) {
 	if target, err := os.Readlink("/etc/localtime"); err == nil {

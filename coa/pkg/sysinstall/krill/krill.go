@@ -143,7 +143,6 @@ func initialModel(cfg *InstallerConfig) model {
 	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
 	kbd := DetectKeyboard()
-	liveUser := DetectLiveUser()
 	region, zone := DetectTimezone()
 
 	disks := DetectDisks()
@@ -168,10 +167,12 @@ func initialModel(cfg *InstallerConfig) model {
 		inputs[i].CharLimit = 64
 		inputs[i].Width = 30
 	}
-	inputs[fieldFullname].SetValue(liveUser)
-	inputs[fieldLogin].SetValue(liveUser)
+	// "artisan"/"evolution" è l'utente proposto di default: quello del
+	// sistema live (es. "live") non ha senso come account permanente.
+	inputs[fieldFullname].SetValue("artisan")
+	inputs[fieldLogin].SetValue("artisan")
 	inputs[fieldUserPass].EchoMode = textinput.EchoPassword
-	inputs[fieldUserPass].Placeholder = "choose a password"
+	inputs[fieldUserPass].SetValue(UnattendedPassword)
 	inputs[fieldRootPass].EchoMode = textinput.EchoPassword
 	inputs[fieldRootPass].Placeholder = "empty = same as user"
 	inputs[fieldHostname].SetValue(cfg.DefaultHostname())
