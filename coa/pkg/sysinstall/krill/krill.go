@@ -38,6 +38,16 @@ var kbdLayouts = []string{
 	"sk", "hu", "ro", "tr", "gr", "ua", "jp",
 }
 
+// languages sono i locale UTF-8 proposti dal selettore Welcome;
+// 'en_US.UTF-8' è il default sicuro, gli altri si raggiungono con ←/→.
+var languages = []string{
+	"en_US.UTF-8", "it_IT.UTF-8", "de_DE.UTF-8", "fr_FR.UTF-8", "es_ES.UTF-8",
+	"pt_PT.UTF-8", "pt_BR.UTF-8", "nl_NL.UTF-8", "pl_PL.UTF-8", "ru_RU.UTF-8",
+	"sv_SE.UTF-8", "nb_NO.UTF-8", "fi_FI.UTF-8", "da_DK.UTF-8", "cs_CZ.UTF-8",
+	"sk_SK.UTF-8", "hu_HU.UTF-8", "ro_RO.UTF-8", "tr_TR.UTF-8", "el_GR.UTF-8",
+	"uk_UA.UTF-8", "ja_JP.UTF-8", "zh_CN.UTF-8",
+}
+
 // Campi della schermata Users (gli indici 0..4 sono i textinput)
 const (
 	fieldFullname = iota
@@ -85,9 +95,9 @@ type model struct {
 	productName string
 	version     string
 
-	// Welcome
-	language string
-	arch     string
+	// Welcome: selettore della lingua, indice in languages
+	langIdx int
+	arch    string
 
 	// Keyboard: selettore del layout, 'us' come default sicuro
 	kbdModel string
@@ -96,7 +106,7 @@ type model struct {
 	// Network: dhcp (eredita dal live) o indirizzo statico editabile
 	network   NetworkInfo
 	netStatic bool
-	netFocus  int // 0 = selettore dhcp/static, 1.. = campi statici
+	netFocus  int               // 0 = selettore dhcp/static, 1.. = campi statici
 	netInputs []textinput.Model // address, netmask, gateway, dns
 
 	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
@@ -197,8 +207,8 @@ func initialModel(cfg *InstallerConfig) model {
 		productName: orDefault(cfg.Branding.Strings.ProductName, "Linux"),
 		version:     orDefault(cfg.Branding.Strings.Version, "n/a"),
 
-		language: DetectLanguage(),
-		arch:     runtime.GOARCH,
+		langIdx: indexOf(languages, DetectLanguage()),
+		arch:    runtime.GOARCH,
 
 		kbdModel: kbd.Model,
 		kbdIdx:   0, // kbdLayouts[0] = "us", il default voluto
@@ -274,6 +284,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		switch m.state {
+		case StateWelcome:
+			return m.updateWelcome(key)
 		case StateKeyboard:
 			return m.updateKeyboard(key)
 		case StateNetwork:
@@ -286,8 +298,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch key {
 			case "enter":
 				switch m.state {
-				case StateWelcome:
-					m.state = StateKeyboard
 				case StateSummary:
 					// Senza login o password non si parte:
 					// torniamo alla schermata Users
@@ -336,6 +346,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	}
 
+	return m, nil
+}
+
+// updateWelcome gestisce il selettore della lingua nella schermata iniziale.
+func (m model) updateWelcome(key string) (tea.Model, tea.Cmd) {
+	switch key {
+	case "left":
+		m.langIdx = cycle(m.langIdx, -1, len(languages))
+	case "right":
+		m.langIdx = cycle(m.langIdx, 1, len(languages))
+	case "enter":
+		m.state = StateKeyboard
+	}
 	return m, nil
 }
 
@@ -551,8 +574,9 @@ func (m model) viewWelcome() string {
 	stepsView := renderSteps(1)
 	welcomeText := fmt.Sprintf("Welcome to %s system installer\n\n", m.appName)
 	installingText := fmt.Sprintf("We are installing\nLinux %s version %s\non %s\n\n", cyanText.Render(m.productName), cyanText.Render(m.version), cyanText.Render(m.arch))
-	langText := fmt.Sprintf("Language: %s", m.language)
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, welcomeText, installingText, langText)
+	langText := fmt.Sprintf("%sLanguage: %s", cyanText.Render("→ "), cyanText.Render("‹ "+languages[m.langIdx]+" ›"))
+	help := "\n←/→ change language"
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, welcomeText, installingText, langText, help)
 	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
@@ -675,8 +699,8 @@ func (m model) viewSummary() string {
 		greenText.Render(maskPassword(m.userInputs[fieldRootPass].Value())),
 		greenText.Render(hostname))
 	row3 := fmt.Sprintf("Set timezone to %s/%s", greenText.Render(m.sumRegion), greenText.Render(m.sumZone))
-	row4 := fmt.Sprintf("The system language will be set to %s", greenText.Render(m.language))
-	row5 := fmt.Sprintf("Numbers and date locale will be set to %s", greenText.Render(m.language))
+	row4 := fmt.Sprintf("The system language will be set to %s", greenText.Render(languages[m.langIdx]))
+	row5 := fmt.Sprintf("Numbers and date locale will be set to %s", greenText.Render(languages[m.langIdx]))
 	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(kbdLayouts[m.kbdIdx]))
 	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(m.swapTypes[m.swapIdx]))
 	row8 := "Network: " + greenText.Render("dhcp")
@@ -811,7 +835,7 @@ func (m *model) buildPlan() *engine.Plan {
 		Shell:     cfg.Users.User.Shell,
 		Groups:    cfg.Users.DefaultGroups,
 
-		Language:  m.language,
+		Language:  languages[m.langIdx],
 		Region:    m.sumRegion,
 		Zone:      m.sumZone,
 		KbdModel:  m.kbdModel,
