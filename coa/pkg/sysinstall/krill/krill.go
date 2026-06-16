@@ -272,14 +272,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		key := msg.String()
 
+		// Ctrl+C è l'unica scorciatoia per uscire, ovunque: 'q' resta
+		// un carattere digitabile nei campi di testo (Users, Network).
 		if key == "ctrl+c" {
-			return m, tea.Quit
-		}
-		// 'q' esce ovunque tranne dove si digita del testo
-		// e mentre l'installazione è in corso
-		installing := m.state == StateInstall && !m.installDone
-		typing := m.state == StateUsers || m.state == StateNetwork
-		if key == "q" && !typing && !installing {
 			return m, tea.Quit
 		}
 
@@ -534,10 +529,7 @@ func (m model) View() string {
 	mainWindow := windowStyle.Width(width).Render(insideBox)
 	finalView := lipgloss.JoinVertical(lipgloss.Center, title, mainWindow)
 
-	footer := "\nPress 'q' to quit."
-	if m.state == StateUsers || m.state == StateNetwork {
-		footer = "\nPress Ctrl+C to quit."
-	}
+	footer := "\nPress Ctrl+C to quit."
 	if m.state != StateInstall {
 		footer += " | Press 'Enter' to continue."
 	} else if !m.installDone {
