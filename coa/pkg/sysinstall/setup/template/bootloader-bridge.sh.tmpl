@@ -14,7 +14,7 @@ fi
 echo "oa-bootloader-bridge: copia oa-bootloaade su $TARGET_ROOT"
 
 # Copia lo script oa-bootloader.sh all'interno del sistema bersaglio
-cp /etc/oa-tools.d/installer.d/oa-bootloader.sh "$TARGET_ROOT/tmp/"
+cp /etc/oa-tools.d/installer.d/bootloader.sh "$TARGET_ROOT/tmp/"
 
 # Esegue lo script nella gabbia chroot
-chroot "$TARGET_ROOT" /bin/bash /tmp/oa-bootloader.sh
+chroot "$TARGET_ROOT" /bin/bash /tmp/bootloader.sh

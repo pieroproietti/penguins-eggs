@@ -30,7 +30,7 @@ func buildInstaller(oaVersion string) error {
 		displaymanagerConf,
 		removeuserConf,
 		unpackfsConf,
-		shellprocessOaBootloader,
+		shellprocessBootloaderBridge,
 	}
 
 	for _, task := range tasks {
