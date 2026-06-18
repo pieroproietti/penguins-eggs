@@ -38,11 +38,15 @@ char* read_file(const char *filename) {
     
     fseek(f, 0, SEEK_END);
     long length = ftell(f);
+    if (length < 0) {
+        fclose(f);
+        return NULL;
+    }
     fseek(f, 0, SEEK_SET);
-    
-    char *buffer = malloc(length + 1);
+
+    char *buffer = malloc((size_t)length + 1);
     if (buffer) {
-        size_t read_bytes = fread(buffer, 1, length, f);
+        size_t read_bytes = fread(buffer, 1, (size_t)length, f);
         buffer[read_bytes] = '\0';
     }
     fclose(f);

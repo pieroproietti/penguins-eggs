@@ -14,9 +14,9 @@ func RunCopy(payload []byte) error {
 	// 1. Definiamo la struttura locale ESATTA per questo modulo
 	// Questo elimina il bisogno di avere mega-struct globali in giro per il progetto
 	var config struct {
-		Chroot             bool   `json:"chroot"`
+		Chroot   bool   `json:"chroot"`
 		LiveRoot string `json:"live_root,omitempty"`
-		Params             struct {
+		Params   struct {
 			Src           string      `json:"src"`
 			Dest          string      `json:"dest"`
 			IgnoreMissing bool        `json:"ignore_missing"`

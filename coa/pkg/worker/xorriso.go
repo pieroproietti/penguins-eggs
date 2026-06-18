@@ -2,6 +2,7 @@
 package worker
 
 import (
+	"coa/pkg/pathDefaults"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -13,7 +14,7 @@ import (
 // Riceve i parametri crudi dal dispatcher e li decodifica in autonomia.
 func RunXorriso(payload []byte) error {
 	// 1. Struttura locale isolata per il modulo xorriso
-	var config struct {
+	var cfg struct {
 		Params struct {
 			OutputFile  string `json:"output_file"`
 			SourceDir   string `json:"source_dir"`
@@ -26,11 +27,11 @@ func RunXorriso(payload []byte) error {
 	}
 
 	// 2. Apriamo il pacco ricevuto dal dispatcher
-	if err := json.Unmarshal(payload, &config); err != nil {
+	if err := json.Unmarshal(payload, &cfg); err != nil {
 		return fmt.Errorf("errore parsing JSON per modulo xorriso: %w", err)
 	}
 
-	p := config.Params
+	p := cfg.Params
 
 	// 3. Espansione classica delle variabili d'ambiente
 	actualOutput := os.ExpandEnv(p.OutputFile)
@@ -38,13 +39,13 @@ func RunXorriso(payload []byte) error {
 	// FALLBACK DI SICUREZZA:
 	// Se dopo l'espansione è ancora vuoto, usiamo un path predefinito basato sulla home
 	if actualOutput == "" || actualOutput == "${ISO_OUTPUT}" {
-		actualOutput = filepath.Join("/home/eggs/oa-live.iso")
+		actualOutput = filepath.Join(pathDefaults.DefaultWorkPath, "oa-live.iso")
 		fmt.Printf("⚠️  [worker] Warning: ISO_OUTPUT non risolto, uso fallback: %s\n", actualOutput)
 	}
 
 	actualSource := os.ExpandEnv(p.SourceDir)
 	if actualSource == "" {
-		actualSource = "/home/eggs/isodir" // Fallback di sicurezza
+		actualSource = filepath.Join(pathDefaults.DefaultWorkPath, "isodir")
 	}
 
 	// 4. Controlli di sicurezza base

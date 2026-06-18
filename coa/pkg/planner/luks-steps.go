@@ -2,7 +2,9 @@ package planner
 
 import (
 	"fmt"
+	"strings"
 
+	"coa/pkg/pathDefaults"
 	"coa/pkg/parser"
 )
 
@@ -56,8 +58,9 @@ HOOKEOF
 done
 
 # 4. Genera initrd con supporto LUKS dentro il chroot
+echo "LUKS: generazione initrd in corso (potrebbe richiedere qualche minuto)..."
 chroot "$LIVEROOT" /bin/bash -c \
-    "mkinitramfs -v -o /tmp/initrd.img-luks $KERNEL"
+    "mkinitramfs -o /tmp/initrd.img-luks $KERNEL" > /dev/null
 
 echo "LUKS: initrd LUKS generato in $LIVEROOT/tmp/initrd.img-luks"
 `, liveRoot)
@@ -113,7 +116,9 @@ echo "LUKS: initrd LUKS spostato in $ISODIR/initrd.img"
 // luksWrapStep inietta il passo LUKS dopo mksquashfs.
 // Prende filesystem.squashfs, lo inserisce in un container LUKS ext4,
 // e produce isodir/live/root.img al posto di filesystem.squashfs.
-func luksWrapStep(workPath string) OATask {
+// La passphrase viene passata via stdin a cryptsetup (--key-file -)
+// per evitare di scriverla su disco.
+func luksWrapStep(workPath, passphrase string) OATask {
 	squashfs := fmt.Sprintf("%s/isodir/live/filesystem.squashfs", workPath)
 	rootImg := fmt.Sprintf("%s/isodir/live/root.img", workPath)
 	cmd := fmt.Sprintf(`#!/bin/bash
@@ -121,7 +126,6 @@ set -e
 
 SQUASHFS="%s"
 ROOT_IMG="%s"
-LUKS_KEY_FILE="/tmp/coa/luks.key"
 LUKS_TMP="/var/tmp/root.img"
 LUKS_MOUNT="/tmp/mnt/root.img"
 MAPPER="luks-root-build"
@@ -135,11 +139,6 @@ cleanup() {
 }
 trap cleanup ERR
 
-# Verifiche prerequisiti
-if [ ! -f "$LUKS_KEY_FILE" ]; then
-    echo "LUKS ERROR: key file non trovato: $LUKS_KEY_FILE"
-    exit 1
-fi
 if [ ! -f "$SQUASHFS" ]; then
     echo "LUKS ERROR: filesystem.squashfs non trovato: $SQUASHFS"
     exit 1
@@ -161,11 +160,16 @@ echo "LUKS: container root.img:  $(( LUKS_SIZE / 1024 / 1024 )) MB"
 echo "LUKS: truncate $LUKS_TMP..."
 truncate --size "$LUKS_SIZE" "$LUKS_TMP"
 
+LUKS_CRYPTO_ARGS=""
+if [ -f "%s" ]; then
+    LUKS_CRYPTO_ARGS=$(cat "%s")
+fi
+
 echo "LUKS: luksFormat..."
-cryptsetup luksFormat --batch-mode --key-file "$LUKS_KEY_FILE" "$LUKS_TMP"
+printf '%%s' '%s' | cryptsetup luksFormat --batch-mode $LUKS_CRYPTO_ARGS --key-file - "$LUKS_TMP"
 
 echo "LUKS: luksOpen → /dev/mapper/$MAPPER..."
-cryptsetup luksOpen --key-file "$LUKS_KEY_FILE" "$LUKS_TMP" "$MAPPER"
+printf '%%s' '%s' | cryptsetup luksOpen --key-file - "$LUKS_TMP" "$MAPPER"
 
 echo "LUKS: mkfs.ext4 su /dev/mapper/$MAPPER..."
 mkfs.ext4 -m 0 -O ^has_journal -L live-root /dev/mapper/"$MAPPER"
@@ -185,11 +189,9 @@ cryptsetup close "$MAPPER"
 echo "LUKS: installazione root.img in isodir..."
 mv "$LUKS_TMP" "$ROOT_IMG"
 
-# Cancella la chiave in modo sicuro
-shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
-
 echo "LUKS: root.img creato con successo → $ROOT_IMG"
-`, squashfs, rootImg)
+`, squashfs, rootImg, pathDefaults.LuksCryptoArgs, pathDefaults.LuksCryptoArgs,
+		shellEscape(passphrase), shellEscape(passphrase))
 
 	return OATask{
 		Step: parser.Step{
@@ -200,4 +202,10 @@ echo "LUKS: root.img creato con successo → $ROOT_IMG"
 			},
 		},
 	}
+}
+
+// shellEscape protegge una stringa dall'interpretazione della shell
+// dentro un contesto single-quoted di printf.
+func shellEscape(s string) string {
+	return strings.ReplaceAll(s, "'", "'\\''")
 }

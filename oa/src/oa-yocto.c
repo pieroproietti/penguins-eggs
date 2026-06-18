@@ -50,7 +50,8 @@ int yocto_sanitize_file(const char *src_path, int min_id, int max_id) {
     while (fgets(line, sizeof(line), src)) {
 
         char line_copy[PATH_SAFE];
-        strcpy(line_copy, line);
+        strncpy(line_copy, line, sizeof(line_copy) - 1);
+        line_copy[sizeof(line_copy) - 1] = '\0';
 
         strtok(line_copy, ":");           // Salta il nome (era 'name')
         strtok(NULL, ":");                // Salta la password (era 'pass')
@@ -80,7 +81,8 @@ static bool user_exists_in_passwd(const char *passwd_path, const char *username)
     char line[PATH_SAFE];
     while (fgets(line, sizeof(line), f)) {
         char line_copy[PATH_SAFE];
-        strcpy(line_copy, line);
+        strncpy(line_copy, line, sizeof(line_copy) - 1);
+        line_copy[sizeof(line_copy) - 1] = '\0';
         char *user = strtok(line_copy, ":");
         if (user && strcmp(user, username) == 0) {
             fclose(f);
@@ -111,7 +113,8 @@ int yocto_sanitize_shadow(const char *shadow_path, const char *passwd_path) {
     
     while (fgets(line, sizeof(line), src)) {
         char line_copy[PATH_SAFE];
-        strcpy(line_copy, line);
+        strncpy(line_copy, line, sizeof(line_copy) - 1);
+        line_copy[sizeof(line_copy) - 1] = '\0';
         char *user = strtok(line_copy, ":");
 
         if (user) {
@@ -213,7 +216,8 @@ void yocto_add_user_to_groups(const char *group_file, const char *username, cJSO
         line[strcspn(line, "\n")] = 0; // Rimuove il newline
 
         char line_copy[PATH_SAFE];
-        strcpy(line_copy, line);
+        strncpy(line_copy, line, sizeof(line_copy) - 1);
+        line_copy[sizeof(line_copy) - 1] = '\0';
         char *gname = strtok(line_copy, ":");
 
         bool match = false;

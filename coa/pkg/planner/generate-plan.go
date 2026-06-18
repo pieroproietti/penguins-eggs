@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"coa/pkg/pathDefaults"
 	"coa/pkg/parser"
 	"coa/pkg/utils"
 )
@@ -21,7 +22,8 @@ func GeneratePlan(
 	finalIsoPath string,
 	stopAfter string,
 	isDebug bool,
-	mode string) (string, error) { // <--- Nuovo parametro
+	mode string,
+	luksPassphrase string) (string, []byte, error) {
 
 	var plan OAPlan
 
@@ -70,12 +72,12 @@ func GeneratePlan(
 					Description: "cleanup build",
 					Module:      "umount",
 				},
-				WorkDir: 	  workPath,
+				WorkDir: workPath,
 			})
 
 		case "oa-ell":
 			task := OATask{
-				Step:       step,
+				Step:     step,
 				LiveRoot: getActualLiveFs(workPath),
 			}
 
@@ -90,7 +92,7 @@ func GeneratePlan(
 			}
 
 			task := OATask{
-				Step:       step,
+				Step:     step,
 				LiveRoot: getActualLiveFs(workPath),
 			}
 			task.Description = currentDescription
@@ -113,7 +115,7 @@ func GeneratePlan(
 			// Modalità crypted: dopo mksquashfs, inietta il wrap LUKS
 			if mode == "crypted" && task.Name == "mksquashfs" {
 				plan.Plan = append(plan.Plan, task) // mksquashfs
-				plan.Plan = append(plan.Plan, luksWrapStep(workPath))
+				plan.Plan = append(plan.Plan, luksWrapStep(workPath, luksPassphrase))
 				utils.LogNormal("[ENGINE] Modalità crypted: luksWrapStep iniettato dopo mksquashfs.")
 				continue
 			}
@@ -141,7 +143,7 @@ func GeneratePlan(
 				// Creazione script .disk (usiamo i valori appena iniettati)
 				scriptContent := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
 				plan.Plan = append(plan.Plan, OATask{
-					Step: parser.Step{  // <--- I campi vanno dentro 'Step'!
+					Step: parser.Step{ // <--- I campi vanno dentro 'Step'!
 						Name:        "coa-dot-disk",
 						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
 						Module:      "shell",
@@ -156,7 +158,6 @@ func GeneratePlan(
 			// 2. Accodiamo FINALMENTE l'azione originale (squashfs, xorriso o altro)
 			plan.Plan = append(plan.Plan, task)
 
-
 		}
 
 		if stopAfter != "" && step.Name == stopAfter {
@@ -168,9 +169,9 @@ func GeneratePlan(
 	for i, task := range plan.Plan {
 		// Se il YAML aveva previsto una WorkDir (qualsiasi essa sia), la sovrascriviamo d'autorità
 		if task.WorkDir != "" {
-			plan.Plan[i].WorkDir  = workPath
+			plan.Plan[i].WorkDir = workPath
 		}
-		
+
 		// Se il YAML aveva previsto una LiveRoot, la sovrascriviamo con il percorso esatto
 		if task.LiveRoot != "" {
 			plan.Plan[i].LiveRoot = fmt.Sprintf("%s/liveroot", workPath)
@@ -181,7 +182,6 @@ func GeneratePlan(
 			plan.Plan[i].LiveRoot = fmt.Sprintf("%s/liveroot", workPath)
 		}
 	}
-
 
 	// =========================================================================
 	// INTERCETTAZIONE DEBUG JSON
@@ -200,25 +200,27 @@ func GeneratePlan(
 		os.Exit(0) // Qui ha senso uscire, perché siamo nell'engine!
 	}
 
-	return savePlan(plan)
+	planJSON, err := json.MarshalIndent(plan, "", "  ")
+	if err != nil {
+		return "", nil, err
+	}
+
+	if mode == "crypted" {
+		return "", planJSON, nil
+	}
+
+	path, err := savePlan(planJSON)
+	return path, nil, err
 }
 
-func savePlan(plan OAPlan) (string, error) {
-	// ... (la funzione savePlan rimane identica a prima)
-	targetDir := "/tmp/coa"
-	targetFile := "oa-plan.json"
-	fullPath := filepath.Join(targetDir, targetFile)
+func savePlan(planJSON []byte) (string, error) {
+	fullPath := pathDefaults.PlanFile
 
-	if err := os.MkdirAll(targetDir, 0755); err != nil {
+	if err := os.MkdirAll(pathDefaults.StagingDir, 0755); err != nil {
 		return "", err
 	}
 
-	file, err := json.MarshalIndent(plan, "", "  ")
-	if err != nil {
-		return "", err
-	}
-
-	if err := os.WriteFile(fullPath, file, 0644); err != nil {
+	if err := os.WriteFile(fullPath, planJSON, 0644); err != nil {
 		return "", err
 	}
 

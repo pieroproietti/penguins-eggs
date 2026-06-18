@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 
+	"coa/pkg/pathDefaults"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -54,7 +55,7 @@ func handledestroy() {
 	}
 
 	// 2. Rimozione fisica della workspace
-	workPath := "/home/eggs"
+	workPath := pathDefaults.DefaultWorkPath
 	utils.LogNormal("Removing workspace: %s", workPath)
 
 	if err := utils.Exec("rm -rf " + workPath); err != nil {
@@ -64,7 +65,7 @@ func handledestroy() {
 	}
 
 	// 3. Rimozione del file di log di oa
-	logFile := "/var/log/oa-tools.log"
+	logFile := pathDefaults.LogFile
 	utils.LogNormal("Removing log file: %s", logFile)
 
 	if err := os.Remove(logFile); err != nil {

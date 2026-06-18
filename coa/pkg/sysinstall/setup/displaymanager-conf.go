@@ -47,7 +47,7 @@ func displaymanagerConf() error {
 	}
 
 	targetPath := filepath.Join(InstallerDRoot, "modules", "displaymanager.conf")
-	
+
 	// Ci assicuriamo che la cartella modules esista
 	if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
 		return err

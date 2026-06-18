@@ -10,7 +10,7 @@ import (
 // RunScript è il wrapper per i file fisici: legge il contenuto e delega al motore centrale
 func RunScript(payload []byte) error {
 	var config ShellConfig
-	
+
 	// Riutilizziamo la struttura ShellConfig per aprire la busta
 	if err := json.Unmarshal(payload, &config); err != nil {
 		return fmt.Errorf("errore parsing JSON per modulo script: %w", err)
@@ -28,7 +28,7 @@ func RunScript(payload []byte) error {
 	}
 
 	fmt.Printf("📄 [worker script] Caricato file '%s' dal disco...\n", src)
-	
+
 	// Passiamo il controllo al motore di shell.go che gestirà chroot, iniezione e args
 	return executeUnifiedShell(config, scriptContent)
 }

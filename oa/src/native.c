@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/mount.h> // Per umount2 e MNT_DETACH
+#include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
 #include <crypt.h>
@@ -27,6 +28,18 @@ static const char* get_json_string(cJSON *obj, const char *key, const char *fall
 // ==========================================
 // 2. HELPER INTERNI
 // ==========================================
+static int run_exec(char *const argv[]) {
+    pid_t pid = fork();
+    if (pid < 0) return -1;
+    if (pid == 0) {
+        execvp(argv[0], argv);
+        _exit(127);
+    }
+    int status;
+    waitpid(pid, &status, 0);
+    return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+}
+
 static const char* get_json_string(cJSON *obj, const char *key, const char *fallback) {
     cJSON *item = cJSON_GetObjectItemCaseSensitive(obj, key);
     if (cJSON_IsString(item) && (item->valuestring != NULL)) {
@@ -122,12 +135,17 @@ int run_native_users(cJSON *task) {
                 LOG_WARN("      [!] Warning: mkdir fallita per %s (errno: %d)", full_home, errno);
             }
 
-            char home_cmd[PATH_SAFE * 4]; // 16KB sono più che sufficienti per contenere i 3 percorsi
-            snprintf(home_cmd, sizeof(home_cmd), 
-                     "cp -a %s/etc/skel/. %s/ 2>/dev/null || true && chown -R %d:%d %s", 
-                     resolved_root, full_home, OE_UID_HUMAN_MIN, OE_UID_HUMAN_MIN, full_home);
-            
-            if (system(home_cmd) != 0) {
+            char skel_src[PATH_SAFE];
+            snprintf(skel_src, sizeof(skel_src), "%s/etc/skel/.", resolved_root);
+
+            char *cp_argv[] = {"cp", "-a", skel_src, full_home, NULL};
+            run_exec(cp_argv);
+
+            char uid_str[16];
+            snprintf(uid_str, sizeof(uid_str), "%d:%d", OE_UID_HUMAN_MIN, OE_UID_HUMAN_MIN);
+
+            char *chown_argv[] = {"chown", "-R", uid_str, full_home, NULL};
+            if (run_exec(chown_argv) != 0) {
                 LOG_ERR("      [!] Errore setup home per '%s'", login);
             }
         }
@@ -149,14 +167,14 @@ int run_native_umount(cJSON *task) {
 
     // 1. Smontiamo le API di sistema in liveroot
     const char *api_mounts[] = {"dev/pts", "dev", "proc", "sys", "run", "tmp"};
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < (int)(sizeof(api_mounts) / sizeof(api_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, api_mounts[i]);
         umount2(path, MNT_DETACH);
     }
 
     // 2. Smontiamo gli overlay uniti in liveroot
     const char *ovl_mounts[] = {"usr", "var"};
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < (int)(sizeof(ovl_mounts) / sizeof(ovl_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, ovl_mounts[i]);
         umount2(path, MNT_DETACH);
     }
@@ -166,13 +184,13 @@ int run_native_umount(cJSON *task) {
     // bind-montato, va smontato qui; se non lo è, umount2 fallisce in
     // silenzio come per gli altri path, senza effetti collaterali.
     const char *bind_mounts[] = {"opt", "root", "srv", "home"};
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < (int)(sizeof(bind_mounts) / sizeof(bind_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, bind_mounts[i]);
         umount2(path, MNT_DETACH);
     }
 
     // 4. Smontiamo i lowerdir dentro .overlay
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < (int)(sizeof(ovl_mounts) / sizeof(ovl_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/.overlay/lowerdir/%s", work_dir, ovl_mounts[i]);
         umount2(path, MNT_DETACH);
     }
