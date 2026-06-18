@@ -1,7 +1,7 @@
 package planner
 
 import (
-	"coa/pkg/utils"
+	"coa/pkg/config"
 	"os"
 	"strings"
 )
@@ -9,7 +9,7 @@ import (
 // GenerateExcludeList crea il file .list dinamico per mksquashfs.
 // La 'G' maiuscola permette a remaster.go di chiamarla liberamente.
 func GenerateExcludeList(mode string, isGitHubAction bool) string {
-	outPath := "/tmp/coa/excludes.list"
+	outPath := config.ExcludeList
 	var excludes []string
 
 	// ==========================================================
@@ -102,9 +102,6 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	// ==========================================================
 	// Allineato al nuovo dialetto oa-tools
 	userList := "/etc/oa-tools.d/custom.exclude.list"
-	if _, err := os.Stat(userList); os.IsNotExist(err) {
-		utils.LogNormal("[DEBUG] User exclude.list %s, not present", userList)
-	}
 
 	if data, err := os.ReadFile(userList); err == nil {
 		lines := strings.Split(string(data), "\n")
@@ -118,8 +115,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		}
 	}
 
-	// Creiamo la directory temporanea e scriviamo il file list
-	os.MkdirAll("/tmp/coa", 0755)
+	os.MkdirAll(config.StagingDir, 0755)
 
 	// Uniamo tutto con a capo
 	fileContent := strings.Join(excludes, "\n") + "\n"

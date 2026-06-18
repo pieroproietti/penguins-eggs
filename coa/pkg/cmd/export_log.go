@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"coa/pkg/config"
 	"coa/pkg/utils"
 	"encoding/base64"
 	"fmt"
@@ -25,8 +26,8 @@ var exportLogCmd = &cobra.Command{
 			LocalPath  string
 			RemoteName string
 		}{
-			{"/var/log/oa-tools.log", "oa-tools.log.txt"},
-			{"/tmp/coa/oa-plan.json", "oa-plan.json"},
+			{config.LogFile, "oa-tools.log.txt"},
+			{config.PlanFile, "oa-plan.json"},
 			{"/tmp/oa-failed-yaml.txt", "oa-failed.yaml"},
 		}
 

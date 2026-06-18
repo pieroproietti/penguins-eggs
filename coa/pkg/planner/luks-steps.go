@@ -3,6 +3,7 @@ package planner
 import (
 	"fmt"
 
+	"coa/pkg/config"
 	"coa/pkg/parser"
 )
 
@@ -121,7 +122,7 @@ set -e
 
 SQUASHFS="%s"
 ROOT_IMG="%s"
-LUKS_KEY_FILE="/tmp/coa/luks.key"
+LUKS_KEY_FILE="%s"
 LUKS_TMP="/var/tmp/root.img"
 LUKS_MOUNT="/tmp/mnt/root.img"
 MAPPER="luks-root-build"
@@ -189,7 +190,7 @@ mv "$LUKS_TMP" "$ROOT_IMG"
 shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
 
 echo "LUKS: root.img creato con successo → $ROOT_IMG"
-`, squashfs, rootImg)
+`, squashfs, rootImg, config.LuksKeyFile)
 
 	return OATask{
 		Step: parser.Step{

@@ -22,9 +22,9 @@ type TemplateContext struct {
 func RunTemplate(payload []byte) error {
 	// 1. Struttura locale che definisce i parametri richiesti da questo modulo
 	var config struct {
-		Chroot             bool   `json:"chroot"`
+		Chroot   bool   `json:"chroot"`
 		LiveRoot string `json:"live_root,omitempty"`
-		Params             struct {
+		Params   struct {
 			Dest        string            `json:"dest"`
 			Content     string            `json:"content"`
 			Vars        map[string]string `json:"vars"`

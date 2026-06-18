@@ -16,7 +16,7 @@ func RunAutologin(payload []byte) error {
 	// 1. Struttura locale, niente più dipendenze globali dal planner
 	var config struct {
 		LiveRoot string `json:"live_root,omitempty"`
-		Params             struct {
+		Params   struct {
 			User string `json:"user"`
 		} `json:"params"`
 	}

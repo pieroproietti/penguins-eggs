@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"coa/pkg/config"
+
 	"github.com/spf13/cobra"
 )
 
@@ -9,8 +11,9 @@ const (
 	remoteUserHost = "root@192.168.1.2"
 	remoteIsoPath  = "/var/lib/vz/template/iso/"
 	remotePkgPath  = "/eggs/"
-	isoSrcDir      = "/home/eggs"
 )
+
+var isoSrcDir = config.DefaultWorkPath
 
 // cleanExport è accessibile da export_iso.go e export_pkg.go
 var cleanExport bool

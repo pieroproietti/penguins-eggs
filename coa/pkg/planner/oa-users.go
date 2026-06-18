@@ -19,7 +19,7 @@ func oaUsers(settings parser.RemasterConfig, step parser.Step, workPath string) 
 	// 2. Hashiamo la password in Go!
 	targetPassword := hashPassword(settings.Password)
 
-// ... (prima parte del file inalterata) ...
+	// ... (prima parte del file inalterata) ...
 
 	// 3. Creiamo i percorsi dinamici per la home directory
 	homeDir := fmt.Sprintf("/home/%s", targetUser)

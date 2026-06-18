@@ -50,9 +50,9 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 
 		// Percorso HOST: /.../live_root/root/.oa-tools
 		chrootWorkDir := filepath.Join(config.LiveRoot, "root", ".oa-tools")
-		
+
 		// Creiamo la directory con permessi restrittivi
-		os.MkdirAll(chrootWorkDir, 0700) 
+		os.MkdirAll(chrootWorkDir, 0700)
 
 		tmpFile, err := os.CreateTemp(chrootWorkDir, "oa-exec-*.sh")
 		if err != nil {
@@ -97,7 +97,7 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 		}
 
 		fmt.Printf("📦 [worker core] Esecuzione in chroot (via %s)...\n", shellPath)
-		
+
 		// Costruiamo gli argomenti: chroot <root> /bin/bash /root/.oa-tools/file.sh [args...]
 		args := []string{config.LiveRoot, shellPath, execPath}
 		if len(config.Params.Args) > 0 {
@@ -106,7 +106,7 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 		cmd = exec.Command("chroot", args...)
 	} else {
 		fmt.Println("💻 [worker core] Esecuzione locale...")
-		
+
 		// Costruiamo gli argomenti: bash /root/.oa-tools/file.sh [args...]
 		args := []string{execPath}
 		if len(config.Params.Args) > 0 {

@@ -7,11 +7,6 @@ import (
 )
 
 func writeTemplate(tmplPath string, destPath string, data RecipeData) error {
-	// absTmpl, _ := filepath.Abs(tmplPath)
-	// absDest, _ := filepath.Abs(destPath)
-	// utils.LogNormal("[DEBUG] Tmpl: %s", absTmpl)
-	// utils.LogNormal("[DEBUG] Dest: %s", absDest)
-
 	// 1. Parsing del file template
 	tmpl, err := template.ParseFiles(tmplPath)
 	if err != nil {
@@ -26,7 +21,6 @@ func writeTemplate(tmplPath string, destPath string, data RecipeData) error {
 	defer f.Close()
 
 	// 3. sostituzione (Scrittura del contenuto)
-	fmt.Println(data)
 	err = tmpl.Execute(f, data)
 	if err != nil {
 		return fmt.Errorf("errore durante la generazione del template %s: %w", tmplPath, err)
