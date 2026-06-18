@@ -16,7 +16,7 @@ import (
 
 // logToFile scrive un messaggio sia sul log di sistema che su un file locale
 func logToFile(message string) {
-	utils.LogNormal(message)
+	utils.LogNormal("%s", message)
 
 	logPath := "/var/log/coa-tailor.log"
 	f, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -181,7 +181,7 @@ func printAiPrompt(packages []string) {
 	promptContent := sb.String()
 
 	// 4. Stampa a video per l'utente
-	utils.LogNormal("\n" + utils.ColorCyan + promptContent + utils.ColorReset)
+	utils.LogNormal("\n%s%s%s", utils.ColorCyan, promptContent, utils.ColorReset)
 
 	// 5. Scrittura su file AIPrompt.txt nella HOME reale dell'utente
 	userHome, _ := os.UserHomeDir()

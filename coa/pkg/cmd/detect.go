@@ -25,7 +25,7 @@ It does not save this state or alter any configuration; it simply provides a cle
 		myDistro := distro.NewDistro()
 
 		// 2. Stampa a video usando i colori centralizzati (Senza passare per l'engine!)
-		utils.LogNormal("\n%s--- coa distro detect ---%s")
+		utils.LogNormal("\n--- coa distro detect ---")
 		utils.LogNormal("Host Distro:     %s", myDistro.DistroID)
 		utils.LogNormal("Family:          %s", myDistro.FamilyID)
 		utils.LogNormal("DistroLike:      %s", myDistro.DistroLike)

@@ -19,7 +19,7 @@ func hasExecutable(name string) bool {
 func rsyncIfExist(source, dest string) {
 	if _, err := os.Stat(source); err == nil {
 		// Dichiariamo l'azione prima di farla
-		utils.LogNormal("  -> Copia in corso: " + source)
+		utils.LogNormal("  -> Copia in corso: %s", source)
 
 		flags := "-avx"
 		utils.ExecQuiet("rsync " + flags + " " + source + " " + dest)
@@ -29,7 +29,7 @@ func rsyncIfExist(source, dest string) {
 // rmIfExist rimuove file o directory in sicurezza
 func rmIfExist(path string, recursive bool) {
 	if _, err := os.Stat(path); err == nil {
-		utils.LogNormal("  -> Rimozione: " + path)
+		utils.LogNormal("  -> Rimozione: %s", path)
 
 		if recursive {
 			utils.ExecQuiet("rm -rf " + path)
@@ -55,10 +55,10 @@ func HandleSkel(targetUser string) {
 
 	userHome := filepath.Join("/home", user)
 	if _, err := os.Stat(userHome); os.IsNotExist(err) {
-		utils.Fatal("La home directory dell'utente non esiste: " + userHome)
+		utils.Fatal("La home directory dell'utente non esiste: %s", userHome)
 	}
 
-	utils.LogNormal("Inizio rigenerazione di /etc/skel dall'utente: " + user)
+	utils.LogNormal("Inizio rigenerazione di /etc/skel dall'utente: %s", user)
 
 	// 2. Tabula Rasa
 	utils.ExecQuiet("rm -rf /etc/skel")

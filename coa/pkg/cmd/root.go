@@ -34,7 +34,7 @@ func Execute() {
 func CheckSudoRequirements(cmdName string, needSudo bool) {
 	if needSudo && os.Geteuid() != 0 {
 		utils.LogWarning("Il comando '%s' richiede privilegi di root.", cmdName)
-		utils.LogNormal("Esegui: sudo coa", cmdName)
+		utils.LogNormal("Esegui: sudo coa %s", cmdName)
 		os.Exit(1)
 	}
 }
