@@ -163,8 +163,13 @@ echo "LUKS: container root.img:  $(( LUKS_SIZE / 1024 / 1024 )) MB"
 echo "LUKS: truncate $LUKS_TMP..."
 truncate --size "$LUKS_SIZE" "$LUKS_TMP"
 
+LUKS_CRYPTO_ARGS=""
+if [ -f "%s" ]; then
+    LUKS_CRYPTO_ARGS=$(cat "%s")
+fi
+
 echo "LUKS: luksFormat..."
-cryptsetup luksFormat --batch-mode --key-file "$LUKS_KEY_FILE" "$LUKS_TMP"
+cryptsetup luksFormat --batch-mode $LUKS_CRYPTO_ARGS --key-file "$LUKS_KEY_FILE" "$LUKS_TMP"
 
 echo "LUKS: luksOpen → /dev/mapper/$MAPPER..."
 cryptsetup luksOpen --key-file "$LUKS_KEY_FILE" "$LUKS_TMP" "$MAPPER"
@@ -191,7 +196,7 @@ mv "$LUKS_TMP" "$ROOT_IMG"
 shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
 
 echo "LUKS: root.img creato con successo → $ROOT_IMG"
-`, squashfs, rootImg, config.LuksKeyFile)
+`, squashfs, rootImg, config.LuksKeyFile, config.LuksCryptoArgs, config.LuksCryptoArgs)
 
 	return OATask{
 		Step: parser.Step{

@@ -1,12 +1,9 @@
 package cmd
 
 import (
-	"bufio"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"coa/pkg/config"
 	"coa/pkg/distro"
@@ -15,7 +12,6 @@ import (
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 var (
@@ -62,19 +58,26 @@ and generate a precise execution plan for the OA planner.`,
 
 		utils.LogNormal("Avvio procedura di rimasterizzazione (mode: %s)...", produceMode)
 
-		// Per la modalità crypted: chiede la passphrase e la salva in un file temporaneo
+		// Per la modalità crypted: chiede passphrase e configurazione crypto
 		if produceMode == "crypted" {
+			if err := os.MkdirAll(config.StagingDir, 0755); err != nil {
+				utils.Fatal("Impossibile creare %s: %v", config.StagingDir, err)
+			}
+
 			password, err := promptLuksPassword()
 			if err != nil {
 				utils.Fatal("Errore passphrase LUKS: %v", err)
-			}
-			if err := os.MkdirAll(config.StagingDir, 0755); err != nil {
-				utils.Fatal("Impossibile creare %s: %v", config.StagingDir, err)
 			}
 			if err := os.WriteFile(config.LuksKeyFile, []byte(password), 0600); err != nil {
 				utils.Fatal("Impossibile salvare la passphrase LUKS: %v", err)
 			}
 			utils.LogSuccess("Passphrase LUKS salvata.")
+
+			cryptoCfg := promptCryptoConfig()
+			if err := saveCryptoConfig(cryptoCfg); err != nil {
+				utils.Fatal("Impossibile salvare la configurazione crypto: %v", err)
+			}
+			utils.LogSuccess("Configurazione crypto salvata.")
 		}
 
 		// 1. Il ponte di comando valuta la situazione (Il Sensore)
@@ -152,36 +155,3 @@ func init() {
 	rootCmd.AddCommand(remasterCmd)
 }
 
-// promptLuksPassword chiede la passphrase LUKS due volte con echo disabilitato.
-func promptLuksPassword() (string, error) {
-	if !term.IsTerminal(int(os.Stdin.Fd())) {
-		// Modalità non-interattiva: leggi da stdin senza echo
-		scanner := bufio.NewScanner(os.Stdin)
-		if scanner.Scan() {
-			return strings.TrimRight(scanner.Text(), "\r\n"), nil
-		}
-		return "", fmt.Errorf("impossibile leggere la passphrase da stdin")
-	}
-
-	fmt.Print("Inserisci la passphrase LUKS: ")
-	pass1, err := term.ReadPassword(int(os.Stdin.Fd()))
-	if err != nil {
-		return "", fmt.Errorf("errore lettura passphrase: %v", err)
-	}
-	fmt.Println()
-
-	fmt.Print("Conferma la passphrase LUKS:  ")
-	pass2, err := term.ReadPassword(int(os.Stdin.Fd()))
-	if err != nil {
-		return "", fmt.Errorf("errore lettura conferma: %v", err)
-	}
-	fmt.Println()
-
-	if string(pass1) != string(pass2) {
-		return "", fmt.Errorf("le passphrase non corrispondono")
-	}
-	if len(pass1) < 8 {
-		return "", fmt.Errorf("la passphrase deve avere almeno 8 caratteri")
-	}
-	return string(pass1), nil
-}

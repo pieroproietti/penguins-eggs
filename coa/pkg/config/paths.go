@@ -9,8 +9,9 @@ const (
 )
 
 var (
-	LuksKeyFile   = filepath.Join(StagingDir, "luks.key")
-	PlanFile      = filepath.Join(StagingDir, "oa-plan.json")
-	ExcludeList   = filepath.Join(StagingDir, "excludes.list")
+	LuksKeyFile    = filepath.Join(StagingDir, "luks.key")
+	LuksCryptoArgs = filepath.Join(StagingDir, "luks.args")
+	PlanFile       = filepath.Join(StagingDir, "oa-plan.json")
+	ExcludeList    = filepath.Join(StagingDir, "excludes.list")
 	BootloadersDir = filepath.Join(StagingDir, "bootloaders")
 )
