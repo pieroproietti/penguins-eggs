@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -59,19 +60,18 @@ and generate a precise execution plan for the OA planner.`,
 		utils.LogNormal("Avvio procedura di rimasterizzazione (mode: %s)...", produceMode)
 
 		// Per la modalità crypted: chiede passphrase e configurazione crypto
+		var luksPassphrase string
 		if produceMode == "crypted" {
 			if err := os.MkdirAll(config.StagingDir, 0755); err != nil {
 				utils.Fatal("Impossibile creare %s: %v", config.StagingDir, err)
 			}
 
-			password, err := promptLuksPassword()
+			var err error
+			luksPassphrase, err = promptLuksPassword()
 			if err != nil {
 				utils.Fatal("Errore passphrase LUKS: %v", err)
 			}
-			if err := os.WriteFile(config.LuksKeyFile, []byte(password), 0600); err != nil {
-				utils.Fatal("Impossibile salvare la passphrase LUKS: %v", err)
-			}
-			utils.LogSuccess("Passphrase LUKS salvata.")
+			utils.LogSuccess("Passphrase LUKS acquisita (non verrà scritta su disco).")
 
 			cryptoCfg := promptCryptoConfig()
 			if err := saveCryptoConfig(cryptoCfg); err != nil {
@@ -109,26 +109,34 @@ and generate a precise execution plan for the OA planner.`,
 		planner.GenerateExcludeList(produceMode, isGitHubAction)
 
 		// 3. planner: Generiamo il piano JSON per oa
-		planPath, err := planner.GeneratePlan(
-			profile, // <-- L'intero oggetto che contiene Settings e Remaster
+		planPath, planJSON, err := planner.GeneratePlan(
+			profile,
 			myDistro.FamilyID,
 			isGitHubAction,
 			true,
 			producePath,
 			finalIsoPath,
 			stopAfter,
-			debugPlan, // <--- Passiamo il flag anche all'planner
+			debugPlan,
 			produceMode,
+			luksPassphrase,
 		)
 		if err != nil {
 			utils.Fatal("Impossibile generare il piano di volo: %v", err)
 		}
 
-		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il JSON appena generato
+		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il piano
 		utils.LogNormal("Passaggio dei comandi al motore OA...")
-		oaCmd := exec.Command("oa", planPath)
 
-		// Colleghiamo l'output di oa direttamente al terminale dell'utente
+		var oaCmd *exec.Cmd
+		if produceMode == "crypted" {
+			// Modalità crypted: il piano passa via stdin, niente file su disco
+			oaCmd = exec.Command("oa")
+			oaCmd.Stdin = bytes.NewReader(planJSON)
+		} else {
+			oaCmd = exec.Command("oa", planPath)
+		}
+
 		oaCmd.Stdout = os.Stdout
 		oaCmd.Stderr = os.Stderr
 

@@ -22,7 +22,8 @@ func GeneratePlan(
 	finalIsoPath string,
 	stopAfter string,
 	isDebug bool,
-	mode string) (string, error) { // <--- Nuovo parametro
+	mode string,
+	luksPassphrase string) (string, []byte, error) {
 
 	var plan OAPlan
 
@@ -114,7 +115,7 @@ func GeneratePlan(
 			// Modalità crypted: dopo mksquashfs, inietta il wrap LUKS
 			if mode == "crypted" && task.Name == "mksquashfs" {
 				plan.Plan = append(plan.Plan, task) // mksquashfs
-				plan.Plan = append(plan.Plan, luksWrapStep(workPath))
+				plan.Plan = append(plan.Plan, luksWrapStep(workPath, luksPassphrase))
 				utils.LogNormal("[ENGINE] Modalità crypted: luksWrapStep iniettato dopo mksquashfs.")
 				continue
 			}
@@ -199,22 +200,27 @@ func GeneratePlan(
 		os.Exit(0) // Qui ha senso uscire, perché siamo nell'engine!
 	}
 
-	return savePlan(plan)
+	planJSON, err := json.MarshalIndent(plan, "", "  ")
+	if err != nil {
+		return "", nil, err
+	}
+
+	if mode == "crypted" {
+		return "", planJSON, nil
+	}
+
+	path, err := savePlan(planJSON)
+	return path, nil, err
 }
 
-func savePlan(plan OAPlan) (string, error) {
+func savePlan(planJSON []byte) (string, error) {
 	fullPath := config.PlanFile
 
 	if err := os.MkdirAll(config.StagingDir, 0755); err != nil {
 		return "", err
 	}
 
-	file, err := json.MarshalIndent(plan, "", "  ")
-	if err != nil {
-		return "", err
-	}
-
-	if err := os.WriteFile(fullPath, file, 0644); err != nil {
+	if err := os.WriteFile(fullPath, planJSON, 0644); err != nil {
 		return "", err
 	}
 
