@@ -91,7 +91,7 @@ EOF
 
 # 3. Trampolino EFI (Attenzione agli escape \$ per preservare le variabili per GRUB)
 cat <<EOF > "$ISODIR/EFI/BOOT/grub.cfg"
-search --set=root --file /live/filesystem.squashfs
+search --set=root --label OA_LIVE
 set prefix=(\$root)/boot/grub
 configfile \$prefix/grub.cfg
 EOF

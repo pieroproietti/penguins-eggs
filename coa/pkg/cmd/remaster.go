@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"bufio"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"coa/pkg/distro"
 	"coa/pkg/parser"
@@ -11,13 +14,15 @@ import (
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 var (
 	produceMode string
 	producePath string
 	stopAfter   string
-	debugPlan   bool // <--- Nuova variabile per il flag di debug
+	debugPlan   bool
+	cryptedFlag bool
 )
 
 var remasterCmd = &cobra.Command{
@@ -37,7 +42,27 @@ and generate a precise execution plan for the OA planner.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 
-		utils.LogNormal("Avvio procedura di rimasterizzazione...")
+		// --crypted sovrascrive --mode
+		if cryptedFlag {
+			produceMode = "crypted"
+		}
+
+		utils.LogNormal("Avvio procedura di rimasterizzazione (mode: %s)...", produceMode)
+
+		// Per la modalità crypted: chiede la passphrase e la salva in un file temporaneo
+		if produceMode == "crypted" {
+			password, err := promptLuksPassword()
+			if err != nil {
+				utils.Fatal("Errore passphrase LUKS: %v", err)
+			}
+			if err := os.MkdirAll("/tmp/coa", 0755); err != nil {
+				utils.Fatal("Impossibile creare /tmp/coa: %v", err)
+			}
+			if err := os.WriteFile("/tmp/coa/luks.key", []byte(password), 0600); err != nil {
+				utils.Fatal("Impossibile salvare la passphrase LUKS: %v", err)
+			}
+			utils.LogSuccess("Passphrase LUKS salvata.")
+		}
 
 		// 1. Il ponte di comando valuta la situazione (Il Sensore)
 		isGitHubAction := false
@@ -107,12 +132,43 @@ and generate a precise execution plan for the OA planner.`,
 func init() {
 	remasterCmd.Flags().StringVar(&produceMode, "mode", "standard", "standard, clone, or crypted")
 	remasterCmd.Flags().StringVar(&producePath, "path", "/home/eggs", "working directory")
-
-	// Registrazione del nuovo flag per il breakpoint
+	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Crea una ISO con filesystem.squashfs cifrato in LUKS (equivale a --mode crypted)")
 	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
-
-	// Registrazione del flag di debug
-	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON (o lo YAML in caso di pre-processing) ed esce senza masterizzare")
+	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON ed esce senza masterizzare")
 
 	rootCmd.AddCommand(remasterCmd)
+}
+
+// promptLuksPassword chiede la passphrase LUKS due volte con echo disabilitato.
+func promptLuksPassword() (string, error) {
+	if !term.IsTerminal(int(os.Stdin.Fd())) {
+		// Modalità non-interattiva: leggi da stdin senza echo
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			return strings.TrimRight(scanner.Text(), "\r\n"), nil
+		}
+		return "", fmt.Errorf("impossibile leggere la passphrase da stdin")
+	}
+
+	fmt.Print("Inserisci la passphrase LUKS: ")
+	pass1, err := term.ReadPassword(int(os.Stdin.Fd()))
+	if err != nil {
+		return "", fmt.Errorf("errore lettura passphrase: %v", err)
+	}
+	fmt.Println()
+
+	fmt.Print("Conferma la passphrase LUKS:  ")
+	pass2, err := term.ReadPassword(int(os.Stdin.Fd()))
+	if err != nil {
+		return "", fmt.Errorf("errore lettura conferma: %v", err)
+	}
+	fmt.Println()
+
+	if string(pass1) != string(pass2) {
+		return "", fmt.Errorf("le passphrase non corrispondono")
+	}
+	if len(pass1) < 8 {
+		return "", fmt.Errorf("la passphrase deve avere almeno 8 caratteri")
+	}
+	return string(pass1), nil
 }

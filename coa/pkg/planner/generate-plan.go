@@ -83,12 +83,50 @@ func GeneratePlan(
 			plan.Plan = append(plan.Plan, task)
 
 		default:
+			// Modalità crypted: salta il modulo autologin-gui (nessun utente "live")
+			if mode == "crypted" && step.Module == "autologin-gui" {
+				utils.LogNormal("[ENGINE] Modalità crypted: salto autologin-gui.")
+				continue
+			}
+
 			task := OATask{
 				Step:       step,
 				LiveRoot: getActualLiveFs(workPath),
 			}
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
+
+			// Modalità crypted: sostituisce il passo initramfs con la prep LUKS
+			if mode == "crypted" && task.Name == "initramfs" {
+				plan.Plan = append(plan.Plan, luksInitrdPrepStep(workPath))
+				utils.LogNormal("[ENGINE] Modalità crypted: initramfs sostituito con luksInitrdPrepStep.")
+				continue
+			}
+
+			// Modalità crypted: sostituisce copy-kernel-initrd con la versione LUKS
+			if mode == "crypted" && task.Name == "copy-kernel-initrd" {
+				plan.Plan = append(plan.Plan, luksKernelCopyStep(workPath))
+				utils.LogNormal("[ENGINE] Modalità crypted: copy-kernel-initrd sostituito con luksKernelCopyStep.")
+				continue
+			}
+
+			// Modalità crypted: dopo mksquashfs, inietta il wrap LUKS
+			if mode == "crypted" && task.Name == "mksquashfs" {
+				plan.Plan = append(plan.Plan, task) // mksquashfs
+				plan.Plan = append(plan.Plan, luksWrapStep(workPath))
+				utils.LogNormal("[ENGINE] Modalità crypted: luksWrapStep iniettato dopo mksquashfs.")
+				continue
+			}
+
+			// Modalità crypted: aggiunge live-media per LUKS ai boot params
+			if mode == "crypted" && task.Name == "generate-boot-menus" {
+				if args, ok := task.Params["args"].([]interface{}); ok && len(args) >= 2 {
+					if bootParams, ok := args[1].(string); ok {
+						args[1] = bootParams + " live-media=/dev/mapper/live-root"
+					}
+				}
+				utils.LogNormal("[ENGINE] Modalità crypted: boot params aggiornati con live-media LUKS.")
+			}
 
 			// Prima di "coa-xorriso" inseriamo "coa-dot-disk"
 			if task.Name == "xorriso" {
