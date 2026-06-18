@@ -1,4 +1,4 @@
-package config
+package pathDefaults
 
 import "path/filepath"
 

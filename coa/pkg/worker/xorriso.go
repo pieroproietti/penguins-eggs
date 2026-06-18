@@ -2,7 +2,7 @@
 package worker
 
 import (
-	"coa/pkg/config"
+	"coa/pkg/pathDefaults"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -39,13 +39,13 @@ func RunXorriso(payload []byte) error {
 	// FALLBACK DI SICUREZZA:
 	// Se dopo l'espansione è ancora vuoto, usiamo un path predefinito basato sulla home
 	if actualOutput == "" || actualOutput == "${ISO_OUTPUT}" {
-		actualOutput = filepath.Join(config.DefaultWorkPath, "oa-live.iso")
+		actualOutput = filepath.Join(pathDefaults.DefaultWorkPath, "oa-live.iso")
 		fmt.Printf("⚠️  [worker] Warning: ISO_OUTPUT non risolto, uso fallback: %s\n", actualOutput)
 	}
 
 	actualSource := os.ExpandEnv(p.SourceDir)
 	if actualSource == "" {
-		actualSource = filepath.Join(config.DefaultWorkPath, "isodir")
+		actualSource = filepath.Join(pathDefaults.DefaultWorkPath, "isodir")
 	}
 
 	// 4. Controlli di sicurezza base

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"coa/pkg/config"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/parser"
 )
 
@@ -190,7 +190,7 @@ echo "LUKS: installazione root.img in isodir..."
 mv "$LUKS_TMP" "$ROOT_IMG"
 
 echo "LUKS: root.img creato con successo → $ROOT_IMG"
-`, squashfs, rootImg, config.LuksCryptoArgs, config.LuksCryptoArgs,
+`, squashfs, rootImg, pathDefaults.LuksCryptoArgs, pathDefaults.LuksCryptoArgs,
 		shellEscape(passphrase), shellEscape(passphrase))
 
 	return OATask{

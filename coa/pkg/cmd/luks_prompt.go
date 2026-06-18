@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"coa/pkg/config"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/tui"
 	"coa/pkg/utils"
 )
@@ -144,5 +144,5 @@ func promptCryptoConfig() CryptoConfig {
 
 func saveCryptoConfig(cfg CryptoConfig) error {
 	content := cfg.FormatArgs()
-	return os.WriteFile(config.LuksCryptoArgs, []byte(content), 0600)
+	return os.WriteFile(pathDefaults.LuksCryptoArgs, []byte(content), 0600)
 }

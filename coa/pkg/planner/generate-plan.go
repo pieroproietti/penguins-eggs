@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"coa/pkg/config"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/parser"
 	"coa/pkg/utils"
 )
@@ -214,9 +214,9 @@ func GeneratePlan(
 }
 
 func savePlan(planJSON []byte) (string, error) {
-	fullPath := config.PlanFile
+	fullPath := pathDefaults.PlanFile
 
-	if err := os.MkdirAll(config.StagingDir, 0755); err != nil {
+	if err := os.MkdirAll(pathDefaults.StagingDir, 0755); err != nil {
 		return "", err
 	}
 

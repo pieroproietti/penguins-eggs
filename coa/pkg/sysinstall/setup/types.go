@@ -1,6 +1,6 @@
 package setup
 
-import "coa/pkg/config"
+import "coa/pkg/pathDefaults"
 
 // Costanti globali del pacchetto calamares
 const (
@@ -8,4 +8,4 @@ const (
 	modulesDir     = InstallerDRoot + "/modules"
 )
 
-var stagingDir = config.StagingDir
+var stagingDir = pathDefaults.StagingDir

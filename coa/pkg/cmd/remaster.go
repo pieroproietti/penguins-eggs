@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"coa/pkg/config"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/distro"
 	"coa/pkg/parser"
 	"coa/pkg/planner"
@@ -62,8 +62,8 @@ and generate a precise execution plan for the OA planner.`,
 		// Per la modalità crypted: chiede passphrase e configurazione crypto
 		var luksPassphrase string
 		if produceMode == "crypted" {
-			if err := os.MkdirAll(config.StagingDir, 0755); err != nil {
-				utils.Fatal("Impossibile creare %s: %v", config.StagingDir, err)
+			if err := os.MkdirAll(pathDefaults.StagingDir, 0755); err != nil {
+				utils.Fatal("Impossibile creare %s: %v", pathDefaults.StagingDir, err)
 			}
 
 			var err error
@@ -102,7 +102,7 @@ and generate a precise execution plan for the OA planner.`,
 
 		// RECUPERO BOOTLOADERS
 		utils.LogNormal("Recupero bootloaders (penguins-bootloaders)...")
-		utils.EnsureBootloaders(config.BootloadersDir)
+		utils.EnsureBootloaders(pathDefaults.BootloadersDir)
 
 		// GENERAZIONE EXCLUSIONI
 		utils.LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
@@ -154,7 +154,7 @@ and generate a precise execution plan for the OA planner.`,
 }
 
 func init() {
-	remasterCmd.Flags().StringVar(&producePath, "path", config.DefaultWorkPath, "working directory")
+	remasterCmd.Flags().StringVar(&producePath, "path", pathDefaults.DefaultWorkPath, "working directory")
 	remasterCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clona il sistema preservando utenti e /home")
 	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Crea una ISO con filesystem.squashfs cifrato in LUKS")
 	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
