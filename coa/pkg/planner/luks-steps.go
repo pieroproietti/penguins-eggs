@@ -57,8 +57,9 @@ HOOKEOF
 done
 
 # 4. Genera initrd con supporto LUKS dentro il chroot
+echo "LUKS: generazione initrd in corso (potrebbe richiedere qualche minuto)..."
 chroot "$LIVEROOT" /bin/bash -c \
-    "mkinitramfs -v -o /tmp/initrd.img-luks $KERNEL"
+    "mkinitramfs -o /tmp/initrd.img-luks $KERNEL" > /dev/null
 
 echo "LUKS: initrd LUKS generato in $LIVEROOT/tmp/initrd.img-luks"
 `, liveRoot)

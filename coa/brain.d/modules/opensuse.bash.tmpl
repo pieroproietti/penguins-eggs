@@ -14,7 +14,8 @@
 #!/bin/bash
 set -e
 # opensuse: distro_initramfs_cmd
-dracut -f -v --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensuse.img
+echo "Generazione initramfs live (dracut)..."
+dracut -f --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensuse.img 2>&1 | tail -1
 {{ end }}
 
 # ----------------------------------------------------------------------------
