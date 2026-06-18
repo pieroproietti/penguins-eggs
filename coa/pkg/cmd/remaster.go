@@ -18,10 +18,10 @@ import (
 )
 
 var (
-	produceMode string
 	producePath string
 	stopAfter   string
 	debugPlan   bool
+	cloneFlag   bool
 	cryptedFlag bool
 )
 
@@ -31,19 +31,31 @@ var remasterCmd = &cobra.Command{
 	Long: `The 'remaster' command orchestrates the creation of a bootable live ISO. 
 It uses the new Coala architecture to read the agnostic Brain profile 
 and generate a precise execution plan for the OA planner.`,
-	Example: `  # Start a standard ISO remastering
-  sudo ./coa remaster --mode standard
-  
+	Example: `  # Standard ISO remastering
+  sudo ./coa remaster
+
+  # Clone mode (preserves users and /home)
+  sudo ./coa remaster --clone
+
+  # Crypted mode (LUKS-encrypted squashfs)
+  sudo ./coa remaster --crypted
+
   # Debug mode: stop after a specific step
   sudo ./coa remaster --stop-after coa-initrd
-  
-  # Print the generated JSON plan (or YAML) and exit
+
+  # Print the generated JSON plan and exit
   sudo ./coa remaster --debug`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 
-		// --crypted sovrascrive --mode
-		if cryptedFlag {
+		if cloneFlag && cryptedFlag {
+			utils.Fatal("I flag --clone e --crypted sono mutuamente esclusivi.")
+		}
+
+		produceMode := "standard"
+		if cloneFlag {
+			produceMode = "clone"
+		} else if cryptedFlag {
 			produceMode = "crypted"
 		}
 
@@ -130,9 +142,9 @@ and generate a precise execution plan for the OA planner.`,
 }
 
 func init() {
-	remasterCmd.Flags().StringVar(&produceMode, "mode", "standard", "standard, clone, or crypted")
 	remasterCmd.Flags().StringVar(&producePath, "path", "/home/eggs", "working directory")
-	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Crea una ISO con filesystem.squashfs cifrato in LUKS (equivale a --mode crypted)")
+	remasterCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clona il sistema preservando utenti e /home")
+	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Crea una ISO con filesystem.squashfs cifrato in LUKS")
 	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
 	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON ed esce senza masterizzare")
 
