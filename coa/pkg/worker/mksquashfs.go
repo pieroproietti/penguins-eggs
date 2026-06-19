@@ -73,10 +73,8 @@ func RunMksquashfs(payload []byte) error {
 		args = append(args, "-comp", algo)
 	}
 
-	fmt.Println("========================================================")
-	fmt.Printf("📦 [worker] STARTING MKSQUASHFS (Profile: %s L%s, %s, %s Cores)\n", algo, level, blockSize, procs)
-	fmt.Println("========================================================")
-
+	fmt.Printf("📦 [worker] Starting mksquashfs (Profile: %s L%s, %s, %s Cores)\n", algo, level, blockSize, procs)
+	
 	cmd := exec.Command("mksquashfs", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
