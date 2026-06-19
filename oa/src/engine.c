@@ -28,7 +28,7 @@ int run_go_worker(cJSON *task) {
     int pipefd[2];
     if (pipe(pipefd) == -1) {
         // Sostituito perror con LOG_ERR + errno
-        LOG_ERR("[oa-engine] Errore creazione pipe (errno: %d)", errno);
+        LOG_ERR("[oa-engine] Pipe creation error (errno: %d)", errno);
         free(payload);
         return -1;
     }
@@ -36,7 +36,7 @@ int run_go_worker(cJSON *task) {
     pid_t pid = fork();
     if (pid == -1) {
         // Sostituito perror con LOG_ERR + errno
-        LOG_ERR("[oa-engine] Errore fork (errno: %d)", errno);
+        LOG_ERR("[oa-engine] Fork error (errno: %d)", errno);
         free(payload);
         return -1;
     }
@@ -56,7 +56,7 @@ int run_go_worker(cJSON *task) {
         execlp("sh", "sh", "-c", "coa ell 2>&1 | tee -a /var/log/oa-tools.log", NULL);
 
         // Se execlp fallisce, il programma arriva qui
-        LOG_ERR("❌ [oa-engine] Errore esecuzione 'coa ell' tramite sh (errno: %d)", errno);
+        LOG_ERR("❌ [oa-engine] Error executing ‘coa ell’ via sh (errno: %d)", errno);
         exit(EXIT_FAILURE);
     } else {
         // --- PROCESSO PADRE (Motore C) ---
@@ -79,7 +79,7 @@ int run_go_worker(cJSON *task) {
             return 0; // Successo
         } else {
             // Rimosso fprintf e \n
-            LOG_ERR("❌ [oa-engine] Il worker Go ha restituito un errore.");
+            LOG_ERR("❌ [oa-engine] The Go worker returned an error.");
             return -1;
         }
     }
@@ -90,7 +90,7 @@ int dispatch_task(cJSON *task) {
     cJSON *mod_item = cJSON_GetObjectItemCaseSensitive(task, "module");
     if (!cJSON_IsString(mod_item)) {
         // Rimosso fprintf e \n
-        LOG_ERR("[oa-engine] Errore: 'module' mancante nel task.");
+        LOG_ERR("[oa-engine] Error: ‘module’ field missing in the task.");
         return -1;
     }
     
@@ -98,11 +98,11 @@ int dispatch_task(cJSON *task) {
 
     if (is_native_module(module)) {
         // Rimosso printf e \n
-        LOG_INFO("⚙️  [oa-engine] Esecuzione nativa modulo: %s", module);
+        LOG_INFO("⚙️  [oa-engine] Native module execution: %s", module);
         return run_native(module, task);
     } else {
         // Rimosso printf e \n
-        LOG_INFO("🔀 [oa-engine] Delega modulo '%s' al worker Go...", module);
+        LOG_INFO("🔀 [oa-engine] Delegate the ‘%s’ module to the Go worker", module);
         return run_go_worker(task);
     }
 }

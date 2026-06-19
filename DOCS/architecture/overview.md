@@ -14,7 +14,6 @@ The `cmd` package contains the user interface. Each file maps a command the user
 | :--- | :--- | :--- |
 | `remaster` | Yes | The heart of the system. Starts the "flight" that produces the ISO: the `parser` reads the YAML rules, the `planner` writes the JSON plan, then the C binary is launched. Supports `--mode` (standard, clone, crypted) and `--stop-after` for surgical debugging. |
 | `destroy` | Yes | The safe destroyer (`kill` is kept as an alias). First runs the C engine with `oa cleanup` to unmount the virtual filesystems in `MNT_DETACH` mode (so the host never hangs), then physically removes the workspace and the log files. |
-| `detect` | No | Read-only diagnostics. Uses the `distro` package to identify the host family (e.g. "debian", "archlinux"), ID and release, with colored output and no side effects. |
 | `adapt` | No | Post-boot utility for virtual machines: iterates over the virtual video outputs and runs `xrandr --auto` to instantly fit the live session to the hypervisor window. |
 | `export` | No | Network orchestrator with subcommands `iso`, `pkg` and `log`: sends artifacts over `scp` with SSH multiplexing to a remote Proxmox storage. The global `--clean` flag deletes old versions on the server before uploading. |
 | `sysinstall` | Mixed | Parent command routing to the final installer: GUI (`calamares`) or TUI (`krill`). |

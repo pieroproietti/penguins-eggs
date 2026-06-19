@@ -5,26 +5,24 @@ import (
 	"io"
 	"os"
 
-	"coa/pkg/dispatcher" // Il tuo nuovo pacchetto
+	"coa/pkg/dispatcher"
 
 	"github.com/spf13/cobra"
 )
 
 var ellCmd = &cobra.Command{
-	Use:   "ell",
-	Short: "Esegue un task delegato dal motore C",
+	Use:    "ell",
+	Short:  "Execute a task delegated by the C engine",
+	Hidden: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// 1. Legge il payload JSON inviato dal programma C tramite pipe
 		payload, err := io.ReadAll(os.Stdin)
 		if err != nil {
-			return fmt.Errorf("errore di lettura da stdin: %w", err)
+			return fmt.Errorf("error reading from stdin: %w", err)
 		}
 
 		if len(payload) == 0 {
-			return fmt.Errorf("nessun payload ricevuto dal motore C")
+			return fmt.Errorf("no payload received from the C engine")
 		}
-
-		// 2. Passa la palla al vero smistatore e se ne lava le mani
 
 		return dispatcher.RouteTask(payload)
 	},

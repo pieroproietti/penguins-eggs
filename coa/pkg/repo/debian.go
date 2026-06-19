@@ -15,9 +15,7 @@ const (
 	repoSources = "/etc/apt/sources.list.d/penguins-repos.sources"
 )
 
-// isDeb822 verifica se il sistema utilizza il nuovo formato DEB822
 func isDeb822() bool {
-	// Controlla nativamente l'esistenza dei file senza invocare shell esterne
 	if _, err := os.Stat("/etc/apt/sources.list.d/ubuntu.sources"); err == nil {
 		return true
 	}
@@ -27,57 +25,50 @@ func isDeb822() bool {
 	return false
 }
 
-// AddDebian configura la repository su Debian/Ubuntu
 func addDebian() error {
-	utils.LogNormal("Configurazione repository penguins-eggs per Debian/Ubuntu...")
+	utils.LogNormal("Configuring penguins-eggs repository for Debian/Ubuntu...")
 
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("questo comando richiede i privilegi di root (usa sudo)")
+		return fmt.Errorf("this command requires root privileges (use sudo)")
 	}
-
-	// 1. Scarica e dearmora la chiave GPG
 	cmdStr := fmt.Sprintf("curl -fsSL %s | gpg --dearmor > %s", repoKeyUrl, repoKeyPath)
 	cmd := exec.Command("bash", "-c", cmdStr)
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("impossibile importare la chiave GPG: %w", err)
+		return fmt.Errorf("unable to import GPG key: %w", err)
 	}
 
-	// 2. Routing del formato: DEB822 o Classico
 	if isDeb822() {
-		utils.LogNormal("[INFO] Rilevato formato DEB822. Generazione file .sources...")
+		utils.LogNormal("[INFO] DEB822 format detected. Generating .sources file...")
 
 		content := fmt.Sprintf("Types: deb\nURIs: %s/deb\nSuites: stable\nComponents: main\nSigned-By: %s\n", repoUrl, repoKeyPath)
 
 		if err := os.WriteFile(repoSources, []byte(content), 0644); err != nil {
-			return fmt.Errorf("impossibile scrivere il file %s: %w", repoSources, err)
+			return fmt.Errorf("unable to write file %s: %w", repoSources, err)
 		}
 	} else {
-		utils.LogNormal("[INFO] Rilevato formato classico. Generazione file .list...")
+		utils.LogNormal("[INFO] Classic format detected. Generating .list file...")
 
 		content := fmt.Sprintf("deb [signed-by=%s] %s/deb stable main\n", repoKeyPath, repoUrl)
 
 		if err := os.WriteFile(repoList, []byte(content), 0644); err != nil {
-			return fmt.Errorf("impossibile scrivere il file %s: %w", repoList, err)
+			return fmt.Errorf("unable to write file %s: %w", repoList, err)
 		}
 	}
 
-	utils.LogSuccess("✅ Repository aggiunta con successo. Esegui 'apt update'.")
+	utils.LogSuccess("✅ Repository added successfully. Run 'apt update'.")
 	return nil
 }
 
-// RemoveDebian elimina la repository dal sistema
 func removeDebian() error {
-	utils.LogNormal("Rimozione repository penguins-eggs...")
+	utils.LogNormal("Removing penguins-eggs repository...")
 
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("questo comando richiede i privilegi di root (usa sudo)")
+		return fmt.Errorf("this command requires root privileges (use sudo)")
 	}
-
-	// Ignoriamo eventuali errori se uno dei file non esiste (es. pulizia sicura)
 	os.Remove(repoKeyPath)
 	os.Remove(repoList)
-	os.Remove(repoSources) // Puliamo anche il .sources per sicurezza
+	os.Remove(repoSources)
 
-	utils.LogNormal("🗑️ Repository rimossa con successo. Esegui 'apt update'.")
+	utils.LogNormal("🗑️ Repository removed successfully. Run 'apt update'.")
 	return nil
 }

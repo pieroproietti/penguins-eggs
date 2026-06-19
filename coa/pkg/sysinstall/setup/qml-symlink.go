@@ -18,7 +18,7 @@ func QmlSymlink() error {
 	os.RemoveAll(targetLink)
 
 	if err := os.Symlink(source, targetLink); err != nil {
-		return fmt.Errorf("symlink fallito %s -> %s: %w", source, targetLink, err)
+		return fmt.Errorf("symlink failed %s -> %s: %w", source, targetLink, err)
 	}
 
 	return nil

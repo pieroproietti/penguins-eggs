@@ -6,8 +6,7 @@ import (
 	"fmt"
 )
 
-// oaUsers crea e restituisce i task necessari per configurare l'utente live
-func oaUsers(settings parser.RemasterConfig, step parser.Step, workPath string) []OATask {
+func buildLiveUserTasks(settings parser.RemasterConfig, step parser.Step, workPath string) []OATask {
 	var tasks []OATask
 
 	// 1. Utente dinamico (fallback su "live")
@@ -64,7 +63,7 @@ func oaUsers(settings parser.RemasterConfig, step parser.Step, workPath string) 
 		Step: parser.Step{
 			Name:        "inject-live-users", // Aggiunto il nome che mancava!
 			Module:      "users",
-			Description: fmt.Sprintf("Iniezione identità utente live (%s)", targetUser),
+			Description: fmt.Sprintf("Live user identity injection (%s)", targetUser),
 			Params: map[string]interface{}{
 				"users": usersToInject, // Il motore C lo cercherà qui dentro!
 			},

@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Variabile di stato per agganciare il flag di scrittura automatica
 var writeToGrub bool
 
 // grub40Cmd represents the 'coa tools grub40' command
@@ -119,7 +118,7 @@ menuentry "oa-tools: %s" --class isoboot {
 		// 9. LOGICA DI SCRITTURA DIRETTA O CONSULTAZIONE STANDARD
 		if writeToGrub {
 			if os.Geteuid() != 0 {
-				utils.Fatal("L'iniezione automatica richiede i privilegi di root. Rilancia il comando con 'sudo'.")
+				utils.Fatal("Automatic injection requires root privileges. Rerun the command with 'sudo'.")
 			}
 
 			targetFile := "/etc/grub.d/40_custom"
@@ -142,11 +141,11 @@ menuentry "oa-tools: %s" --class isoboot {
 
 			err = os.WriteFile(targetFile, []byte(content), 0755)
 			if err != nil {
-				utils.Fatal("Scrittura fallita su %s: %v", targetFile, err)
+				utils.Fatal("Write failed on %s: %v", targetFile, err)
 			}
 
-			utils.LogSuccess("Entry per '%s' configurata con successo in %s.", isoName, targetFile)
-			utils.LogNormal("Per rendere effettive le modifiche esegui: '%s'", updateCmd)
+			utils.LogSuccess("Entry for '%s' configured successfully in %s.", isoName, targetFile)
+			utils.LogNormal("To apply the changes run: '%s'", updateCmd)
 
 		} else {
 			grubTemplate := `

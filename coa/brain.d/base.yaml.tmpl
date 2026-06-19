@@ -27,14 +27,14 @@ remaster:
 # ----------------------------------------------------------------------------
   # --- 2.1 PREPARAZIONE E COPIA BOOTLOADER ---
   - name: "prepare-bootloader"
-    description: "Crea directory e copia assets bootloader (BIOS/UEFI)"
+    description: "Create a directory and copy the bootloader assets (BIOS/UEFI)"
     module: "shell"
     params:
       command: "/etc/oa-tools.d/scripts/prepare-bootloader.sh /home/eggs/isodir /tmp/coa/bootloaders"
 
   # --- 2.2. GENERAZIONE EFI.IMG ---
   - name: "generate-efi.img"
-    description: "Generazione immagine FAT per EFI"
+    description: "Generating a FAT image for EFI"
     module: "shell"
     params:
       command: |
@@ -51,7 +51,7 @@ remaster:
 # ----------------------------------------------------------------------------
   # --- 3. PREPARAZIONE ASSETS: SPLASH E FONT ---
   - name: "copy-assets"
-    description: "Copia splash screen e configurazione font GRUB/ISOLINUX"
+    description: "Copy the splash screen and configure the GRUB/ISOLINUX fonts"
     module: "shell"
     params:
       command: |
@@ -68,7 +68,7 @@ remaster:
 
 # 3.1. --- GENERAZIONE MENU DI BOOT (Modulo Script) ---
   - name: "generate-boot-menus"
-    description: "Generazione dinamica GRUB, ISOLINUX e trampolino EFI"
+    description: "Dynamic generation of GRUB, ISOLINUX and EFI trampoline"
     module: "script"
     chroot: false
     params:
@@ -89,7 +89,7 @@ remaster:
 # ----------------------------------------------------------------------------
 ## -- 4.1 sanitize host
   - name: "sanitize-system-files"
-    description: "Sanitizzazione fstab e crypttab per il sistema live"
+    description: "Sanitize fstab and crypttab for the live system"
     module: "shell"
     chroot: false
     params:
@@ -128,7 +128,7 @@ remaster:
   ## 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
   # 7.1. Configurazione Sudoers (Senza password)
   - name: "conf-live-sudoers"
-    description: "Configurazione sudoers per utente live"
+    description: "Configure sudoers for the live user"
     module: "template"
     chroot: true
     params:
@@ -139,7 +139,7 @@ remaster:
 
   # 7.2. Desktop Launcher Universale
   - name: "create-live-launcher"
-    description: "Desktop Launcher di installazione"
+    description: "Add universal desktop launcher"
     module: "template"
     chroot: true
     params:
@@ -159,7 +159,7 @@ remaster:
 
   # 7.3. Trust Agent (Copying the script to liveroot)
   - name: "trust-agent-script"
-    description: "Copia dello script per il trust dinamico del desktop launcher"
+    description: "Copy dynamic trust script for the desktop launcher"
     module: "shell"
     chroot: false 
     params:
@@ -169,7 +169,7 @@ remaster:
 
   # 7.4. Trust Agent Autostart
   - name: "trust-agent-autostart"
-    description: "Innesco XDG Autostart per il trust agent"
+    description: "Enable XDG Autostart for the trust agent"
     module: "template"
     chroot: true
     params:
@@ -188,7 +188,7 @@ remaster:
 # 7.1 autologin-gui
 # ----------------------------------------------------------------------------
   - name: autologin-gui
-    description: "Creazione di autologin per utente live"
+    description: "Set up autologin for the live user"
     module: "autologin-gui"
     params:
       user: "live"
@@ -198,7 +198,7 @@ remaster:
 # 7.5 egg-icon
 # ----------------------------------------------------------------------------
   - name: "eggs-icon"
-    description: "Creazione Icona Uovo (SVG 3D Golden Edition)"
+    description: "Create Egg Icon"
     module: "template"
     params:
       dest: "/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"

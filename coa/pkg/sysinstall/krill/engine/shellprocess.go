@@ -80,10 +80,10 @@ func (c *ctx) runShellprocess(id string) error {
 		}
 		if err != nil {
 			if tolerant {
-				c.logf("comando tollerato fallito: %s (%v)", command, err)
+				c.logf("tolerated command failed: %s (%v)", command, err)
 				continue
 			}
-			return fmt.Errorf("comando %q: %w", command, err)
+			return fmt.Errorf("command %q: %w", command, err)
 		}
 	}
 	return nil

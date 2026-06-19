@@ -63,7 +63,7 @@ func RunXorriso(payload []byte) error {
 
 	// Verifica rapida dei binari di boot (evita che xorriso fallisca malamente dopo)
 	if p.IsolinuxBin == "" || p.EfiImg == "" {
-		fmt.Println("⚠️  [worker] Warning: parametri di boot (isolinux_bin o efi_img) mancanti. La ISO potrebbe non avviarsi.")
+		fmt.Println("⚠️  [worker] Warning: boot parameters (isolinux_bin or efi_img) missing. The ISO may not boot.")
 	}
 
 	// 5. Costruzione sicura degli argomenti
@@ -93,9 +93,9 @@ func RunXorriso(payload []byte) error {
 	}
 
 	// 6. Output visivo
-	fmt.Printf("\n💿 [worker] Generazione ISO ibrida: %s\n", actualOutput)
+	fmt.Printf("\n💿 [worker] Generating hybrid ISO: %s\n", actualOutput)
 	fmt.Printf("📁 [worker] Sorgente: %s\n", actualSource)
-	fmt.Println("⏳ [worker] Avvio compressione xorriso (potrebbe richiedere qualche minuto)...")
+	fmt.Println("⏳ [worker] Starting xorriso compression (this may take a few minutes)...")
 
 	// 7. Esecuzione del processo nativo
 	cmd := exec.Command("xorriso", args...)
@@ -104,9 +104,9 @@ func RunXorriso(payload []byte) error {
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("processo xorriso fallito: %w", err)
+		return fmt.Errorf("xorriso process failed: %w", err)
 	}
 
-	fmt.Printf("✅ [worker] Immagine ISO creata con successo in: %s\n", actualOutput)
+	fmt.Printf("✅ [worker] ISO image created successfully at: %s\n", actualOutput)
 	return nil
 }

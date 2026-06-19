@@ -15,7 +15,6 @@ On systems migrating from penguins-eggs, the legacy alias `eggs` works interchan
 | **`remaster`** | 🟢 Yes | Builds the live ISO. |
 | **`sysinstall`** | 🟡 Mixed | Launches the system installer (GUI or TUI) on the target. |
 | **`destroy`** | 🟢 Yes | Unmounts the filesystems and safely cleans the workspace (`kill` is an alias). |
-| **`detect`** | 🔴 No | Detects and displays the host system profile. |
 | **`adapt`** | 🔴 No | Dynamically adapts the video resolution inside a VM. |
 | **`export`** | 🔴 No | Transfers artifacts (ISO/packages/logs) to a remote server. |
 | **`wardrobe`** | 🟡 Mixed | Manages and applies the costumes (desktop configurations). |
@@ -67,11 +66,6 @@ Manages the wardrobe: ready-made desktop configurations ("costumes") that can be
 ---
 
 ## 🧰 Utilities and Diagnostics
-
-### `coa detect`
-Read-only diagnostic tool. Analyzes `/etc/os-release` to identify the host environment agnostically and maps the distribution to its mother family (e.g. it recognizes *Linux Mint* as part of the *Debian* family).
-
-*   **Usage:** `coa detect`
 
 ### `coa adapt`
 Post-boot utility designed for live environments booted in virtual machines (VirtualBox, QEMU/KVM, VMware). Maps the virtual video outputs and forces a dynamic resize (`xrandr --auto`) to fit the resolution to the hypervisor window.

@@ -18,14 +18,14 @@ func BuildInstaller(oaVersion string) error {
 	// utenti sono già clonati da /home: togliamo "users" dalla sequence
 	// condivisa prima che Calamares o Krill la leggano.
 	if mode := readSibling().Mode; mode == "clone" || mode == "crypted" {
-		utils.LogNormal("[INSTALLER] Modalità '%s': utenti già clonati, rimuovo lo step 'users' da settings.conf.", mode)
+		utils.LogNormal("[INSTALLER] Mode '%s': users already cloned, removing 'users' step from settings.conf.", mode)
 		if err := stripUsersModule(filepath.Join(InstallerDRoot, "settings.conf")); err != nil {
 			return err
 		}
 	}
 
 	d := distro.NewDistro()
-	utils.LogNormal("Generazione moduli e payload in corso...")
+	utils.LogNormal("Generating modules and payload...")
 
 	// 2. IL LINK QML! Fatto qui, è blindato.
 	if err := QmlSymlink(); err != nil {
@@ -47,7 +47,7 @@ func BuildInstaller(oaVersion string) error {
 
 	for _, task := range tasks {
 		if err := task(); err != nil {
-			utils.LogError("Fallimento modulo: %v", err)
+			utils.LogError("Module failure: %v", err)
 			return err
 		}
 	}

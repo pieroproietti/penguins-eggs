@@ -1,4 +1,3 @@
-// Moduli utente: creazione dell'utente, autologin, rimozione dell'utente live.
 package engine
 
 import (
@@ -24,9 +23,8 @@ func runUsers(c *ctx) error {
 		return err
 	}
 
-	// Password via chpasswd (stdin), così passa dalla configurazione PAM del target
 	if plan.UserPass == "" {
-		return fmt.Errorf("password utente vuota")
+		return fmt.Errorf("empty user password")
 	}
 	if err := c.chrootInput(plan.Login+":"+plan.UserPass+"\n", "chpasswd"); err != nil {
 		return err
@@ -57,7 +55,7 @@ func runUsers(c *ctx) error {
 func (c *ctx) existingGroups(groups []string) []string {
 	data, err := os.ReadFile(c.tpath("etc", "group"))
 	if err != nil {
-		c.logf("lettura /etc/group del target fallita: %v", err)
+		c.logf("reading target /etc/group failed: %v", err)
 		return nil
 	}
 	content := string(data)
@@ -88,7 +86,7 @@ func runDisplaymanager(c *ctx) error {
 		os.MkdirAll(dir, 0755)
 		conf := fmt.Sprintf("[Seat:*]\nautologin-user=%s\nautologin-user-timeout=0\n", login)
 		os.WriteFile(dir+"/90-autologin.conf", []byte(conf), 0644)
-		c.logf("autologin lightdm configurato per %s", login)
+		c.logf("autologin lightdm configured for %s", login)
 	}
 
 	// sddm
@@ -97,7 +95,7 @@ func runDisplaymanager(c *ctx) error {
 		os.MkdirAll(dir, 0755)
 		conf := fmt.Sprintf("[Autologin]\nUser=%s\nRelogin=false\n", login)
 		os.WriteFile(dir+"/autologin.conf", []byte(conf), 0644)
-		c.logf("autologin sddm configurato per %s", login)
+		c.logf("autologin sddm configured for %s", login)
 	}
 
 	// gdm3 / gdm
@@ -113,7 +111,7 @@ func runDisplaymanager(c *ctx) error {
 				content = "[daemon]\n" + autologin + "\n" + content
 			}
 			os.WriteFile(custom, []byte(content), 0644)
-			c.logf("autologin %s configurato per %s", gdm, login)
+			c.logf("autologin %s configured for %s", gdm, login)
 		}
 	}
 	return nil
@@ -152,9 +150,8 @@ func runRemoveuser(c *ctx) error {
 	if user == "" || user == c.plan.Login {
 		return nil
 	}
-	// Tolleriamo l'errore: l'utente live potrebbe non esistere nel target
 	if err := c.chroot("userdel", "-r", user); err != nil {
-		c.logf("userdel %s fallito (non fatale): %v", user, err)
+		c.logf("userdel %s failed (non-fatal): %v", user, err)
 	}
 	return nil
 }

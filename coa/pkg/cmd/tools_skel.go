@@ -10,7 +10,7 @@ var skelTargetUser string
 
 var skelCmd = &cobra.Command{
 	Use:   "skel",
-	Short: "Crea /etc/skel a partire dalle configurazioni dell'utente corrente",
+	Short: "Create /etc/skel based on the current user's configurations",
 	Run: func(cmd *cobra.Command, args []string) {
 		xdg.HandleSkel(skelTargetUser)
 	},

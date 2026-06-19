@@ -23,19 +23,19 @@ func addArch(isManjaro bool) error {
 		distroName = "Manjaro"
 		serverUrl = archBaseUrl + "/manjaro"
 	}
-	utils.LogNormal("Configurazione repository penguins-eggs per %s...\n", distroName)
+	utils.LogNormal("Configuring penguins-eggs repository for %s...\n", distroName)
 
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("richiesti privilegi di root (sudo)")
+		return fmt.Errorf("root privileges required (sudo)")
 	}
 
 	content, _ := os.ReadFile(pacmanConfPath)
 	if strings.Contains(string(content), repoNameBlock) {
-		utils.LogNormal("[INFO] Il repository %s esiste già in %s\n", repoNameBlock, pacmanConfPath)
+		utils.LogNormal("[INFO] Repository %s already exists in %s\n", repoNameBlock, pacmanConfPath)
 		return nil
 	}
 
-	utils.LogNormal("Importazione della chiave GPG: %s...\n", archKeyId)
+	utils.LogNormal("Importing GPG key: %s...\n", archKeyId)
 	exec.Command("pacman-key", "--recv-key", archKeyId, "--keyserver", "keyserver.ubuntu.com").Run()
 	exec.Command("pacman-key", "--lsign-key", archKeyId).Run()
 
@@ -48,19 +48,19 @@ func addArch(isManjaro bool) error {
 	defer f.Close()
 	f.WriteString(repoBlock)
 
-	utils.LogSuccess("✅ Repository aggiunto con successo!")
+	utils.LogSuccess("✅ Repository added successfully!")
 	if isManjaro {
-		utils.LogNormal("Esegui 'sudo pamac update --force-refresh'")
+		utils.LogNormal("Run 'sudo pamac update --force-refresh'")
 	} else {
-		utils.LogNormal("Esegui 'sudo pacman -Syyu'")
+		utils.LogNormal("Run 'sudo pacman -Syyu'")
 	}
 	return nil
 }
 
 func removeArch(isManjaro bool) error {
-	utils.LogNormal("Rimozione repository Arch/Manjaro...")
+	utils.LogNormal("Removing Arch/Manjaro repository...")
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("richiesti privilegi di root (sudo)")
+		return fmt.Errorf("root privileges required (sudo)")
 	}
 
 	serverUrl := archBaseUrl + "/arch"
@@ -75,12 +75,11 @@ func removeArch(isManjaro bool) error {
 		repoBlock := fmt.Sprintf("\n%s\n%s\nSigLevel = Optional TrustAll\nServer = %s\n", repoBlockIdentifier, repoNameBlock, serverUrl)
 		strContent = strings.ReplaceAll(strContent, repoBlock, "")
 
-		// Gestione del caso senza newline iniziali
-		repoBlockNoNL := fmt.Sprintf("%s\n%s\nSigLevel = Optional TrustAll\nServer = %s\n", repoBlockIdentifier, repoNameBlock, serverUrl)
+			repoBlockNoNL := fmt.Sprintf("%s\n%s\nSigLevel = Optional TrustAll\nServer = %s\n", repoBlockIdentifier, repoNameBlock, serverUrl)
 		strContent = strings.ReplaceAll(strContent, repoBlockNoNL, "")
 
 		os.WriteFile(pacmanConfPath, []byte(strings.TrimSpace(strContent)+"\n"), 0644)
-		utils.LogNormal("🗑️ Repository rimosso da pacman.conf.")
+		utils.LogNormal("🗑️ Repository removed from pacman.conf.")
 	}
 
 	return nil

@@ -56,7 +56,7 @@ int run_native_users(cJSON *task) {
     cJSON *params = cJSON_GetObjectItemCaseSensitive(task, "params");
     if (!params) {
         // CORRETTO: rimosso stderr e \n
-        LOG_ERR("[oa-native] Errore: 'params' mancante in users.");
+        LOG_ERR("[oa-native] Error: ‘params’ missing in users.");
         return -1;
     }
 
@@ -64,7 +64,7 @@ int run_native_users(cJSON *task) {
     const char *resolved_root = get_json_string(task, "live_root", "");
 
     if (strlen(resolved_root) == 0) {
-        LOG_ERR("[oa-native] Errore: 'live_root' mancante.");
+        LOG_ERR("[oa-native] Error: ‘live_root’ is missing.");
         return -1;
     }
 
@@ -73,10 +73,10 @@ int run_native_users(cJSON *task) {
     snprintf(s_path, sizeof(s_path), "%s/etc/shadow", resolved_root);
     snprintf(g_path, sizeof(g_path), "%s/etc/group", resolved_root);
 
-    LOG_INFO("👤 [oa-native] Gestione utenti (Mode: %s) su root: %s", mode, resolved_root);
+    LOG_INFO("👤 [oa-native] User management (Mode: %s) su root: %s", mode, resolved_root);
 
     if (strcmp(mode, "clone") != 0 && strcmp(mode, "crypted") != 0) {
-        LOG_INFO("   -> Pulizia utenti host (sanitize)...");
+        LOG_INFO("   -> Cleaning up host users (sanitize)...");
         yocto_sanitize_file(p_path, OE_UID_HUMAN_MIN, OE_UID_HUMAN_MAX);
         yocto_sanitize_shadow(s_path, p_path);
         yocto_sanitize_file(g_path, OE_UID_HUMAN_MIN, OE_UID_HUMAN_MAX);
@@ -88,7 +88,7 @@ int run_native_users(cJSON *task) {
         FILE *fs = fopen(s_path, "a");
         
         if (!fp || !fs) { 
-            LOG_ERR("[oa-native] Errore fatale: Impossibile aprire i DB in %s/etc/", resolved_root);
+            LOG_ERR("[oa-native] Fatal error: Unable to open the databases in %s/etc/", resolved_root);
             if(fp) fclose(fp); 
             if(fs) fclose(fs); 
             return -1;
@@ -102,7 +102,7 @@ int run_native_users(cJSON *task) {
             
             if (strlen(login) == 0) continue;
 
-            LOG_INFO("   -> Iniezione utente: '%s' home='%s'", login, home);
+            LOG_INFO("   ->  Inject the user: '%s' home='%s'", login, home);
 
             char *final_pass = (char *)pass;
             if (strlen(pass) > 0 && pass[0] != '$') {
@@ -118,12 +118,12 @@ int run_native_users(cJSON *task) {
                 fprintf(fg, "%s:x:%d:\n", login, OE_UID_HUMAN_MIN);
                 fclose(fg);
             } else {
-                LOG_ERR("      [!] Impossibile creare gruppo primario.");
+                LOG_ERR("      [!] Unable to create a primary group.");
             }
 
             cJSON *groups_obj = cJSON_GetObjectItemCaseSensitive(u, "groups");
             if (cJSON_IsArray(groups_obj)) {
-                LOG_INFO("   -> Aggiunta a gruppi secondari...");
+                LOG_INFO("   -> Added to secondary groups...");
                 yocto_add_user_to_groups(g_path, login, groups_obj);
             }
 
@@ -132,7 +132,7 @@ int run_native_users(cJSON *task) {
             
             if (mkdir(full_home, 0755) != 0 && errno != EEXIST) {
                 // Sostituito fprintf con LOG_WARN
-                LOG_WARN("      [!] Warning: mkdir fallita per %s (errno: %d)", full_home, errno);
+                LOG_WARN("      [!] Warning: mkdir failure on %s (errno: %d)", full_home, errno);
             }
 
             char skel_src[PATH_SAFE];
@@ -146,20 +146,20 @@ int run_native_users(cJSON *task) {
 
             char *chown_argv[] = {"chown", "-R", uid_str, full_home, NULL};
             if (run_exec(chown_argv) != 0) {
-                LOG_ERR("      [!] Errore setup home per '%s'", login);
+                LOG_ERR("      [!] Home setup error for '%s'", login);
             }
         }
         fclose(fp);
         fclose(fs);
     }
-    LOG_INFO("✅ [oa-native] Utenti configurati con successo.");
+    LOG_INFO("✅ [oa-native] Users successfully configured.");
     return 0;
 }
 
 int run_native_umount(cJSON *task) {
     const char *work_dir = get_json_string(task, "work_dir", "");
     if (strlen(work_dir) == 0) {
-        LOG_ERR("❌ [oa-native] Errore: 'work_dir' mancante per il cleanup.");
+        LOG_ERR("❌ [oa-native] Error: ‘work_dir’ is missing for cleanup.");
         return 1;
     }
 

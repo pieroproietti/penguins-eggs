@@ -11,15 +11,12 @@ import (
 
 var docTarget string
 
-// genDocsCmd è un comando nascosto usato dal Makefile/builder per generare la documentazione
 var genDocsCmd = &cobra.Command{
 	Use:    "_gen_docs",
-	Hidden: true, // Nascondiamo questo comando agli utenti normali (non apparirà in 'coa --help')
-	Short:  "Genera file Markdown, Man pages e script di autocompletamento",
+	Hidden: true,
+	Short:  "Generate Markdown files, Man pages, and autocompletion scripts",
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.LogNormal("[gen_docs] Generazione documentazione nella cartella: %s", docTarget)
-
-		// 1. Preparazione delle cartelle di destinazione
+		utils.LogNormal("[gen_docs] Generating documentation in folder: %s", docTarget)
 		mdDir := filepath.Join(docTarget, "md")
 		manDir := filepath.Join(docTarget, "man")
 		compDir := filepath.Join(docTarget, "completion")
@@ -27,50 +24,43 @@ var genDocsCmd = &cobra.Command{
 		dirs := []string{mdDir, manDir, compDir}
 		for _, dir := range dirs {
 			if err := os.MkdirAll(dir, 0755); err != nil {
-				utils.LogError("Impossibile creare la directory %s: %v", dir, err)
+				utils.LogError("Unable to create directory %s: %v", dir, err)
 				os.Exit(1)
 			}
 		}
 
-		// 2. Generazione Documentazione Markdown
 		if err := doc.GenMarkdownTree(rootCmd, mdDir); err != nil {
-			utils.LogError("Generazione Markdown fallita: %v", err)
+			utils.LogError("Markdown generation failed: %v", err)
 			os.Exit(1)
 		}
 
-		// 3. Generazione Pagine Man (Manuali Linux classici)
 		header := &doc.GenManHeader{
 			Title:   "COA",
 			Section: "1",
 		}
 		if err := doc.GenManTree(rootCmd, header, manDir); err != nil {
-			utils.LogError("Generazione Man pages fallita: %v", err)
+			utils.LogError("Man pages generation failed: %v", err)
 			os.Exit(1)
 		}
 
-		// 4. Generazione Script di Autocompletamento (Bash, Zsh, Fish)
-		// -> Prima generiamo quelli per il comando originale "coa"
 		rootCmd.GenBashCompletionFile(filepath.Join(compDir, "coa.bash"))
 		rootCmd.GenZshCompletionFile(filepath.Join(compDir, "coa.zsh"))
 		rootCmd.GenFishCompletionFile(filepath.Join(compDir, "coa.fish"), true)
 
-		// -> IL TRUCCO: Mascheriamo temporaneamente il comando come "eggs"
 		originalUse := rootCmd.Use
 		rootCmd.Use = "eggs"
 
-		// -> Ora Cobra genererà il codice interno usando "__start_eggs" invece di "__start_coa"
 		rootCmd.GenBashCompletionFile(filepath.Join(compDir, "eggs.bash"))
 		rootCmd.GenZshCompletionFile(filepath.Join(compDir, "eggs.zsh"))
 		rootCmd.GenFishCompletionFile(filepath.Join(compDir, "eggs.fish"), true)
 
-		// -> Ripristiniamo il nome originale per mantenere pulito lo stato interno
 		rootCmd.Use = originalUse
 
-		utils.LogSuccess("[gen_docs] Documentazione e completamenti generati con successo.")
+		utils.LogSuccess("[gen_docs] Documentation and completions generated successfully.")
 	},
 }
 
 func init() {
-	genDocsCmd.Flags().StringVar(&docTarget, "target", "./docs", "Target directory per la generazione")
+	genDocsCmd.Flags().StringVar(&docTarget, "target", "./docs", "Target directory for generation")
 	rootCmd.AddCommand(genDocsCmd)
 }

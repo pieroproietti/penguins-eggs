@@ -89,25 +89,20 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 
 	var cmd *exec.Cmd
 
-	// 2. Rilevamento interprete ed esecuzione
 	if config.Chroot {
 		shellPath := "/bin/sh"
 		if _, err := os.Stat(filepath.Join(config.LiveRoot, "bin", "bash")); err == nil {
 			shellPath = "/bin/bash"
 		}
 
-		fmt.Printf("📦 [worker core] Esecuzione in chroot (via %s)...\n", shellPath)
-
-		// Costruiamo gli argomenti: chroot <root> /bin/bash /root/.oa-tools/file.sh [args...]
+		fmt.Printf("📦 [worker core] Running in chroot (via %s)...\n", shellPath)
 		args := []string{config.LiveRoot, shellPath, execPath}
 		if len(config.Params.Args) > 0 {
 			args = append(args, config.Params.Args...)
 		}
 		cmd = exec.Command("chroot", args...)
 	} else {
-		fmt.Println("💻 [worker core] Esecuzione locale...")
-
-		// Costruiamo gli argomenti: bash /root/.oa-tools/file.sh [args...]
+		fmt.Println("💻 [worker core] Running locally...")
 		args := []string{execPath}
 		if len(config.Params.Args) > 0 {
 			args = append(args, config.Params.Args...)
@@ -118,9 +113,8 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	// 3. Avvio
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("esecuzione fallita: %w", err)
+		return fmt.Errorf("execution failed: %w", err)
 	}
 
 	return nil

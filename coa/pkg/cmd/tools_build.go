@@ -18,18 +18,14 @@ It orchestrates the full compilation of both the C-native engine (oa) and the Go
 	Example: `  # Compile the ecosystem and generate native packages
   coa tools build`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Controllo Anti-Sudo: blocchiamo l'esecuzione se l'utente è root
 		if os.Geteuid() == 0 {
-			utils.Fatal(" Esecuzione interrotta. NON eseguire 'coa tools build' con sudo!")
-			utils.LogNormal("La compilazione deve essere effettuata come utente normale per evitare di " +
-				"creare file e pacchetti di proprietà di root nel tuo workspace.")
+			utils.Fatal(" Execution aborted. Do NOT run 'coa tools build' with sudo!")
+			utils.LogNormal("Compilation must be run as a normal user to avoid " +
+				"creating root-owned files and packages in your workspace.")
 			os.Exit(1)
 		}
 
-		// Rileva la distribuzione host (i Sensi)
 		myDistro := distro.NewDistro()
-
-		// Passa la palla al motore di build, includendo la versione di Git
 		builder.HandleBuild(myDistro)
 	},
 }

@@ -13,8 +13,9 @@ func init() {
 
 func wardrobeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "wardrobe",
-		Short: "Gestione dei vestiti (costumes)",
+		Use:    "wardrobe",
+		Short:  "Gestione dei vestiti (costumes)",
+		Hidden: true,
 	}
 
 	// Attacchiamo i rami al comando wardrobe

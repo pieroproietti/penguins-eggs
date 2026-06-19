@@ -11,28 +11,26 @@ var cleanVerbose bool
 
 var toolsCleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "Pulisce log, cache apt/pacman e residui del sistema host",
-	Long: `Dimagrisce il sistema rimuovendo file non necessari.
-Ideale da lanciare prima di 'coa remaster' per ottenere una ISO più compatta.`,
+	Short: "Log rotation, package manager cache cleanup, and host system remnants",
+	Long: `It streamlines the system by removing unnecessary files.
+Ideal to run before ‘coa remaster’ to create a more compact ISO.`,
 	Example: `  sudo coa tools clean
   sudo coa tools clean --verbose`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Sostituiamo il check manuale con la funzione centralizzata del pacchetto cmd
 		CheckSudoRequirements(cmd.Name(), true)
 
-		utils.LogNormal("Inizio procedura di Bleach (pulizia profonda)...")
+		utils.LogNormal("Starting Bleach (deep cleanup)...")
 
 		b := bleach.New(cleanVerbose)
 		if err := b.Clean(); err != nil {
-			// Fatal stampa in rosso ed esce da solo con codice 1
-			utils.Fatal("Pulizia interrotta: %v", err)
+			utils.Fatal("Cleanup interrupted: %v", err)
 		}
 
-		utils.LogSuccess("Sistema pulito! Ora la tua ISO sarà più snella.")
+		utils.LogSuccess("System clean! Your ISO will now be leaner.")
 	},
 }
 
 func init() {
-	toolsCleanCmd.Flags().BoolVarP(&cleanVerbose, "verbose", "v", false, "Mostra l'output dettagliato dei comandi di pulizia")
+	toolsCleanCmd.Flags().BoolVarP(&cleanVerbose, "verbose", "v", false, "Show detailed output of cleanup commands")
 	toolsCmd.AddCommand(toolsCleanCmd)
 }
