@@ -7,19 +7,18 @@ import (
 	"path/filepath"
 )
 
-// Wear è il punto di ingresso principale
 func Wear(costumeName string, noAcc bool, noFirm bool) error {
-	utils.LogNormal("Inizio procedura di vestizione per: %s", costumeName)
+	utils.LogNormal("Starting costume application for: %s", costumeName)
 
 	root, err := getWardrobeRoot()
 	if err != nil {
-		utils.LogError("Errore root guardaroba: %v", err)
+		utils.LogError("Wardrobe root error: %v", err)
 		return err
 	}
 
 	costumeDir := filepath.Join(root, "costumes", costumeName)
 	if _, err := os.Stat(costumeDir); os.IsNotExist(err) {
-		return fmt.Errorf("costume '%s' non trovato in %s", costumeName, costumeDir)
+		return fmt.Errorf("costume '%s' not found in %s", costumeName, costumeDir)
 	}
 
 	yamlFile := findYaml(costumeDir)
@@ -28,70 +27,62 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 		return err
 	}
 
-	// 1. Applicazione del costume principale
-	utils.LogNormal("--- Applicazione Costume: %s ---", suit.Name)
+	utils.LogNormal("--- Applying Costume: %s ---", suit.Name)
 	if err := applySuit(costumeDir, suit); err != nil {
 		return err
 	}
 
-	// 2. Applicazione Accessori (se presenti e non disabilitati)
 	if !noAcc && len(suit.Accessories) > 0 {
-		utils.LogNormal("--- Elaborazione %d accessori ---", len(suit.Accessories))
+		utils.LogNormal("--- Processing %d accessories ---", len(suit.Accessories))
 		for _, accName := range suit.Accessories {
 			accDir := filepath.Join(root, "accessories", accName)
 			if accYaml := findYaml(accDir); accYaml != "" {
 				if accSuit, err := loadSuit(accYaml); err == nil {
-					utils.LogNormal("Accessorio: %s", accName)
+					utils.LogNormal("Accessory: %s", accName)
 					applySuit(accDir, accSuit)
 				}
 			}
 		}
 	}
 
-	// 3. Chiusura: Sincronizzazione home
-	utils.LogNormal("--- Finalizzazione ---")
+	utils.LogNormal("--- Finalizing ---")
 	copySkelToUser()
 
-	utils.LogNormal("✅ Vestizione completata con successo!")
+	utils.LogNormal("✅ Costume applied successfully!")
 	return nil
 }
 
-// applySuit esegue le tre fasi: Pacchetti, Overlay, Comandi
 func applySuit(dir string, suit *Suit) error {
-	// Fase A: Pacchetti
 	if len(suit.Packages) > 0 {
-		utils.LogNormal("[%s] Tentativo installazione pacchetti: %v", suit.Name, suit.Packages)
+		utils.LogNormal("[%s] Attempting package installation: %v", suit.Name, suit.Packages)
 		installWithRetries(suit.Packages, 3)
 	} else {
-		utils.LogNormal("[%s] Nessun pacchetto da installare.", suit.Name)
+		utils.LogNormal("[%s] No packages to install.", suit.Name)
 	}
 
-	// Fase B: Overlay Sysroot
 	sysrootPath := filepath.Join(dir, "sysroot")
 	if _, err := os.Stat(sysrootPath); os.IsNotExist(err) {
-		sysrootPath = filepath.Join(dir, "dirs") // Compatibilità col vecchio formato
+		sysrootPath = filepath.Join(dir, "dirs")
 	}
 
 	if _, err := os.Stat(sysrootPath); err == nil {
-		utils.LogNormal("[%s] Trovata cartella overlay: %s", suit.Name, sysrootPath)
-		utils.LogNormal("[%s] Esecuzione rsync verso la radice /...", suit.Name)
+		utils.LogNormal("[%s] Overlay folder found: %s", suit.Name, sysrootPath)
+		utils.LogNormal("[%s] Running rsync to root /...", suit.Name)
 
-		// Usiamo sudo rsync -aAXv per garantire il successo della "cucitura"
 		cmd := fmt.Sprintf("sudo rsync -aAXv %s/ /", sysrootPath)
 		if err := utils.Exec(cmd); err != nil {
-			utils.LogNormal("[%s] Errore durante l'overlay: %v", suit.Name, err)
+			utils.LogNormal("[%s] Error during overlay: %v", suit.Name, err)
 		} else {
-			utils.LogNormal("[%s] Overlay completato correttamente.", suit.Name)
+			utils.LogNormal("[%s] Overlay completed successfully.", suit.Name)
 		}
 	} else {
-		utils.LogNormal("[%s] Nessuna cartella sysroot/dirs trovata, salto overlay.", suit.Name)
+		utils.LogNormal("[%s] No sysroot/dirs folder found, skipping overlay.", suit.Name)
 	}
 
-	// Fase C: Comandi Post-Installazione
 	if len(suit.Cmds) > 0 {
-		utils.LogNormal("[%s] Esecuzione %d comandi post-installazione...", suit.Name, len(suit.Cmds))
+		utils.LogNormal("[%s] Running %d post-installation commands...", suit.Name, len(suit.Cmds))
 		for _, command := range suit.Cmds {
-			utils.LogNormal("[%s] Eseguo: %s", suit.Name, command)
+			utils.LogNormal("[%s] Executing: %s", suit.Name, command)
 			utils.Exec(command)
 		}
 	}
@@ -99,16 +90,13 @@ func applySuit(dir string, suit *Suit) error {
 	return nil
 }
 
-// copySkelToUser sincronizza /etc/skel con la home dell'utente
 func copySkelToUser() {
 	userHome, _ := os.UserHomeDir()
-
-	// Recuperiamo la home reale se siamo sotto sudo
 	if sudoUser := os.Getenv("SUDO_USER"); sudoUser != "" {
 		userHome = filepath.Join("/home", sudoUser)
 	}
 
-	utils.LogNormal("Sincronizzazione /etc/skel -> %s", userHome)
+	utils.LogNormal("Syncing /etc/skel -> %s", userHome)
 	cmd := fmt.Sprintf("sudo rsync -a /etc/skel/ %s/", userHome)
 	utils.Exec(cmd)
 }

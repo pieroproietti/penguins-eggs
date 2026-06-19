@@ -11,7 +11,7 @@ import (
 
 // InitWorkspace pialla la vecchia configurazione e crea l'albero pulito
 func initWorkspace() error {
-	utils.LogNormal("Generazione ambiente Evolution Edition...")
+	utils.LogNormal("Generating Evolution Edition environment...")
 
 	// 1. Rimuove tutto
 	os.RemoveAll(InstallerDRoot)

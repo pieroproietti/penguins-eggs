@@ -63,7 +63,7 @@ func buildLiveUserTasks(settings parser.RemasterConfig, step parser.Step, workPa
 		Step: parser.Step{
 			Name:        "inject-live-users", // Aggiunto il nome che mancava!
 			Module:      "users",
-			Description: fmt.Sprintf("Iniezione identità utente live (%s)", targetUser),
+			Description: fmt.Sprintf("Live user identity injection (%s)", targetUser),
 			Params: map[string]interface{}{
 				"users": usersToInject, // Il motore C lo cercherà qui dentro!
 			},

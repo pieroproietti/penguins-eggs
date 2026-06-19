@@ -20,7 +20,7 @@ func EnsureBootloaders(targetDir string) (string, error) {
 		return targetDir, nil
 	}
 
-	LogNormal("[coa] Bootloaders non trovati in %s. Inizio download...", targetDir)
+	LogNormal("[coa] Bootloaders not found in %s. Starting download...", targetDir)
 
 	// 2. Download
 	resp, err := http.Get(BootloaderURL)
@@ -30,7 +30,7 @@ func EnsureBootloaders(targetDir string) (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("errore download: status %d", resp.StatusCode)
+		return "", fmt.Errorf("download error: status %d", resp.StatusCode)
 	}
 
 	// 3. Estrazione

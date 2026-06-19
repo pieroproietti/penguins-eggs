@@ -47,7 +47,7 @@ and generate a precise execution plan for the OA planner.`,
 		CheckSudoRequirements(cmd.Name(), true)
 
 		if cloneFlag && cryptedFlag {
-			utils.Fatal("I flag --clone e --crypted sono mutuamente esclusivi.")
+			utils.Fatal("The --clone and --crypted flags are mutually exclusive.")
 		}
 
 		produceMode := "standard"
@@ -57,37 +57,34 @@ and generate a precise execution plan for the OA planner.`,
 			produceMode = "crypted"
 		}
 
-		utils.LogNormal("Avvio procedura di rimasterizzazione (mode: %s)...", produceMode)
+		utils.LogNormal("Starting remastering procedure (mode: %s)...", produceMode)
 
-		// 1. Identità: Chi siamo?
 		myDistro := distro.NewDistro()
 
 		if produceMode == "crypted" && myDistro.FamilyID != "debian" {
-			utils.Fatal("L'opzione --crypted è disponibile solo per la famiglia Debian (rilevata: %s).", myDistro.DistroLike)
+			utils.Fatal("The --crypted option is only available for the Debian family (detected: %s).", myDistro.DistroLike)
 		}
 
-		// Per la modalità crypted: chiede passphrase e configurazione crypto
 		var luksPassphrase string
 		if produceMode == "crypted" {
 			if err := os.MkdirAll(pathDefaults.StagingDir, 0755); err != nil {
-				utils.Fatal("Impossibile creare %s: %v", pathDefaults.StagingDir, err)
+				utils.Fatal("Unable to create %s: %v", pathDefaults.StagingDir, err)
 			}
 
 			var err error
 			luksPassphrase, err = promptLuksPassword()
 			if err != nil {
-				utils.Fatal("Errore passphrase LUKS: %v", err)
+				utils.Fatal("LUKS passphrase error: %v", err)
 			}
-			utils.LogSuccess("Passphrase LUKS acquisita (non verrà scritta su disco).")
+			utils.LogSuccess("LUKS passphrase acquired (will not be written to disk).")
 
 			cryptoCfg := promptCryptoConfig()
 			if err := saveCryptoConfig(cryptoCfg); err != nil {
-				utils.Fatal("Impossibile salvare la configurazione crypto: %v", err)
+				utils.Fatal("Unable to save crypto configuration: %v", err)
 			}
-			utils.LogSuccess("Configurazione crypto salvata.")
+			utils.LogSuccess("Crypto configuration saved.")
 		}
 
-		// 1. Il ponte di comando valuta la situazione (Il Sensore)
 		isGitHubAction := false
 		if _, err := os.Stat("/home/runner/work"); !os.IsNotExist(err) {
 			isGitHubAction = true
@@ -96,24 +93,20 @@ and generate a precise execution plan for the OA planner.`,
 		isoName := myDistro.GetISOName(produceMode)
 
 		finalIsoPath := filepath.Join(producePath, isoName)
-		utils.LogNormal("L'uovo verrà generato in: %s", finalIsoPath)
+		utils.LogNormal("ISO will be generated at: %s", finalIsoPath)
 
-		// 2. PARSER: Carichiamo lo spartito dal Brain
 		profile, err := parser.DetectAndLoad(isGitHubAction)
 		if err != nil {
-			utils.Fatal("Impossibile caricare il Brain Profile: %v", err)
+			utils.Fatal("Unable to load Brain Profile: %v", err)
 		}
-		utils.LogSuccess("Spartito caricato con successo.")
+		utils.LogSuccess("Profile loaded successfully.")
 
-		// RECUPERO BOOTLOADERS
-		utils.LogNormal("Recupero bootloaders (penguins-bootloaders)...")
+		utils.LogNormal("Fetching bootloaders (penguins-bootloaders)...")
 		utils.EnsureBootloaders(pathDefaults.BootloadersDir)
 
-		// GENERAZIONE EXCLUSIONI
-		utils.LogNormal("Generazione lista di esclusione (%s mode)...", produceMode)
+		utils.LogNormal("Generating exclude list (%s mode)...", produceMode)
 		planner.GenerateExcludeList(produceMode, isGitHubAction)
 
-		// 3. planner: Generiamo il piano JSON per oa
 		planPath, planJSON, err := planner.GeneratePlan(
 			profile,
 			myDistro.FamilyID,
@@ -127,15 +120,14 @@ and generate a precise execution plan for the OA planner.`,
 			luksPassphrase,
 		)
 		if err != nil {
-			utils.Fatal("Impossibile generare il piano di volo: %v", err)
+			utils.Fatal("Unable to generate the flight plan: %v", err)
 		}
 
-		// 4. DECOLLO: Eseguiamo il motore C (oa) passandogli il piano
-		utils.LogNormal("Passaggio dei comandi al motore OA...")
+		utils.LogNormal("Handing off to the OA engine...")
 
 		var oaCmd *exec.Cmd
 		if produceMode == "crypted" {
-			// Modalità crypted: il piano passa via stdin, niente file su disco
+			// Crypted mode: plan goes via stdin, no file on disk
 			oaCmd = exec.Command("oa")
 			oaCmd.Stdin = bytes.NewReader(planJSON)
 		} else {
@@ -146,14 +138,13 @@ and generate a precise execution plan for the OA planner.`,
 		oaCmd.Stderr = os.Stderr
 
 		if err := oaCmd.Run(); err != nil {
-			utils.Fatal("L'esecuzione di oa è fallita: %v", err)
+			utils.Fatal("OA engine execution failed: %v", err)
 		}
 
-		// Vittoria finale: Differenziamo il messaggio se abbiamo usato il breakpoint
 		if stopAfter != "" {
-			utils.LogWarning("Breakpoint raggiunto e ambiente smontato in sicurezza. Pronto per l'ispezione! 🐧🔍")
+			utils.LogWarning("Breakpoint reached and environment safely unmounted. Ready for inspection!")
 		} else {
-			utils.LogSuccess("Rimasterizzazione completata! L'uovo è pronto. 🐧🥚")
+			utils.LogSuccess("Remastering complete! The egg is ready.")
 		}
 	},
 }
@@ -166,16 +157,16 @@ var produceCmd = &cobra.Command{
 
 func init() {
 	remasterCmd.Flags().StringVar(&producePath, "path", pathDefaults.DefaultWorkPath, "working directory")
-	remasterCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clona il sistema preservando utenti e /home")
-	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Crea una ISO con filesystem.squashfs cifrato in LUKS")
-	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
-	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON ed esce senza masterizzare")
+	remasterCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clone the system preserving users and /home")
+	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Create an ISO with LUKS-encrypted filesystem.squashfs")
+	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Stop execution after a specific step (e.g. coa-initrd)")
+	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Print the JSON plan and exit without remastering")
 
 	produceCmd.Flags().StringVar(&producePath, "path", pathDefaults.DefaultWorkPath, "working directory")
-	produceCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clona il sistema preservando utenti e /home")
-	produceCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Crea una ISO con filesystem.squashfs cifrato in LUKS")
-	produceCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
-	produceCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON ed esce senza masterizzare")
+	produceCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clone the system preserving users and /home")
+	produceCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Create an ISO with LUKS-encrypted filesystem.squashfs")
+	produceCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Stop execution after a specific step (e.g. coa-initrd)")
+	produceCmd.Flags().BoolVar(&debugPlan, "debug", false, "Print the JSON plan and exit without remastering")
 
 	rootCmd.AddCommand(remasterCmd)
 	rootCmd.AddCommand(produceCmd)

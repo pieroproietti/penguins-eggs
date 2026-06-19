@@ -84,7 +84,7 @@ func (c *ctx) ensureChrootMounts() error {
 func runUmount(c *ctx) error {
 	for i := len(c.mounts) - 1; i >= 0; i-- {
 		if err := c.run("umount", c.mounts[i]); err != nil {
-			c.logf("umount %s fallito, riprovo lazy", c.mounts[i])
+			c.logf("umount %s failed, retrying lazy", c.mounts[i])
 			c.run("umount", "-l", c.mounts[i])
 		}
 	}

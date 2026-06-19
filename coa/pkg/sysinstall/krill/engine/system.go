@@ -69,7 +69,7 @@ func runFstab(c *ctx) error {
 func (c *ctx) uuidOf(device string) string {
 	out, err := exec.Command("blkid", "-s", "UUID", "-o", "value", device).Output()
 	if err != nil {
-		c.logf("blkid %s fallito: %v", device, err)
+		c.logf("blkid %s failed: %v", device, err)
 		return ""
 	}
 	return strings.TrimSpace(string(out))
@@ -113,7 +113,7 @@ func runLocale(c *ctx) error {
 		}
 		if exists(c.tpath("usr", "sbin", "locale-gen")) || exists(c.tpath("usr", "bin", "locale-gen")) {
 			if err := c.chroot("locale-gen"); err != nil {
-				c.logf("locale-gen fallito (non fatale): %v", err)
+				c.logf("locale-gen failed (non-fatal): %v", err)
 			}
 		}
 	}

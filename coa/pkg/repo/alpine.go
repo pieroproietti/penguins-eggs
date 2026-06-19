@@ -18,26 +18,23 @@ const (
 )
 
 func addAlpine() error {
-	utils.LogNormal("Configurazione repository penguins-eggs per Alpine...")
+	utils.LogNormal("Configuring penguins-eggs repository for Alpine...")
 
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("richiesti privilegi di root (sudo)")
+		return fmt.Errorf("root privileges required (sudo)")
 	}
-
-	// 1. Chiave
 	if _, err := os.Stat(alpineKeyPath); os.IsNotExist(err) {
 		cmdStr := fmt.Sprintf("curl -fsSL %s -o %s", alpineKeyUrl, alpineKeyPath)
 		if err := exec.Command("bash", "-c", cmdStr).Run(); err != nil {
-			return fmt.Errorf("errore download chiave: %w", err)
+			return fmt.Errorf("key download error: %w", err)
 		}
 	} else {
-		utils.LogNormal("[INFO] Chiave già esistente.")
+		utils.LogNormal("[INFO] Key already exists.")
 	}
 
-	// 2. Repo
 	content, _ := os.ReadFile(alpineRepoFile)
 	if strings.Contains(string(content), alpineRepoUrl) {
-		utils.LogNormal("[INFO] La linea del repository è già in /etc/apk/repositories.")
+		utils.LogNormal("[INFO] Repository line already exists in /etc/apk/repositories.")
 	} else {
 		f, err := os.OpenFile(alpineRepoFile, os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil {
@@ -45,18 +42,18 @@ func addAlpine() error {
 		}
 		defer f.Close()
 		f.WriteString("\n" + alpineRepoUrl + "\n")
-		utils.LogSuccess("✅ Repository aggiunto.")
+		utils.LogSuccess("✅ Repository added.")
 	}
 
-	utils.LogNormal("Esegui 'apk update' per aggiornare i repository.")
+	utils.LogNormal("Run 'apk update' to refresh repositories.")
 	return nil
 }
 
 func removeAlpine() error {
-	utils.LogNormal("Rimozione repository Alpine...")
+	utils.LogNormal("Removing Alpine repository...")
 
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("richiesti privilegi di root (sudo)")
+		return fmt.Errorf("root privileges required (sudo)")
 	}
 
 	os.Remove(alpineKeyPath)
@@ -73,6 +70,6 @@ func removeAlpine() error {
 		os.WriteFile(alpineRepoFile, []byte(strings.Join(newLines, "\n")+"\n"), 0644)
 	}
 
-	utils.LogNormal("🗑️ Repository e chiave rimossi. Esegui 'apk update'.")
+	utils.LogNormal("🗑️ Repository and key removed. Run 'apk update'.")
 	return nil
 }

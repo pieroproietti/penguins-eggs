@@ -31,7 +31,7 @@ func newPasswordModel(title string) passwordModel {
 	pass.Focus()
 
 	confirm := textinput.New()
-	confirm.Placeholder = "conferma password"
+	confirm.Placeholder = "confirm password"
 	confirm.EchoMode = textinput.EchoPassword
 
 	return passwordModel{
@@ -83,11 +83,11 @@ func (m passwordModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p1 := m.inputs[0].Value()
 			p2 := m.inputs[1].Value()
 			if p1 == "" {
-				m.err = "La password non può essere vuota."
+				m.err = "Password cannot be empty."
 				return m, nil
 			}
 			if p1 != p2 {
-				m.err = "Le password non corrispondono."
+				m.err = "Passwords do not match."
 				m.inputs[1].SetValue("")
 				return m, nil
 			}
@@ -109,12 +109,12 @@ func (m passwordModel) View() string {
 	var b strings.Builder
 	b.WriteString(pwLabel.Render(m.title) + "\n\n")
 	b.WriteString(fmt.Sprintf("  Password: %s\n", m.inputs[0].View()))
-	b.WriteString(fmt.Sprintf("  Conferma: %s\n", m.inputs[1].View()))
+	b.WriteString(fmt.Sprintf("  Confirm:  %s\n", m.inputs[1].View()))
 
 	if m.err != "" {
 		b.WriteString("\n" + pwError.Render("  "+m.err))
 	}
-	b.WriteString("\n" + pwDim.Render("  tab cambia campo · enter conferma"))
+	b.WriteString("\n" + pwDim.Render("  tab switch field · enter confirm"))
 	return b.String()
 }
 
@@ -129,7 +129,7 @@ func RunPassword(title string) (string, error) {
 
 	fm := final.(passwordModel)
 	if fm.quitting {
-		return "", fmt.Errorf("annullato dall'utente")
+		return "", fmt.Errorf("cancelled by user")
 	}
 	return fm.inputs[0].Value(), nil
 }

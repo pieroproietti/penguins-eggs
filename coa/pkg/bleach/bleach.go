@@ -36,13 +36,11 @@ func (b *Bleach) run(name string, args ...string) {
 	cmd.Run()
 }
 
-// Clean esegue la pulizia del sistema per recuperare spazio prima del remastering
 func (b *Bleach) Clean() error {
 	d := distro.NewDistro()
 
-	b.log(fmt.Sprintf("Inizio pulizia per famiglia: %s", d.FamilyID))
+	b.log(fmt.Sprintf("Starting cleanup for family: %s", d.FamilyID))
 
-	// 1. Pulizia Gestore Pacchetti in base alla distro
 	switch d.FamilyID {
 	case "alpine":
 		b.run("apk", "cache", "clean")
@@ -64,34 +62,28 @@ func (b *Bleach) Clean() error {
 		b.run("zypper", "clean")
 	}
 
-	// 2. Cache di terze parti (Flatpak & Snap)
-	b.log("Pulizia cache Flatpak e Snap")
+	b.log("Cleaning Flatpak and Snap cache")
 	if matches, err := filepath.Glob("/var/tmp/flatpak-cache-*"); err == nil {
 		for _, match := range matches {
 			os.RemoveAll(match)
 		}
 	}
-	// Snap conserva versioni vecchie disabilitate che occupano GB
 	os.RemoveAll("/var/lib/snapd/cache")
 
-	// 3. Cronologia Shell (Root)
-	b.log("Pulizia cronologia shell di root")
+	b.log("Cleaning root shell history")
 	os.RemoveAll("/root/.bash_history")
 	os.RemoveAll("/root/.zsh_history")
 
-	// 4. Pulizia Journald / Syslog
-	b.log("Pulizia log di sistema")
+	b.log("Cleaning system logs")
 	if _, err := os.Stat("/run/systemd/system"); err == nil {
 		b.run("journalctl", "--rotate")
 		b.run("journalctl", "--vacuum-time=1s")
 	} else {
-		// Per i sistemi sysvinit / openrc
 		b.run("sh", "-c", "find /var/log -name '*gz' -print0 | xargs -0r rm -f")
 		b.run("sh", "-c", "find /var/log/ -type f -exec truncate -s 0 {} \\;")
 	}
 
-	// 5. System Cache (PageCache, dentries, inodes)
-	b.log("Svuotamento cache Kernel (PageCache, dentries e inodes)")
+	b.log("Flushing kernel cache (PageCache, dentries and inodes)")
 	b.run("sync")
 	os.WriteFile("/proc/sys/vm/drop_caches", []byte("3"), 0644)
 

@@ -55,43 +55,42 @@ func RunCopy(payload []byte) error {
 	if err != nil {
 		if config.Params.IgnoreMissing && os.IsNotExist(err) {
 			// Uscita pulita e silenziosa se il file manca e ignore_missing è true
-			fmt.Printf("📦 [worker] Copia ignorata (sorgente assente): %s\n", src)
+			fmt.Printf("📦 [worker] Copy skipped (source missing): %s\n", src)
 			return nil
 		}
-		return fmt.Errorf("errore apertura sorgente %s: %v", src, err)
+		return fmt.Errorf("error opening source %s: %v", src, err)
 	}
 	defer sourceFile.Close()
 
 	// 5. Creazione dinamica dell'albero delle directory di destinazione
 	destDir := filepath.Dir(dest)
 	if err := os.MkdirAll(destDir, 0755); err != nil {
-		return fmt.Errorf("impossibile creare le directory di destinazione %s: %v", destDir, err)
+		return fmt.Errorf("unable to create destination directories %s: %v", destDir, err)
 	}
 
 	// 6. Lettura e calcolo dei permessi
 	info, err := sourceFile.Stat()
 	if err != nil {
-		return fmt.Errorf("impossibile leggere attributi di %s: %v", src, err)
+		return fmt.Errorf("unable to read attributes of %s: %v", src, err)
 	}
 
 	perms := info.Mode()
 	if config.Params.Permissions != 0 {
-		perms = config.Params.Permissions // Sovrascrittura permessi se richiesta dal YAML
+		perms = config.Params.Permissions
 	}
 
 	// 7. Creazione o sovrascrittura del file di destinazione
 	destFile, err := os.OpenFile(dest, os.O_RDWR|os.O_CREATE|os.O_TRUNC, perms)
 	if err != nil {
-		return fmt.Errorf("errore creazione file destinazione %s: %v", dest, err)
+		return fmt.Errorf("error creating destination file %s: %v", dest, err)
 	}
 	defer destFile.Close()
 
 	// 8. Travaso dei dati
 	if _, err := io.Copy(destFile, sourceFile); err != nil {
-		return fmt.Errorf("errore durante la copia dei dati: %v", err)
+		return fmt.Errorf("error copying data: %v", err)
 	}
 
-	// Output pulito (ho aggiornato la label a [worker] per rispecchiare i nuovi pacchetti)
-	fmt.Printf("📦 [worker] Copia completata: %s -> %s\n", src, dest)
+	fmt.Printf("📦 [worker] Copy completed: %s -> %s\n", src, dest)
 	return nil
 }

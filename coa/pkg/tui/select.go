@@ -70,7 +70,7 @@ func (m selectModel) View() string {
 		b.WriteString(fmt.Sprintf("%s%s\n", cursor, style.Render(opt.Label)))
 	}
 
-	b.WriteString(selectDim.Render("\n↑/↓ seleziona · enter conferma"))
+	b.WriteString(selectDim.Render("\n↑/↓ select · enter confirm"))
 	return b.String()
 }
 
@@ -89,7 +89,7 @@ func RunSelect(title string, options []SelectOption, defaultIdx int) (string, er
 
 	fm := final.(selectModel)
 	if fm.quitting {
-		return options[defaultIdx].Value, fmt.Errorf("annullato dall'utente")
+		return options[defaultIdx].Value, fmt.Errorf("cancelled by user")
 	}
 	return fm.options[fm.cursor].Value, nil
 }

@@ -163,12 +163,12 @@ func Run(plan *Plan, progress func(Event)) error {
 		if err != nil {
 			c.logf("ERRORE nel modulo %s: %v", name, err)
 			runUmount(c) // non lasciamo il sistema live con i mount appesi
-			return fmt.Errorf("modulo %s: %w (dettagli in %s)", name, err, logPath)
+			return fmt.Errorf("module %s: %w (details in %s)", name, err, logPath)
 		}
 	}
 
 	progress(Event{Index: total, Total: total, Module: "done", Message: "Installation complete"})
-	c.logf("=== installazione completata ===")
+	c.logf("=== installation completed ===")
 	return nil
 }
 

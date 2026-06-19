@@ -20,25 +20,18 @@ KERNEL="$(uname -r)"
 PREMOUNT_DIR="$LIVEROOT/etc/initramfs-tools/scripts/live-premount"
 HOOKS_DIR="$LIVEROOT/etc/initramfs-tools/hooks"
 
-echo "LUKS: preparazione initrd LUKS per kernel $KERNEL..."
-
-# 1. Copia boot-encrypted-root.sh nel live-premount del chroot
+echo "LUKS: preparing LUKS initrd for kernel $KERNEL..."
 mkdir -p "$PREMOUNT_DIR"
 cp /etc/oa-tools.d/scripts/boot-encrypted-root.sh "$PREMOUNT_DIR/"
 chmod +x "$PREMOUNT_DIR/boot-encrypted-root.sh"
-echo "LUKS: boot-encrypted-root.sh installato in $PREMOUNT_DIR"
-
-# 2. Scrivi crypttab dummy (sovrascrive quello sanitizzato)
-# Questo forza mkinitramfs a includere cryptsetup nell'initrd.
+echo "LUKS: boot-encrypted-root.sh installed in $PREMOUNT_DIR"
 printf "# Dummy entry to ensure cryptsetup is included\ncryptroot UUID=none none luks\n" \
     > "$LIVEROOT/etc/crypttab"
-echo "LUKS: crypttab dummy scritto."
-
-# 3. Hook per losetup e rsync (richiesti da boot-encrypted-root.sh nel initrd)
+echo "LUKS: dummy crypttab written."
 mkdir -p "$HOOKS_DIR"
 for CMDPATH in /usr/sbin/losetup /usr/bin/rsync; do
     if [ ! -e "$LIVEROOT/$CMDPATH" ]; then
-        echo "LUKS: WARN: $CMDPATH non trovato nel liveroot, salto."
+        echo "LUKS: WARN: $CMDPATH not found in liveroot, skipping."
         continue
     fi
     BASENAME=$(basename "$CMDPATH")
@@ -50,19 +43,18 @@ for CMDPATH in /usr/sbin/losetup /usr/bin/rsync; do
 PREREQ=""
 case \$1 in prereqs) echo "\${PREREQ}"; exit 0;; esac
 . /usr/share/initramfs-tools/hook-functions
-copy_exec $CMDPATH $DESTDIR || echo "WARN: copy_exec $CMDPATH fallito" >&2
+copy_exec $CMDPATH $DESTDIR || echo "WARN: copy_exec $CMDPATH failed" >&2
 exit 0
 HOOKEOF
     chmod +x "$HOOK_FILE"
-    echo "LUKS: hook $HOOK_FILE creato."
+    echo "LUKS: hook $HOOK_FILE created."
 done
 
-# 4. Genera initrd con supporto LUKS dentro il chroot
-echo "LUKS: generazione initrd in corso (potrebbe richiedere qualche minuto)..."
+echo "LUKS: generating initrd (this may take a few minutes)..."
 chroot "$LIVEROOT" /bin/bash -c \
     "mkinitramfs -o /tmp/initrd.img-luks $KERNEL" > /dev/null
 
-echo "LUKS: initrd LUKS generato in $LIVEROOT/tmp/initrd.img-luks"
+echo "LUKS: LUKS initrd generated at $LIVEROOT/tmp/initrd.img-luks"
 `, liveRoot)
 
 	return OATask{
@@ -77,7 +69,6 @@ echo "LUKS: initrd LUKS generato in $LIVEROOT/tmp/initrd.img-luks"
 }
 
 // luksKernelCopyStep sostituisce "copy-kernel-initrd" in modalità crypted.
-// Copia vmlinuz normalmente e usa l'initrd LUKS generato da luksInitrdPrepStep.
 func luksKernelCopyStep(workPath string) OATask {
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
 	isoDir := fmt.Sprintf("%s/isodir/live", workPath)
@@ -89,17 +80,15 @@ ISODIR="%s"
 
 mkdir -p "$ISODIR"
 
-# Copia vmlinuz dal sistema host
 cp "/boot/vmlinuz-$KERNEL" "$ISODIR/vmlinuz"
-echo "LUKS: vmlinuz copiato in $ISODIR"
+echo "LUKS: vmlinuz copied to $ISODIR"
 
-# Sposta l'initrd LUKS (generato da luksInitrdPrepStep) in isodir
 if [ ! -f "$LIVEROOT/tmp/initrd.img-luks" ]; then
-    echo "LUKS ERROR: initrd LUKS non trovato in $LIVEROOT/tmp/initrd.img-luks"
+    echo "LUKS ERROR: LUKS initrd not found at $LIVEROOT/tmp/initrd.img-luks"
     exit 1
 fi
 mv "$LIVEROOT/tmp/initrd.img-luks" "$ISODIR/initrd.img"
-echo "LUKS: initrd LUKS spostato in $ISODIR/initrd.img"
+echo "LUKS: LUKS initrd moved to $ISODIR/initrd.img"
 `, liveRoot, isoDir)
 
 	return OATask{
@@ -140,11 +129,10 @@ cleanup() {
 trap cleanup ERR
 
 if [ ! -f "$SQUASHFS" ]; then
-    echo "LUKS ERROR: filesystem.squashfs non trovato: $SQUASHFS"
+    echo "LUKS ERROR: filesystem.squashfs not found: $SQUASHFS"
     exit 1
 fi
 
-# Calcola la dimensione del container LUKS
 SQFS_SIZE=$(stat -c%%s "$SQUASHFS")
 OVERHEAD=$(( SQFS_SIZE * 4 / 100 ))
 LUKS_HDR=$(( 32 * 1024 * 1024 ))
@@ -156,7 +144,6 @@ LUKS_SIZE=$(( (TOTAL + ALIGN - 1) / ALIGN * ALIGN ))
 echo "LUKS: filesystem.squashfs: $(( SQFS_SIZE / 1024 / 1024 )) MB"
 echo "LUKS: container root.img:  $(( LUKS_SIZE / 1024 / 1024 )) MB"
 
-# Crea e formatta il container LUKS
 echo "LUKS: truncate $LUKS_TMP..."
 truncate --size "$LUKS_SIZE" "$LUKS_TMP"
 
@@ -177,19 +164,19 @@ mkfs.ext4 -m 0 -O ^has_journal -L live-root /dev/mapper/"$MAPPER"
 mkdir -p "$LUKS_MOUNT"
 mount /dev/mapper/"$MAPPER" "$LUKS_MOUNT"
 
-echo "LUKS: sposto filesystem.squashfs dentro il container..."
+echo "LUKS: moving filesystem.squashfs inside the container..."
 mkdir -p "$LUKS_MOUNT/live"
 mv "$SQUASHFS" "$LUKS_MOUNT/live/filesystem.squashfs"
 sync
 
-echo "LUKS: chiusura container..."
+echo "LUKS: closing container..."
 umount "$LUKS_MOUNT"
 cryptsetup close "$MAPPER"
 
-echo "LUKS: installazione root.img in isodir..."
+echo "LUKS: installing root.img in isodir..."
 mv "$LUKS_TMP" "$ROOT_IMG"
 
-echo "LUKS: root.img creato con successo → $ROOT_IMG"
+echo "LUKS: root.img created successfully → $ROOT_IMG"
 `, squashfs, rootImg, pathDefaults.LuksCryptoArgs, pathDefaults.LuksCryptoArgs,
 		shellEscape(passphrase), shellEscape(passphrase))
 

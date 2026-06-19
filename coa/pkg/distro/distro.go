@@ -100,7 +100,7 @@ func NewDistro() *Distro {
 	}
 
 	// Fallback agnostico
-	utils.LogNormal("[coa] Distro non mappata specificamente (%s). Modalità Generica.", osInfo["ID"])
+	utils.LogNormal("[coa] Distro not specifically mapped (%s). Generic mode.", osInfo["ID"])
 	d.FamilyID = "generic"
 	d.DistroLike = osInfo["ID"]
 	return d

@@ -60,7 +60,7 @@ func GeneratePlan(
 			// tramite il bind mount di /home: il modulo "users" va saltato
 			// perché altrimenti sovrascriverebbe identità e password esistenti.
 			if mode == "clone" || mode == "crypted" {
-				utils.LogNormal("[ENGINE] Modalità '%s': utenti reali clonati da /home, salto il modulo 'users'.", mode)
+				utils.LogNormal("[ENGINE] Mode '%s': real users cloned from /home, skipping 'users' module.", mode)
 			} else {
 				plan.Plan = append(plan.Plan, buildLiveUserTasks(plan.Settings, step, workPath)...)
 			}
@@ -87,7 +87,7 @@ func GeneratePlan(
 		default:
 			// Modalità crypted: salta il modulo autologin-gui (nessun utente "live")
 			if mode == "crypted" && step.Module == "autologin-gui" {
-				utils.LogNormal("[ENGINE] Modalità crypted: salto autologin-gui.")
+				utils.LogNormal("[ENGINE] Crypted mode: skipping autologin-gui.")
 				continue
 			}
 
@@ -101,14 +101,14 @@ func GeneratePlan(
 			// Modalità crypted: sostituisce il passo initramfs con la prep LUKS
 			if mode == "crypted" && task.Name == "initramfs" {
 				plan.Plan = append(plan.Plan, luksInitrdPrepStep(workPath))
-				utils.LogNormal("[ENGINE] Modalità crypted: initramfs sostituito con luksInitrdPrepStep.")
+				utils.LogNormal("[ENGINE] Crypted mode: initramfs replaced with luksInitrdPrepStep.")
 				continue
 			}
 
 			// Modalità crypted: sostituisce copy-kernel-initrd con la versione LUKS
 			if mode == "crypted" && task.Name == "copy-kernel-initrd" {
 				plan.Plan = append(plan.Plan, luksKernelCopyStep(workPath))
-				utils.LogNormal("[ENGINE] Modalità crypted: copy-kernel-initrd sostituito con luksKernelCopyStep.")
+				utils.LogNormal("[ENGINE] Crypted mode: copy-kernel-initrd replaced with luksKernelCopyStep.")
 				continue
 			}
 
@@ -116,7 +116,7 @@ func GeneratePlan(
 			if mode == "crypted" && task.Name == "mksquashfs" {
 				plan.Plan = append(plan.Plan, task) // mksquashfs
 				plan.Plan = append(plan.Plan, luksWrapStep(workPath, luksPassphrase))
-				utils.LogNormal("[ENGINE] Modalità crypted: luksWrapStep iniettato dopo mksquashfs.")
+				utils.LogNormal("[ENGINE] Crypted mode: luksWrapStep injected after mksquashfs.")
 				continue
 			}
 
@@ -127,7 +127,7 @@ func GeneratePlan(
 						args[1] = bootParams + " live-media=/dev/mapper/live-root"
 					}
 				}
-				utils.LogNormal("[ENGINE] Modalità crypted: boot params aggiornati con live-media LUKS.")
+				utils.LogNormal("[ENGINE] Crypted mode: boot params updated with live-media LUKS.")
 			}
 
 			// Prima di "coa-xorriso" inseriamo "coa-dot-disk"
@@ -152,7 +152,7 @@ func GeneratePlan(
 						},
 					},
 				})
-				utils.LogNormal("\n[ENGINE] Iniezione metadati .disk completata per live-boot.")
+				utils.LogNormal("\n[ENGINE] .disk metadata injection completed for live-boot.")
 			}
 
 			// 2. Accodiamo FINALMENTE l'azione originale (squashfs, xorriso o altro)
@@ -161,7 +161,7 @@ func GeneratePlan(
 		}
 
 		if stopAfter != "" && step.Name == stopAfter {
-			utils.LogNormal("\n[ENGINE] 🛑 Breakpoint '%s' elaborato.", step.Name)
+			utils.LogNormal("\n[ENGINE] 🛑 Breakpoint '%s' processed.", step.Name)
 			hitBreakpoint = true
 		}
 	}
@@ -196,7 +196,7 @@ func GeneratePlan(
 		fmt.Println(string(jsonDebug))
 
 		fmt.Println("====================================================================")
-		fmt.Println("[debug] Esecuzione interrotta dal flag --debug. Nessuna ISO generata.")
+		fmt.Println("[debug] Execution stopped by --debug flag. No ISO generated.")
 		os.Exit(0) // Qui ha senso uscire, perché siamo nell'engine!
 	}
 

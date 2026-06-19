@@ -18,11 +18,10 @@ const (
 	opensuseRepoUrl    = "https://penguins-eggs.net/repos/rpm/opensuse/leap"
 )
 
-// AddFedoraEl supporta Fedora e EL9 (Alma/Rocky)
 func addFedoraEl(isEl9 bool) error {
-	utils.LogNormal("Configurazione repository RPM (Fedora/EL9)...")
+	utils.LogNormal("Configuring RPM repository (Fedora/EL9)...")
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("richiesti privilegi di root")
+		return fmt.Errorf("root privileges required")
 	}
 
 	repoUrl := rpmRepoFedoraUrl
@@ -39,15 +38,14 @@ func addFedoraEl(isEl9 bool) error {
 	exec.Command("rpm", "--import", rpmKeyUrl).Run()
 	exec.Command("dnf", "clean", "metadata").Run()
 
-	utils.LogSuccess("✅ Repository aggiunto. Esegui 'dnf check-update'.")
+	utils.LogSuccess("✅ Repository added. Run 'dnf check-update'.")
 	return nil
 }
 
-// AddSuse usa i parametri specifici per zypper
 func addSuse() error {
-	utils.LogNormal("Configurazione repository openSUSE...")
+	utils.LogNormal("Configuring openSUSE repository...")
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("richiesti privilegi di root")
+		return fmt.Errorf("root privileges required")
 	}
 
 	repoContent := fmt.Sprintf("[penguins-eggs]\nname=penguins-eggs.net repos\nbaseurl=%s\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=0\ngpgkey=%s\nautorefresh=1\n", opensuseRepoUrl, rpmKeyUrl)
@@ -58,15 +56,14 @@ func addSuse() error {
 
 	exec.Command("rpm", "--import", rpmKeyUrl).Run()
 
-	utils.LogSuccess("✅ Repository aggiunto. Esegui 'zypper refresh'.")
+	utils.LogSuccess("✅ Repository added. Run 'zypper refresh'.")
 	return nil
 }
 
-// RemoveRpm gestisce la rimozione per Fedora, EL9 E openSUSE (rimuovendo la chiave GPG dinamicamente)
 func removeRpm(isSuse bool) error {
-	utils.LogNormal("Rimozione repository RPM...")
+	utils.LogNormal("Removing RPM repository...")
 	if os.Geteuid() != 0 {
-		return fmt.Errorf("richiesti privilegi di root")
+		return fmt.Errorf("root privileges required")
 	}
 
 	repoPath := fedoraRepoFilePath
@@ -76,7 +73,6 @@ func removeRpm(isSuse bool) error {
 
 	os.Remove(repoPath)
 
-	// Trova ed elimina la chiave (il tuo trucco geniale in TS -> Go)
 	cmdStr := fmt.Sprintf("rpm -q gpg-pubkey --qf '%%{name}-%%{version}-%%{release} %%{summary}\n' | grep '%s' | cut -d' ' -f1", rpmKeyOwner)
 	out, err := exec.Command("bash", "-c", cmdStr).Output()
 
@@ -84,14 +80,14 @@ func removeRpm(isSuse bool) error {
 		keys := strings.Split(strings.TrimSpace(string(out)), "\n")
 		for _, k := range keys {
 			if k != "" {
-				utils.LogNormal("Rimozione chiave GPG %s...", k)
+				utils.LogNormal("Removing GPG key %s...", k)
 				exec.Command("rpm", "-e", k).Run()
 			}
 		}
 	} else {
-		utils.LogNormal("[INFO] Nessuna chiave GPG da rimuovere.")
+		utils.LogNormal("[INFO] No GPG keys to remove.")
 	}
 
-	utils.LogNormal("🗑️ Repository rimosso con successo.")
+	utils.LogNormal("🗑️ Repository removed successfully.")
 	return nil
 }

@@ -18,6 +18,6 @@ func Get() error {
 		return utils.Exec(cmd)
 	}
 
-	utils.LogNormal("oa-wardrobe è già presente in %s. Per aggiornare usa git pull manualmente.", root)
+	utils.LogNormal("oa-wardrobe already present in %s. To update, use git pull manually.", root)
 	return nil
 }

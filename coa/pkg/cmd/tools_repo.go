@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"coa/pkg/repo" // Assicurati che il path sia corretto
+	"coa/pkg/repo"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -20,31 +20,27 @@ Supported actions:
   rm  - Removes repository files and GPG keys`,
 	Example: `  sudo coa tools repo add
   sudo coa tools repo rm`,
-	Args:      cobra.ExactArgs(1),    // Richiede esattamente 1 argomento
-	ValidArgs: []string{"add", "rm"}, // Suggeriamo solo 'rm' per l'autocompletamento
+	Args:      cobra.ExactArgs(1),
+	ValidArgs: []string{"add", "rm"},
 	Run: func(cmd *cobra.Command, args []string) {
 		action := args[0]
 
-		// Valida l'azione (accettiamo 'remove' come alias silenzioso per retrocompatibilità/abitudine)
 		if action != "add" && action != "rm" && action != "remove" {
-			utils.LogError("Azione non valida: '%s'. Usa 'add' o 'rm'.", action)
+			utils.LogError("Invalid action: '%s'. Use 'add' or 'rm'.", action)
 			os.Exit(1)
 		}
 
-		// Controllo root: toccare i repository richiede i privilegi massimi
 		if os.Geteuid() != 0 {
-			utils.Fatal(" Il comando repo deve essere eseguito come root (sudo).")
+			utils.Fatal(" The repo command must be run as root (sudo).")
 			os.Exit(1)
 		}
 
-		// Passiamo il controllo al modulo repo che gestirà il routing in base alla distro
 		if err := repo.HandleRepos(action); err != nil {
-			utils.LogError("Operazione fallita: %v", err)
+			utils.LogError("Operation failed: %v", err)
 			os.Exit(1)
 		}
 
-		// Messaggio di chiusura a colori (il dettaglio viene già stampato da pkg/repo)
-		utils.LogSuccess("Configurazione repository completata con successo.")
+		utils.LogSuccess("Repository configuration completed successfully.")
 	},
 }
 

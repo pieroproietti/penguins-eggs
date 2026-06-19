@@ -48,62 +48,62 @@ func (c CryptoConfig) FormatArgs() string {
 
 func promptLuksPassword() (string, error) {
 	useDefault := tui.RunConfirmDefault(
-		fmt.Sprintf("Usare la password di default \"%s\" per la cifratura LUKS?", luksDefaultPassword))
+		fmt.Sprintf("Use the default password \"%s\" for LUKS encryption?", luksDefaultPassword))
 
 	if useDefault {
-		utils.LogNormal("Password di default \"%s\" selezionata.", luksDefaultPassword)
+		utils.LogNormal("Default password \"%s\" selected.", luksDefaultPassword)
 		return luksDefaultPassword, nil
 	}
 
-	return tui.RunPassword("Inserisci la passphrase LUKS")
+	return tui.RunPassword("Enter LUKS passphrase")
 }
 
 func promptCryptoConfig() CryptoConfig {
-	useDefault := tui.RunConfirmDefault("Usare la configurazione LUKS di default?")
+	useDefault := tui.RunConfirmDefault("Use the default LUKS configuration?")
 
 	if useDefault {
-		utils.LogNormal("Configurazione LUKS di default selezionata.")
+		utils.LogNormal("Default LUKS configuration selected.")
 		return DefaultCryptoConfig
 	}
 
 	cfg := DefaultCryptoConfig
 
-	if val, err := tui.RunSelect("Algoritmo di cifratura:", []tui.SelectOption{
+	if val, err := tui.RunSelect("Encryption algorithm:", []tui.SelectOption{
 		{Label: "aes-xts-plain64 (default, hardware-accelerated)", Value: "aes-xts-plain64"},
-		{Label: "serpent-xts-plain64 (più sicuro, più lento)", Value: "serpent-xts-plain64"},
+		{Label: "serpent-xts-plain64 (more secure, slower)", Value: "serpent-xts-plain64"},
 		{Label: "twofish-xts-plain64", Value: "twofish-xts-plain64"},
 	}, 0); err == nil {
 		cfg.Cipher = val
 	}
 
-	if val, err := tui.RunSelect("Dimensione chiave:", []tui.SelectOption{
+	if val, err := tui.RunSelect("Key size:", []tui.SelectOption{
 		{Label: "512 bit (AES-256/XTS standard)", Value: "512"},
 		{Label: "256 bit (AES-128/XTS)", Value: "256"},
 	}, 0); err == nil {
 		cfg.KeySize, _ = strconv.Atoi(val)
 	}
 
-	if val, err := tui.RunSelect("Algoritmo di hash:", []tui.SelectOption{
+	if val, err := tui.RunSelect("Hash algorithm:", []tui.SelectOption{
 		{Label: "SHA-256 (default)", Value: "sha256"},
 		{Label: "SHA-512", Value: "sha512"},
 	}, 0); err == nil {
 		cfg.Hash = val
 	}
 
-	if val, err := tui.RunSelect("Dimensione settore:", []tui.SelectOption{
-		{Label: "512 byte (default, compatibile loop device)", Value: "512"},
-		{Label: "4096 byte (SSD/NVMe moderni)", Value: "4096"},
+	if val, err := tui.RunSelect("Sector size:", []tui.SelectOption{
+		{Label: "512 byte (default, loop device compatible)", Value: "512"},
+		{Label: "4096 byte (modern SSD/NVMe)", Value: "4096"},
 	}, 0); err == nil {
 		size, _ := strconv.Atoi(val)
 		if size == 4096 {
-			utils.LogWarning("Su loop device il sector_size sarà forzato a 512.")
+			utils.LogWarning("On loop devices sector_size will be forced to 512.")
 			size = 512
 		}
 		cfg.SectorSize = size
 	}
 
 	if val, err := tui.RunSelect("Key derivation function (PBKDF):", []tui.SelectOption{
-		{Label: "argon2id (raccomandato, default LUKS2)", Value: "argon2id"},
+		{Label: "argon2id (recommended, default LUKS2)", Value: "argon2id"},
 		{Label: "argon2i", Value: "argon2i"},
 		{Label: "pbkdf2 (standard LUKS1)", Value: "pbkdf2"},
 	}, 0); err == nil {
@@ -112,7 +112,7 @@ func promptCryptoConfig() CryptoConfig {
 
 	switch cfg.Pbkdf {
 	case "argon2id", "argon2i":
-		if val, err := tui.RunSelect("Costo memoria Argon2 (KiB):", []tui.SelectOption{
+		if val, err := tui.RunSelect("Argon2 memory cost (KiB):", []tui.SelectOption{
 			{Label: "512 MiB (default)", Value: "524288"},
 			{Label: "1 GiB", Value: "1048576"},
 			{Label: "2 GiB", Value: "2097152"},
@@ -120,20 +120,20 @@ func promptCryptoConfig() CryptoConfig {
 			cfg.PbkdfMemory, _ = strconv.Atoi(val)
 		}
 
-		if val, err := tui.RunSelect("Thread paralleli Argon2:", []tui.SelectOption{
-			{Label: "4 thread (default)", Value: "4"},
+		if val, err := tui.RunSelect("Argon2 parallel threads:", []tui.SelectOption{
+			{Label: "4 threads (default)", Value: "4"},
 			{Label: "1 thread", Value: "1"},
-			{Label: "2 thread", Value: "2"},
-			{Label: "8 thread", Value: "8"},
+			{Label: "2 threads", Value: "2"},
+			{Label: "8 threads", Value: "8"},
 		}, 0); err == nil {
 			cfg.PbkdfParallel, _ = strconv.Atoi(val)
 		}
 
 	case "pbkdf2":
 		if val, err := tui.RunSelect("Iteration time PBKDF2 (ms):", []tui.SelectOption{
-			{Label: "2 secondi (default)", Value: "2000"},
-			{Label: "5 secondi", Value: "5000"},
-			{Label: "10 secondi", Value: "10000"},
+			{Label: "2 seconds (default)", Value: "2000"},
+			{Label: "5 seconds", Value: "5000"},
+			{Label: "10 seconds", Value: "10000"},
 		}, 0); err == nil {
 			cfg.IterTime, _ = strconv.Atoi(val)
 		}

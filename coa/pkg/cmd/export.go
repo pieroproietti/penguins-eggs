@@ -15,19 +15,17 @@ const (
 
 var isoSrcDir = pathDefaults.DefaultWorkPath
 
-// cleanExport è accessibile da export_iso.go e export_pkg.go
 var cleanExport bool
 
 var exportCmd = &cobra.Command{
 	Use:   "export",
 	Short: "Export artifacts (iso, pkg) to a remote Proxmox storage",
-	Long: `Il comando export gestisce il trasferimento degli artefatti prodotti 
-(ISO di installazione o pacchetti di distribuzione) verso server remoti 
-configurati, automatizzando la pulizia e il versionamento.`,
+	Long: `The export command handles the transfer of produced artifacts
+(installation ISOs or distribution packages) to configured remote servers,
+automating cleanup and versioning.`,
 }
 
 func init() {
-	// Aggiungiamo il flag 'clean' come persistente, così vale per tutti i sotto-comandi
 	exportCmd.PersistentFlags().BoolVar(&cleanExport, "clean", false, "Clean old versions on remote server before exporting")
 	rootCmd.AddCommand(exportCmd)
 }

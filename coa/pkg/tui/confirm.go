@@ -30,7 +30,7 @@ func (m confirmModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "left", "h", "right", "l", "tab":
 			m.value = !m.value
-		case "y", "s":
+		case "y":
 			m.value = true
 			m.chosen = true
 			return m, tea.Quit
@@ -51,10 +51,10 @@ func (m confirmModel) View() string {
 		return ""
 	}
 
-	yes := confirmDim2.Render("Si")
+	yes := confirmDim2.Render("Yes")
 	no := confirmDim2.Render("No")
 	if m.value {
-		yes = confirmHighlight.Render("[ Si ]")
+		yes = confirmHighlight.Render("[ Yes ]")
 	} else {
 		no = confirmHighlight.Render("[ No ]")
 	}
@@ -62,7 +62,7 @@ func (m confirmModel) View() string {
 	return fmt.Sprintf("%s  %s  %s\n%s",
 		confirmHighlight.Render(m.title),
 		yes, no,
-		confirmDim2.Render("←/→ cambia · enter conferma"))
+		confirmDim2.Render("←/→ switch · enter confirm"))
 }
 
 func RunConfirm(title string, defaultValue bool) (bool, error) {
@@ -79,12 +79,12 @@ func RunConfirm(title string, defaultValue bool) (bool, error) {
 
 	fm := final.(confirmModel)
 	if fm.quitting {
-		return defaultValue, fmt.Errorf("annullato dall'utente")
+		return defaultValue, fmt.Errorf("cancelled by user")
 	}
 	return fm.value, nil
 }
 
-// RunConfirmDefault è un shortcut per conferme dove il default è Si.
+// RunConfirmDefault is a shortcut for confirmations where the default is Yes.
 func RunConfirmDefault(title string) bool {
 	val, err := RunConfirm(title, true)
 	if err != nil {
