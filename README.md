@@ -110,4 +110,4 @@ This project collects stars, look to the sky... contribute!
 
 ### blog ed AI
 * [https://penguins-eggs.net](https://penguins-eggs.net)
-* [llvm.txt](https://penguins-eggs.net/llvm.txt)
+* [llms.txt](https://penguins-eggs.net/llms.txt)
