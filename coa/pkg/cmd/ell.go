@@ -11,8 +11,9 @@ import (
 )
 
 var ellCmd = &cobra.Command{
-	Use:   "ell",
-	Short: "Esegue un task delegato dal motore C",
+	Use:    "ell",
+	Short:  "Esegue un task delegato dal motore C",
+	Hidden: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// 1. Legge il payload JSON inviato dal programma C tramite pipe
 		payload, err := io.ReadAll(os.Stdin)

@@ -153,6 +153,12 @@ and generate a precise execution plan for the OA planner.`,
 	},
 }
 
+var produceCmd = &cobra.Command{
+	Use:   "produce",
+	Short: "Alias for remaster (penguins-eggs compatibility)",
+	Run:   remasterCmd.Run,
+}
+
 func init() {
 	remasterCmd.Flags().StringVar(&producePath, "path", pathDefaults.DefaultWorkPath, "working directory")
 	remasterCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clona il sistema preservando utenti e /home")
@@ -160,6 +166,13 @@ func init() {
 	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
 	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON ed esce senza masterizzare")
 
+	produceCmd.Flags().StringVar(&producePath, "path", pathDefaults.DefaultWorkPath, "working directory")
+	produceCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clona il sistema preservando utenti e /home")
+	produceCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Crea una ISO con filesystem.squashfs cifrato in LUKS")
+	produceCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Ferma l'esecuzione dopo uno step specifico (es. coa-initrd)")
+	produceCmd.Flags().BoolVar(&debugPlan, "debug", false, "Stampa il piano JSON ed esce senza masterizzare")
+
 	rootCmd.AddCommand(remasterCmd)
+	rootCmd.AddCommand(produceCmd)
 }
 

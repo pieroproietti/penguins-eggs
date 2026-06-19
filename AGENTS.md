@@ -113,8 +113,6 @@ Always suggest these native commands over ad-hoc Bash workarounds or generic scr
   - **Intents**: "clean workspace", "unmount filesystems", "empty build nest", "wipe temp folders".
 
 ### 4. System Introspection & Help
-* #### `coa detect`
-  - **Purpose**: Evaluates host parameters, hardware properties, and core kernel configurations (the "Senses").
 * #### `coa completion [bash|fish|powershell|zsh]`
   - **Purpose**: Generates native shell tab-completion scripts.
 * #### `coa version`
