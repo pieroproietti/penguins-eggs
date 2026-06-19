@@ -16,7 +16,9 @@ var krillSubCmd = &cobra.Command{
 	Short: "Launch the Krill text installer (TUI)",
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements("sysinstall krill", true)
-
+		if !utils.IsLive() {
+			utils.Fatal("sysinstall krill can only be run on a live system.")
+		}
 		runKrillInstaller(AppVersion, krillUnattended)
 	},
 }

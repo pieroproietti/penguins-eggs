@@ -15,6 +15,9 @@ var calamaresSubCmd = &cobra.Command{
 	Short: "Launch the Calamares graphical installer",
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements("sysinstall calamares", true)
+		if !utils.IsLive() {
+			utils.Fatal("sysinstall calamares can only be run on a live system.")
+		}
 		RunCalamaresInstaller(AppVersion)
 	},
 }
