@@ -65,16 +65,16 @@ int main(int argc, char **argv) {
         
         if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
             printf("Uso:\n");
-            printf("  oa <plan.json>          Esegue i task da file\n");
-            printf("  cat plan.json | oa      Esegue i task da STDIN\n");
-            printf("  oa cleanup [percorso]   Esegue uno smontaggio d'emergenza\n");
+            printf("  oa <plan.json>          Runs tasks from a file\n");
+            printf("  cat plan.json | oa      Runs tasks from STDIN\n");
+            printf("  oa cleanup              Performs an emergency umount\n");
             return EXIT_SUCCESS;
         }
 
         // --- LA TUA MANIGLIA DI EMERGENZA ---
         if (strcmp(argv[1], "cleanup") == 0) {
             const char *target_dir = (argc > 2) ? argv[2] : "/home/eggs";
-            printf("🚨 [oa-main] Modalità EMERGENZA: Avvio smontaggio su %s\n", target_dir);
+            printf("🚨 [oa-main] EMERGENCY Mode: Run `umount` on %s\n", target_dir);
 
             cJSON *task = cJSON_CreateObject();
             cJSON_AddStringToObject(task, "module", "umount");
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
         // Se l'argomento non è un comando speciale, proviamo a leggerlo come file JSON
         json_data = read_file(argv[1]);
         if (!json_data) {
-            fprintf(stderr, "❌ [oa-main] Impossibile aprire il file JSON o comando sconosciuto: %s\n", argv[1]);
+            fprintf(stderr, "❌ [oa-main] Unable to open the JSON file or unknown command: %s\n", argv[1]);
             return EXIT_FAILURE;
         }
     } else {
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     }
 
     if (!json_data || strlen(json_data) == 0) {
-        fprintf(stderr, "❌ [oa-main] Nessun piano JSON ricevuto in input.\n");
+        fprintf(stderr, "❌ [oa-main] No JSON plan received as input.\n");
         if (json_data) free(json_data);
         return EXIT_FAILURE;
     }
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {
         const char *error_ptr = cJSON_GetErrorPtr();
-        LOG_ERR("❌ [oa-main] Errore di parsing JSON: %s", error_ptr ? error_ptr : "sconosciuto");
+        LOG_ERR("❌ [oa-main] JSON parsing error: %s", error_ptr ? error_ptr : "sconosciuto");
         free(json_data);
         oa_close_log(); 
         return EXIT_FAILURE;
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
 
     cJSON *plan_array = cJSON_GetObjectItemCaseSensitive(root, "plan");
     if (!cJSON_IsArray(plan_array)) {
-        LOG_ERR("❌ [oa-main] Formato JSON non valido: array 'plan' mancante.");
+        LOG_ERR("❌ [oa-main] Invalid JSON format: ‘plan’ array is missing.");
         cJSON_Delete(root);
         free(json_data);
         oa_close_log(); 
@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
     }
 
     int total_tasks = cJSON_GetArraySize(plan_array);
-    LOG_INFO("🚀 [oa-main] Ricevuto piano con %d task. Avvio esecuzione...", total_tasks);
+    LOG_INFO("🚀 [oa-main] Received schedule with %d tasks. Starting execution.", total_tasks);
 
     int success_count = 0;
     int error_count = 0;
@@ -139,14 +139,14 @@ int main(int argc, char **argv) {
         const char *task_name = cJSON_IsString(name_item) ? name_item->valuestring : "Sconosciuto";
 
         LOG_INFO("========================================");
-        LOG_INFO("▶ Esecuzione Task: %s", task_name);
+        LOG_INFO("▶ Task Execution: %s", task_name);
         LOG_INFO("========================================");
 
         if (dispatch_task(task) == 0) {
             success_count++;
         } else {
             // CORRETTO: rimosso stderr e \n
-            LOG_ERR("⚠️  [oa-main] Il task '%s' ha fallito.", task_name);
+            LOG_ERR("⚠️  [oa-main] The ‘%s’ task failed.", task_name);
             error_count++;
         }
     }
@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
     cJSON_Delete(root);
     free(json_data);
 
-    LOG_INFO("🏁 [oa-main] Esecuzione completata. Successi: %d, Errori: %d", success_count, error_count);
+    LOG_INFO("🏁 [oa-main] Execution complete. Successes: %d, Errors: %d", success_count, error_count);
     
     // ==================================
     // chiusura log 

@@ -14,7 +14,7 @@ FILE *oa_log_file = NULL;
 void oa_init_log(const char *logfile) {
     oa_log_file = fopen(logfile, "a");
     if (!oa_log_file) {
-        perror("Impossibile aprire il file di log");
+        perror("Unable to open the log file");
     }
 }
 
