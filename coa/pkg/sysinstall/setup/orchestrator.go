@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"os/exec"
 	"path/filepath"
 
 	"coa/pkg/distro"
@@ -27,9 +28,11 @@ func BuildInstaller(oaVersion string) error {
 	d := distro.NewDistro()
 	utils.LogNormal("Generating modules and payload...")
 
-	// 2. IL LINK QML! Fatto qui, è blindato.
-	if err := QmlSymlink(); err != nil {
-		return err
+	// 2. IL LINK QML! Fatto qui, è blindato — solo se Calamares è installato.
+	if _, err := exec.LookPath("calamares"); err == nil {
+		if err := QmlSymlink(); err != nil {
+			return err
+		}
 	}
 
 	// 2. Chiamata in cascata agli Stampatori e ai Payload
