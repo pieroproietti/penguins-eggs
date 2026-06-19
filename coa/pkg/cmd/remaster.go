@@ -25,7 +25,7 @@ var (
 
 var remasterCmd = &cobra.Command{
 	Use:   "remaster",
-	Short: "Start a system remastering flight (ISO production)",
+	Short: "Start a system remastering (ISO production)",
 	Long: `The 'remaster' command orchestrates the creation of a bootable live ISO. 
 It uses the new Coala architecture to read the agnostic Brain profile 
 and generate a precise execution plan for the OA planner.`,

@@ -11,9 +11,9 @@ var cleanVerbose bool
 
 var toolsCleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "Pulisce log, cache apt/pacman e residui del sistema host",
-	Long: `Dimagrisce il sistema rimuovendo file non necessari.
-Ideale da lanciare prima di 'coa remaster' per ottenere una ISO più compatta.`,
+	Short: "Log rotation, package manager cache cleanup, and host system remnants",
+	Long: `It streamlines the system by removing unnecessary files.
+Ideal to run before ‘coa remaster’ to create a more compact ISO.`,
 	Example: `  sudo coa tools clean
   sudo coa tools clean --verbose`,
 	Run: func(cmd *cobra.Command, args []string) {

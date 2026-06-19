@@ -6,8 +6,7 @@ import (
 	"fmt"
 )
 
-// oaUsers crea e restituisce i task necessari per configurare l'utente live
-func oaUsers(settings parser.RemasterConfig, step parser.Step, workPath string) []OATask {
+func buildLiveUserTasks(settings parser.RemasterConfig, step parser.Step, workPath string) []OATask {
 	var tasks []OATask
 
 	// 1. Utente dinamico (fallback su "live")

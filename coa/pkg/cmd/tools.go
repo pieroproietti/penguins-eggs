@@ -7,9 +7,9 @@ import (
 // toolsCmd rappresenta il comando padre "tools"
 var toolsCmd = &cobra.Command{
 	Use:   "tools",
-	Short: "Strumenti di utilità per la manutenzione e il sistema",
-	Long: `Una suite di strumenti ausiliari forniti da coa per la gestione, 
-la pulizia e l'ispezione del sistema host e delle ISO.`,
+	Short: "Useful tools for maintenance and system management",
+	Long: `A suite of auxiliary tools provided by coa for the management, 
+cleaning, and inspection of the host system and ISOs.`,
 	// Non definiamo una funzione Run, così se l'utente digita solo "coa tools",
 	// Cobra stamperà in automatico l'help con la lista dei sotto-comandi (es. clean).
 }

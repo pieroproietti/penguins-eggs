@@ -11,13 +11,13 @@ import (
 
 var toolsRepoCmd = &cobra.Command{
 	Use:   "repo [add|rm]",
-	Short: "Aggiunge o rimuove il repository ufficiale di penguins-eggs",
-	Long: `Configura il gestore pacchetti del sistema host (APT, Pacman, DNF, Zypper, APK) 
-per scaricare i pacchetti dalla repository ufficiale di penguins-eggs.net.
+	Short: "Adds or removes the official penguins-eggs repository",
+	Long: `Configure the host system's package manager (APT, Pacman, DNF, Zypper, APK) 
+to download packages from the official penguins-eggs.net repository.
 
-Azioni supportate:
-  add - Installa le chiavi GPG e aggiunge il repository
-  rm  - Rimuove i file del repository e le chiavi GPG`,
+Supported actions:
+  add - Install the GPG keys and add the repository
+  rm  - Removes repository files and GPG keys`,
 	Example: `  sudo coa tools repo add
   sudo coa tools repo rm`,
 	Args:      cobra.ExactArgs(1),    // Richiede esattamente 1 argomento

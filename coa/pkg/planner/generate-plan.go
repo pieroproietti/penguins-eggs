@@ -62,7 +62,7 @@ func GeneratePlan(
 			if mode == "clone" || mode == "crypted" {
 				utils.LogNormal("[ENGINE] Modalità '%s': utenti reali clonati da /home, salto il modulo 'users'.", mode)
 			} else {
-				plan.Plan = append(plan.Plan, oaUsers(plan.Settings, step, workPath)...)
+				plan.Plan = append(plan.Plan, buildLiveUserTasks(plan.Settings, step, workPath)...)
 			}
 
 		case "umount":
