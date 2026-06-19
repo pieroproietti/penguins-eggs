@@ -59,6 +59,13 @@ and generate a precise execution plan for the OA planner.`,
 
 		utils.LogNormal("Avvio procedura di rimasterizzazione (mode: %s)...", produceMode)
 
+		// 1. Identità: Chi siamo?
+		myDistro := distro.NewDistro()
+
+		if produceMode == "crypted" && myDistro.FamilyID != "debian" {
+			utils.Fatal("L'opzione --crypted è disponibile solo per la famiglia Debian (rilevata: %s).", myDistro.DistroLike)
+		}
+
 		// Per la modalità crypted: chiede passphrase e configurazione crypto
 		var luksPassphrase string
 		if produceMode == "crypted" {
@@ -86,8 +93,6 @@ and generate a precise execution plan for the OA planner.`,
 			isGitHubAction = true
 		}
 
-		// 1. Identità: Chi siamo?
-		myDistro := distro.NewDistro()
 		isoName := myDistro.GetISOName(produceMode)
 
 		finalIsoPath := filepath.Join(producePath, isoName)
