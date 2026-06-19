@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	sysctx "coa/pkg/context" // <-- Il nostro cervello universale
+	sysctx "coa/pkg/context"
 )
 
 func LogBuild(format string, a ...interface{}) {
@@ -22,7 +22,7 @@ func LogError(format string, a ...interface{}) {
 
 func HandleBuild(d *distro.Distro) {
 
-	// 1. Preparazione Dati
+	// 1. Data preparation
 	ctx := sysctx.Detect()
 	baseVer, relNum := getGitVersion()
 	dist := strings.ToLower(d.DistroLike)

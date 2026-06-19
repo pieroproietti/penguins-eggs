@@ -11,7 +11,7 @@ import (
 )
 
 func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
-	utils.LogNormal("[build] Packager: sealing package for %s...", dist)
+	utils.LogNormal("[build] Packager: building package for %s...", dist)
 
 	stage := ctx.StageDir
 	var cmd *exec.Cmd

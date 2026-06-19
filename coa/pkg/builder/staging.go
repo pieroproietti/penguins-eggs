@@ -11,18 +11,18 @@ func staging(ctx sysctx.RuntimeContext) string {
 	stageDir := ctx.StageDir
 	buildDir := ctx.BaseBuildDir
 
-	// Pulisci tutto quello che c'era prima
+	// Clean up everything from before
 	os.RemoveAll(stageDir)
 
-	// Crea la gerarchia pulita (usr, etc, ecc.)
-	// Qui andranno solo i file che devono finire nel pacchetto
+	// Create the clean hierarchy (usr, etc, etc.)
+	// Only files that belong in the package go here
 	os.MkdirAll(filepath.Join(stageDir, "usr/bin"), 0755)
 	os.MkdirAll(filepath.Join(stageDir, "etc/oa-tools.d"), 0755)
 
 	// stage := filepath.Join(buildDir, dist)
 	// os.RemoveAll(stage)
 
-	// Definiamo le cartelle standard che ogni pacchetto deve avere
+	// Define the standard directories every package must have
 	dirs := []string{
 		"usr/bin",
 		"etc/oa-tools.d/brain.d",
@@ -36,26 +36,26 @@ func staging(ctx sysctx.RuntimeContext) string {
 		os.MkdirAll(filepath.Join(stageDir, d), 0755)
 	}
 
-	// 1. Binari (dalla Fucina)
+	// 1. Binaries (from the build directory)
 	copyFile(filepath.Join(buildDir, "oa"), filepath.Join(stageDir, "usr/bin/oa"))
 	copyFile(filepath.Join(buildDir, "coa"), filepath.Join(stageDir, "usr/bin/coa"))
 	os.Symlink("coa", filepath.Join(stageDir, "usr/bin/eggs"))
 
-	// 2. Configurazione (dalla ProjRoot)
+	// 2. Configuration (from ProjRoot)
 	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.yaml"), filepath.Join(stageDir, "etc/oa-tools.d/custom.yaml"))
 	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.exclude.list"), filepath.Join(stageDir, "etc/oa-tools.d/custom.exclude.list"))
 
 	copyDir(filepath.Join(projRoot, "coa/pkg/assets/configs/scripts"), filepath.Join(stageDir, "etc/oa-tools.d/scripts"))
 
-	// Copia ricorsiva del brain.d
+	// Recursive copy of brain.d
 	copyDir(filepath.Join(projRoot, "coa/brain.d"), filepath.Join(stageDir, "etc/oa-tools.d/brain.d"))
 
-	// 3. Documentazione (Man pages)
+	// 3. Documentation (man pages)
 	manFiles, _ := filepath.Glob(filepath.Join(buildDir, "docs/man/*.1"))
 	for _, f := range manFiles {
 		dest := filepath.Join(stageDir, "usr/share/man/man1", filepath.Base(f))
 		copyFile(f, dest)
-		// Qui potresti anche gzippare al volo se vuoi
+		// Could also gzip on the fly here if needed
 	}
 
 	// 4. Completions
@@ -71,7 +71,7 @@ func staging(ctx sysctx.RuntimeContext) string {
 	dest = filepath.Join(stageDir, "usr/share/zsh/vendor-completions/_coa")
 	copyFile(src, dest)
 
-	// 5. Completions eggs
+	// 5. Eggs completions
 	src = filepath.Join(buildDir, "docs/completion/eggs.bash")
 	dest = filepath.Join(stageDir, "usr/share/bash-completion/completions/eggs.bash")
 	copyFile(src, dest)

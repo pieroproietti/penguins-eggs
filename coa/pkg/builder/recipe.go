@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 )
 
-// recipe: scrive il file di controllo (PKGBUILD, SPEC, ecc.) nello staging
+// recipe writes the control file (PKGBUILD, SPEC, etc.) into the staging area
 func recipe(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
-	utils.LogNormal("[build] Recipe: scrivo la ricetta per %s...", dist)
+	utils.LogNormal("[build] Recipe: writing recipe for %s...", dist)
 
 	stage := ctx.StageDir
 
@@ -29,52 +29,52 @@ func recipe(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 	}
 }
 
-// writeAPKBUILD scrive APKBUILD per alpine
+// writeAPKBUILD writes the APKBUILD for alpine
 func writeAPKBUILD(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {
-	// 1. Definiamo il percorso e nome del template
+	// 1. Define the template path and name
 	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates/alpine.tmpl")
 
-	// 2. Destinazione: nella root dello stage e DEVE chiamarsi "APKBUILD"
+	// 2. Destination: in the stage root, must be named "APKBUILD"
 	destPath := filepath.Join(stage, "APKBUILD")
 
-	// 3. Eseguiamo la fusione dei dati
+	// 3. Merge the data
 	return writeTemplate(tmplPath, destPath, data)
 }
 
-// writePKGBUILD scrive PKGBUILD per arch/manjaro
+// writePKGBUILD writes the PKGBUILD for arch/manjaro
 func writePKGBUILD(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) error {
-	// 1. Costruiamo il nome del file template (arch/manjaro) ed il percorso di origine
+	// 1. Build the template filename (arch/manjaro) and source path
 	tmplName := fmt.Sprintf("%s.tmpl", dist)
 	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
 
-	// 2. Destinazione: nella root dello stage e DEVE chiamarsi esattamente "PKGBUILD"
+	// 2. Destination: in the stage root, must be named exactly "PKGBUILD"
 	destPath := filepath.Join(stage, "PKGBUILD")
 
-	// 3. Eseguiamo la fusione
+	// 3. Merge the data
 	return writeTemplate(tmplPath, destPath, data)
 }
 
-// writeSpecFile: scrive oa-tools.spec per fedora/opensuse
+// writeSpecFile writes oa-tools.spec for fedora/opensuse
 func writeSpecFile(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) error {
-	// 1. definiami il nome del template (fedora/opensuse)
+	// 1. Define the template name (fedora/opensuse)
 	tmplName := fmt.Sprintf("%s.tmpl", dist)
 	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
 
-	// Il file di destinazione per RPM si chiama convenzionalmente col nome del pacchetto
+	// The RPM destination file is conventionally named after the package
 	destPath := filepath.Join(stage, "oa-tools.spec")
 
-	// 2. Eseguiamo la fusione tramite la tua funzione di appoggio
+	// 2. Merge using the helper function
 	return writeTemplate(tmplPath, destPath, data)
 }
 
-// writeDebianFiles: configura DEBIAN e crea control, rules, compat, copyright
+// writeDebianFiles sets up the DEBIAN directory and creates control, rules, compat, copyright
 func writeDebianFiles(ctx sysctx.RuntimeContext, stage string, data RecipeData) error {
 	debianDir := filepath.Join(stage, "DEBIAN")
 
-	// Assicuriamo che la cartella esista
+	// Ensure the directory exists
 	os.MkdirAll(debianDir, 0755)
 
-	// Mappa template -> destinazione
+	// Template -> destination map
 	files := map[string]string{
 		"control.tmpl":   "control",
 		"rules.tmpl":     "rules",
@@ -87,10 +87,10 @@ func writeDebianFiles(ctx sysctx.RuntimeContext, stage string, data RecipeData) 
 		tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates/debian", tmplName)
 		destPath := filepath.Join(debianDir, destName)
 
-		// Feedback a video per il manutentore
-		utils.LogNormal("--> Scrittura template: %s -> %s", tmplName, destPath)
+		// Visual feedback for the maintainer
+		utils.LogNormal("--> Writing template: %s -> %s", tmplName, destPath)
 
-		// Usiamo direttamente 'data' che contiene BaseVersion, Rel e Date
+		// Use 'data' directly, which contains BaseVersion, Rel, and Date
 		err := writeTemplate(tmplPath, destPath, data)
 		if err != nil {
 			return err

@@ -6,15 +6,15 @@ import (
 	"os"
 )
 
-// moveFile sposta un file in modo sicuro anche tra file system diversi (es. tmpfs -> ext4)
+// moveFile moves a file safely even across different filesystems (e.g. tmpfs -> ext4)
 func moveFile(sourcePath, destPath string) error {
-	// 1. Proviamo il rename nativo (istanteo, funziona se siamo sullo stesso disco)
+	// 1. Try native rename (instant, works if on the same filesystem)
 	err := os.Rename(sourcePath, destPath)
 	if err == nil {
 		return nil
 	}
 
-	// 2. Se fallisce (tipico errore "cross-device link"), eseguiamo Copia e Cancella
+	// 2. If it fails (typical "cross-device link" error), fall back to copy and delete
 	inputFile, err := os.Open(sourcePath)
 	if err != nil {
 		return fmt.Errorf("unable to open source: %v", err)
@@ -27,15 +27,15 @@ func moveFile(sourcePath, destPath string) error {
 	}
 	defer outputFile.Close()
 
-	// Copiamo i byte (usando io.Copy evitiamo di caricare tutto il file in RAM in un colpo solo)
+	// Copy bytes (io.Copy avoids loading the entire file into RAM at once)
 	_, err = io.Copy(outputFile, inputFile)
 	if err != nil {
 		return fmt.Errorf("error during copy: %v", err)
 	}
 
-	// Chiudiamo il file sorgente prima di poterlo eliminare
+	// Close the source file before deleting it
 	inputFile.Close()
 
-	// Eliminiamo l'originale
+	// Delete the original
 	return os.Remove(sourcePath)
 }
