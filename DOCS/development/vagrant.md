@@ -97,7 +97,7 @@ cd /home/vagrant/oa-tools
 ./m  # or your build command for coa/oa
 
 # Run the full remastering flight on a real kernel
-sudo ./coa remaster --mode standard
+sudo ./coa remaster
 ```
 
 ---

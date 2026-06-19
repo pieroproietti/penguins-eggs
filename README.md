@@ -50,16 +50,16 @@ The goal is ambitious: a truly universal approach to Linux remastering. Every di
 
 We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
-### 🧠 [coa](./DOCS/README.md) (**brooding in my dialect**) - The Mind
+### 🧠 [coa](./DOCS/architecture/overview.md) (**brooding in my dialect**) - The Mind
 It manages the full lifecycle: from laying the ISO to the final installation.
 
 The name derives from the dialect word coa, referring to the act of brooding or incubating eggs until they are ready to hatch.
 
 **Language: Go**
 
-For coa commands, see [coa command Reference](/DOCS/COA_COMMANDS.md).
+For coa commands, see [coa command Reference](./DOCS/manual/commands.md).
 
-### 🦾 [oa](./DOCS/README.md) (**eggs in my dialect**) - The Workhorse
+### 🦾 [oa](./DOCS/architecture/oa.md) (**eggs in my dialect**) - The Workhorse
 **Language: C**
 `oa` is the low-level engine. It handles the "heavy lifting" of the system:
 - Managing OverlayFS and mount points.
@@ -70,10 +70,12 @@ For coa commands, see [coa command Reference](/DOCS/COA_COMMANDS.md).
 
 ## 🚀 Getting Started
 
+> **Coming from penguins-eggs?** The binary is installed as both `coa` and `eggs` — your existing commands (`eggs produce`, `eggs kill`, …) work unchanged. See the [Quick Start](./DOCS/manual/quickstart.md) for the full compatibility table.
+
 ### Prerequisites
-- A Linux system (Debian-based, Arch-based. Fedora-based or Manjaro-based).
+- A Linux system (Debian-based, Arch-based, Fedora-based or Manjaro-based).
 - `gcc` and `make` (for `oa`).
-- `golang` 1.21+ (for `coa`).
+- `golang` 1.25+ (for `coa`).
 
 ### Build Everything
 From this root directory, simply run:
@@ -92,7 +94,7 @@ This will compile both binaries:
 ## 📜 Philosophy
 The **oa-tools** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
 
-Documentation about oa-tools can be found on [DOCS](/DOCS/).
+Documentation about oa-tools can be found on [DOCS](./DOCS/README.md). See also the [Manifestum](./DOCS/manifestum.md) for the founding vision and origins.
 
 The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosophy can be read on my blog.
 

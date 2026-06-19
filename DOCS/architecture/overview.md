@@ -12,7 +12,7 @@ The `cmd` package contains the user interface. Each file maps a command the user
 
 | Command | Sudo | Role |
 | :--- | :--- | :--- |
-| `remaster` | Yes | The heart of the system. Starts the "flight" that produces the ISO: the `parser` reads the YAML rules, the `planner` writes the JSON plan, then the C binary is launched. Supports `--mode` (standard, clone, crypted) and `--stop-after` for surgical debugging. |
+| `remaster` | Yes | The heart of the system. Starts the "flight" that produces the ISO: the `parser` reads the YAML rules, the `planner` writes the JSON plan, then the C binary is launched. Supports `--clone`, `--crypted` and `--stop-after` for surgical debugging. Alias: `produce`. |
 | `destroy` | Yes | The safe destroyer (`kill` is kept as an alias). First runs the C engine with `oa cleanup` to unmount the virtual filesystems in `MNT_DETACH` mode (so the host never hangs), then physically removes the workspace and the log files. |
 | `adapt` | No | Post-boot utility for virtual machines: iterates over the virtual video outputs and runs `xrandr --auto` to instantly fit the live session to the hypervisor window. |
 | `export` | No | Network orchestrator with subcommands `iso`, `pkg` and `log`: sends artifacts over `scp` with SSH multiplexing to a remote Proxmox storage. The global `--clean` flag deletes old versions on the server before uploading. |
@@ -37,7 +37,7 @@ The **parser** loads the "score" from the Brain. It analyzes the YAML profile ma
 Here the logical handover happens. The Go **planner** takes the YAML tree validated by the parser and compiles it into a *JSON flight plan*. See [planner.md](./planner.md).
 
 *   **The breakpoint trick:** if the user passed `--stop-after` (e.g. `--stop-after coa-initrd`), the planner literally cuts the JSON plan at that step. The system stops mid-flight, leaving the *chroot* environment mounted and ready for manual inspection and debugging.
-*   **Asset preparation:** in the same phase, Go ensures the bootloader binaries are present (`utils.EnsureBootloaders`) and generates the dynamic exclusion list (`planner.GenerateExcludeList`) according to `--mode`.
+*   **Asset preparation:** in the same phase, Go ensures the bootloader binaries are present (`utils.EnsureBootloaders`) and generates the dynamic exclusion list (`planner.GenerateExcludeList`) according to the selected mode (`--clone` or `--crypted`).
 
 ### 4. The handoff to the C engine (`oa`)
 At this point Go has finished the "intelligence" work and produced a complete, safe plan (the JSON file under `/tmp/coa/`). It runs `exec.Command("oa", planPath)` to invoke the low-level engine, wiring the C process `Stdout`/`Stderr` straight to the user's terminal so execution is visible in real time. If the C engine crashes, Go intercepts the exit code and stops everything with a red error log; on success it closes with the green success message.
@@ -56,15 +56,17 @@ This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution
 | `parser` | Loads and validates the YAML profile from the Brain. → [parser.md](./parser.md) |
 | `planner` | Compiles the validated profile into the JSON plan for `oa`. → [planner.md](./planner.md) |
 | `distro` | Detects the host distribution from `/etc/os-release` (ID + ID_LIKE matching). |
-| `dispatcher` | Routes the installation to the right frontend (Calamares GUI / Krill TUI). |
-| `calamares` | Generates the Calamares configuration used on the live system. |
-| `krill` | The native TUI installer. |
+| `dispatcher` | Routes `coa ell` tasks to the matching worker module. |
+| `sysinstall/setup` | Generates the unified installer configuration (Calamares + Krill). → [installer.md](../design/installer.md) |
+| `sysinstall/krill` | The native TUI installer (Bubbletea) and its engine. → [installer.md](../design/installer.md) |
 | `builder` | Generates the native coa/oa packages (.deb, PKGBUILD, .rpm) for each distribution. |
 | `bleach` | Cleanup routines for the various distributions. |
 | `tailor` | The tailor managing the wardrobe (costumes). |
 | `worker` | The Go modules executed on behalf of the C engine (`coa ell`). → [ell.md](./ell.md) |
 | `context` | The structured `RuntimeContext` passed across packages. |
-| `assets` | Embedded assets (calamares-base configuration and more). |
+| `pathDefaults` | Centralized default paths (`/home/eggs`, `/tmp/coa`, log file). |
+| `tui` | Reusable Bubbletea TUI components (confirm, password, select). |
+| `assets` | Embedded assets (installer-base configuration and more). |
 | `repo` | Management of the official package repository. |
 | `xdg` | XDG helpers for the live session. |
 | `utils` | Logging (`LogNormal/Success/Warning/Error/Fatal`), exec wrappers (`Exec/ExecQuiet/ExecCapture`) and general utilities. |

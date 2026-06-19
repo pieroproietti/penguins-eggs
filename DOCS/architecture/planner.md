@@ -32,6 +32,14 @@ The single abstract directive becomes one `shell` task invoking `/etc/oa-tools.d
 ### `umount` → the guaranteed cleanup
 Compiled into the `cleanup` task carrying `work_dir`, executed natively by the C engine.
 
+### `--crypted` → LUKS pipeline injection (`luks-steps.go`)
+When the mode is `crypted`, the planner intercepts three standard steps and replaces or extends them:
+1. **`initramfs`** → replaced by `luks-initrd-prep`: injects `boot-encrypted-root.sh` into the live initramfs hooks, writes a dummy `/etc/crypttab` to pull in `cryptsetup`, and regenerates the initrd with LUKS support.
+2. **`copy-kernel-initrd`** → replaced by `luks-kernel-copy`: copies the LUKS-aware initrd instead of the standard one.
+3. **`mksquashfs`** → kept, but immediately followed by `luks-wrap-squashfs`: the plain `filesystem.squashfs` is wrapped inside a LUKS2 ext4 container (`root.img`). The passphrase is passed via `printf | cryptsetup --key-file -` and never touches the disk.
+
+The boot parameters are also updated to include `live-media` so the live-boot stack knows to look for the LUKS container. The `autologin-gui` step is skipped (no live user in crypted mode). Currently Debian family only.
+
 ### `xorriso` → parameter injection + `.disk` metadata
 The planner resolves `params.output_file` (the final ISO path computed from the distro identity) and `params.source_dir` (`<work_dir>/isodir`). Right before it, a **`coa-dot-disk`** shell task is inserted: it generates the `.disk` metadata directory (info, UUID from the kernel, timestamp) following the Debian live-boot standard.
 
@@ -56,7 +64,7 @@ Called by `remaster` before planning, it generates `/tmp/coa/excludes.list` — 
 * **System identity:** `etc/fstab`, `etc/mtab`, host SSH keys (`etc/ssh/ssh_host_*`), saved network connections (`NetworkManager/system-connections/*` and its `secret_key`), persistent udev rules, swapfile.
 * **Package caches:** `apt` archives and the heavy `*.bin` indexes, `pacman/pkg`, `dnf`.
 * **The Debian cryptdisks hack:** a single wildcard (`etc/rc*.d/*cryptdisks*`) — `mksquashfs -wildcards` does the scanning, no Go code needed.
-* **Privacy by `--mode`:** in `standard` mode `root/*` (hidden files included) is razed; in `clone`/`crypted` user data survives but shell histories, trash bins and browser caches are still purged.
+* **Privacy by mode:** in standard mode `root/*` (hidden files included) is razed; with `--clone`/`--crypted` user data survives but shell histories, trash bins and browser caches are still purged.
 * **GitHub Actions slimming:** on a runner, `usr`, `var` and `opt` are stripped — the structural smoketest exercises the whole chain (mksquashfs, xorriso, umount) in minutes, producing a non-functional but valid ISO.
 * **User exclusions:** `/etc/oa-tools.d/custom.exclude.list`, if present, is sanitized (comments skipped, leading slashes removed) and appended.
 

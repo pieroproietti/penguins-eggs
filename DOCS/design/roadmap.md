@@ -7,8 +7,8 @@
 - ✅ Remastering working on all six families: Alpine, Arch, Debian, Fedora, Manjaro, openSUSE (and derivatives).
 - ✅ Graphical installer: Calamares (Alpine included).
 - ✅ TUI installer: Krill, rewritten in Go with Bubbletea — installs for real, verified in VM on both BIOS and UEFI (June 2026). Interactive wizard plus `--unattended` mode for headless installs. See [installer.md](./installer.md) for the implemented architecture.
-- ❌ Clone with user data (`--mode clone`).
-- ❌ Encrypted clone (`--mode crypted`).
+- ❌ Clone with user data (`--clone`).
+- ❌ Encrypted clone (`--crypted`).
 
 ## Open Points
 

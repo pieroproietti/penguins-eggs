@@ -30,10 +30,31 @@ The heart of the system. Reads the YAML profile through the parser, generates th
 
 *   **Usage:** `sudo coa remaster [flags]`
 *   **Flags:**
-    *   `--mode <string>`: production mode (`standard`, `clone`, `crypted`). Default: `standard`.
+    *   `--clone`: clone mode — preserves users and `/home` in the ISO.
+    *   `--crypted`: LUKS-encrypted mode — produces an encrypted squashfs (Debian family only). Mutually exclusive with `--clone`.
     *   `--path <string>`: working directory. Default: `/home/eggs`.
     *   `--stop-after <step>`: **[debug]** stops execution after a specific step (e.g. `coa-initrd`), leaving the *chroot* mounted for manual inspection.
     *   `--debug`: prints the JSON plan (or the pre-processed YAML) and exits without building anything.
+*   **Alias:** `coa produce` (penguins-eggs compatibility).
+
+#### LUKS Encryption (`--crypted`)
+
+When `--crypted` is passed, `coa remaster` activates an interactive TUI wizard that asks for:
+
+1. **Passphrase** — use the default (`0`) or enter a custom one. The passphrase is passed to `cryptsetup` via stdin and is never written to disk.
+2. **Crypto configuration** — use the defaults or customize each parameter:
+
+| Parameter | Default | Options |
+|---|---|---|
+| Cipher | `aes-xts-plain64` | `serpent-xts-plain64`, `twofish-xts-plain64` |
+| Key size | 512 bit | 256 bit |
+| Hash | `sha256` | `sha512` |
+| Sector size | 512 byte | 4096 byte |
+| PBKDF | `argon2id` | `argon2i`, `pbkdf2` |
+
+The planner then modifies the flight plan: the standard `initramfs` and `copy-kernel-initrd` steps are replaced with LUKS-aware variants, and after `mksquashfs` a `luks-wrap-squashfs` step wraps `filesystem.squashfs` inside a LUKS2 ext4 container (`root.img`). The boot parameters are updated to include `live-media` for LUKS.
+
+This feature is currently available for the **Debian family only**.
 
 ### `coa sysinstall`
 The orchestrator for installing the operating system to disk. Acts as a router toward the final installation engines.
@@ -42,6 +63,7 @@ The orchestrator for installing the operating system to disk. Acts as a router t
 *   **Engines:**
     *   `calamares`: launches the graphical installer (GUI).
     *   `krill`: launches the text installer (TUI).
+        *   `--unattended`: non-interactive install with live-user defaults, password `evolution`, first disk, 10-second abort countdown.
 
 ### `coa destroy` (alias: `coa kill`)
 The "safe destroyer". Tears down the remastering environment: it uses `MNT_DETACH` (lazy unmount) to free the virtual mount points (`/proc`, `/sys`, `/dev`) without kernel panics or host hangs, then deletes the working directory.

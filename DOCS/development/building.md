@@ -4,7 +4,7 @@ To generate native packages for **oa-tools** (Debian `.deb`, Arch/Manjaro `.pkg.
 
 ## 1. Universal Core (The Artisan's Workshop)
 Regardless of the distribution, these are mandatory to compile the "Mind" (Go) and the "Arm" (C):
-*   **Go Compiler (1.20+)**: Required to compile the `coa` orchestrator.
+*   **Go Compiler (1.25+)**: Required to compile the `coa` orchestrator.
 *   **GCC & Make**: Required to compile the `oa` C engine.
 *   **Git**: Required for versioning and managing the `wardrobe`.
 

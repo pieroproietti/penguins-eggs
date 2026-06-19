@@ -78,13 +78,10 @@ Everything the engine does is logged, command by command, to
 ```
 pkg/cmd/
 ├── sysinstall.go            # 'coa sysinstall' (parent command)
-├── sysinstall_prepare.go    # the shared preparation pipeline
 ├── sysinstall_calamares.go  # GUI face: calls setup.Run()
 └── sysinstall_krill.go      # TUI face (+ --unattended flag)
 
 pkg/sysinstall/
-├── calamares/
-│   └── qml-symlink.go       # QML symlink helper for Calamares GUI
 ├── krill/
 │   ├── config.go            # reader of the finished configuration + live detection
 │   ├── krill.go             # Bubbletea wizard (7 steps)
@@ -99,12 +96,13 @@ pkg/sysinstall/
 │       └── users.go         #   user creation, displaymanager, removeuser
 └── setup/
     ├── orchestrator.go      # buildInstaller(): cascades all generators
-    ├── run.go               # Run() entrypoint; Launch() starts Calamares
     ├── types.go             # package-level constants (InstallerDRoot, etc.)
     ├── workspace.go         # initWorkspace(): creates the config dir tree
     ├── utils.go             # renderAndSaveEmbedded() template helper
-    ├── bootloader-conf.go   # shellprocess_oa_bootloader.conf generator
+    ├── qml-symlink.go       # QML symlink helper for Calamares GUI
+    ├── sibling.go           # sibling detection helpers
     ├── bootloader-scripts.go# oa-bootloader.sh + oa-bridge.sh
+    ├── shellprocess_bootloader_bridge.go
     ├── branding-desc.go     # branding/eggs/branding.desc
     ├── displaymanager-conf.go
     ├── mount-conf.go
@@ -158,9 +156,9 @@ yet implemented — see the [roadmap](./roadmap.md).
 The original draft of this document proposed that Krill parse `settings.conf`
 directly — which is what was built — but also imagined a separate `sysinstall/`
 package tree with `engine/`, `adapters/` and a standalone dispatcher. In
-practice the configuration generators grew naturally inside `pkg/calamares`,
+practice the configuration generators grew naturally inside `pkg/sysinstall/setup`,
 the shared pipeline was extracted into `pkg/cmd`, and Krill (reader + TUI +
-engine) lives under `pkg/krill`. The decisive simplification was recognizing
+engine) lives under `pkg/sysinstall/krill`. The decisive simplification was recognizing
 that the **finished configuration directory is the only contract needed**
 between the GUI and the TUI: since oa-tools generates those files itself,
 Krill re-reading them is not duplication but the cheapest possible interface.
