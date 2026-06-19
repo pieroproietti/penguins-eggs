@@ -443,3 +443,4 @@ Ho sistemato il Changelog includendo tutti i punti chiave discussi. Buona semina
 
 ### blog
 * [https://penguins-eggs.net](https://penguins-eggs.net)
+* [llms.txt](https://penguins-eggs.net/llms.txt)
