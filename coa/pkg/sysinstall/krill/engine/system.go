@@ -12,10 +12,10 @@ import (
 func runUnpackfs(c *ctx) error {
 	src := c.plan.UnpackSource
 	if src == "" || !exists(src) {
-		return fmt.Errorf("filesystem sorgente non trovato: %q", src)
+		return fmt.Errorf("source filesystem not found: %q", src)
 	}
 	if _, err := exec.LookPath("unsquashfs"); err != nil {
-		return fmt.Errorf("unsquashfs non disponibile sul sistema live")
+		return fmt.Errorf("unsquashfs not available on the live system")
 	}
 	// -f scrive su directory esistente (il target è già montato)
 	return c.run("unsquashfs", "-f", "-no-progress", "-d", c.plan.Target, src)
@@ -31,7 +31,7 @@ func runMachineid(c *ctx) error {
 	if exists(c.tpath("var", "lib", "dbus")) {
 		os.Remove(dbusID)
 		if err := os.Symlink("/etc/machine-id", dbusID); err != nil {
-			c.logf("symlink dbus machine-id non creato: %v", err)
+			c.logf("dbus machine-id symlink not created: %v", err)
 		}
 	}
 	return nil
@@ -124,7 +124,7 @@ func runLocale(c *ctx) error {
 		if exists(c.tpath("usr", "share", "zoneinfo", c.plan.Region, c.plan.Zone)) {
 			os.Remove(c.tpath("etc", "localtime"))
 			if err := os.Symlink("/usr/share/zoneinfo/"+tz, c.tpath("etc", "localtime")); err != nil {
-				c.logf("symlink localtime non creato: %v", err)
+				c.logf("localtime symlink not created: %v", err)
 			}
 			os.WriteFile(c.tpath("etc", "timezone"), []byte(tz+"\n"), 0644)
 		}

@@ -1,4 +1,3 @@
-// worker/mksquashfs.go
 package worker
 
 import (
@@ -9,9 +8,7 @@ import (
 	"runtime"
 )
 
-// RunMksquashfs esegue la compressione leggendo i parametri grezzi passati dal dispatcher.
 func RunMksquashfs(payload []byte) error {
-	// 1. Struttura locale isolata: definiamo solo ciò che serve a questo modulo
 	var config struct {
 		Params struct {
 			Algorithm    string `json:"algorithm"`
@@ -22,27 +19,23 @@ func RunMksquashfs(payload []byte) error {
 		} `json:"params"`
 	}
 
-	// 2. Apriamo la busta ricevuta dal dispatcher
 	if err := json.Unmarshal(payload, &config); err != nil {
-		return fmt.Errorf("errore parsing JSON per modulo mksquashfs: %w", err)
+		return fmt.Errorf("error parsing JSON for mksquashfs module: %w", err)
 	}
 
-	// 3. Estraiamo i parametri
 	algo := config.Params.Algorithm
 	level := config.Params.Level
 	liveRoot := config.Params.LiveRoot
 	destFile := config.Params.DestFile
 	excludesFile := config.Params.ExcludesFile
 
-	// Controlli di sicurezza fondamentali
 	if liveRoot == "" {
-		return fmt.Errorf("modulo mksquashfs: parametro 'live_root' mancante")
+		return fmt.Errorf("mksquashfs module: missing 'live_root' parameter")
 	}
 	if destFile == "" {
-		return fmt.Errorf("modulo mksquashfs: parametro 'dest_file' mancante")
+		return fmt.Errorf("mksquashfs module: missing 'dest_file' parameter")
 	}
 
-	// Setup dei valori di default se mancanti
 	if algo == "" {
 		algo = "zstd"
 	}
@@ -51,9 +44,8 @@ func RunMksquashfs(payload []byte) error {
 	}
 
 	blockSize := "1M"
-	procs := fmt.Sprintf("%d", runtime.NumCPU()) // Usa tutti i core disponibili
+	procs := fmt.Sprintf("%d", runtime.NumCPU())
 
-	// 4. Costruiamo gli argomenti di base per mksquashfs
 	args := []string{
 		liveRoot,
 		destFile,
@@ -66,17 +58,14 @@ func RunMksquashfs(payload []byte) error {
 		"-p", "media d 0755 root root",
 	}
 
-	// Aggiungiamo il file delle esclusioni solo se specificato
 	if excludesFile != "" {
 		args = append(args, "-ef", excludesFile)
 	}
 
-	// 5. Gestione intelligente degli argomenti di compressione
 	switch algo {
 	case "zstd":
 		args = append(args, "-comp", "zstd", "-Xcompression-level", level)
 	case "xz":
-		// xz non supporta -Xcompression-level su mksquashfs in questo formato
 		args = append(args, "-comp", "xz")
 	case "gzip":
 		args = append(args, "-comp", "gzip")
@@ -84,20 +73,16 @@ func RunMksquashfs(payload []byte) error {
 		args = append(args, "-comp", algo)
 	}
 
-	// 6. Output visivo pulito per il terminale
 	fmt.Println("========================================================")
-	fmt.Printf("📦 [worker] AVVIO MKSQUASHFS (Profilo: %s L%s, %s, %s Cores)\n", algo, level, blockSize, procs)
+	fmt.Printf("📦 [worker] STARTING MKSQUASHFS (Profile: %s L%s, %s, %s Cores)\n", algo, level, blockSize, procs)
 	fmt.Println("========================================================")
 
-	// 7. Esecuzione
 	cmd := exec.Command("mksquashfs", args...)
-
-	// Colleghiamo l'output al terminale per far scorrere la barra di progresso in tempo reale
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("fallimento mksquashfs: %w", err)
+		return fmt.Errorf("mksquashfs failed: %w", err)
 	}
 
 	return nil

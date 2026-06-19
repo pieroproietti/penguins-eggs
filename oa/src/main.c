@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
         }
         
         if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
-            printf("Uso:\n");
+            printf("Usage:\n");
             printf("  oa <plan.json>          Runs tasks from a file\n");
             printf("  cat plan.json | oa      Runs tasks from STDIN\n");
             printf("  oa cleanup              Performs an emergency umount\n");
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {
         const char *error_ptr = cJSON_GetErrorPtr();
-        LOG_ERR("❌ [oa-main] JSON parsing error: %s", error_ptr ? error_ptr : "sconosciuto");
+        LOG_ERR("❌ [oa-main] JSON parsing error: %s", error_ptr ? error_ptr : "unknown");
         free(json_data);
         oa_close_log(); 
         return EXIT_FAILURE;
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     cJSON *task = NULL;
     cJSON_ArrayForEach(task, plan_array) {
         cJSON *name_item = cJSON_GetObjectItemCaseSensitive(task, "name");
-        const char *task_name = cJSON_IsString(name_item) ? name_item->valuestring : "Sconosciuto";
+        const char *task_name = cJSON_IsString(name_item) ? name_item->valuestring : "Unknown";
 
         LOG_INFO("========================================");
         LOG_INFO("▶ Task Execution: %s", task_name);

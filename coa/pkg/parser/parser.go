@@ -36,7 +36,7 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	}
 
 	if baseDir == "" {
-		return nil, fmt.Errorf("nessuna configurazione brain trovata nei percorsi previsti")
+		return nil, fmt.Errorf("no brain configuration found in expected paths")
 	}
 
 	indexPath := filepath.Join(baseDir, "index.yaml")
@@ -44,12 +44,12 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	// 3. Lettura e parsing dell'indice
 	indexData, err := os.ReadFile(indexPath)
 	if err != nil {
-		return nil, fmt.Errorf("impossibile leggere l'indice %s: %v", indexPath, err)
+		return nil, fmt.Errorf("unable to read index %s: %v", indexPath, err)
 	}
 
 	var index BrainIndex
 	if err := yaml.Unmarshal(indexData, &index); err != nil {
-		return nil, fmt.Errorf("errore sintassi index.yaml: %v", err)
+		return nil, fmt.Errorf("syntax error in index.yaml: %v", err)
 	}
 
 	// 4. Logica di Matching
@@ -71,7 +71,7 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	}
 
 	if moduleFile == "" {
-		return nil, fmt.Errorf("nessun modulo trovato per %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
+		return nil, fmt.Errorf("no module found for %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
 	}
 
 	// =========================================================================
@@ -113,13 +113,13 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	//_, err = tmpl.ParseFiles(scriptsPath, ellActionsPath, modulePath, basePath)
 	_, err = tmpl.ParseFiles(basePath, modulePath)
 	if err != nil {
-		return nil, fmt.Errorf("errore nel parsing dei template: %v", err)
+		return nil, fmt.Errorf("error parsing templates: %v", err)
 	}
 
 	var rendered bytes.Buffer
 	// Eseguiamo il template puntando esplicitamente al file base che farà da telaio
 	if err := tmpl.ExecuteTemplate(&rendered, "base.yaml.tmpl", ctx); err != nil {
-		return nil, fmt.Errorf("errore durante il rendering del profilo: %v", err)
+		return nil, fmt.Errorf("error rendering profile: %v", err)
 	}
 
 	// 6. Parsing dello YAML finale renderizzato
@@ -127,13 +127,13 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	if err := yaml.Unmarshal(rendered.Bytes(), &profile); err != nil {
 		// SALVATAGGIO D'EMERGENZA: Scrive il file corrotto in /tmp per ispezionarlo
 		os.WriteFile("/tmp/oa-failed-yaml.txt", rendered.Bytes(), 0644)
-		return nil, fmt.Errorf("errore sintassi YAML (riga visibile in /tmp/oa-failed-yaml.txt): %v", err)
+		return nil, fmt.Errorf("YAML syntax error (see /tmp/oa-failed-yaml.txt): %v", err)
 	}
 
 	// 7. OVERRIDE: Applichiamo il custom.yml se esiste
 	customCfg, err := LoadCustomSettings()
 	if err != nil {
-		return nil, fmt.Errorf("errore nel caricamento di custom.yml: %v", err)
+		return nil, fmt.Errorf("error loading custom.yml: %v", err)
 	}
 
 	if customCfg != nil {

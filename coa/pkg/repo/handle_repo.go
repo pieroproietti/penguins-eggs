@@ -25,7 +25,7 @@ func HandleRepos(action string) error {
 		case "opensuse", "suse":
 			err = addSuse()
 		default:
-			err = fmt.Errorf("famiglia distro non supportata per l'aggiunta della repo: %s", d.FamilyID)
+			err = fmt.Errorf("unsupported distro family for adding repo: %s", d.FamilyID)
 		}
 
 	case "remove", "rm":
@@ -41,11 +41,11 @@ func HandleRepos(action string) error {
 		case "opensuse", "suse":
 			err = removeRpm(true) // isSuse = true
 		default:
-			err = fmt.Errorf("famiglia distro non supportata per la rimozione della repo: %s", d.FamilyID)
+			err = fmt.Errorf("unsupported distro family for removing repo: %s", d.FamilyID)
 		}
 
 	default:
-		err = fmt.Errorf("azione sconosciuta: %s. Usa 'add' o 'remove'", action)
+		err = fmt.Errorf("unknown action: %s. Use 'add' or 'remove'", action)
 	}
 
 	return err

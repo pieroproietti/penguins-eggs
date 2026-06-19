@@ -30,7 +30,7 @@ func buildLiveUserTasks(settings parser.RemasterConfig, step parser.Step, workPa
 		Step: parser.Step{
 			Name:        "create-live-home", // Aggiunto il nome che mancava!
 			Module:      "shell",
-			Description: fmt.Sprintf("Creazione home directory per l'utente %s", targetUser),
+			Description: fmt.Sprintf("Creating home directory for user %s", targetUser),
 			Params: map[string]interface{}{
 				"command": skelCmd,
 			},

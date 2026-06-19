@@ -73,7 +73,7 @@ int run_native_users(cJSON *task) {
     snprintf(s_path, sizeof(s_path), "%s/etc/shadow", resolved_root);
     snprintf(g_path, sizeof(g_path), "%s/etc/group", resolved_root);
 
-    LOG_INFO("👤 [oa-native] User management (Mode: %s) su root: %s", mode, resolved_root);
+    LOG_INFO("👤 [oa-native] User management (Mode: %s) on root: %s", mode, resolved_root);
 
     if (strcmp(mode, "clone") != 0 && strcmp(mode, "crypted") != 0) {
         LOG_INFO("   -> Cleaning up host users (sanitize)...");
@@ -199,7 +199,7 @@ int run_native_umount(cJSON *task) {
     snprintf(path, sizeof(path), "%s/liveroot", work_dir);
     umount2(path, MNT_DETACH);
 
-    LOG_INFO("✅ [oa-native] Smontaggio di sicurezza completato per: %s", work_dir);
+    LOG_INFO("✅ [oa-native] Safety unmount completed for: %s", work_dir);
     return 0;
 }
 
@@ -215,6 +215,6 @@ int run_native(const char *module, cJSON *task) {
         return run_native_umount(task);
     }
 
-    LOG_ERR("❌ [oa-native] Modulo nativo sconosciuto in C: %s", module);
+    LOG_ERR("❌ [oa-native] Unknown native C module: %s", module);
     return -1;
 }

@@ -21,7 +21,7 @@ func getWardrobeRoot() (string, error) {
 	if homeDir == "" {
 		home, err := os.UserHomeDir()
 		if err != nil {
-			return "", fmt.Errorf("impossibile determinare la home directory: %v", err)
+			return "", fmt.Errorf("unable to determine home directory: %v", err)
 		}
 		homeDir = home
 	}

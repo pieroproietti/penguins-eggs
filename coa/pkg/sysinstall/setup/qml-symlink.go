@@ -12,7 +12,7 @@ func QmlSymlink() error {
 	targetLink := filepath.Join(qmlDir, "calamares")
 
 	if _, err := os.Stat(source); os.IsNotExist(err) {
-		return fmt.Errorf("sorgente QML non trovata: %s", source)
+		return fmt.Errorf("QML source not found: %s", source)
 	}
 
 	os.RemoveAll(targetLink)

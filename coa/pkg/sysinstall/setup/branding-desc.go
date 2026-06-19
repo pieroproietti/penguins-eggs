@@ -89,7 +89,7 @@ func brandingDesc(oaVersion string) error {
 	targetPath := filepath.Join(targetDir, "branding.desc")
 
 	if err := os.MkdirAll(targetDir, 0755); err != nil {
-		return fmt.Errorf("impossibile creare la directory di branding: %v", err)
+		return fmt.Errorf("unable to create branding directory: %v", err)
 	}
 
 	return renderAndSaveEmbedded("branding.desc.tmpl", targetPath, config, 0644)

@@ -1,4 +1,3 @@
-// worker/template.go
 package worker
 
 import (
@@ -11,16 +10,12 @@ import (
 	"text/template"
 )
 
-// TemplateContext sono i "Facts" che passiamo al template
 type TemplateContext struct {
 	TargetRoot string
 	Vars       map[string]string
 }
 
-// RunTemplate renderizza una stringa template e la salva su disco, gestendo i percorsi chroot.
-// Riceve il payload JSON grezzo dal dispatcher.
 func RunTemplate(payload []byte) error {
-	// 1. Struttura locale che definisce i parametri richiesti da questo modulo
 	var config struct {
 		Chroot   bool   `json:"chroot"`
 		LiveRoot string `json:"live_root,omitempty"`
@@ -32,50 +27,43 @@ func RunTemplate(payload []byte) error {
 		} `json:"params"`
 	}
 
-	// 2. Decodifica del pacchetto inviato dal dispatcher
 	if err := json.Unmarshal(payload, &config); err != nil {
-		return fmt.Errorf("errore parsing JSON per modulo template: %w", err)
+		return fmt.Errorf("error parsing JSON for template module: %w", err)
 	}
 
-	// Controlli di sicurezza per evitare panici successivi
 	if config.Params.Dest == "" {
-		return fmt.Errorf("modulo template: parametro 'dest' mancante")
+		return fmt.Errorf("template module: missing 'dest' parameter")
 	}
 	if config.Params.Content == "" {
-		return fmt.Errorf("modulo template: parametro 'content' mancante")
+		return fmt.Errorf("template module: missing 'content' parameter")
 	}
 
-	// 3. Routing Intelligente del Percorso
 	var fullPath string
 	if config.Chroot {
 		if config.LiveRoot == "" {
-			return fmt.Errorf("chroot richiesto ma live_root mancante")
+			return fmt.Errorf("chroot requested but live_root is missing")
 		}
-		// Scrittura DENTRO il chroot (es. /home/eggs/liveroot/usr/share/...)
 		fullPath = filepath.Join(config.LiveRoot, config.Params.Dest)
 	} else {
-		// Scrittura SULL'HOST (es. /home/eggs/isodir/EFI/BOOT/grub.cfg)
 		fullPath = config.Params.Dest
 	}
 
-	// 4. Prepariamo i "Facts" per il template
 	ctx := TemplateContext{
 		TargetRoot: config.LiveRoot,
 		Vars:       config.Params.Vars,
 	}
 
-	// 5. Creiamo i nostri "Filtri" (come in Ansible/Jinja2)
 	funcMap := template.FuncMap{
 		"osRelease": func(key string) string {
 			releasePath := filepath.Join(config.LiveRoot, "etc/os-release")
 			data, err := os.ReadFile(releasePath)
 			if err != nil {
-				return "OA Live" // Fallback elegante
+				return "OA Live"
 			}
 			for _, line := range strings.Split(string(data), "\n") {
 				if strings.HasPrefix(line, key+"=") {
 					val := strings.TrimPrefix(line, key+"=")
-					return strings.Trim(val, `"'`) // Rimuove gli apici
+					return strings.Trim(val, `"'`)
 				}
 			}
 			return "OA Live"
@@ -83,22 +71,19 @@ func RunTemplate(payload []byte) error {
 		"upper": strings.ToUpper,
 	}
 
-	// 6. Compiliamo il template attivando i filtri E I DELIMITATORI [[ ]]
 	tmpl, err := template.New("oa_template").Delims("[[", "]]").Funcs(funcMap).Parse(config.Params.Content)
 	if err != nil {
-		return fmt.Errorf("errore di sintassi nel template: %w", err)
+		return fmt.Errorf("template syntax error: %w", err)
 	}
 
-	// 7. Eseguiamo il rendering in memoria
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, ctx); err != nil {
-		return fmt.Errorf("errore durante il rendering del template: %w", err)
+		return fmt.Errorf("error rendering template: %w", err)
 	}
 
-	// 8. Creazione directory e scrittura su disco (usando il fullPath calcolato)
 	dir := filepath.Dir(fullPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		return fmt.Errorf("impossibile creare le directory per %s: %w", fullPath, err)
+		return fmt.Errorf("unable to create directories for %s: %w", fullPath, err)
 	}
 
 	perms := config.Params.Permissions
@@ -106,12 +91,10 @@ func RunTemplate(payload []byte) error {
 		perms = 0644
 	}
 
-	// Scriviamo il buffer sul disco
 	if err := os.WriteFile(fullPath, buf.Bytes(), perms); err != nil {
-		return fmt.Errorf("errore durante la scrittura del file: %w", err)
+		return fmt.Errorf("error writing file: %w", err)
 	}
 
-	// Output pulito per la console
-	fmt.Printf("📦 [worker] Template renderizzato e scritto su: %s\n", fullPath)
+	fmt.Printf("📦 [worker] Template rendered and written to: %s\n", fullPath)
 	return nil
 }

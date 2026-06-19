@@ -17,20 +17,20 @@ func moveFile(sourcePath, destPath string) error {
 	// 2. Se fallisce (tipico errore "cross-device link"), eseguiamo Copia e Cancella
 	inputFile, err := os.Open(sourcePath)
 	if err != nil {
-		return fmt.Errorf("impossibile aprire il sorgente: %v", err)
+		return fmt.Errorf("unable to open source: %v", err)
 	}
 	defer inputFile.Close()
 
 	outputFile, err := os.Create(destPath)
 	if err != nil {
-		return fmt.Errorf("impossibile creare la destinazione: %v", err)
+		return fmt.Errorf("unable to create destination: %v", err)
 	}
 	defer outputFile.Close()
 
 	// Copiamo i byte (usando io.Copy evitiamo di caricare tutto il file in RAM in un colpo solo)
 	_, err = io.Copy(outputFile, inputFile)
 	if err != nil {
-		return fmt.Errorf("errore durante la copia: %v", err)
+		return fmt.Errorf("error during copy: %v", err)
 	}
 
 	// Chiudiamo il file sorgente prima di poterlo eliminare

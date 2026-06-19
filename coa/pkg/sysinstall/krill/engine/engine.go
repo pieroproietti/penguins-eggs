@@ -134,7 +134,7 @@ func Run(plan *Plan, progress func(Event)) error {
 
 	logFile, err := os.Create(logPath)
 	if err != nil {
-		return fmt.Errorf("impossibile creare %s: %w", logPath, err)
+		return fmt.Errorf("unable to create %s: %w", logPath, err)
 	}
 	defer logFile.Close()
 
@@ -145,7 +145,7 @@ func Run(plan *Plan, progress func(Event)) error {
 	total := len(plan.Exec)
 	for i, name := range plan.Exec {
 		progress(Event{Index: i, Total: total, Module: name, Message: labelFor(name)})
-		c.logf("--- modulo %d/%d: %s ---", i+1, total, name)
+		c.logf("--- module %d/%d: %s ---", i+1, total, name)
 
 		var err error
 		switch {
@@ -154,14 +154,14 @@ func Run(plan *Plan, progress func(Event)) error {
 		default:
 			fn, ok := modules()[name]
 			if !ok {
-				c.logf("modulo sconosciuto '%s': ignorato", name)
+				c.logf("unknown module '%s': skipped", name)
 				continue
 			}
 			err = fn(c)
 		}
 
 		if err != nil {
-			c.logf("ERRORE nel modulo %s: %v", name, err)
+			c.logf("ERROR in module %s: %v", name, err)
 			runUmount(c) // non lasciamo il sistema live con i mount appesi
 			return fmt.Errorf("module %s: %w (details in %s)", name, err, logPath)
 		}

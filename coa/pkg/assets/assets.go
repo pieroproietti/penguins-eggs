@@ -21,10 +21,10 @@ var calamaresFiles embed.FS
 // ExtractCalamares estrae i file universali di Calamares usando fsCopy
 func ExtractCalamares(destRoot string) error {
 	// Chiamata diretta e pulita al logger centralizzato
-	utils.LogNormal("Estrazione asset Calamares in: %s", destRoot)
+	utils.LogNormal("Extracting Calamares assets to: %s", destRoot)
 
 	if err := os.MkdirAll(destRoot, 0755); err != nil {
-		return fmt.Errorf("impossibile creare la directory %s: %v", destRoot, err)
+		return fmt.Errorf("unable to create directory %s: %v", destRoot, err)
 	}
 
 	return fsCopy(calamaresFiles, "calamares_base", destRoot)

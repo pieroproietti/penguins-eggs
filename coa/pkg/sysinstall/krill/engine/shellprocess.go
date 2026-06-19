@@ -36,7 +36,7 @@ func (sl *ScriptList) UnmarshalYAML(value *yaml.Node) error {
 		return nil
 	}
 
-	return fmt.Errorf("il campo script deve essere una stringa o una lista di stringhe")
+	return fmt.Errorf("script field must be a string or a list of strings")
 }
 
 // Usiamo il tipo custom ScriptList
@@ -55,7 +55,7 @@ func (c *ctx) runShellprocess(id string) error {
 
 	data, err := os.ReadFile(confPath)
 	if err != nil {
-		return fmt.Errorf("configurazione shellprocess %s: %w", id, err)
+		return fmt.Errorf("shellprocess configuration %s: %w", id, err)
 	}
 	var conf shellprocessConf
 	if err := yaml.Unmarshal(data, &conf); err != nil {

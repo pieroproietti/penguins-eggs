@@ -1,4 +1,3 @@
-// worker/shell.go
 package worker
 
 import (
@@ -9,7 +8,6 @@ import (
 	"path/filepath"
 )
 
-// ShellConfig è la struttura unificata per script e shell
 type ShellConfig struct {
 	Chroot   bool   `json:"chroot"`
 	LiveRoot string `json:"live_root,omitempty"`
@@ -20,59 +18,50 @@ type ShellConfig struct {
 	} `json:"params"`
 }
 
-// RunShell gestisce i comandi "inline" (stringhe dirette dallo YAML)
 func RunShell(payload []byte) error {
 	var config ShellConfig
 	if err := json.Unmarshal(payload, &config); err != nil {
-		return fmt.Errorf("errore parsing JSON per modulo shell: %w", err)
+		return fmt.Errorf("error parsing JSON for shell module: %w", err)
 	}
 
 	if config.Params.Command == "" {
-		return fmt.Errorf("nessun comando specificato nel parametro 'command'")
+		return fmt.Errorf("no command specified in 'command' parameter")
 	}
 
-	// 'set -e' blocca lo script al primo errore
 	scriptContent := []byte("set -e\n\n" + config.Params.Command)
 
 	return executeUnifiedShell(config, scriptContent)
 }
 
-// executeUnifiedShell è il cuore operativo (privato) condiviso da shell e script
 func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
-	var tmpFilePath string // Percorso fisico sull'host
-	var execPath string    // Percorso logico per la shell (interno o esterno)
+	var tmpFilePath string
+	var execPath string
 
-	// 1. Logica della directory unificata ".oa-tools"
 	if config.Chroot {
 		if config.LiveRoot == "" {
-			return fmt.Errorf("chroot richiesto ma live_root mancante")
+			return fmt.Errorf("chroot requested but live_root is missing")
 		}
 
-		// Percorso HOST: /.../live_root/root/.oa-tools
 		chrootWorkDir := filepath.Join(config.LiveRoot, "root", ".oa-tools")
-
-		// Creiamo la directory con permessi restrittivi
 		os.MkdirAll(chrootWorkDir, 0700)
 
 		tmpFile, err := os.CreateTemp(chrootWorkDir, "oa-exec-*.sh")
 		if err != nil {
-			return fmt.Errorf("impossibile creare script in %s: %w", chrootWorkDir, err)
+			return fmt.Errorf("unable to create script in %s: %w", chrootWorkDir, err)
 		}
 		tmpFilePath = tmpFile.Name()
 		tmpFile.Write(scriptContent)
 		tmpFile.Close()
 
-		// Percorso CHROOT (quello che vede bash)
 		execPath = "/root/.oa-tools/" + filepath.Base(tmpFilePath)
 
 	} else {
-		// Esecuzione locale standard sull'host
 		hostWorkDir := "/root/.oa-tools"
 		os.MkdirAll(hostWorkDir, 0700)
 
 		tmpFile, err := os.CreateTemp(hostWorkDir, "oa-exec-*.sh")
 		if err != nil {
-			return fmt.Errorf("impossibile creare script in %s: %w", hostWorkDir, err)
+			return fmt.Errorf("unable to create script in %s: %w", hostWorkDir, err)
 		}
 		tmpFilePath = tmpFile.Name()
 		tmpFile.Write(scriptContent)
@@ -81,10 +70,7 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 		execPath = tmpFilePath
 	}
 
-	// Rendiamo il file sempre eseguibile
 	os.Chmod(tmpFilePath, 0755)
-
-	// Pulizia chirurgica garantita a fine esecuzione
 	defer os.Remove(tmpFilePath)
 
 	var cmd *exec.Cmd

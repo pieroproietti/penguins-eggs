@@ -18,7 +18,7 @@ func initWorkspace() error {
 
 	// 2. Estrae installer.d
 	if err := assets.ExtractCalamares(InstallerDRoot); err != nil {
-		return fmt.Errorf("errore estrazione asset: %v", err)
+		return fmt.Errorf("error extracting assets: %v", err)
 	}
 
 	// 3. Crea la struttura essenziale richiesta da Calamares
@@ -30,7 +30,7 @@ func initWorkspace() error {
 
 	for _, d := range dirs {
 		if err := os.MkdirAll(filepath.Join(InstallerDRoot, d), 0755); err != nil {
-			return fmt.Errorf("errore creazione directory %s: %v", d, err)
+			return fmt.Errorf("error creating directory %s: %v", d, err)
 		}
 	}
 

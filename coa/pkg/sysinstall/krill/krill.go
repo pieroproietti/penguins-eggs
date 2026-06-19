@@ -863,10 +863,10 @@ func insertAfter(seq []string, after, module string) []string {
 func Run() error {
 	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
 	if err != nil {
-		return fmt.Errorf("configurazione installer non trovata in %s: %w", DefaultConfigRoot, err)
+		return fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
 	}
 	for _, w := range cfg.Warnings {
-		fmt.Fprintf(os.Stderr, "[krill] attenzione: %s\n", w)
+		fmt.Fprintf(os.Stderr, "[krill] warning: %s\n", w)
 	}
 
 	m := initialModel(cfg)
@@ -875,7 +875,7 @@ func Run() error {
 	p := tea.NewProgram(m, tea.WithAltScreen())
 
 	if _, err := p.Run(); err != nil {
-		return fmt.Errorf("errore fatale nell'esecuzione di krill: %w", err)
+		return fmt.Errorf("fatal error running krill: %w", err)
 	}
 
 	return nil

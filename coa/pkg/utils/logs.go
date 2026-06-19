@@ -63,7 +63,7 @@ func LogWarning(format string, a ...interface{}) {
 // LogError stampa un messaggio di errore sullo STANDARD ERROR
 func LogError(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Fprintf(os.Stderr, "\n%s[ERRORE]%s %s\n", colorize(ColorRed), colorize(ColorReset), msg)
+	fmt.Fprintf(os.Stderr, "\n%s[ERROR]%s %s\n", colorize(ColorRed), colorize(ColorReset), msg)
 }
 
 // Fatal stampa un errore ed esce con codice 1
