@@ -1,7 +1,10 @@
-# 🥚 Philosophy
-## The "Evolution Edition" Architecture of oa-tools
+# 🥚 Philosophy: The Evolutionary Architecture of oa-tools
+## This document traces the architectural phylogeny of oa-tools.
 
-This document traces the architectural and philosophical vision behind the evolution of `oa-tools`. It was born from the need to balance configuration flexibility with execution robustness, overcoming the physiological limits of dynamically generated shell scripts.
+To understand its architecture, one must understand its genesis. The original penguins-eggs project was born seven or eight years ago from a bold, almost biological intuition: to introduce evolutionism into operating systems.
+By equipping a live system with the ability to reproduce itself (remastering), the software is no longer a static artifact. It is allowed to mutate—acquiring user customizations and new configurations—leaving the ultimate variance and natural selection to the environment. The operating systems that adapt best to user needs survive, get installed, and are replicated further.
+
+The new oa-tools architecture is simply the next evolutionary leap of this reproductive system. It evolved from the need to balance configuration flexibility (variance) with execution robustness (survival), leaving behind the physiological limits of dynamically generated shell scripts.
 
 The conceptual heart revolves around the wordplay that gives the project its soul: in dialect, *oa* means eggs. The orchestrator *coa* prepares the ground and the environment ("broods the egg"), letting life take shape in the operating system.
 

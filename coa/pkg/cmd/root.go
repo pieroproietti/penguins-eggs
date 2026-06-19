@@ -12,12 +12,11 @@ import (
 var AppVersion = "development"
 
 var rootCmd = &cobra.Command{
-	Use:   "coa",
-	Short: "coa - Calamares & OA Lightweight Architect",
-	Long: `coa is the universal orchestrator for penguins-eggs.
-Designed to be lightweight and elegant, it reads the distribution-specific
-logic from the Brain and drives the OA engine for
-system remastering and installation.`,
+	Use:     "coa",
+	Short:   "coa - The Universal Orchestrator and Worker for penguins-eggs",
+	Long: `coa means "to hatch". It is the main engine behind penguins-eggs.
+Designed to be lightweight and solid, it takes care of incubating all the 
+necessary tasks from the Brain to seamlessly hatch your remastered system.`,
 	Version: AppVersion,
 }
 

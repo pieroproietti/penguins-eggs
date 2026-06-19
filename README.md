@@ -64,7 +64,7 @@ For coa commands, see [coa command Reference](./DOCS/manual/commands.md).
 `oa` is the low-level engine. It handles the "heavy lifting" of the system:
 - Managing OverlayFS and mount points.
 - Executing SquashFS compression.
-- Remove and create users and groupt via yocto_style functions.
+- Remove and create users and groups via yocto_style functions.
 - Interacting directly with the Linux Kernel and system binaries.
 - **Philosophy:** Performance, stability, and zero-dependency execution.
 

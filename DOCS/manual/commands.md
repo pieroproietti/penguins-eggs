@@ -1,6 +1,6 @@
 # 🛠️ `coa` Command Reference
 
-`coa` (Calamares & OA Lightweight Architect) is the universal orchestrator for system remastering and installation. It is the command-line interface of the **oa-tools** project: it delegates the configuration logic to the *parser*, the plan compilation to the *planner* (both in Go) and the low-level execution to the C engine *oa*.
+`coa` (which means "to hatch") is the universal orchestrator for system remastering and installation. As the command-line interface of the **oa-tools** project, it incubates your tasks: it delegates the configuration logic to the *parser*, the plan compilation to the *planner* (both in Go), and the low-level execution to the C native engine *oa* (eggs).
 
 On systems migrating from penguins-eggs, the legacy alias `eggs` works interchangeably with `coa`.
 

@@ -1,4 +1,4 @@
-# 🧠 Architecture Overview: `coa` (Orchestrator and CLI)
+# 🧠 Architecture Overview: `coa` (Orchestrator and worker (ell))
 
 If the C engine (`oa`) is the mechanical arm that physically executes syscalls on the system, the Go binary **`coa`** is the mind. It analyzes the environment, reads the rules from the Brain (the YAML templates in `brain.d`), draws up the execution plan and issues the orders.
 
