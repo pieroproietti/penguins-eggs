@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"coa/pkg/distro"
+	"coa/pkg/parser"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -27,7 +28,13 @@ func init() {
 
 func handleExportIso(clean bool) {
 	d := distro.NewDistro()
-	isoPattern := d.GetISOSearchPattern()
+
+	var isoPattern string
+	if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil && customCfg.Remaster.ISOPrefix != "" {
+		isoPattern = customCfg.Remaster.ISOPrefix + "-*.iso"
+	} else {
+		isoPattern = d.GetISOSearchPattern()
+	}
 
 	allFiles, _ := filepath.Glob(filepath.Join(isoSrcDir, isoPattern))
 	if len(allFiles) == 0 {
