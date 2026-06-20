@@ -19,6 +19,7 @@ On systems migrating from penguins-eggs, the legacy alias `eggs` works interchan
 | **`export`** | 🔴 No | Transfers artifacts (ISO/packages/logs) to a remote server. |
 | **`wardrobe`** | 🟡 Mixed | Manages and applies the costumes (desktop configurations). |
 | **`tools`** | 🟡 Mixed | Maintenance utilities: build, clean, grub40, repo, skel. |
+| **`config`** | 🟢 Yes | Interactive TUI for viewing and editing the configuration. |
 | **`version`** | 🔴 No | Prints the coa version. |
 
 ---
@@ -84,6 +85,35 @@ Manages the wardrobe: ready-made desktop configurations ("costumes") that can be
     *   `coa wardrobe wear <costume>`: wears a costume from the wardrobe.
         *   `--no-acc`: skip accessory installation.
         *   `--no-firm`: skip firmware installation.
+
+---
+
+## ⚙️ Configuration
+
+### `coa config`
+Interactive TUI for viewing and editing the oa-tools configuration. The settings are stored in `/etc/oa-tools.d/custom.yaml` and override the built-in defaults used by the parser during remastering.
+
+*   **Usage:** `sudo coa config`
+
+The TUI is organized in three tabs (navigate with `Tab` / `Shift+Tab`):
+
+#### Settings tab
+Editable fields:
+
+| Field | Default | Description |
+|---|---|---|
+| Password | `evolution` | Password for the live user. |
+| Algorithm | `zstd` | Compression algorithm for mksquashfs (`zstd`, `xz`, `lz4`, `gzip`). |
+| Level | `3` | Compression level (shown only when algorithm is `zstd`). |
+| ISO prefix | *(auto)* | Custom prefix for the ISO filename. When empty, the distro name is used. |
+
+Use `↑`/`↓` to move between fields, `←`/`→` to cycle the algorithm, and type to edit text fields.
+
+#### Excludes tab
+Shows the current content of `/etc/oa-tools.d/custom.exclude.list` and opens it in `$EDITOR` (default: `nano`) on `Enter`. Paths listed here are excluded from the squashfs during remastering.
+
+#### Save tab
+Choose **Save and exit** or **Exit without saving**. On save, the configuration is written to `/etc/oa-tools.d/custom.yaml`.
 
 ---
 

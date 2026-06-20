@@ -12,6 +12,7 @@ oa-tools is the next-generation successor of penguins-eggs, rewritten in C+Go fo
 | `sudo eggs kill` | `sudo coa destroy` | Native name |
 | `sudo eggs install` | `sudo coa sysinstall krill` | TUI installer |
 | `sudo eggs calamares` | `sudo coa sysinstall calamares` | GUI installer |
+| `eggs config` | `coa config` | Interactive configuration TUI |
 | `eggs adapt` | `coa adapt` | VM screen resize |
 | `eggs tools skel` | `coa tools skel` | Rebuild /etc/skel |
 | `eggs wardrobe wear colibri` | `coa wardrobe wear colibri` | Apply a costume |
@@ -67,6 +68,15 @@ sudo coa wardrobe wear colibri
 # Build the ISO
 sudo coa remaster
 ```
+
+### Customize compression and ISO naming
+
+```bash
+# Open the interactive configuration TUI
+sudo coa config
+```
+
+Change the live user password, the compression algorithm (zstd/xz/lz4/gzip), the compression level, the ISO filename prefix, and edit the custom exclude list — all from a single interface. Settings are saved to `/etc/oa-tools.d/custom.yaml` and applied automatically on the next `coa remaster`.
 
 ### Remaster with LUKS encryption (Debian family)
 
