@@ -6,7 +6,20 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 )
+
+func shellJoin(args []string) string {
+	quoted := make([]string, len(args))
+	for i, a := range args {
+		if strings.ContainsAny(a, " \t") {
+			quoted[i] = fmt.Sprintf("%q", a)
+		} else {
+			quoted[i] = a
+		}
+	}
+	return strings.Join(quoted, " ")
+}
 
 func RunMksquashfs(payload []byte) error {
 	var config struct {
@@ -73,8 +86,8 @@ func RunMksquashfs(payload []byte) error {
 		args = append(args, "-comp", algo)
 	}
 
-	fmt.Printf("📦 [worker] Starting mksquashfs (Profile: %s L%s, %s, %s Cores)\n", algo, level, blockSize, procs)
-	
+	fmt.Printf("📦 [worker] Running: mksquashfs %s\n", shellJoin(args))
+
 	cmd := exec.Command("mksquashfs", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
