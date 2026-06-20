@@ -204,6 +204,13 @@ func (m *configModel) onTabSwitch() tea.Cmd {
 
 func (m *configModel) focusField(idx int) tea.Cmd {
 	m.focus = (idx + cfgFieldCount) % cfgFieldCount
+	if !m.showLevel() && m.focus == cfgLevel {
+		if idx < cfgLevel {
+			m.focus = cfgISOPrefix
+		} else {
+			m.focus = cfgAlgorithm
+		}
+	}
 	for i := range m.inputs {
 		m.inputs[i].Blur()
 	}
@@ -274,9 +281,12 @@ func (m configModel) updateSave(key string) (tea.Model, tea.Cmd) {
 }
 
 func (m configModel) buildState() configState {
-	level, _ := strconv.Atoi(m.inputs[1].Value())
-	if level <= 0 {
-		level = 3
+	level := 0
+	if m.showLevel() {
+		level, _ = strconv.Atoi(m.inputs[1].Value())
+		if level <= 0 {
+			level = 3
+		}
 	}
 	return configState{
 		Password:  m.inputs[0].Value(),
@@ -330,22 +340,38 @@ func (m configModel) renderTabs() string {
 	return lipgloss.JoinVertical(lipgloss.Left, bar, rule)
 }
 
+func (m configModel) showLevel() bool {
+	return cfgAlgorithms[m.algoIdx] == "zstd"
+}
+
 func (m configModel) viewSettings() string {
 	tabs := m.renderTabs()
 
 	userRow := fmt.Sprintf("  %-14s: %s", "User", cfgGreen.Render("live"))
 
-	labels := []string{"Password", "Algorithm", "Level", "ISO prefix"}
+	type fieldDef struct {
+		id    int
+		label string
+	}
+	fields := []fieldDef{
+		{cfgPassword, "Password"},
+		{cfgAlgorithm, "Algorithm"},
+	}
+	if m.showLevel() {
+		fields = append(fields, fieldDef{cfgLevel, "Level"})
+	}
+	fields = append(fields, fieldDef{cfgISOPrefix, "ISO prefix"})
+
 	var rows []string
 	rows = append(rows, userRow)
-	for i, label := range labels {
+	for _, f := range fields {
 		marker := "  "
-		if m.focus == i {
+		if m.focus == f.id {
 			marker = cfgCyan.Render("→ ")
 		}
 
 		var val string
-		switch i {
+		switch f.id {
 		case cfgPassword:
 			val = m.inputs[0].View()
 		case cfgAlgorithm:
@@ -359,7 +385,7 @@ func (m configModel) viewSettings() string {
 				val = m.inputs[2].View()
 			}
 		}
-		rows = append(rows, fmt.Sprintf("%s%-14s: %s", marker, label, val))
+		rows = append(rows, fmt.Sprintf("%s%-14s: %s", marker, f.label, val))
 	}
 
 	help := "\n↑/↓ move · ←/→ change algorithm · type to edit"
@@ -430,7 +456,9 @@ func saveConfigState(state configState) error {
 	b.WriteString(fmt.Sprintf("  password: \"%s\"\n", state.Password))
 	b.WriteString("  compression:\n")
 	b.WriteString(fmt.Sprintf("    algorithm: \"%s\"\n", state.Algorithm))
-	b.WriteString(fmt.Sprintf("    level: %d\n", state.Level))
+	if state.Level > 0 {
+		b.WriteString(fmt.Sprintf("    level: %d\n", state.Level))
+	}
 	if state.ISOPrefix != "" {
 		b.WriteString(fmt.Sprintf("  iso_prefix: \"%s\"\n", state.ISOPrefix))
 	}

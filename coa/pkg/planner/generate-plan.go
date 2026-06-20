@@ -98,6 +98,16 @@ func GeneratePlan(
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
 
+			if task.Name == "mksquashfs" {
+				comp := profile.Settings.Remaster.Compression
+				if comp.Algorithm != "" {
+					task.Params["algorithm"] = comp.Algorithm
+				}
+				if comp.Level > 0 {
+					task.Params["level"] = fmt.Sprintf("%d", comp.Level)
+				}
+			}
+
 			// Modalità crypted: sostituisce il passo initramfs con la prep LUKS
 			if mode == "crypted" && task.Name == "initramfs" {
 				plan.Plan = append(plan.Plan, luksInitrdPrepStep(workPath))
