@@ -17,12 +17,7 @@ type Step struct {
 	Chroot bool                   `yaml:"chroot" json:"chroot"`                     // Nessun omitempty, di default è false ed è giusto così
 	Params map[string]interface{} `yaml:"params,omitempty" json:"params,omitempty"`
 
-	// DEPRECATED
-	Action     string `yaml:"action,omitempty" json:"action,omitempty"` // <-- Aggiunto omitempty
 	RunCommand string `yaml:"run_command,omitempty" json:"run_command,omitempty"`
-	Path       string `yaml:"path,omitempty" json:"path,omitempty"`
-	Src        string `yaml:"src,omitempty" json:"src,omitempty"`
-	Dst        string `yaml:"dst,omitempty" json:"dst,omitempty"`
 	Users      []User `yaml:"users,omitempty" json:"users,omitempty"`
 }
 

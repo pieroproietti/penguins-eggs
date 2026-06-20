@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// AppVersion is injected by the Makefile during build
 var AppVersion = "development"
 
 var rootCmd = &cobra.Command{
@@ -20,7 +19,6 @@ necessary tasks from the Brain to seamlessly hatch your remastered system.`,
 	Version: AppVersion,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
 func Execute() {
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 	rootCmd.SetUsageTemplate(`Usage:{{if .Runnable}}
@@ -59,7 +57,6 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 	}
 }
 
-// CheckSudoRequirements verifies that the user is root if the command requires it
 func CheckSudoRequirements(cmdName string, needSudo bool) {
 	if needSudo && os.Geteuid() != 0 {
 		utils.LogWarning("The command '%s' requires root privileges.", cmdName)

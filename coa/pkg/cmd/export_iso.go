@@ -56,7 +56,6 @@ func handleExportIso(clean bool) {
 	utils.LogNormal("Latest ISO found: %s", targetFileName)
 	socketPath := "/tmp/coa-ssh-mux"
 
-	// Start Master Connection (in background)
 	startMuxCmd := fmt.Sprintf("ssh -M -f -N -o ControlPath=%s %s", socketPath, remoteUserHost)
 	utils.ExecQuiet(startMuxCmd)
 

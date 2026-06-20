@@ -94,8 +94,6 @@ and generate a precise execution plan for the OA planner.`,
 
 		isoName := myDistro.GetISOName(produceMode)
 
-		// After profile is loaded, check for custom ISO prefix — but we need
-		// the name early for disk-space checks, so we peek at custom settings here.
 		if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil && customCfg.Remaster.ISOPrefix != "" {
 			isoName = fmt.Sprintf("%s-%s.iso", customCfg.Remaster.ISOPrefix, time.Now().Format("2006-01-02_1504"))
 		}
@@ -171,7 +169,6 @@ and generate a precise execution plan for the OA planner.`,
 
 		var oaCmd *exec.Cmd
 		if produceMode == "crypted" {
-			// Crypted mode: plan goes via stdin, no file on disk
 			oaCmd = exec.Command("oa")
 			oaCmd.Stdin = bytes.NewReader(planJSON)
 		} else {

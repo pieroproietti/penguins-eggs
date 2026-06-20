@@ -14,7 +14,6 @@ import (
 
 var writeToGrub bool
 
-// grub40Cmd represents the 'coa tools grub40' command
 var grub40Cmd = &cobra.Command{
 	Use:   "grub40 [path/to/iso]",
 	Short: "Generate GRUB configuration to boot ANY ISO via loopback",
@@ -24,13 +23,11 @@ var grub40Cmd = &cobra.Command{
 
 		isoPath := args[0]
 
-		// 1. Ottiene il percorso assoluto dal punto di vista del sistema host
 		absPath, err := filepath.Abs(isoPath)
 		if err != nil {
 			utils.Fatal("Error calculating absolute path: %v", err)
 		}
 
-		// 2. Verifica l'esistenza del file e ne legge la dimensione
 		info, err := os.Stat(absPath)
 		if err != nil {
 			utils.Fatal("Error: cannot access file (are you sure it exists?): %v", err)
@@ -46,13 +43,10 @@ var grub40Cmd = &cobra.Command{
 
 		isoName := filepath.Base(absPath)
 
-		// 3. Calcola il percorso reale che GRUB si aspetta (gestione BTRFS e Mount Point)
 		grubPath := calculateGrubPath(absPath)
 
-		// 4. CONTROLLO ANTI-FRUSTRAZIONE: Verifica se l'host usa effettivamente GRUB
 		detectBootloader()
 
-		// 5. RILEVAMENTO DISTRO HOST: Personalizza il comando di aggiornamento di GRUB
 		updateCmd := "sudo grub-mkconfig -o /boot/grub/grub.cfg"
 		d := distro.NewDistro()
 		distroID := strings.ToLower(d.DistroLike)
@@ -62,14 +56,11 @@ var grub40Cmd = &cobra.Command{
 			updateCmd = "sudo grub-mkconfig -o /boot/grub2/grub.cfg"
 		}
 
-		// 6. PARSING UNIVERSALE DELLA ISO VIA BSDTAR
 		kernelPath, initrdPath, kernelParams, useLoopbackCfg := inspectGenericIso(absPath)
 
-		// 7. GENERAZIONE DEI MARCATORI UNICI PER QUESTA ISO
 		startMarker := fmt.Sprintf("# >>> oa-tools start: %s <<<", isoName)
 		endMarker := fmt.Sprintf("# >>> oa-tools end: %s <<<", isoName)
 
-		// 8. COSTRUZIONE DEL BLOCCO DI MENUENTRY DI GRUB
 		var grubEntry string
 		if useLoopbackCfg {
 			grubEntry = fmt.Sprintf(`%s
@@ -115,7 +106,6 @@ menuentry "oa-tools: %s" --class isoboot {
 %s`, startMarker, isoName, grubPath, kernelPath, kernelParams, initrdPath, endMarker)
 		}
 
-		// 9. LOGICA DI SCRITTURA DIRETTA O CONSULTAZIONE STANDARD
 		if writeToGrub {
 			if os.Geteuid() != 0 {
 				utils.Fatal("Automatic injection requires root privileges. Rerun the command with 'sudo'.")
@@ -162,9 +152,7 @@ menuentry "oa-tools: %s" --class isoboot {
 	},
 }
 
-// inspectGenericIso analizza a fondo l'ISO cercando file di boot e ne estrae l'anatomia
 func inspectGenericIso(isoPath string) (kernel, initrd, params string, useLoopbackCfg bool) {
-	// Usiamo ExecCapture per prelevare il contenuto in modo pulito e ignoriamo l'errore se fallisce
 	checkCmd := fmt.Sprintf("bsdtar -O -xf '%s' boot/grub/loopback.cfg 2>/dev/null", isoPath)
 	outCheck, _ := utils.ExecCapture(checkCmd)
 	if len(strings.TrimSpace(outCheck)) > 0 {
@@ -183,7 +171,6 @@ func inspectGenericIso(isoPath string) (kernel, initrd, params string, useLoopba
 
 	var configText string
 	for _, target := range targets {
-		// Catturiamo il file di configurazione con bsdtar usando la shell di ExecCapture
 		cmdStr := fmt.Sprintf("bsdtar -O -xf '%s' '%s' 2>/dev/null", isoPath, target)
 		out, _ := utils.ExecCapture(cmdStr)
 
@@ -226,7 +213,6 @@ func inspectGenericIso(isoPath string) (kernel, initrd, params string, useLoopba
 	}
 
 	if kernel != "" {
-		// Se intercettiamo la firma Arch, gli iniettiamo la variabile hardware $imgdevpath calcolata da GRUB
 		if strings.Contains(params, "archisobasedir") {
 			params = "archisobasedir=arch archisolabel=OA_LIVE img_dev=$imgdevpath img_loop=$isofile cow_spacesize=2G"
 		} else if strings.Contains(params, "rd.live.image") || strings.Contains(params, "root=live:") {
@@ -246,7 +232,6 @@ func inspectGenericIso(isoPath string) (kernel, initrd, params string, useLoopba
 	return "/live/vmlinuz", "/live/initrd.img", "boot=live components rootwait findiso=$isofile", false
 }
 
-// Logica intelligente per mappare il percorso reale per GRUB analizzando i mount point dell'host
 func calculateGrubPath(absPath string) string {
 	data, err := os.ReadFile("/proc/mounts")
 	if err != nil {
@@ -321,7 +306,6 @@ func calculateGrubPath(absPath string) string {
 	return relPath
 }
 
-// detectBootloader controlla in modo pragmatico se GRUB è configurato nell'host
 func detectBootloader() {
 	_, errGrub := os.Stat("/boot/grub")
 	_, errGrub2 := os.Stat("/boot/grub2")

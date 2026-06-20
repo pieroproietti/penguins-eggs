@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// --- CONFIGURAZIONE ESPORTAZIONE CONDIVISA ---
 const (
 	remoteUserHost = "root@192.168.1.2"
 	remoteIsoPath  = "/var/lib/vz/template/iso/"

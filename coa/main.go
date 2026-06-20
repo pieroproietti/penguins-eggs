@@ -5,6 +5,5 @@ import (
 )
 
 func main() {
-	// Passiamo il controllo a Cobra
 	cmd.Execute()
 }

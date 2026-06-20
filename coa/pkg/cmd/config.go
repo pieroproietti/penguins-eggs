@@ -21,7 +21,6 @@ const (
 	customExcludePath = "/etc/oa-tools.d/custom.exclude.list"
 )
 
-// --- Tabs ---
 const (
 	tabSettings = iota
 	tabExcludes
@@ -29,7 +28,6 @@ const (
 	tabCount
 )
 
-// --- Settings fields ---
 const (
 	cfgPassword = iota
 	cfgAlgorithm
@@ -38,7 +36,6 @@ const (
 	cfgFieldCount
 )
 
-// --- Styles (same palette as krill) ---
 var (
 	cfgTitle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#C59B27")).Bold(true).MarginBottom(1)
 	cfgCyan   = lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFFF"))
@@ -55,21 +52,17 @@ var cfgAlgorithms = []string{"zstd", "xz", "lz4", "gzip"}
 
 type editorDoneMsg struct{}
 
-// --- Model ---
 type configModel struct {
 	tab       int
 	termWidth int
 
-	// Settings
 	focus   int
-	inputs  []textinput.Model // [password, level, isoPrefix]
+	inputs  []textinput.Model
 	algoIdx int
 
-	// Save
 	saveFocus int
 	saveErr   string
 
-	// State
 	saved    bool
 	quitting bool
 }
@@ -145,12 +138,10 @@ func newConfigModel() configModel {
 	}
 }
 
-// --- Init ---
 func (m configModel) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-// --- Update ---
 func (m configModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -296,7 +287,6 @@ func (m configModel) buildState() configState {
 	}
 }
 
-// --- View ---
 func (m configModel) View() string {
 	if m.saved || m.quitting {
 		return ""
@@ -448,7 +438,6 @@ func (m configModel) viewSave() string {
 	return lipgloss.JoinVertical(lipgloss.Left, tabs, "", content, help)
 }
 
-// --- Save ---
 func saveConfigState(state configState) error {
 	var b strings.Builder
 	b.WriteString("# custom.yaml - oa-tools configuration overrides\n")
@@ -469,7 +458,6 @@ func saveConfigState(state configState) error {
 	return os.WriteFile(customYAMLPath, []byte(b.String()), 0644)
 }
 
-// --- Cobra ---
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "View and edit oa-tools configuration",
