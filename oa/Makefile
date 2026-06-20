@@ -2,7 +2,6 @@ CC = gcc
 CFLAGS = -Wall -Wextra -I./include
 LDFLAGS = -lcrypt
 
-# Aggiunto src/logger.c alla lista dei sorgenti!
 SRC = src/main.c src/engine.c src/native.c src/logger.c src/oa-yocto.c src/cJSON.c
 OBJ = $(SRC:.c=.o)
 TARGET = oa
@@ -14,4 +13,3 @@ $(TARGET): $(OBJ)
 
 clean:
 	rm -f src/*.o $(TARGET)
-	

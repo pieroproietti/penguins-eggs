@@ -1,10 +1,9 @@
-// src/native.c
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/mount.h> // Per umount2 e MNT_DETACH
+#include <sys/mount.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
@@ -20,19 +19,10 @@
 #define PATH_SAFE 4096
 #endif
 
-// ==========================================
-// 1. PROTOTIPI (Forward Declarations)
-// ==========================================
 int run_native_users(cJSON *task);
 int run_native_umount(cJSON *task);
 static const char* get_json_string(cJSON *obj, const char *key, const char *fallback);
 
-// ==========================================
-// 2. HELPER INTERNI
-// ==========================================
-
-// Genera un salt random per crypt() leggendo da /dev/urandom.
-// Formato risultante: "$6$<16 chars random>$"
 static void generate_salt(char *buf, size_t buf_size) {
     static const char salt_chars[] =
         "abcdefghijklmnopqrstuvwxyz"
@@ -40,7 +30,6 @@ static void generate_salt(char *buf, size_t buf_size) {
         "0123456789./";
     const int salt_len = 16;
 
-    // Prefisso SHA-512
     snprintf(buf, buf_size, "$6$");
     size_t offset = 3;
 
@@ -55,7 +44,6 @@ static void generate_salt(char *buf, size_t buf_size) {
         close(fd);
     }
 
-    // Fallback se /dev/urandom non funziona (non dovrebbe mai accadere)
     if (offset == 3) {
         srand((unsigned)getpid() ^ (unsigned)time(NULL));
         for (int i = 0; i < salt_len && offset + 1 < buf_size; i++) {
@@ -89,15 +77,10 @@ static const char* get_json_string(cJSON *obj, const char *key, const char *fall
     return fallback;
 }
 
-// ==========================================
-// 3. IMPLEMENTAZIONI DEI MODULI
-// ==========================================
-
 int run_native_users(cJSON *task) {
     cJSON *params = cJSON_GetObjectItemCaseSensitive(task, "params");
     if (!params) {
-        // CORRETTO: rimosso stderr e \n
-        LOG_ERR("[oa-native] Error: ‘params’ missing in users.");
+        LOG_ERR("[oa-native] Error: 'params' missing in users.");
         return -1;
     }
 
@@ -105,7 +88,7 @@ int run_native_users(cJSON *task) {
     const char *resolved_root = get_json_string(task, "live_root", "");
 
     if (strlen(resolved_root) == 0) {
-        LOG_ERR("[oa-native] Error: ‘live_root’ is missing.");
+        LOG_ERR("[oa-native] Error: 'live_root' is missing.");
         return -1;
     }
 
@@ -233,43 +216,35 @@ int run_native_users(cJSON *task) {
 int run_native_umount(cJSON *task) {
     const char *work_dir = get_json_string(task, "work_dir", "");
     if (strlen(work_dir) == 0) {
-        LOG_ERR("❌ [oa-native] Error: ‘work_dir’ is missing for cleanup.");
+        LOG_ERR("❌ [oa-native] Error: 'work_dir' is missing for cleanup.");
         return 1;
     }
 
     char path[4096];
 
-    // 1. Smontiamo le API di sistema in liveroot
     const char *api_mounts[] = {"dev/pts", "dev", "proc", "sys", "run", "tmp"};
     for (int i = 0; i < (int)(sizeof(api_mounts) / sizeof(api_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, api_mounts[i]);
         umount2(path, MNT_DETACH);
     }
 
-    // 2. Smontiamo gli overlay uniti in liveroot
     const char *ovl_mounts[] = {"usr", "var"};
     for (int i = 0; i < (int)(sizeof(ovl_mounts) / sizeof(ovl_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, ovl_mounts[i]);
         umount2(path, MNT_DETACH);
     }
 
-    // 3. Smontiamo i bind mount standard in liveroot
-    // "home" è incluso per sicurezza: se in modalità clone/crypted è stato
-    // bind-montato, va smontato qui; se non lo è, umount2 fallisce in
-    // silenzio come per gli altri path, senza effetti collaterali.
     const char *bind_mounts[] = {"opt", "root", "srv", "home"};
     for (int i = 0; i < (int)(sizeof(bind_mounts) / sizeof(bind_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, bind_mounts[i]);
         umount2(path, MNT_DETACH);
     }
 
-    // 4. Smontiamo i lowerdir dentro .overlay
     for (int i = 0; i < (int)(sizeof(ovl_mounts) / sizeof(ovl_mounts[0])); i++) {
         snprintf(path, sizeof(path), "%s/.overlay/lowerdir/%s", work_dir, ovl_mounts[i]);
         umount2(path, MNT_DETACH);
     }
 
-    // 5. Infine, smontiamo la liveroot stessa se necessario
     snprintf(path, sizeof(path), "%s/liveroot", work_dir);
     umount2(path, MNT_DETACH);
 
@@ -277,14 +252,11 @@ int run_native_umount(cJSON *task) {
     return 0;
 }
 
-// ==========================================
-// 4. DISPATCHER NATIVO
-// ==========================================
 int run_native(const char *module, cJSON *task) {
     if (strcmp(module, "users") == 0) {
         return run_native_users(task);
     }
-    
+
     if (strcmp(module, "umount") == 0) {
         return run_native_umount(task);
     }

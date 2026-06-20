@@ -1,4 +1,3 @@
-// src/main.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +6,6 @@
 
 extern int dispatch_task(cJSON *task);
 
-// Lettura da STDIN
 char* read_stdin() {
     size_t capacity = 4096;
     size_t size = 0;
@@ -31,11 +29,10 @@ char* read_stdin() {
     return buffer;
 }
 
-// Lettura da FILE
 char* read_file(const char *filename) {
     FILE *f = fopen(filename, "rb");
     if (!f) return NULL;
-    
+
     fseek(f, 0, SEEK_END);
     long length = ftell(f);
     if (length < 0) {
@@ -56,13 +53,12 @@ char* read_file(const char *filename) {
 int main(int argc, char **argv) {
     char *json_data = NULL;
 
-    // Controllo argomenti CLI
     if (argc > 1) {
         if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
             printf("oa-ng (Next Generation Orchestrator) v1.0\n");
             return EXIT_SUCCESS;
         }
-        
+
         if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
             printf("Usage:\n");
             printf("  oa <plan.json>          Runs tasks from a file\n");
@@ -71,30 +67,27 @@ int main(int argc, char **argv) {
             return EXIT_SUCCESS;
         }
 
-        // --- LA TUA MANIGLIA DI EMERGENZA ---
         if (strcmp(argv[1], "cleanup") == 0) {
             const char *target_dir = (argc > 2) ? argv[2] : "/home/eggs";
             printf("🚨 [oa-main] EMERGENCY Mode: Run `umount` on %s\n", target_dir);
 
             cJSON *task = cJSON_CreateObject();
             cJSON_AddStringToObject(task, "module", "umount");
-            cJSON_AddStringToObject(task, "work_dir", target_dir); 
-            cJSON_AddObjectToObject(task, "params"); 
+            cJSON_AddStringToObject(task, "work_dir", target_dir);
+            cJSON_AddObjectToObject(task, "params");
 
             int res = dispatch_task(task);
             cJSON_Delete(task);
 
             return (res == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
-        
-        // Se l'argomento non è un comando speciale, proviamo a leggerlo come file JSON
+
         json_data = read_file(argv[1]);
         if (!json_data) {
             fprintf(stderr, "❌ [oa-main] Unable to open the JSON file or unknown command: %s\n", argv[1]);
             return EXIT_FAILURE;
         }
     } else {
-        // Nessun argomento: leggiamo dallo Standard Input
         json_data = read_stdin();
     }
 
@@ -104,9 +97,6 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    // ==================================
-    // log solo se facciamo un plan
-    // ==================================
     oa_init_log("/var/log/oa-tools.log");
 
     cJSON *root = cJSON_Parse(json_data);
@@ -114,16 +104,16 @@ int main(int argc, char **argv) {
         const char *error_ptr = cJSON_GetErrorPtr();
         LOG_ERR("❌ [oa-main] JSON parsing error: %s", error_ptr ? error_ptr : "unknown");
         free(json_data);
-        oa_close_log(); 
+        oa_close_log();
         return EXIT_FAILURE;
     }
 
     cJSON *plan_array = cJSON_GetObjectItemCaseSensitive(root, "plan");
     if (!cJSON_IsArray(plan_array)) {
-        LOG_ERR("❌ [oa-main] Invalid JSON format: ‘plan’ array is missing.");
+        LOG_ERR("❌ [oa-main] Invalid JSON format: 'plan' array is missing.");
         cJSON_Delete(root);
         free(json_data);
-        oa_close_log(); 
+        oa_close_log();
         return EXIT_FAILURE;
     }
 
@@ -145,8 +135,7 @@ int main(int argc, char **argv) {
         if (dispatch_task(task) == 0) {
             success_count++;
         } else {
-            // CORRETTO: rimosso stderr e \n
-            LOG_ERR("⚠️  [oa-main] The ‘%s’ task failed.", task_name);
+            LOG_ERR("⚠️  [oa-main] The '%s' task failed.", task_name);
             error_count++;
         }
     }
@@ -155,10 +144,7 @@ int main(int argc, char **argv) {
     free(json_data);
 
     LOG_INFO("🏁 [oa-main] Execution complete. Successes: %d, Errors: %d", success_count, error_count);
-    
-    // ==================================
-    // chiusura log 
-    // ==================================
-    oa_close_log();    
+
+    oa_close_log();
     return (error_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

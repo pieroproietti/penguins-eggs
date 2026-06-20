@@ -1,10 +1,3 @@
-/*
- * oa: eggs in my dialect🥚🥚
- *
- * src/vendors/oa-yocto.c
- * Logica di classificazione utenti basata su OpenEmbedded-Core
- * e sulla filosofia di penguins-eggs.
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,31 +6,19 @@
 #include <sys/stat.h>
 #include "oa-yocto.h"
 
-/**
- * @brief Scrive una riga in formato passwd (USER:x:UID:GID:GECOS:HOME:SHELL)
- */
 void yocto_write_passwd(FILE *f, const char *user, int uid, int gid, const char *gecos, const char *home, const char *shell) {
     if (f) fprintf(f, "%s:x:%d:%d:%s:%s:%s\n", user, uid, gid, gecos, home, shell);
 }
 
-/**
- * @brief Scrive una riga in formato shadow (USER:PASS:LAST:MIN:MAX:WARN:INACT:EXP:RES)
- */
 void yocto_write_shadow(FILE *f, const char *user, const char *enc_pass) {
-    // 19750 è un valore di last_change approssimativo per il 2024+
+    // 19750 = approximate last_change days since epoch for 2024+
     if (f) fprintf(f, "%s:%s:19750:0:99999:7:::\n", user, enc_pass);
 }
 
-/**
- * @brief Scrive una riga in formato group (GROUP:x:GID:USERS)
- */
 void yocto_write_group(FILE *f, const char *group, int gid, const char *users) {
     if (f) fprintf(f, "%s:x:%d:%s\n", group, gid, users ? users : "");
 }
 
-/**
- * @brief Filtra un file di testo (passwd/group) rimuovendo gli UID/GID umani
- */
 int yocto_sanitize_file(const char *src_path, int min_id, int max_id) {
     char tmp_path[PATH_SAFE];
     snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", src_path);
@@ -53,13 +34,12 @@ int yocto_sanitize_file(const char *src_path, int min_id, int max_id) {
         strncpy(line_copy, line, sizeof(line_copy) - 1);
         line_copy[sizeof(line_copy) - 1] = '\0';
 
-        strtok(line_copy, ":");           // Salta il nome (era 'name')
-        strtok(NULL, ":");                // Salta la password (era 'pass')
-        char *id_str = strtok(NULL, ":"); // Questo ci serve per l'ID
+        strtok(line_copy, ":");
+        strtok(NULL, ":");
+        char *id_str = strtok(NULL, ":");
 
         if (id_str) {
             int id = atoi(id_str);
-            // Se l'ID è fuori dal range umano (OE-Core), preserviamo la riga
             if (id < min_id || id > max_id) {
                 fputs(line, dst);
             }
@@ -71,9 +51,6 @@ int yocto_sanitize_file(const char *src_path, int min_id, int max_id) {
     return rename(tmp_path, src_path);
 }
 
-/**
- * @brief Controlla se un nome (utente o gruppo) esiste come primo campo in un file colon-separated
- */
 static bool user_exists_in_file(const char *file_path, const char *name) {
     FILE *f = fopen(file_path, "r");
     if (!f) return false;
@@ -93,9 +70,6 @@ static bool user_exists_in_file(const char *file_path, const char *name) {
     return false;
 }
 
-/**
- * @brief Filtra il file shadow mantenendo solo gli utenti presenti in passwd
- */
 int yocto_sanitize_shadow(const char *shadow_path, const char *passwd_path) {
     char tmp_path[PATH_SAFE];
     snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", shadow_path);
@@ -110,7 +84,7 @@ int yocto_sanitize_shadow(const char *shadow_path, const char *passwd_path) {
 
     char line[PATH_SAFE];
     int removed = 0, kept = 0;
-    
+
     while (fgets(line, sizeof(line), src)) {
         char line_copy[PATH_SAFE];
         strncpy(line_copy, line, sizeof(line_copy) - 1);
@@ -118,7 +92,6 @@ int yocto_sanitize_shadow(const char *shadow_path, const char *passwd_path) {
         char *user = strtok(line_copy, ":");
 
         if (user) {
-            // Se l'utente è sopravvissuto alla pulizia di passwd, lo teniamo
             if (user_exists_in_file(passwd_path, user)) {
                 fputs(line, dst);
                 kept++;
@@ -132,16 +105,13 @@ int yocto_sanitize_shadow(const char *shadow_path, const char *passwd_path) {
     fclose(src);
     fclose(dst);
 
-    // Ripristiniamo i permessi restrittivi richiesti da PAM per shadow
-    chmod(tmp_path, 0640); 
+    // PAM requires restrictive permissions on shadow
+    chmod(tmp_path, 0640);
 
     printf("Sanitized shadow: kept %d, removed %d entries", kept, removed);
     return rename(tmp_path, shadow_path);
 }
 
-/**
- * @brief Verifica se il percorso della home è in una whitelist di sistema.
- */
 static bool is_path_allowed(const char *home) {
     if (home == NULL || strlen(home) < 2) {
         return false;
@@ -149,9 +119,9 @@ static bool is_path_allowed(const char *home) {
 
     const char *whitelist[] = {"home", "opt", "srv", "usr", "var", NULL};
     char path_tmp[PATH_SAFE];
-    
+
     strncpy(path_tmp, home, sizeof(path_tmp));
-    path_tmp[sizeof(path_tmp) - 1] = '\0'; // Sicurezza extra per il terminatore
+    path_tmp[sizeof(path_tmp) - 1] = '\0';
 
     char *fLevel = strtok(path_tmp, "/");
     if (fLevel == NULL) return false;
@@ -165,28 +135,20 @@ static bool is_path_allowed(const char *home) {
     return false;
 }
 
-/**
- * @brief yocto_is_human_user
- * Decide se un utente dell'host deve essere processato.
- */
 bool yocto_is_human_user(uint32_t uid, const char *home) {
-    // 1. Filtro UID basato su OE-Core (1000-59999)
     if (uid < OE_UID_HUMAN_MIN || uid > OE_UID_HUMAN_MAX) {
         return false;
     }
 
-    // 2. Controllo Whitelist dei percorsi
     if (!is_path_allowed(home)) {
         return false;
     }
 
-    // 3. Verifica fisica
     struct stat st;
     if (stat(home, &st) != 0 || !S_ISDIR(st.st_mode)) {
         return false;
     }
 
-    // 4. Analisi sottocartelle vietate
     if (strstr(home, "/cache") || strstr(home, "/run") || strstr(home, "/spool")) {
         return false;
     }
@@ -194,16 +156,10 @@ bool yocto_is_human_user(uint32_t uid, const char *home) {
     return true;
 }
 
-/**
- * @brief Scrive una riga in formato gshadow (GROUP:!::MEMBERS)
- */
 void yocto_write_gshadow(FILE *f, const char *group, const char *members) {
     if (f) fprintf(f, "%s:!::%s\n", group, members ? members : "");
 }
 
-/**
- * @brief Filtra gshadow mantenendo solo i gruppi presenti in /etc/group
- */
 int yocto_sanitize_gshadow(const char *gshadow_path, const char *group_path) {
     char tmp_path[PATH_SAFE];
     snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", gshadow_path);
@@ -233,22 +189,16 @@ int yocto_sanitize_gshadow(const char *gshadow_path, const char *group_path) {
     return rename(tmp_path, gshadow_path);
 }
 
-/**
- * @brief Scrive una riga in formato subuid/subgid (USER:START:COUNT)
- */
 void yocto_write_subid(FILE *f, const char *user, long start, long count) {
     if (f) fprintf(f, "%s:%ld:%ld\n", user, start, count);
 }
 
-/**
- * @brief Filtra subuid/subgid rimuovendo le entry degli utenti non più in passwd
- */
 int yocto_sanitize_subid(const char *subid_path, const char *passwd_path) {
     char tmp_path[PATH_SAFE];
     snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", subid_path);
 
     FILE *src = fopen(subid_path, "r");
-    if (!src) return 0; // subuid/subgid might not exist
+    if (!src) return 0;
 
     FILE *dst = fopen(tmp_path, "w");
     if (!dst) {
@@ -272,9 +222,6 @@ int yocto_sanitize_subid(const char *subid_path, const char *passwd_path) {
     return rename(tmp_path, subid_path);
 }
 
-/**
- * @brief Aggiunge nativamente un utente a un elenco di gruppi secondari in /etc/group
- */
 void yocto_add_user_to_groups(const char *group_file, const char *username, cJSON *groups_array) {
     if (!cJSON_IsArray(groups_array)) return;
 
@@ -291,7 +238,7 @@ void yocto_add_user_to_groups(const char *group_file, const char *username, cJSO
 
     char line[PATH_SAFE];
     while (fgets(line, sizeof(line), src)) {
-        line[strcspn(line, "\n")] = 0; // Rimuove il newline
+        line[strcspn(line, "\n")] = 0;
 
         char line_copy[PATH_SAFE];
         strncpy(line_copy, line, sizeof(line_copy) - 1);
@@ -308,7 +255,6 @@ void yocto_add_user_to_groups(const char *group_file, const char *username, cJSO
         }
 
         if (match) {
-            // Se la riga finisce con ':', non ci sono altri utenti. Altrimenti aggiungiamo una virgola.
             if (line[strlen(line) - 1] == ':') {
                 fprintf(dst, "%s%s\n", line, username);
             } else {
