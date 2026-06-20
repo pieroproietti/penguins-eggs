@@ -47,6 +47,7 @@ type RemasterConfig struct {
 	Password    string            `yaml:"password" json:"password"`
 	WorkDir     string            `yaml:"work_dir" json:"work_dir"`
 	Compression CompressionConfig `yaml:"compression" json:"compression"`
+	ISOPrefix   string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty"`
 }
 
 type CompressionConfig struct {

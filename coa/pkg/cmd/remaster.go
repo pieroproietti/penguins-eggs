@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	"coa/pkg/pathDefaults"
 	"coa/pkg/distro"
@@ -91,6 +93,12 @@ and generate a precise execution plan for the OA planner.`,
 		}
 
 		isoName := myDistro.GetISOName(produceMode)
+
+		// After profile is loaded, check for custom ISO prefix — but we need
+		// the name early for disk-space checks, so we peek at custom settings here.
+		if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil && customCfg.Remaster.ISOPrefix != "" {
+			isoName = fmt.Sprintf("%s-%s.iso", customCfg.Remaster.ISOPrefix, time.Now().Format("2006-01-02_1504"))
+		}
 
 		finalIsoPath := filepath.Join(producePath, isoName)
 		utils.LogNormal("ISO will be generated at: %s", finalIsoPath)
