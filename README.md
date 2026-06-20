@@ -1,27 +1,4 @@
-> [!IMPORTANT]
-> # STOP ALL WARS
->
-> ## Non gridate più
->
-> Cessate d'uccidere i morti,  
-> Non gridate più, non gridate  
-> Se li volete ancora udire,  
-> Se sperate di non perire.  
-> 
-> Hanno l'impercettibile sussurro,  
-> Non fanno più rumore  
-> Del crescere dell'erba,  
-> Lieta dove non passa l'uomo.
->
-> — *Giuseppe Ungaretti*
->
-> ---
->
-> Millennial civilizations and sovereign nations are being razed to the ground by the same logic of dominance that has stained human history for centuries. From the Middle East to Ukraine, we are witnessing the destruction of our common heritage. No modern ideology or national interest can justify these crimes. 
-> 
-> **Silence is complicity, stop the massacre.**
----
-
+See AI context: https://penguins-eggs.net/llms.txt
 > ## ⚡ REBRANDING NOTICE
 >
 > **`oa-tools` is becoming the new `penguins-eggs`**
