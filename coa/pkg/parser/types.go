@@ -39,20 +39,20 @@ type User struct {
 
 // Strutture di Settings
 type Settings struct {
-	Remaster RemasterConfig `yaml:"remaster" json:"remaster"`
+	Remaster RemasterConfig `yaml:"remaster" json:"remaster" mapstructure:"remaster"`
 }
 
 type RemasterConfig struct {
-	User        string            `yaml:"user" json:"user"`
-	Password    string            `yaml:"password" json:"password"`
-	WorkDir     string            `yaml:"work_dir" json:"work_dir"`
-	Compression CompressionConfig `yaml:"compression" json:"compression"`
-	ISOPrefix   string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty"`
+	User        string            `yaml:"user" json:"user" mapstructure:"user"`
+	Password    string            `yaml:"password" json:"password" mapstructure:"password"`
+	WorkDir     string            `yaml:"work_dir" json:"work_dir" mapstructure:"work_dir"`
+	Compression CompressionConfig `yaml:"compression" json:"compression" mapstructure:"compression"`
+	ISOPrefix   string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty" mapstructure:"iso_prefix"`
 }
 
 type CompressionConfig struct {
-	Algorithm string `yaml:"algorithm" json:"algorithm"`
-	Level     int    `yaml:"level" json:"level"`
+	Algorithm string `yaml:"algorithm" json:"algorithm" mapstructure:"algorithm"`
+	Level     int    `yaml:"level" json:"level" mapstructure:"level"`
 }
 
 // TemplateContext e Index

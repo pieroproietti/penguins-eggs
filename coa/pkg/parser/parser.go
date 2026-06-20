@@ -130,17 +130,50 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		return nil, fmt.Errorf("YAML syntax error (see /tmp/oa-failed-yaml.txt): %v", err)
 	}
 
-	// 7. OVERRIDE: Applichiamo il custom.yml se esiste
+	// 7. DEFAULT + OVERRIDE
+	profile.Settings.Remaster = defaultRemasterConfig()
 	customCfg, err := LoadCustomSettings()
 	if err != nil {
-		return nil, fmt.Errorf("error loading custom.yml: %v", err)
+		return nil, fmt.Errorf("error loading custom.yaml: %v", err)
 	}
-
 	if customCfg != nil {
-		profile.Settings.Remaster = customCfg.Remaster
+		mergeCustomSettings(&profile.Settings.Remaster, &customCfg.Remaster)
 	}
 
 	return &profile, nil
+}
+
+func defaultRemasterConfig() RemasterConfig {
+	return RemasterConfig{
+		User:     "live",
+		Password: "evolution",
+		WorkDir:  "/home/eggs",
+		Compression: CompressionConfig{
+			Algorithm: "zstd",
+			Level:     3,
+		},
+	}
+}
+
+func mergeCustomSettings(base *RemasterConfig, custom *RemasterConfig) {
+	if custom.User != "" {
+		base.User = custom.User
+	}
+	if custom.Password != "" {
+		base.Password = custom.Password
+	}
+	if custom.WorkDir != "" {
+		base.WorkDir = custom.WorkDir
+	}
+	if custom.Compression.Algorithm != "" {
+		base.Compression.Algorithm = custom.Compression.Algorithm
+	}
+	if custom.Compression.Level > 0 {
+		base.Compression.Level = custom.Compression.Level
+	}
+	if custom.ISOPrefix != "" {
+		base.ISOPrefix = custom.ISOPrefix
+	}
 }
 
 func LoadCustomSettings() (*Settings, error) {
