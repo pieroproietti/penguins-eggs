@@ -65,4 +65,24 @@ bool yocto_is_human_user(uint32_t uid, const char *home);
  */
 void yocto_add_user_to_groups(const char *group_file, const char *username, cJSON *groups_array);
 
+/**
+ * @brief Scrive una riga in formato gshadow (GROUP:!::MEMBERS)
+ */
+void yocto_write_gshadow(FILE *f, const char *group, const char *members);
+
+/**
+ * @brief Filtra gshadow mantenendo solo i gruppi presenti in /etc/group
+ */
+int yocto_sanitize_gshadow(const char *gshadow_path, const char *group_path);
+
+/**
+ * @brief Scrive una riga in formato subuid/subgid (USER:START:COUNT)
+ */
+void yocto_write_subid(FILE *f, const char *user, long start, long count);
+
+/**
+ * @brief Filtra subuid/subgid rimuovendo le entry degli utenti umani rimossi
+ */
+int yocto_sanitize_subid(const char *subid_path, const char *passwd_path);
+
 #endif // OA_YOCTO_H

@@ -105,7 +105,43 @@ and generate a precise execution plan for the OA planner.`,
 		utils.EnsureBootloaders(pathDefaults.BootloadersDir)
 
 		utils.LogNormal("Generating exclude list (%s mode)...", produceMode)
-		planner.GenerateExcludeList(produceMode, isGitHubAction)
+		excludeListPath := planner.GenerateExcludeList(produceMode, isGitHubAction)
+
+		compression := "zstd"
+		if profile.Settings.Remaster.Compression.Algorithm != "" {
+			compression = profile.Settings.Remaster.Compression.Algorithm
+		}
+
+		if !isGitHubAction {
+			utils.LogNormal("Checking available disk space...")
+			snapshotDir := filepath.Dir(finalIsoPath)
+			report, err := planner.CheckDiskSpace(producePath, snapshotDir, compression, excludeListPath)
+			if err != nil {
+				utils.LogWarning("Could not verify disk space: %v", err)
+			} else {
+				utils.LogNormal("Space estimate:\n%s", report.String())
+				needed := report.NeededKiB()
+				if report.FreeSnapshotKiB < report.CompressedKiB {
+					utils.Fatal("Not enough space on %s: need %.1f GiB, have %.1f GiB.",
+						snapshotDir,
+						float64(report.CompressedKiB)/1024.0/1024.0,
+						float64(report.FreeSnapshotKiB)/1024.0/1024.0)
+				}
+				if report.SamePartition && report.FreeSnapshotKiB < needed {
+					utils.Fatal("Work dir and ISO on same partition: need %.1f GiB (2x ISO), have %.1f GiB on %s.",
+						float64(needed)/1024.0/1024.0,
+						float64(report.FreeSnapshotKiB)/1024.0/1024.0,
+						snapshotDir)
+				}
+				if !report.SamePartition && report.FreeWorkKiB < report.CompressedKiB {
+					utils.Fatal("Not enough space on work dir %s: need %.1f GiB, have %.1f GiB.",
+						producePath,
+						float64(report.CompressedKiB)/1024.0/1024.0,
+						float64(report.FreeWorkKiB)/1024.0/1024.0)
+				}
+				utils.LogSuccess("Disk space check passed.")
+			}
+		}
 
 		planPath, planJSON, err := planner.GeneratePlan(
 			profile,

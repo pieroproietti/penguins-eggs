@@ -1,10 +1,39 @@
 package planner
 
 import (
+	"bufio"
 	"coa/pkg/pathDefaults"
 	"os"
 	"strings"
 )
+
+// detectSwapFiles legge /etc/fstab e restituisce i path dei file di swap
+// (non device /dev/*) da escludere dallo squashfs.
+func detectSwapFiles() []string {
+	f, err := os.Open("/etc/fstab")
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+
+	var swaps []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
+			continue
+		}
+		// Solo file di swap (non device block), path assoluto che inizia con /
+		if fields[2] == "swap" && strings.HasPrefix(fields[0], "/") && !strings.HasPrefix(fields[0], "/dev/") {
+			swaps = append(swaps, strings.TrimPrefix(fields[0], "/"))
+		}
+	}
+	return swaps
+}
 
 // GenerateExcludeList crea il file .list dinamico per mksquashfs.
 // La 'G' maiuscola permette a remaster.go di chiamarla liberamente.
@@ -39,6 +68,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	excludes = append(excludes,
 		"boot/efi/EFI",
 		"boot/loader/entries/",
+		"boot/grub/!(themes|unicode.pf2)",
 		"etc/fstab",
 		"etc/mtab",
 		"swapfile",
@@ -48,12 +78,63 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		"etc/ssh/ssh_host_*",
 		"var/lib/NetworkManager/secret_key",
 
-		// Rete di Sicurezza Cache: l'asterisco classico è sufficiente
+		// Identità macchina: devono essere rigenerati al primo boot
+		"etc/machine-id",
+		"var/lib/dbus/machine-id",
+
+		// Rete: rigenerato dal DHCP/systemd-resolved al boot
+		"etc/resolv.conf",
+
+		// Hardware-specific: impedisce conflitti tra macchine diverse
+		"etc/adjtime",
+		"etc/crypttab",
+		"etc/X11/xorg.conf",
+		"etc/X11/xorg.conf.d/20-nvidia.conf",
+		"etc/X11/xorg.conf.d/20-intel.conf",
+		"etc/X11/xorg.conf.d/20-radeon.conf",
+		"etc/X11/xorg.conf.d/20-amd.conf",
+
+		// APT cache e stato vecchio
 		"var/cache/apt/archives/*",
-		"var/cache/apt/*.bin", // Il killer da 100 MB di apt
+		"var/cache/apt/*.bin",
+		"var/cache/apt/apt-file/*",
+		"var/cache/apt-xapian-index/index.*",
+		"var/cache/apt-show-versions/*",
+		"var/cache/debconf/*-old",
+		"var/lib/apt/lists/*",
+		"var/lib/apt/periodic/*",
+		"var/lib/dpkg/*-old",
+
+		// Pacman (Arch) e DNF (Fedora)
 		"var/cache/pacman/pkg/*",
+		"var/lib/pacman/sync/*",
 		"var/cache/dnf/*",
+
+		// Log: teniamo solo le directory di servizi persistenti
+		"var/log/!(apache2|clamav|libvirt|journal|samba)",
+		"var/log/clamav/*",
+		"var/log/journal/*",
+		"var/log/samba/*",
+
+		// Vari stato runtime
+		"var/lib/sudo/*",
+		"var/lib/dhcp/*",
+		"var/lib/urandom/*",
+		"var/lib/udisks/*",
+		"var/mail/*",
+		"var/spool/mail/*",
+		"var/spool/anacron/*",
+
+		// Display manager cache
+		"var/cache/lightdm",
+		"var/lib/lightdm/.cache",
+		"var/lib/lightdm/.Xauthority",
 	)
+
+	// ==========================================================
+	// 2.1. Swap files rilevati da /etc/fstab
+	// ==========================================================
+	excludes = append(excludes, detectSwapFiles()...)
 
 	// ==========================================================
 	// 3. Hack per Debian: cryptdisks
@@ -86,14 +167,32 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 			"root/.??*", // <-- FIX QUI!
 		)
 	} else {
-		// Anche in modalità clone, è saggio NON portarsi dietro la cronologia di bash
-		// e i file del cestino dell'utente, a meno che non sia strettamente necessario
+		// In modalità clone, puliamo cronologia, cache e file temporanei
+		// ma preserviamo configurazioni e dati utente
 		excludes = append(excludes,
 			"root/.bash_history",
 			"root/.zsh_history",
+			"root/.cache",
+			"root/.local/share/recently-used.xbel",
+			"root/.local/share/Trash/*",
+			"root/.xsession-errors*",
+
 			"home/*/.bash_history",
+			"home/*/.lesshst",
 			"home/*/.local/share/Trash/*",
-			"home/*/.cache/*", // Le cache dei browser pesano moltissimo!
+			"home/*/.local/share/recently-used.xbel",
+			"home/*/.local/share/mc/history",
+			"home/*/.cache/*",
+			"home/*/.thumbnails/*",
+			"home/*/.dbus",
+			"home/*/.gvfs",
+			"home/*/.Trash*",
+			"home/*/.xsession-errors*",
+			"home/*/.adobe",
+			"home/*/.macromedia",
+			"home/*/.recently-used",
+			"home/*/.recently-used.xbel",
+			"home/*/.sudo_as_admin_successful",
 		)
 	}
 

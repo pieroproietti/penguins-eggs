@@ -72,19 +72,19 @@ int yocto_sanitize_file(const char *src_path, int min_id, int max_id) {
 }
 
 /**
- * @brief Controlla se un utente esiste nel file passwd
+ * @brief Controlla se un nome (utente o gruppo) esiste come primo campo in un file colon-separated
  */
-static bool user_exists_in_passwd(const char *passwd_path, const char *username) {
-    FILE *f = fopen(passwd_path, "r");
+static bool user_exists_in_file(const char *file_path, const char *name) {
+    FILE *f = fopen(file_path, "r");
     if (!f) return false;
-    
+
     char line[PATH_SAFE];
     while (fgets(line, sizeof(line), f)) {
         char line_copy[PATH_SAFE];
         strncpy(line_copy, line, sizeof(line_copy) - 1);
         line_copy[sizeof(line_copy) - 1] = '\0';
-        char *user = strtok(line_copy, ":");
-        if (user && strcmp(user, username) == 0) {
+        char *field = strtok(line_copy, ":");
+        if (field && strcmp(field, name) == 0) {
             fclose(f);
             return true;
         }
@@ -119,7 +119,7 @@ int yocto_sanitize_shadow(const char *shadow_path, const char *passwd_path) {
 
         if (user) {
             // Se l'utente è sopravvissuto alla pulizia di passwd, lo teniamo
-            if (user_exists_in_passwd(passwd_path, user)) {
+            if (user_exists_in_file(passwd_path, user)) {
                 fputs(line, dst);
                 kept++;
             } else {
@@ -192,6 +192,84 @@ bool yocto_is_human_user(uint32_t uid, const char *home) {
     }
 
     return true;
+}
+
+/**
+ * @brief Scrive una riga in formato gshadow (GROUP:!::MEMBERS)
+ */
+void yocto_write_gshadow(FILE *f, const char *group, const char *members) {
+    if (f) fprintf(f, "%s:!::%s\n", group, members ? members : "");
+}
+
+/**
+ * @brief Filtra gshadow mantenendo solo i gruppi presenti in /etc/group
+ */
+int yocto_sanitize_gshadow(const char *gshadow_path, const char *group_path) {
+    char tmp_path[PATH_SAFE];
+    snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", gshadow_path);
+
+    FILE *src = fopen(gshadow_path, "r");
+    FILE *dst = fopen(tmp_path, "w");
+    if (!src || !dst) {
+        if (src) fclose(src);
+        if (dst) fclose(dst);
+        return -1;
+    }
+
+    char line[PATH_SAFE];
+    while (fgets(line, sizeof(line), src)) {
+        char line_copy[PATH_SAFE];
+        strncpy(line_copy, line, sizeof(line_copy) - 1);
+        line_copy[sizeof(line_copy) - 1] = '\0';
+        char *gname = strtok(line_copy, ":");
+        if (gname && user_exists_in_file(group_path, gname)) {
+            fputs(line, dst);
+        }
+    }
+
+    fclose(src);
+    fclose(dst);
+    chmod(tmp_path, 0640);
+    return rename(tmp_path, gshadow_path);
+}
+
+/**
+ * @brief Scrive una riga in formato subuid/subgid (USER:START:COUNT)
+ */
+void yocto_write_subid(FILE *f, const char *user, long start, long count) {
+    if (f) fprintf(f, "%s:%ld:%ld\n", user, start, count);
+}
+
+/**
+ * @brief Filtra subuid/subgid rimuovendo le entry degli utenti non più in passwd
+ */
+int yocto_sanitize_subid(const char *subid_path, const char *passwd_path) {
+    char tmp_path[PATH_SAFE];
+    snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", subid_path);
+
+    FILE *src = fopen(subid_path, "r");
+    if (!src) return 0; // subuid/subgid might not exist
+
+    FILE *dst = fopen(tmp_path, "w");
+    if (!dst) {
+        fclose(src);
+        return -1;
+    }
+
+    char line[PATH_SAFE];
+    while (fgets(line, sizeof(line), src)) {
+        char line_copy[PATH_SAFE];
+        strncpy(line_copy, line, sizeof(line_copy) - 1);
+        line_copy[sizeof(line_copy) - 1] = '\0';
+        char *user = strtok(line_copy, ":");
+        if (user && user_exists_in_file(passwd_path, user)) {
+            fputs(line, dst);
+        }
+    }
+
+    fclose(src);
+    fclose(dst);
+    return rename(tmp_path, subid_path);
 }
 
 /**
