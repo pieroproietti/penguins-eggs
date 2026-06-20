@@ -1,10 +1,9 @@
 # ==============================================================================
-# 🧩 FILE: base.yaml.tmpl
-# 🎯 ROLE: Main orchestration plan (YAML) for oa-tools framework
+# FILE: base.yaml.tmpl
+# ROLE: Main orchestration plan (YAML) for oa-tools framework
 # ==============================================================================
-# ----------------------------------------------------------------------------
-# impostazioni che possono essere sovrascritte dall'utente
-# ----------------------------------------------------------------------------
+
+# --- User-overridable settings ---
 settings:
   remaster:
     user: "live"
@@ -23,16 +22,17 @@ remaster:
     module: "mount_logic"
 
 # ----------------------------------------------------------------------------
-# 2. BOOTLOADERS PREPARATION
+# 2. BOOTLOADER PREPARATION
 # ----------------------------------------------------------------------------
-  # --- 2.1 PREPARAZIONE E COPIA BOOTLOADER ---
   - name: "prepare-bootloader"
     description: "Create a directory and copy the bootloader assets (BIOS/UEFI)"
     module: "shell"
     params:
       command: "/etc/oa-tools.d/scripts/prepare-bootloader.sh /home/eggs/isodir /tmp/coa/bootloaders"
 
-  # --- 2.2. GENERAZIONE EFI.IMG ---
+# ----------------------------------------------------------------------------
+# 3. EFI IMAGE GENERATION
+# ----------------------------------------------------------------------------
   - name: "generate-efi.img"
     description: "Generating a FAT image for EFI"
     module: "shell"
@@ -47,26 +47,25 @@ remaster:
         fi
 
 # ----------------------------------------------------------------------------
-# 3. LIVE MENUS
+# 4. BOOT ASSETS (SPLASH AND FONTS)
 # ----------------------------------------------------------------------------
-  # --- 3. PREPARAZIONE ASSETS: SPLASH E FONT ---
   - name: "copy-assets"
     description: "Copy the splash screen and configure the GRUB/ISOLINUX fonts"
     module: "shell"
     params:
       command: |
-        # 1. Copia Splash Screen (con ignoranza dei file mancanti)
         [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ] && cp -f /etc/oa-tools.d/brain.d/assets/splash.png /home/eggs/isodir/boot/grub/splash.png
         [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ] && cp -f /etc/oa-tools.d/brain.d/assets/splash.png /home/eggs/isodir/isolinux/splash.png
 
-        # 2. Gestione Font GRUB
         if [ -f "/usr/share/grub/unicode.pf2" ]; then
             cp -f /usr/share/grub/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
         elif [ -f "/etc/oa-tools.d/brain.d/assets/unicode.pf2" ]; then
             cp -f /etc/oa-tools.d/brain.d/assets/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
         fi
 
-# 3.1. --- GENERAZIONE MENU DI BOOT (Modulo Script) ---
+# ----------------------------------------------------------------------------
+# 5. BOOT MENU GENERATION
+# ----------------------------------------------------------------------------
   - name: "generate-boot-menus"
     description: "Dynamic generation of GRUB, ISOLINUX and EFI trampoline"
     module: "script"
@@ -78,29 +77,27 @@ remaster:
         - '{{ template "distro_boot_params" . }}'
 
 # ----------------------------------------------------------------------------
-# 4. USER IDENTITY
+# 6. USER IDENTITY
 # ----------------------------------------------------------------------------
-  - name: "Indentity"
+  - name: "identity"
     description: "Live user injection and password sanitization"
     module: "users"
 
 # ----------------------------------------------------------------------------
-# 4.1 Sanitize host
+# 7. SYSTEM FILE SANITIZATION
 # ----------------------------------------------------------------------------
-## -- 4.1 sanitize host
   - name: "sanitize-system-files"
     description: "Sanitize fstab and crypttab for the live system"
     module: "shell"
     chroot: false
     params:
       command: |
-        # Operiamo direttamente sul path noto
         echo "# UNCONFIGURED FSTAB" > /home/eggs/liveroot/etc/fstab
         echo "# UNCONFIGURED CRYPTTAB" > /home/eggs/liveroot/etc/crypttab
         chmod 644 /home/eggs/liveroot/etc/fstab /home/eggs/liveroot/etc/crypttab
 
 # ----------------------------------------------------------------------------
-# 5. LIVE INITRAMFS
+# 8. LIVE INITRAMFS
 # ----------------------------------------------------------------------------
   - name: "initramfs"
     description: "Live environment-specific Initramfs generation"
@@ -112,7 +109,7 @@ remaster:
 {{ include "distro_initramfs_cmd" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
-# 6. COPIA DEL KERNEL ED INITRAMFS
+# 9. COPY KERNEL AND INITRAMFS
 # ----------------------------------------------------------------------------
   - name: "copy-kernel-initrd"
     description: "Universal copy of kernel and initramfs to live ISO directory"
@@ -123,28 +120,28 @@ remaster:
 {{ include "distro_copy_kernel_cmd" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
-# 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
+# 10. LIVE USER PRIVILEGES
 # ----------------------------------------------------------------------------
-  ## 7. LIVE USER PRIVILEGES, AUTOLOGIN AND TRUSTED DESKTOP LAUNCHER
-  # 7.1. Configurazione Sudoers (Senza password)
   - name: "conf-live-sudoers"
     description: "Configure sudoers for the live user"
     module: "template"
     chroot: true
     params:
       dest: "/etc/sudoers.d/00-live"
-      permissions: 288 # Esadecimale 0440
+      permissions: 288 # 0440 octal
       content: |
         live ALL=(ALL) NOPASSWD:ALL
 
-  # 7.2. Desktop Launcher Universale
+# ----------------------------------------------------------------------------
+# 11. DESKTOP LAUNCHER
+# ----------------------------------------------------------------------------
   - name: "create-live-launcher"
     description: "Add universal desktop launcher"
     module: "template"
     chroot: true
     params:
       dest: "/usr/share/applications/install-system.desktop"
-      permissions: 493 # Esadecimale 0755
+      permissions: 493 # 0755 octal
       content: |
         [Desktop Entry]
         Type=Application
@@ -157,24 +154,25 @@ remaster:
         Terminal=false
         Categories=System;
 
-  # 7.3. Trust Agent (Copying the script to liveroot)
+# ----------------------------------------------------------------------------
+# 12. TRUST AGENT
+# ----------------------------------------------------------------------------
   - name: "trust-agent-script"
     description: "Copy dynamic trust script for the desktop launcher"
     module: "shell"
-    chroot: false 
+    chroot: false
     params:
       command: |
         cp /etc/oa-tools.d/scripts/trust-desktop.sh /home/eggs/liveroot/usr/local/bin/trust-desktop
         chmod 755 /home/eggs/liveroot/usr/local/bin/trust-desktop
 
-  # 7.4. Trust Agent Autostart
   - name: "trust-agent-autostart"
     description: "Enable XDG Autostart for the trust agent"
     module: "template"
     chroot: true
     params:
       dest: "/etc/xdg/autostart/trust-installer.desktop"
-      permissions: 420 # Esadecimale 0644
+      permissions: 420 # 0644 octal
       content: |
         [Desktop Entry]
         Type=Application
@@ -183,9 +181,8 @@ remaster:
         Hidden=false
         NoDisplay=true
 
-
 # ----------------------------------------------------------------------------
-# 7.1 autologin-gui
+# 13. AUTOLOGIN
 # ----------------------------------------------------------------------------
   - name: autologin-gui
     description: "Set up autologin for the live user"
@@ -195,14 +192,14 @@ remaster:
       is_gui: true
 
 # ----------------------------------------------------------------------------
-# 7.5 egg-icon
+# 14. EGG ICON
 # ----------------------------------------------------------------------------
   - name: "eggs-icon"
     description: "Create Egg Icon"
     module: "template"
     params:
       dest: "/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
-      permissions: 0644
+      permissions: 420 # 0644 octal
       content: |
         <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -217,7 +214,7 @@ remaster:
         </svg>
 
 # ----------------------------------------------------------------------------
-# 8. FILESYSTEM.SQUASHFS COMPRESSION
+# 15. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
   - name: "mksquashfs"
     module: "mksquashfs"
@@ -227,12 +224,12 @@ remaster:
       live_root: "/home/eggs/liveroot"
       dest_file: "/home/eggs/isodir/live/filesystem.squashfs"
       excludes_file: "/tmp/coa/excludes.list"
-  
+
 # ----------------------------------------------------------------------------
-# 8.1 Hard link to /home/eggs/isodir/live/filesystem.squashfs in arch, fedora, manjaro
+# 16. DISTRO-SPECIFIC SQUASHFS HOOK
 # ----------------------------------------------------------------------------
   - name: "distro_hook_squashfs"
-    description: "Hard link to /home/eggs/isodir/live/filesystem.squashfs in arch, fedora, manjaro"
+    description: "Hard link to filesystem.squashfs for distros that need it (arch, fedora, manjaro)"
     module: "shell"
     chroot: false
     params:
@@ -240,7 +237,7 @@ remaster:
 {{ include "distro_hook_squashfs" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
-# 9. ISO XORRISO PACKAGING
+# 17. ISO XORRISO PACKAGING
 # ----------------------------------------------------------------------------
   - name: "xorriso"
     module: "xorriso"
@@ -252,22 +249,13 @@ remaster:
       efi_img: "EFI/BOOT/efi.img"
       isohdpfx: "/tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin"
 
-# ----------------------------------------------------------------------------
-# 10. CLEANUP
-# ----------------------------------------------------------------------------
-#  - name: "cleanup"
-#    description: "unmount on the plan"
-#    module: "umount"
-#    work_dir: "INJECTED_BY_PLANNER"
-
 # ==============================================================================
-# 🎯 CALAMARES INSTALLER HOOKS
+# CALAMARES INSTALLER HOOKS
 # ==============================================================================
 install:
   - name: "coa-finalize"
     description: "Target finalization and host bootloader regeneration"
     module: "shell"
-    params: 
+    params:
       command: |
 {{ include "distro_hook_install_logic" . | indent 8 }}
-
