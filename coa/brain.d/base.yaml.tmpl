@@ -110,7 +110,7 @@ remaster:
 {{ include "distro_copy_kernel_cmd" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
-# 10. LIVE USER PRIVILEGES
+# 10. LIVE USER PRIVILEGES (sudo)
 # ----------------------------------------------------------------------------
   - name: "conf-live-sudoers"
     description: "Configure sudoers for the live user"
@@ -122,6 +122,9 @@ remaster:
       content: |
         live ALL=(ALL) NOPASSWD:ALL
 
+# ----------------------------------------------------------------------------
+# 11. LIVE USER PRIVILEGES (polkit)
+# ----------------------------------------------------------------------------
   - name: "polkit-policy"
     description: "Polkit policy for the installer launcher (pkexec eggs)"
     module: "template"
@@ -152,7 +155,7 @@ remaster:
         </policyconfig>
 
 # ----------------------------------------------------------------------------
-# 11. DESKTOP LAUNCHER
+# 12. DESKTOP LAUNCHER
 # ----------------------------------------------------------------------------
   - name: "create-live-launcher"
     description: "Add universal desktop launcher"
@@ -174,7 +177,7 @@ remaster:
         Categories=System;
 
 # ----------------------------------------------------------------------------
-# 12. TRUST AGENT
+# 13. TRUST AGENT
 # ----------------------------------------------------------------------------
   - name: "trust-agent-script"
     description: "Copy dynamic trust script for the desktop launcher"
@@ -201,7 +204,7 @@ remaster:
         NoDisplay=true
 
 # ----------------------------------------------------------------------------
-# 13. AUTOLOGIN
+# 14. AUTOLOGIN
 # ----------------------------------------------------------------------------
   - name: autologin-gui
     description: "Set up autologin for the live user"
@@ -211,7 +214,7 @@ remaster:
       is_gui: true
 
 # ----------------------------------------------------------------------------
-# 14. EGG ICON
+# 15. EGG ICON
 # ----------------------------------------------------------------------------
   - name: "eggs-icon"
     description: "Create Egg Icon"
@@ -233,7 +236,7 @@ remaster:
         </svg>
 
 # ----------------------------------------------------------------------------
-# 15. FILESYSTEM.SQUASHFS COMPRESSION
+# 16. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
   - name: "mksquashfs"
     module: "mksquashfs"
@@ -245,7 +248,7 @@ remaster:
       excludes_file: "/tmp/coa/excludes.list"
 
 # ----------------------------------------------------------------------------
-# 16. DISTRO-SPECIFIC SQUASHFS HOOK
+# 17. DISTRO-SPECIFIC SQUASHFS HOOK
 # ----------------------------------------------------------------------------
   - name: "distro_hook_squashfs"
     description: "Hard link to filesystem.squashfs for distros that need it (arch, fedora, manjaro)"
@@ -256,7 +259,7 @@ remaster:
 {{ include "distro_hook_squashfs" . | indent 8 }}
 
 # ----------------------------------------------------------------------------
-# 17. ISO XORRISO PACKAGING
+# 18. ISO XORRISO PACKAGING
 # ----------------------------------------------------------------------------
   - name: "xorriso"
     module: "xorriso"
