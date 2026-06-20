@@ -3,16 +3,6 @@
 # ROLE: Main orchestration plan (YAML) for oa-tools framework
 # ==============================================================================
 
-# --- User-overridable settings ---
-settings:
-  remaster:
-    user: "live"
-    password: "evolution"
-    work_dir: "/home/eggs"
-    compression:
-      algorithm: "zstd"
-      level: 3
-
 remaster:
 # ----------------------------------------------------------------------------
 # 1. INITIAL SETUP AND MOUNT
@@ -132,6 +122,35 @@ remaster:
       content: |
         live ALL=(ALL) NOPASSWD:ALL
 
+  - name: "polkit-policy"
+    description: "Polkit policy for the installer launcher (pkexec eggs)"
+    module: "template"
+    chroot: true
+    params:
+      dest: "/usr/share/polkit-1/actions/net.penguins-eggs.pkexec.policy"
+      permissions: 420 # 0644 octal
+      content: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE policyconfig PUBLIC
+        "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+        "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+        <policyconfig>
+          <vendor>penguins-eggs</vendor>
+          <vendor_url>https://penguins-eggs.net</vendor_url>
+          <action id="net.penguins-eggs.pkexec.run">
+            <description>Run System Installer</description>
+            <message>Authentication is required to run the system installer</message>
+            <icon_name>penguins-eggs</icon_name>
+            <defaults>
+              <allow_any>no</allow_any>
+              <allow_inactive>no</allow_inactive>
+              <allow_active>yes</allow_active>
+            </defaults>
+            <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/eggs</annotate>
+            <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+          </action>
+        </policyconfig>
+
 # ----------------------------------------------------------------------------
 # 11. DESKTOP LAUNCHER
 # ----------------------------------------------------------------------------
@@ -149,7 +168,7 @@ remaster:
         Name=Install System
         GenericName=Live Installer
         Comment=Install this system to your hard disk
-        Exec=sudo eggs sysinstall calamares
+        Exec=pkexec eggs sysinstall calamares
         Icon=penguins-eggs
         Terminal=false
         Categories=System;
