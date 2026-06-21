@@ -196,14 +196,14 @@ and generate a precise execution plan for the OA planner.`,
 				sizeBytes := info.Size()
 				sizeGiB := float64(sizeBytes) / 1024.0 / 1024.0 / 1024.0
 				if sizeGiB >= 1.0 {
-					utils.LogNormal("ISO image size: %.2f GiB (%s)", sizeGiB, finalIsoPath)
+					utils.LogSuccess("ISO: %.2f GiB in %02d:%02d:%02d — the egg is ready!", sizeGiB, h, m, s)
 				} else {
 					sizeMiB := float64(sizeBytes) / 1024.0 / 1024.0
-					utils.LogSuccess("ISO image size: %.1f MiB (%s)", sizeMiB, finalIsoPath)
+					utils.LogSuccess("ISO: %.1f MiB in %02d:%02d:%02d — the egg is ready!", sizeMiB, h, m, s)
 				}
+			} else {
+				utils.LogSuccess("Remastering completed in %02d:%02d:%02d — the egg is ready!", h, m, s)
 			}
-
-			utils.LogSuccess("Remastering completed in %02d:%02d:%02d! The egg is ready.", h, m, s)
 		}
 	},
 }
