@@ -1,8 +1,8 @@
-# Interfacing oa-tools with Proxmox VE
+# Interfacing penguins-eggs (oa edition) with Proxmox VE
 
 ## Goodbye Vagrant: transitioning to a native, high-performance test environment
 
-This document summarizes the architecture and the configuration steps needed to interface the **oa-tools** development and testing system (`oa` / `coa`) directly with a **Proxmox VE (KVM/QEMU)** hypervisor, abandoning Vagrant.
+This document summarizes the architecture and the configuration steps needed to interface the **penguins-eggs (oa edition)** development and testing system (`oa` / `coa`) directly with a **Proxmox VE (KVM/QEMU)** hypervisor, abandoning Vagrant.
 
 ### Why Proxmox, and why the farewell to Vagrant/containers
 
@@ -145,7 +145,7 @@ sudo systemctl enable --now qemu-guest-agent
 
 With this architecture in place, development becomes linear and lightning fast:
 
-1. The `oa-tools` code is modified on the main development environment and centralized in `/eggs/shared` on the host.
+1. The penguins-eggs code is modified on the main development environment and centralized in `/eggs/shared` on the host.
 2. The host orchestrator launches the deploy script (e.g. `p4push <target>`).
 3. The target VM receives the code instantly through the `/shared` directory mounted via VirtIO.
 4. Inside the VM, the native build environment runs (`dpkg-buildpackage`, `rpmbuild` or `makepkg`), producing the final package free of contamination or virtualization overhead.

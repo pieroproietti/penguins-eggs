@@ -2,9 +2,9 @@
 
 ## Coming from penguins-eggs?
 
-oa-tools is the next-generation successor of penguins-eggs, rewritten in C+Go for speed and reliability. If you already know `eggs`, you already know `oa-tools`: the binary is installed as both `coa` and `eggs`, so your muscle memory keeps working.
+penguins-eggs (oa edition) is the next-generation successor of penguins-eggs, rewritten in C+Go for speed and reliability. If you already know `eggs`, you already know penguins-eggs (oa edition): the binary is installed as both `coa` and `eggs`, so your muscle memory keeps working.
 
-| penguins-eggs | oa-tools | Notes |
+| penguins-eggs (legacy) | penguins-eggs (oa edition) | Notes |
 |---|---|---|
 | `sudo eggs produce` | `sudo eggs produce` | Same command, same result |
 | `sudo eggs produce` | `sudo coa remaster` | Native name, identical behavior |
@@ -125,7 +125,7 @@ sudo update-grub
 
 ## Supported distributions
 
-oa-tools detects the host automatically. Currently supported families:
+penguins-eggs (oa edition) detects the host automatically. Currently supported families:
 
 | Family | Examples |
 |---|---|

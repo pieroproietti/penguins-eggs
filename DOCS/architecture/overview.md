@@ -45,7 +45,7 @@ At this point Go has finished the "intelligence" work and produced a complete, s
 
 ---
 
-This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution in **C**) is what makes **oa-tools** a perfect hybrid: the maintainability and flexibility of modern Go, fused with the surgical isolation, speed and low-level safety of C.
+This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution in **C**) is what makes **penguins-eggs (oa edition)** a perfect hybrid: the maintainability and flexibility of modern Go, fused with the surgical isolation, speed and low-level safety of C.
 
 ---
 

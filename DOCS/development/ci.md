@@ -1,6 +1,6 @@
 # ⚙️ CI Architecture: Hammers & Furnace
 
-The CI of `oa-tools` is split into two pipelines with complementary jobs, both living in `.github/workflows/`:
+The CI of **penguins-eggs (oa edition)** is split into two pipelines with complementary jobs, both living in `.github/workflows/`:
 
 | Pipeline | Workflow | Where it runs | What it produces |
 | :--- | :--- | :--- | :--- |

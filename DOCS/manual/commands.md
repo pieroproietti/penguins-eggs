@@ -1,6 +1,6 @@
 # 🛠️ `coa` Command Reference
 
-`coa` (which means "to hatch") is the universal orchestrator for system remastering and installation. As the command-line interface of the **oa-tools** project, it incubates your tasks: it delegates the configuration logic to the *parser*, the plan compilation to the *planner* (both in Go), and the low-level execution to the C native engine *oa* (eggs).
+`coa` (which means "to hatch") is the universal orchestrator for system remastering and installation. As the command-line interface of the **penguins-eggs (oa edition)** project, it incubates your tasks: it delegates the configuration logic to the *parser*, the plan compilation to the *planner* (both in Go), and the low-level execution to the C native engine *oa* (eggs).
 
 On systems migrating from penguins-eggs, the legacy alias `eggs` works interchangeably with `coa`.
 
@@ -91,7 +91,7 @@ Manages the wardrobe: ready-made desktop configurations ("costumes") that can be
 ## ⚙️ Configuration
 
 ### `coa config`
-Interactive TUI for viewing and editing the oa-tools configuration. The settings are stored in `/etc/oa-tools.d/custom.yaml` and override the built-in defaults used by the parser during remastering.
+Interactive TUI for viewing and editing the penguins-eggs configuration. The settings are stored in `/etc/oa-tools.d/custom.yaml` and override the built-in defaults used by the parser during remastering.
 
 *   **Usage:** `sudo coa config`
 

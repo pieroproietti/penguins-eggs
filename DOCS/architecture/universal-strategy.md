@@ -1,6 +1,6 @@
 # 🌍 The Universal Strategy
 
-The **Universal Strategy** is the philosophical and technical framework guiding the development of `oa-tools`.
+The **Universal Strategy** is the philosophical and technical framework guiding the development of **penguins-eggs (oa edition)**.
 The core principle is simple: a remastered Linux system (an "egg") must be able to hatch on any hardware and in any environment, regardless of the "mother" distribution it was generated on.
 
 This strategy turns remastering from a mere carbon copy into the creation of **agnostic, resilient, ready-to-use** systems.
@@ -49,7 +49,7 @@ Maps each distribution ID (and its `ID_LIKE` relatives) to the right profile, so
 
 ## 3. Scalability and Future
 
-Thanks to this architecture, `oa-tools` is not tied to the present. The Universal Strategy makes it possible to:
+Thanks to this architecture, **penguins-eggs (oa edition)** is not tied to the present. The Universal Strategy makes it possible to:
 * **Support new distros:** adding a distribution only requires writing a new `modules/<distro>.bash.tmpl`, without touching the Go core.
 * **Explore hardware:** the separation between logic and implementation opens the way to different architectures (such as the **arm64** and **RISC-V** ports), where the binaries change but the hatching strategy stays the same.
 

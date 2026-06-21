@@ -1,29 +1,27 @@
 See AI context: https://penguins-eggs.net/llms.txt
 > ## ⚡ REBRANDING NOTICE
 >
-> **`oa-tools` is becoming the new `penguins-eggs`**
+> **`penguins-eggs` is now the C/Go edition**
 >
-> | Current | Future |
+> | Project | Status |
 > | :--- | :--- |
+> | `penguins-eggs` (oa edition, C/Go) | **active development** |
 > | `penguins-eggs` (TypeScript) | → `penguins-eggs-legacy` (maintained) |
-> | `oa-tools` (C/Go) | → `penguins-eggs` (successor) |
 >
-> **New users → use `oa-tools`** (faster, C/Go).  
+> **New users → use penguins-eggs (oa edition)** (faster, C/Go).  
 > **Existing users → legacy `penguins-eggs`** remains supported.
->
-> *Rebranding happens when `--clone` is fully implemented in `oa-tools`.*
 >
 > — Piero Proietti
 
-### 🥚 oa-tools - A Next-Generation Remastering Suite
-After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [oa-tools](https://github.com/pieroproietti/oa-tools).
-oa-tools is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
-The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. oa-tools already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
+### 🥚 penguins-eggs (oa edition)
+After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [penguins-eggs (oa edition)](https://github.com/pieroproietti/oa-tools).
+The new penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
+The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. penguins-eggs (oa edition) already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
 
-## 🏗 oa-tools Architecture
+## 🏗 penguins-eggs (oa edition) Architecture
 
 We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
@@ -69,9 +67,9 @@ This will compile both binaries:
 ---
 
 ## 📜 Philosophy
-The **oa-tools** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
+The **penguins-eggs (oa edition)** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
 
-Documentation about oa-tools can be found on [DOCS](./DOCS/README.md). See also the [Manifestum](./DOCS/manifestum.md) for the founding vision and origins.
+Documentation can be found on [DOCS](./DOCS/README.md). See also the [Manifestum](./DOCS/manifestum.md) for the founding vision and origins.
 
 The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosophy can be read on my blog.
 
@@ -87,6 +85,5 @@ This project collects stars, look to the sky... contribute!
 ---
 *Created with passion by Piero Proietti.*
 
-### blog ed AI
+### blog
 * [https://penguins-eggs.net](https://penguins-eggs.net)
-* [llms.txt](https://penguins-eggs.net/llms.txt)

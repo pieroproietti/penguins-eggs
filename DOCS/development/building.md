@@ -1,6 +1,6 @@
-# Building oa-tools: Requirements & Toolchain
+# Building penguins-eggs (oa edition): Requirements & Toolchain
 
-To generate native packages for **oa-tools** (Debian `.deb`, Arch/Manjaro `.pkg.tar.zst`, Fedora `.rpm`), your build environment must have the following tools installed. This setup follows the **"Eggs & Bananas"** philosophy of using essential, high-quality tools for maximum efficiency.
+To generate native packages for **penguins-eggs (oa edition)** (Debian `.deb`, Arch/Manjaro `.pkg.tar.zst`, Fedora `.rpm`), your build environment must have the following tools installed. This setup follows the **"Eggs & Bananas"** philosophy of using essential, high-quality tools for maximum efficiency.
 
 ## 1. Universal Core (The Artisan's Workshop)
 Regardless of the distribution, these are mandatory to compile the "Mind" (Go) and the "Arm" (C):

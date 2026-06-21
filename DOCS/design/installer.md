@@ -160,5 +160,5 @@ practice the configuration generators grew naturally inside `pkg/sysinstall/setu
 the shared pipeline was extracted into `pkg/cmd`, and Krill (reader + TUI +
 engine) lives under `pkg/sysinstall/krill`. The decisive simplification was recognizing
 that the **finished configuration directory is the only contract needed**
-between the GUI and the TUI: since oa-tools generates those files itself,
+between the GUI and the TUI: since penguins-eggs generates those files itself,
 Krill re-reading them is not duplication but the cheapest possible interface.
