@@ -59,6 +59,8 @@ and generate a precise execution plan for the OA planner.`,
 			produceMode = "crypted"
 		}
 
+		startTime := time.Now()
+
 		utils.LogNormal("Starting remastering procedure (mode: %s)...", produceMode)
 
 		myDistro := distro.NewDistro()
@@ -185,7 +187,23 @@ and generate a precise execution plan for the OA planner.`,
 		if stopAfter != "" {
 			utils.LogWarning("Breakpoint reached and environment safely unmounted. Ready for inspection!")
 		} else {
-			utils.LogSuccess("Remastering complete! The egg is ready.")
+			elapsed := time.Since(startTime)
+			h := int(elapsed.Hours())
+			m := int(elapsed.Minutes()) % 60
+			s := int(elapsed.Seconds()) % 60
+
+			if info, err := os.Stat(finalIsoPath); err == nil {
+				sizeBytes := info.Size()
+				sizeGiB := float64(sizeBytes) / 1024.0 / 1024.0 / 1024.0
+				if sizeGiB >= 1.0 {
+					utils.LogNormal("ISO image size: %.2f GiB (%s)", sizeGiB, finalIsoPath)
+				} else {
+					sizeMiB := float64(sizeBytes) / 1024.0 / 1024.0
+					utils.LogSuccess("ISO image size: %.1f MiB (%s)", sizeMiB, finalIsoPath)
+				}
+			}
+
+			utils.LogSuccess("Remastering completed in %02d:%02d:%02d! The egg is ready.", h, m, s)
 		}
 	},
 }

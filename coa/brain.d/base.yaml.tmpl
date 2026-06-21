@@ -12,13 +12,13 @@ remaster:
     module: "mount_logic"
 
 # ----------------------------------------------------------------------------
-# 2. BOOTLOADER PREPARATION
+# 2. BOOTLOADER COPY
 # ----------------------------------------------------------------------------
-  - name: "prepare-bootloader"
+  - name: "bootloader-copy"
     description: "Create a directory and copy the bootloader assets (BIOS/UEFI)"
     module: "shell"
     params:
-      command: "/etc/oa-tools.d/scripts/prepare-bootloader.sh /home/eggs/isodir /tmp/coa/bootloaders"
+      command: "/etc/oa-tools.d/scripts/bootloader-copy.sh /tmp/coa/bootloaders /home/eggs/isodir"
 
 # ----------------------------------------------------------------------------
 # 3. EFI IMAGE GENERATION
@@ -39,7 +39,7 @@ remaster:
 # ----------------------------------------------------------------------------
 # 4. BOOT ASSETS (SPLASH AND FONTS)
 # ----------------------------------------------------------------------------
-  - name: "copy-assets"
+  - name: "boot-assets"
     description: "Copy the splash screen and configure the GRUB/ISOLINUX fonts"
     module: "shell"
     params:
