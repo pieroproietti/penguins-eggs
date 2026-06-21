@@ -46,6 +46,8 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	// ==========================================================
 	excludes = append(excludes,
 		"dev/*",
+		"mnt", 
+		"media",
 		"proc/*",
 		"sys/*",
 		"run/*",

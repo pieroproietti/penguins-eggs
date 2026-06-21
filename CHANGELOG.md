@@ -1,3 +1,4 @@
+See AI context: https://penguins-eggs.net/llms.txt
 ### 🥚 oa-tools - A Next-Generation Remastering Suite
 After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [oa-tools](https://github.com/pieroproietti/oa-tools).
 oa-tools is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
@@ -6,6 +7,37 @@ The goal is ambitious: a truly universal approach to Linux remastering. Every di
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
 # Changelog - oa-tools
+
+## Release Notes: oa-tools v0.9.1 - "Functional parity" 2026-06-20
+
+penguins-eggs (oa edition) has reached functional parity with penguins-egg (legacy).
+
+### Features
+- **Interactive config command** — `coa config` TUI for compression, iso_prefix, password settings
+- **Polkit policy** — passwordless installer launch on live/clone/crypted systems
+- **Disk space pre-check** — validates free space before remastering starts
+- **gshadow/subuid/subgid support** — full user database handling in native C module
+- **Comprehensive exclude list** — extended exclusions for cleaner squashfs
+
+### Improvements
+- **`export iso` uses iso_prefix from config** — no longer builds pattern from distro info when a custom prefix is set
+- **`custom.yaml` field-level merge** — individual settings override defaults without replacing the entire block
+- **Compression settings from config** — planner injects algorithm/level from config, removed hardcoded values
+- **Full mksquashfs command in logs** — replaces summary profile line for better debugging
+- **Reordered base.yaml.tmpl** — polkit as its own step, sequential numbering
+
+### Code cleanup
+- Removed ~370 lines of redundant comments, dead code, and unused struct fields across Go and C
+- Added include guard to `logger.h`, fixed double `OE_UID_HUMAN_MIN` define
+- Removed tracked `.o` files
+
+### Translation
+- All Italian user-facing messages translated to English (Go + C)
+
+**Full Changelog**: https://github.com/pieroproietti/oa-tools/compare/v0.9.0...v0.9.1
+
+###   added  ISO size and time in a single success line;
+
 
 ## Release Notes: oa-tools v0.9.0 - "The Installer" 2026-06-19
 

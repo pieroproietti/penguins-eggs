@@ -51,7 +51,7 @@ set menu_color_highlight=white/blue
 set color_normal=white/black
 set color_highlight=white/blue
 
-menuentry "--- oa-tools ---" {
+menuentry "--- penguins-eggs (oa edition) ---" {
     true
 }
 menuentry "" {
@@ -74,7 +74,7 @@ TIMEOUT 50
 DEFAULT live
 
 MENU BACKGROUND splash.png
-MENU TITLE oa-tools
+MENU TITLE penguins-eggs (oa edition)
 
 LABEL live
     MENU LABEL Start $PRETTY_NAME
