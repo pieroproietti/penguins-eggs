@@ -26,6 +26,7 @@ jobs:
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
             prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
+            
           - os: debian
             vmid: 303
             snapshot: virgin
@@ -34,7 +35,6 @@ jobs:
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt install -y ./*.deb"
 
-
           - os: fedora
             vmid: 304
             snapshot: virgin
@@ -42,6 +42,14 @@ jobs:
             artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-fedora.zip"
             prep_cmd: "sh -c 'dnf makecache && dnf install -y wget unzip sshpass'"
             install_cmd: "dnf install -y ./*.rpm"
+
+          - os: manjaro
+            vmid: 305
+            snapshot: virgin
+            subnet: "192.168.1"
+            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-manjaro.zip"
+            prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
+            install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
             
     steps:
       - name: 🔐 Caricamento Segreti (Air-gapped)
@@ -133,3 +141,4 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S qm shutdown ${{ matrix.vmid }}"
+          
