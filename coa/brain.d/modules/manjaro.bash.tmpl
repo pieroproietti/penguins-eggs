@@ -52,13 +52,17 @@ mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
 {{ define "distro_copy_kernel_cmd" }}
 #!/bin/bash
 set -e
-# arch: distro_copy_kernel_cmd
+# manjaro: distro_copy_kernel_cmd
 
 LIVEROOT="/home/eggs/liveroot"
 ISODIR="/home/eggs/isodir"
 
 KERNEL_VERSION=$(uname -r)
-echo "-> Copia Kernel Arch/Derivate ($KERNEL_VERSION)..."
+# Estraiamo major e minor version (es: "6.6") per gestire lo standard Manjaro
+KVER_MAJOR_MINOR=$(echo "$KERNEL_VERSION" | cut -d. -f1,2)
+ARCH=$(uname -m)
+
+echo "-> Copia Kernel Manjaro/Derivate ($KERNEL_VERSION)..."
 
 PKGBASE_FILE="$LIVEROOT/lib/modules/$KERNEL_VERSION/pkgbase"
 if [ ! -f "$PKGBASE_FILE" ]; then
@@ -68,9 +72,30 @@ fi
 
 PKG_NAME=$(cat "$PKGBASE_FILE")
 
-# 1. Copia del Kernel
-echo "-> Copia vmlinuz-$PKG_NAME..."
-cp "$LIVEROOT/boot/vmlinuz-$PKG_NAME" "$ISODIR/live/vmlinuz"
+# 1. Ricerca intelligente del file del Kernel
+KERNEL_SRC=""
+
+# Tentativo 1: Standard Arch Linux (es. vmlinuz-linux)
+if [ -f "$LIVEROOT/boot/vmlinuz-$PKG_NAME" ]; then
+    KERNEL_SRC="$LIVEROOT/boot/vmlinuz-$PKG_NAME"
+
+# Tentativo 2: Standard Manjaro (es. vmlinuz-6.6-x86_64)
+elif [ -f "$LIVEROOT/boot/vmlinuz-${KVER_MAJOR_MINOR}-${ARCH}" ]; then
+    KERNEL_SRC="$LIVEROOT/boot/vmlinuz-${KVER_MAJOR_MINOR}-${ARCH}"
+
+# Tentativo 3: Fallback estremo
+else
+    echo "-> Pattern standard non trovati, cerco un vmlinuz valido in /boot..."
+    KERNEL_SRC=$(find "$LIVEROOT/boot" -maxdepth 1 -name "vmlinuz-*" -type f -print -quit)
+fi
+
+if [ -z "$KERNEL_SRC" ] || [ ! -f "$KERNEL_SRC" ]; then
+    echo "[ERRORE FATALE] Impossibile determinare il file del kernel in $LIVEROOT/boot!"
+    exit 1
+fi
+
+echo "-> Copia $(basename "$KERNEL_SRC")..."
+cp "$KERNEL_SRC" "$ISODIR/live/vmlinuz"
 
 # 2. Copia dell'initramfs inequivocabile
 if [ ! -f "$LIVEROOT/boot/oa-initrd.img" ]; then
@@ -83,6 +108,7 @@ cp "$LIVEROOT/boot/oa-initrd.img" "$ISODIR/live/initrd.img"
 
 # 3. Pulizia della scena del crimine dal chroot
 rm -f "$LIVEROOT/boot/initramfs-oa-initrd.img"
+rm -f "$LIVEROOT/boot/oa-initrd.img"
 
 echo "-> Copia blindata completata con successo."
 {{ end }}
