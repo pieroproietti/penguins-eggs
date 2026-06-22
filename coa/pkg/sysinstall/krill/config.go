@@ -186,28 +186,7 @@ func (c *InstallerConfig) SquashfsSource() string {
 // DefaultHostname espande il template Calamares (es. "oa-${product}")
 // usando lo shortProductName del branding, ridotto a un nome valido.
 func (c *InstallerConfig) DefaultHostname() string {
-	template := c.Users.Hostname.Template
-	if template == "" {
-		template = "oa-${product}"
-	}
-	product := "linux"
-	if fields := strings.Fields(c.Branding.Strings.ShortProductName); len(fields) > 0 {
-		product = sanitizeHostname(fields[0])
-	}
-	return strings.ReplaceAll(template, "${product}", product)
-}
-
-func sanitizeHostname(s string) string {
-	var b strings.Builder
-	for _, r := range strings.ToLower(s) {
-		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
-			b.WriteRune(r)
-		}
-	}
-	if b.Len() == 0 {
-		return "linux"
-	}
-	return b.String()
+	return "naked"
 }
 
 // --- RILEVAMENTO DAL SISTEMA LIVE ---
@@ -361,6 +340,50 @@ func DetectTimezone() (string, string) {
 	}
 	return "Europe", "Rome"
 }
+
+// TimezoneData contiene regioni e zone lette da /usr/share/zoneinfo.
+type TimezoneData struct {
+	Regions []string
+	Zones   map[string][]string
+}
+
+// DetectTimezones legge le regioni e le zone disponibili dal sistema.
+func DetectTimezones() TimezoneData {
+	validRegions := map[string]bool{
+		"Africa": true, "America": true, "Antarctica": true, "Arctic": true,
+		"Asia": true, "Atlantic": true, "Australia": true, "Europe": true,
+		"Indian": true, "Pacific": true,
+	}
+	td := TimezoneData{Zones: make(map[string][]string)}
+	entries, err := os.ReadDir("/usr/share/zoneinfo")
+	if err != nil {
+		td.Regions = []string{"Europe"}
+		td.Zones["Europe"] = []string{"Rome"}
+		return td
+	}
+	for _, e := range entries {
+		if !e.IsDir() || !validRegions[e.Name()] {
+			continue
+		}
+		region := e.Name()
+		zones, err := os.ReadDir(filepath.Join("/usr/share/zoneinfo", region))
+		if err != nil || len(zones) == 0 {
+			continue
+		}
+		td.Regions = append(td.Regions, region)
+		for _, z := range zones {
+			if !strings.HasPrefix(z.Name(), ".") {
+				td.Zones[region] = append(td.Zones[region], z.Name())
+			}
+		}
+	}
+	if len(td.Regions) == 0 {
+		td.Regions = []string{"Europe"}
+		td.Zones["Europe"] = []string{"Rome"}
+	}
+	return td
+}
+
 
 // DetectLanguage restituisce la lingua corrente del sistema live.
 func DetectLanguage() string {

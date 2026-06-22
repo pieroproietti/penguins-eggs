@@ -84,8 +84,8 @@ func TestLoadInstallerConfig(t *testing.T) {
 	if got := cfg.FirmwareLabel(); got != "UEFI" {
 		t.Errorf("FirmwareLabel = %q, atteso UEFI", got)
 	}
-	if got := cfg.DefaultHostname(); got != "oa-debian" {
-		t.Errorf("DefaultHostname = %q, atteso oa-debian", got)
+	if got := cfg.DefaultHostname(); got != "naked" {
+		t.Errorf("DefaultHostname = %q, atteso naked", got)
 	}
 	if got := cfg.SquashfsSource(); got != "/run/live/medium/live/filesystem.squashfs" {
 		t.Errorf("SquashfsSource = %q", got)

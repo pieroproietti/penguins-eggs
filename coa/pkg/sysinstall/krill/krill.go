@@ -22,6 +22,7 @@ type appState int
 
 const (
 	StateWelcome appState = iota
+	StateLocation
 	StateKeyboard
 	StateNetwork
 	StateDisk
@@ -125,9 +126,11 @@ type model struct {
 	userFocus  int
 	userAuto   bool
 
-	// Summary
-	sumRegion string
-	sumZone   string
+	// Location: selettori regione/zona (↑/↓ campo, ←/→ valore)
+	locData      TimezoneData
+	locRegionIdx int
+	locZoneIdx   int
+	locField     int // 0 = region, 1 = zone
 
 	// Install (guidata dagli eventi dell'engine)
 	installMsg  string
@@ -154,6 +157,7 @@ func initialModel(cfg *InstallerConfig) model {
 
 	kbd := DetectKeyboard()
 	region, zone := DetectTimezone()
+	tzData := DetectTimezones()
 
 	disks := DetectDisks()
 	if len(disks) == 0 {
@@ -229,8 +233,9 @@ func initialModel(cfg *InstallerConfig) model {
 		userFocus:  fieldFullname,
 		userAuto:   true,
 
-		sumRegion: region,
-		sumZone:   zone,
+		locData:      tzData,
+		locRegionIdx: indexOf(tzData.Regions, region),
+		locZoneIdx:   indexOfZone(tzData, region, zone),
 
 		installMsg: "Starting installation...",
 		percent:    0.0,
@@ -281,6 +286,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch m.state {
 		case StateWelcome:
 			return m.updateWelcome(key)
+		case StateLocation:
+			return m.updateLocation(key)
 		case StateKeyboard:
 			return m.updateKeyboard(key)
 		case StateNetwork:
@@ -351,6 +358,34 @@ func (m model) updateWelcome(key string) (tea.Model, tea.Cmd) {
 		m.langIdx = cycle(m.langIdx, -1, len(languages))
 	case "right":
 		m.langIdx = cycle(m.langIdx, 1, len(languages))
+	case "enter":
+		m.state = StateLocation
+	}
+	return m, nil
+}
+
+// updateLocation gestisce i selettori di regione e zona.
+func (m model) updateLocation(key string) (tea.Model, tea.Cmd) {
+	switch key {
+	case "up", "shift+tab":
+		m.locField = cycle(m.locField, -1, 2)
+	case "down", "tab":
+		m.locField = cycle(m.locField, 1, 2)
+	case "left", "right":
+		delta := 1
+		if key == "left" {
+			delta = -1
+		}
+		switch m.locField {
+		case 0:
+			m.locRegionIdx = cycle(m.locRegionIdx, delta, len(m.locData.Regions))
+			m.locZoneIdx = 0
+		case 1:
+			zones := m.locData.Zones[m.selectedRegion()]
+			if len(zones) > 0 {
+				m.locZoneIdx = cycle(m.locZoneIdx, delta, len(zones))
+			}
+		}
 	case "enter":
 		m.state = StateKeyboard
 	}
@@ -498,6 +533,25 @@ func indexOf(list []string, value string) int {
 	return 0
 }
 
+// indexOfZone restituisce la posizione di zone nella regione data, 0 se assente.
+func indexOfZone(td TimezoneData, region, zone string) int {
+	return indexOf(td.Zones[region], zone)
+}
+
+// selectedRegion restituisce la regione correntemente selezionata.
+func (m *model) selectedRegion() string {
+	return m.locData.Regions[m.locRegionIdx]
+}
+
+// selectedZone restituisce la zona correntemente selezionata.
+func (m *model) selectedZone() string {
+	zones := m.locData.Zones[m.selectedRegion()]
+	if len(zones) == 0 {
+		return ""
+	}
+	return zones[m.locZoneIdx]
+}
+
 // --- VIEW GLOBALE ---
 func (m model) View() string {
 	title := titleStyle.Render(strings.ToUpper(m.appName) + " INSTALLER - PENGUINS-EGGS")
@@ -506,6 +560,8 @@ func (m model) View() string {
 	switch m.state {
 	case StateWelcome:
 		insideBox = m.viewWelcome()
+	case StateLocation:
+		insideBox = m.viewLocation()
 	case StateKeyboard:
 		insideBox = m.viewKeyboard()
 	case StateNetwork:
@@ -547,7 +603,7 @@ func (m model) View() string {
 // Tab orizzontale sopra il contenuto: con un terminale 80x24 una colonna
 // laterale toglie troppo spazio utile, una riga in alto no.
 func renderSteps(currentStep int) string {
-	steps := []string{"Welcome", "Keyboard", "Network", "Disk", "Users", "Summary", "Install"}
+	steps := []string{"Welcome", "Location", "Keyboard", "Network", "Disk", "Users", "Summary", "Install"}
 	var renderedSteps []string
 	for i, step := range steps {
 		if i+1 == currentStep {
@@ -572,8 +628,29 @@ func (m model) viewWelcome() string {
 	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
-func (m model) viewKeyboard() string {
+func (m model) viewLocation() string {
 	stepsView := renderSteps(2)
+	region := m.selectedRegion()
+	zone := m.selectedZone()
+
+	row1 := m.locationRow(0, "Region", region)
+	row2 := m.locationRow(1, "Zone", zone)
+	help := "\n↑/↓ select field | ←/→ change value"
+
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, help)
+	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
+}
+
+func (m model) locationRow(field int, label, value string) string {
+	marker := "  "
+	if m.locField == field {
+		marker = cyanText.Render("→ ")
+	}
+	return fmt.Sprintf("%s%-10s: %s", marker, label, cyanText.Render("‹ "+value+" ›"))
+}
+
+func (m model) viewKeyboard() string {
+	stepsView := renderSteps(3)
 	modelTxt := fmt.Sprintf("  Model : %s", cyanText.Render(m.kbdModel))
 	layoutTxt := fmt.Sprintf("%sLayout: %s", cyanText.Render("→ "), cyanText.Render("‹ "+kbdLayouts[m.kbdIdx]+" ›"))
 	help := "\n←/→ change layout ('us' is the safe default)"
@@ -582,7 +659,7 @@ func (m model) viewKeyboard() string {
 }
 
 func (m model) viewNetwork() string {
-	stepsView := renderSteps(3)
+	stepsView := renderSteps(4)
 	n := m.network
 
 	typeVal := "dhcp"
@@ -622,7 +699,7 @@ func (m model) viewNetwork() string {
 }
 
 func (m model) viewDisk() string {
-	stepsView := renderSteps(4)
+	stepsView := renderSteps(5)
 
 	device := m.disks[m.diskIdx]
 	row1 := fmt.Sprintf("BIOS: %s | Installation mode: %s", cyanText.Render(m.diskBios), cyanText.Render(m.diskMode))
@@ -650,7 +727,7 @@ func (m model) selectorRow(field int, label, value string) string {
 }
 
 func (m model) viewUsers() string {
-	stepsView := renderSteps(5)
+	stepsView := renderSteps(6)
 
 	labels := []string{"fullname", "login", "user password", "root password", "hostname"}
 	var rows []string
@@ -678,7 +755,7 @@ func (m model) viewUsers() string {
 }
 
 func (m model) viewSummary() string {
-	stepsView := renderSteps(6)
+	stepsView := renderSteps(7)
 
 	login := m.userInputs[fieldLogin].Value()
 	hostname := m.userInputs[fieldHostname].Value()
@@ -690,7 +767,7 @@ func (m model) viewSummary() string {
 		greenText.Render(maskPassword(m.userInputs[fieldUserPass].Value())),
 		greenText.Render(maskPassword(m.userInputs[fieldRootPass].Value())),
 		greenText.Render(hostname))
-	row3 := fmt.Sprintf("Set timezone to %s/%s", greenText.Render(m.sumRegion), greenText.Render(m.sumZone))
+	row3 := fmt.Sprintf("Set timezone to %s/%s", greenText.Render(m.selectedRegion()), greenText.Render(m.selectedZone()))
 	row4 := fmt.Sprintf("The system language will be set to %s", greenText.Render(languages[m.langIdx]))
 	row5 := fmt.Sprintf("Numbers and date locale will be set to %s", greenText.Render(languages[m.langIdx]))
 	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(kbdLayouts[m.kbdIdx]))
@@ -719,7 +796,7 @@ func maskPassword(pass string) string {
 }
 
 func (m model) viewInstall() string {
-	stepsView := renderSteps(7)
+	stepsView := renderSteps(8)
 	header := fmt.Sprintf("Installing: %s\n", cyanText.Render(m.productName))
 
 	spin := m.spinner.View()
@@ -828,8 +905,8 @@ func (m *model) buildPlan() *engine.Plan {
 		Groups:    cfg.Users.DefaultGroups,
 
 		Language:  languages[m.langIdx],
-		Region:    m.sumRegion,
-		Zone:      m.sumZone,
+		Region:    m.selectedRegion(),
+		Zone:      m.selectedZone(),
 		KbdModel:  m.kbdModel,
 		KbdLayout: kbdLayouts[m.kbdIdx],
 
