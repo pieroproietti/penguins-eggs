@@ -41,14 +41,15 @@ generate_bls_entry() {
                 BOOT_PREFIX="/boot"
             fi
             
-            # 7. Scrittura del file .conf per il BLS
+            # 7. Scrittura del file .conf per il BLS (con selinux disabilitato)
             cat <<EOF > "/boot/loader/entries/${MACHINE_ID}-${KVER}.conf"
 title $DISTRO_ID ($KVER)
 version $KVER
 linux $BOOT_PREFIX/vmlinuz-$KVER
 initrd $BOOT_PREFIX/$INITRD_FILE
-options root=$ROOT_UUID ro quiet
+options root=$ROOT_UUID ro quiet selinux=0
 EOF
+
             echo "oa-bootloader: Entry BLS creata con successo ($BOOT_PREFIX/vmlinuz-$KVER)"
         else
             echo "ATTENZIONE: Impossibile trovare il kernel per generare la entry BLS!"
