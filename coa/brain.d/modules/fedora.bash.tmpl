@@ -18,28 +18,32 @@ dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9
 # 6. COPY KERNEL/INITRD
 # ----------------------------------------------------------------------------
 {{ define "distro_copy_kernel_cmd" }}
-#!/bin/bash
-set -e
-# fedora: distro_copy_kernel_cmd
-
 KERNEL_VERSION=$(uname -r)
 echo "-> Copia Kernel Fedora ($KERNEL_VERSION)..."
 
-KERNEL_SRC="/boot/vmlinuz-$KERNEL_VERSION"
+# Usiamo i percorsi assoluti e sicuri, leggendo e scrivendo dove serve davvero
+KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
+INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
+DEST_DIR="/home/eggs/isodir/live"
 
-# Controllo di sicurezza
-if [ ! -f "$KERNEL_SRC" ]; then
-    echo "[ERRORE FATALE] Impossibile trovare i file di boot per Fedora ($KERNEL_VERSION) in /boot!"
+# Controllo di sicurezza sul KERNEL
+if [ ! -f "$KERNEL_SRC" ] ; then
+    echo "[ERRORE FATALE] Impossibile trovare il kernel in $KERNEL_SRC!"
     exit 1
 fi
 
-# Copia nella isodir
-cp "$KERNEL_SRC" /home/eggs/isodir/live/vmlinuz
-echo "-> Copia oa-initrd.img..."
-cp "$LIVEROOT/boot/oa-initrd.img" "$ISODIR/live/initrd.img"
+# Controllo di sicurezza sull'INITRD
+if [ ! -f "$INITRD_SRC" ] ; then
+    echo "[ERRORE FATALE] Impossibile trovare l'initrd in $INITRD_SRC! Dracut non lo ha generato."
+    exit 1
+fi
 
-# 3. Pulizia della scena del crimine dal chroot
-rm -f "$LIVEROOT/boot/oa-initrd.img"
+# Creiamo la directory di destinazione (se non esiste) e copiamo
+mkdir -p "$DEST_DIR"
+
+cp "$KERNEL_SRC" "$DEST_DIR/vmlinuz"
+echo "-> Copia oa-initrd.img..."
+cp "$INITRD_SRC" "$DEST_DIR/initrd.img"
 
 echo "-> Copia completata con successo."
 {{ end }}
