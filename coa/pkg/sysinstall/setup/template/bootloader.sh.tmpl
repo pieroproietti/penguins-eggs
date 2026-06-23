@@ -6,6 +6,51 @@ DISTRO_ID="{{ .ID }}"
 
 echo "oa-bootloader: Avvio configurazione autonoma per OS Family: $FAMILY | OS ID: $DISTRO_ID"
 
+# ----------------------------------------------------------------------------
+# FUNZIONE: Generazione BLS (BootLoaderSpec) per Fedora/RedHat e openSUSE
+# ----------------------------------------------------------------------------
+generate_bls_entry() {
+    if [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
+        echo "oa-bootloader: Generazione entry BLS nativa per $FAMILY..."
+        
+        # 1. Creiamo la directory e puliamo le vecchie entry della Live
+        mkdir -p /boot/loader/entries
+        rm -f /boot/loader/entries/*.conf
+        
+        # 2. Ricaviamo la versione esatta del kernel
+        KVER=$(ls -1 /boot/vmlinuz-* 2>/dev/null | head -n 1 | sed 's|.*/vmlinuz-||')
+        
+        if [ -n "$KVER" ]; then
+            # 3. Troviamo la partizione di root da fstab (per usare l'UUID corretto)
+            ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
+            if [[ "$ROOT_PART" == UUID=* ]]; then
+                ROOT_UUID="$ROOT_PART"
+            else
+                ROOT_UUID="UUID=$(blkid -s UUID -o value $ROOT_PART)"
+            fi
+            
+            # 4. Standard BLS: il nome file inizia con il machine-id
+            MACHINE_ID=$(cat /etc/machine-id 2>/dev/null || echo "oa-linux")
+            
+            # 5. Rileviamo il nome esatto dell'initrd (Fedora usa initramfs-*, SUSE usa initrd-*)
+            INITRD_FILE=$(ls -1 /boot/initramfs-${KVER}* /boot/initrd-${KVER}* 2>/dev/null | head -n 1 | xargs basename)
+            
+            # 6. Scrittura del file .conf per il BLS
+            cat <<EOF > "/boot/loader/entries/${MACHINE_ID}-${KVER}.conf"
+title $DISTRO_ID ($KVER)
+version $KVER
+linux /vmlinuz-$KVER
+initrd /$INITRD_FILE
+options root=$ROOT_UUID ro quiet
+EOF
+            echo "oa-bootloader: Entry BLS creata con successo in /boot/loader/entries/"
+        else
+            echo "ATTENZIONE: Impossibile trovare il kernel per generare la entry BLS!"
+        fi
+    fi
+}
+# ----------------------------------------------------------------------------
+
 # 1. Rilevamento UEFI o BIOS
 IS_UEFI=0
 if [ -d /sys/firmware/efi ]; then
@@ -142,6 +187,7 @@ EOF
         if command -v update-grub &> /dev/null; then
             update-grub
         else
+            generate_bls_entry
             $GRUB_MKCONFIG_CMD -o $GRUB_CFG_PATH
         fi
     else
@@ -158,6 +204,7 @@ else
         if command -v update-grub &> /dev/null; then
             update-grub
         else
+            generate_bls_entry
             $GRUB_MKCONFIG_CMD -o $GRUB_CFG_PATH
         fi
     else
