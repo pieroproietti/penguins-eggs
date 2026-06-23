@@ -15,10 +15,8 @@
 set -e
 # opensuse: distro_initramfs_cmd
 echo "Generazione initramfs live (dracut)..."
-
-# ATTENZIONE: Tolto il pipe con tail! 
-# Vogliamo vedere tutto l'output di Dracut per capire se fallisce e perché.
-dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img
+# ATTENZIONE: Aggiunti i driver per i controller fisici e virtuali (AHCI, VirtIO, IDE)
+dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay ahci virtio_blk virtio_pci virtio_scsi cdrom ata_piix sd_mod" /boot/oa-initrd.img
 {{ end }}
 
 # ----------------------------------------------------------------------------
