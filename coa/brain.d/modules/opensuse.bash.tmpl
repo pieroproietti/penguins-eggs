@@ -18,8 +18,6 @@ echo "Generazione initramfs live (dracut)..."
 dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img 2>&1 | tail -1
 {{ end }}
 
-
-
 # ----------------------------------------------------------------------------
 # 6. COPY KERNEL/INITRD
 # ----------------------------------------------------------------------------
@@ -34,7 +32,7 @@ echo "-> Copia Kernel openSUSE ($KERNEL_VERSION)..."
 KERNEL_SRC="/boot/vmlinuz-$KERNEL_VERSION"
 
 # Controllo di sicurezza
-if [ ! -f "$KERNEL_SRC" ] || [ ! -f "$INITRD_SRC" ]; then
+if [ ! -f "$KERNEL_SRC" ] ; then
     echo "[ERRORE FATALE] Impossibile trovare i file di boot per openSUSE ($KERNEL_VERSION) in /boot!"
     exit 1
 fi

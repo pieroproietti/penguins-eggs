@@ -28,7 +28,7 @@ echo "-> Copia Kernel Fedora ($KERNEL_VERSION)..."
 KERNEL_SRC="/boot/vmlinuz-$KERNEL_VERSION"
 
 # Controllo di sicurezza
-if [ ! -f "$KERNEL_SRC" ] || [ ! -f "$INITRD_SRC" ]; then
+if [ ! -f "$KERNEL_SRC" ]; then
     echo "[ERRORE FATALE] Impossibile trovare i file di boot per Fedora ($KERNEL_VERSION) in /boot!"
     exit 1
 fi
