@@ -15,8 +15,10 @@
 set -e
 # opensuse: distro_initramfs_cmd
 echo "Generazione initramfs live (dracut)..."
-dracut -f --no-hostonly --add "dmsquash-live livenet" /boot/initramfs-opensuse.img 2>&1 | tail -1
+dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/initramfs-opensuse.img 2>&1 | tail -1
 {{ end }}
+
+
 
 # ----------------------------------------------------------------------------
 # 6. COPY KERNEL/INITRD
@@ -30,7 +32,6 @@ KERNEL_VERSION=$(uname -r)
 echo "-> Copia Kernel openSUSE ($KERNEL_VERSION)..."
 
 KERNEL_SRC="/boot/vmlinuz-$KERNEL_VERSION"
-INITRD_SRC="/boot/initrd-$KERNEL_VERSION"
 
 # Controllo di sicurezza
 if [ ! -f "$KERNEL_SRC" ] || [ ! -f "$INITRD_SRC" ]; then
@@ -40,7 +41,11 @@ fi
 
 # Copia nella isodir
 cp "$KERNEL_SRC" /home/eggs/isodir/live/vmlinuz
-cp "$INITRD_SRC" /home/eggs/isodir/live/initrd.img
+echo "-> Copia oa-initrd.img..."
+cp "$LIVEROOT/boot/oa-initrd.img" "$ISODIR/live/initrd.img"
+
+# 3. Pulizia della scena del crimine dal chroot
+rm -f "$LIVEROOT/boot/initramfs-oa-initrd.img"
 
 echo "-> Copia completata con successo."
 {{ end }}
