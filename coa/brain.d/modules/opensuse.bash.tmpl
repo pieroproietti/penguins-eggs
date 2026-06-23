@@ -15,7 +15,10 @@
 set -e
 # opensuse: distro_initramfs_cmd
 echo "Generazione initramfs live (dracut)..."
-dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img 2>&1 | tail -1
+
+# ATTENZIONE: Tolto il pipe con tail! 
+# Vogliamo vedere tutto l'output di Dracut per capire se fallisce e perché.
+dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img
 {{ end }}
 
 # ----------------------------------------------------------------------------
@@ -30,20 +33,29 @@ KERNEL_VERSION=$(uname -r)
 echo "-> Copia Kernel openSUSE ($KERNEL_VERSION)..."
 
 KERNEL_SRC="/boot/vmlinuz-$KERNEL_VERSION"
+INITRD_SRC="$LIVEROOT/boot/oa-initrd.img"
+DEST_DIR="/home/eggs/isodir/live"
 
-# Controllo di sicurezza
+# Controllo di sicurezza sul KERNEL
 if [ ! -f "$KERNEL_SRC" ] ; then
-    echo "[ERRORE FATALE] Impossibile trovare i file di boot per openSUSE ($KERNEL_VERSION) in /boot!"
+    echo "[ERRORE FATALE] Impossibile trovare il kernel in $KERNEL_SRC!"
     exit 1
 fi
 
-# Copia nella isodir
-cp "$KERNEL_SRC" /home/eggs/isodir/live/vmlinuz
-echo "-> Copia oa-initrd.img..."
-cp "$LIVEROOT/boot/oa-initrd.img" "$ISODIR/live/initrd.img"
+# Controllo di sicurezza sull'INITRD
+if [ ! -f "$INITRD_SRC" ] ; then
+    echo "[ERRORE FATALE] Impossibile trovare l'initrd in $INITRD_SRC! Dracut non lo ha generato."
+    exit 1
+fi
 
-# 3. Pulizia della scena del crimine dal chroot
-rm -f "$LIVEROOT/boot/oa-initrd.img"
+# Copia nella isodir usando percorsi assoluti ed espliciti per entrambi
+cp "$KERNEL_SRC" "$DEST_DIR/vmlinuz"
+
+echo "-> Copia oa-initrd.img..."
+cp "$INITRD_SRC" "$DEST_DIR/initrd.img"
+
+# 3. Pulizia della scena del crimine dal chroot (lasciato commentato come avevi fatto tu)
+#rm -f "$INITRD_SRC"
 
 echo "-> Copia completata con successo."
 {{ end }}
