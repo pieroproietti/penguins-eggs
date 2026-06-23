@@ -8,6 +8,20 @@
 {{ define "distro_boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image rd.shell rd.debug selinux=0 cow_spacesize=2G{{ end }}
 
 # ----------------------------------------------------------------------------
+# 5. INITRAMFS LIVE (Cambia il nome dell'immagine finale)
+# ----------------------------------------------------------------------------
+{{ define "distro_initramfs_cmd" }}
+#!/bin/bash
+set -e
+# opensuse: distro_initramfs_cmd
+echo "Generazione initramfs live (dracut)..."
+
+# ATTENZIONE: Tolto il pipe con tail! 
+# Vogliamo vedere tutto l'output di Dracut per capire se fallisce e perché.
+dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img
+{{ end }}
+
+# ----------------------------------------------------------------------------
 # 6. COPY KERNEL/INITRD
 # ----------------------------------------------------------------------------
 {{ define "distro_copy_kernel_cmd" }}
