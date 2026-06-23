@@ -10,6 +10,7 @@ echo "oa-bootloader: Avvio configurazione autonoma per OS Family: $FAMILY | OS I
 # FUNZIONE: Generazione BLS (BootLoaderSpec) per Fedora/RedHat e openSUSE
 # ----------------------------------------------------------------------------
 generate_bls_entry() {
+    
     if [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"redhat"* ]] || [[ "$FAMILY" == *"suse"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
         echo "oa-bootloader: Generazione entry BLS nativa per $FAMILY..."
         
@@ -101,11 +102,12 @@ if [ "$FAMILY" = "debian" ] || [ "$FAMILY" = "ubuntu" ]; then
         echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
         update-initramfs -u || true
     fi
-elif [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"suse"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
+elif [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
     echo "oa-bootloader: Rigenerazione initramfs per $FAMILY (Dracut)..."
-    # Creiamo un initramfs grasso e universale, rimuovendo la dipendenza live
+    # Forziamo Dracut a creare un initramfs standard per il disco fisso, 
+    # omettendo i driver live ma FORZANDO i driver dei filesystem standard!
     if command -v dracut &> /dev/null; then
-        dracut -f --no-hostonly --omit "dmsquash-live livenet" || true
+        dracut -f --no-hostonly --add-drivers "ext4 btrfs xfs" --omit "dmsquash-live livenet" || true
     else
         echo "ATTENZIONE: comando dracut non trovato!"
     fi
