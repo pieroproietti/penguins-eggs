@@ -47,7 +47,7 @@ title $DISTRO_ID ($KVER)
 version $KVER
 linux $BOOT_PREFIX/vmlinuz-$KVER
 initrd $BOOT_PREFIX/$INITRD_FILE
-options root=$ROOT_UUID ro quiet selinux=0
+options root=$ROOT_UUID ro quiet
 EOF
 
             echo "oa-bootloader: Entry BLS creata con successo ($BOOT_PREFIX/vmlinuz-$KVER)"
@@ -219,11 +219,19 @@ else
     fi
 fi
 
-# 6. Pulizia
+# 6. Pulizia e Post-Installazione
 echo "oa-bootloader: Pulizia artefatti live..."
 rm -f /usr/local/bin/oa-trust-desktop
 rm -f /etc/xdg/autostart/trust-installer.desktop
 rm -f /usr/share/applications/install-system.desktop
 rm -f /etc/sudoers.d/00-live
+
+# --- INNESCO AUTORELABEL (Fedora / RedHat) ---
+if [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"redhat"* ]]; then
+    echo "oa-bootloader: Innesco ricalcolo SELinux (autorelabel) al primo avvio..."
+    # Creando questo file nascosto nella root, Systemd avvierà 
+    # selinux-autorelabel-mark.service prima di caricare il desktop
+    touch /.autorelabel
+fi
 
 echo "oa-bootloader: Installazione bootloader completata."
