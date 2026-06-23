@@ -15,7 +15,7 @@
 set -e
 # opensuse: distro_initramfs_cmd
 echo "Generazione initramfs live (dracut)..."
-dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/initramfs-opensuse.img 2>&1 | tail -1
+dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img 2>&1 | tail -1
 {{ end }}
 
 
@@ -45,7 +45,7 @@ echo "-> Copia oa-initrd.img..."
 cp "$LIVEROOT/boot/oa-initrd.img" "$ISODIR/live/initrd.img"
 
 # 3. Pulizia della scena del crimine dal chroot
-rm -f "$LIVEROOT/boot/initramfs-oa-initrd.img"
+rm -f "$LIVEROOT/boot/oa-initrd.img"
 
 echo "-> Copia completata con successo."
 {{ end }}
