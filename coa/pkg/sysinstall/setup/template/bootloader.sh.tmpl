@@ -227,7 +227,7 @@ rm -f /usr/share/applications/install-system.desktop
 rm -f /etc/sudoers.d/00-live
 
 # --- INNESCO AUTORELABEL E SELF-HEALING (Fedora / RedHat) ---
-if [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
+if [[ "$FAMILY" == *"fedora"* ]]; then
     echo "oa-bootloader: Innesco ricalcolo SELinux e servizio di ripristino..."
     
     # 1. Impostiamo SELinux su permissive temporaneamente per superare il blocco di systemd
