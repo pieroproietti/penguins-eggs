@@ -1,7 +1,7 @@
 # ==============================================================================
 # 🎩 MODULO FEDORA
 # ==============================================================================
-{{ define "distro_boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image selinux=0 cow_spacesize=2G loglevel=7 systemd.log_level=debug systemd.log_target=console{{ end }}
+{{ define "distro_boot_params" }}root=live:LABEL=${VOL_ID} rd.live.image rd.shell rd.debug selinux=0 cow_spacesize=2G{{ end }}
 
 # ----------------------------------------------------------------------------
 # 5. INITRAMFS LIVE
