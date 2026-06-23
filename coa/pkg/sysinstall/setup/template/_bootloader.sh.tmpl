@@ -15,7 +15,7 @@ else
     echo "oa-bootloader: Rilevato ambiente BIOS/Legacy."
 fi
 
-# 2. Rilevamento Bootloader disponibili (Gestione Dinamica GRUB vs GRUB2)
+# 2. Rilevamento Bootloader disponibili
 HAS_BOOTCTL=0
 if command -v bootctl &> /dev/null; then
     HAS_BOOTCTL=1
@@ -23,46 +23,23 @@ if command -v bootctl &> /dev/null; then
 fi
 
 HAS_GRUB=0
-GRUB_CMD="grub-install"
-GRUB_MKCONFIG_CMD="grub-mkconfig"
-GRUB_CFG_PATH="/boot/grub/grub.cfg"
-
-# Controlliamo prima grub2 (Fedora, openSUSE)
-if command -v grub2-install &> /dev/null; then
+if command -v grub-install &> /dev/null; then
     HAS_GRUB=1
-    GRUB_CMD="grub2-install"
-    GRUB_MKCONFIG_CMD="grub2-mkconfig"
-    GRUB_CFG_PATH="/boot/grub2/grub.cfg"
-    
-    # Assicuriamoci che la directory di destinazione esista
-    mkdir -p /boot/grub2
-    echo "oa-bootloader: Rilevato GRUB2 (Famiglia RedHat/SUSE)."
-elif command -v grub-install &> /dev/null; then
-    HAS_GRUB=1
-    mkdir -p /boot/grub
-    echo "oa-bootloader: Rilevato GRUB (Famiglia Debian/Arch)."
+    echo "oa-bootloader: Rilevato GRUB."
 fi
 
-# 3. Fix specifico initramfs (Bonifica dalla modalità Live)
+# 3. Fix specifico initramfs (Solo famiglia Debian)
 if [ "$FAMILY" = "debian" ] || [ "$FAMILY" = "ubuntu" ]; then
     if [ -d /etc/initramfs-tools/conf.d ]; then
         echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
         update-initramfs -u || true
-    fi
-elif [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"suse"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
-    echo "oa-bootloader: Rigenerazione initramfs per $FAMILY (Dracut)..."
-    # Forziamo Dracut a creare un initramfs standard per il disco fisso host-only, 
-    # omettendo esplicitamente i driver live per evitare loop all'avvio.
-    if command -v dracut &> /dev/null; then
-        dracut -f --hostonly --omit "dmsquash-live livenet" || true
-    else
-        echo "ATTENZIONE: comando dracut non trovato!"
     fi
 fi
 
 # 4. Rilevamento SAFE MODE (Convivenza Multi-Boot)
 SAFE_MODE=0
 if [ $IS_UEFI -eq 1 ] && [ -d "/boot/efi/EFI" ]; then
+    # Conta le cartelle in EFI ignorando 'BOOT' (il default UEFI) e l'ID della nostra distro
     OTHER_OS=$(ls -1 /boot/efi/EFI 2>/dev/null | grep -ivE "boot|$DISTRO_ID|systemd" | wc -l || echo "0")
     if [ "$OTHER_OS" -gt 0 ]; then
         SAFE_MODE=1
@@ -81,8 +58,12 @@ if [ $IS_UEFI -eq 1 ]; then
             BOOTCTL_ARGS="$BOOTCTL_ARGS --no-variables"
         fi
         
+        # Esecuzione con argomenti dinamici
         bootctl install $BOOTCTL_ARGS
+        
         echo "oa-bootloader: Generazione configurazione per systemd-boot..."
+        
+        # CORREZIONE: Creiamo la struttura dentro la VERA partizione EFI
         mkdir -p /boot/efi/loader/entries
         
         KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | head -n 1 | xargs basename)
@@ -93,6 +74,7 @@ if [ $IS_UEFI -eq 1 ]; then
             exit 1
         fi
 
+        # CORREZIONE: Copiamo i file vitali nella partizione FAT32
         echo "oa-bootloader: Copia del kernel e initramfs nella partizione EFI..."
         cp /boot/$KERNEL_FILE /boot/efi/
         cp /boot/$INITRD_FILE /boot/efi/
@@ -113,6 +95,7 @@ if [ $IS_UEFI -eq 1 ]; then
             exit 1
         fi
 
+        # CORREZIONE: Scriviamo la conf puntando al percorso corretto
         cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
 title   OA Linux ($DISTRO_ID)
 linux   /$KERNEL_FILE
@@ -130,19 +113,19 @@ EOF
         echo "oa-bootloader: Entry systemd-boot generata ($KERNEL_FILE su $ROOT_PART)."
         
     elif [ $HAS_GRUB -eq 1 ]; then
-        echo "oa-bootloader: Installazione $GRUB_CMD (EFI)..."
+        echo "oa-bootloader: Installazione GRUB (EFI)..."
         
         GRUB_ARGS="--target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=$DISTRO_ID --recheck"
         if [ $SAFE_MODE -eq 1 ]; then
             GRUB_ARGS="$GRUB_ARGS --no-nvram"
         fi
         
-        $GRUB_CMD $GRUB_ARGS
+        grub-install $GRUB_ARGS
         
         if command -v update-grub &> /dev/null; then
             update-grub
         else
-            $GRUB_MKCONFIG_CMD -o $GRUB_CFG_PATH
+            grub-mkconfig -o /boot/grub/grub.cfg
         fi
     else
         echo "ERRORE: Nessun bootloader (GRUB o systemd-boot) trovato nel sistema target!"
@@ -152,13 +135,13 @@ else
     # --- GESTIONE BIOS/LEGACY ---
     if [ $HAS_GRUB -eq 1 ]; then
         TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
-        echo "oa-bootloader: Installazione $GRUB_CMD (Legacy) su $TARGET_DISK..."
-        $GRUB_CMD --target=i386-pc --recheck "$TARGET_DISK"
+        echo "oa-bootloader: Installazione GRUB (Legacy) su $TARGET_DISK..."
+        grub-install --target=i386-pc --recheck "$TARGET_DISK"
         
         if command -v update-grub &> /dev/null; then
             update-grub
         else
-            $GRUB_MKCONFIG_CMD -o $GRUB_CFG_PATH
+            grub-mkconfig -o /boot/grub/grub.cfg
         fi
     else
         echo "ERRORE: GRUB non installato. BIOS/Legacy richiede GRUB."
