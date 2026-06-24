@@ -27,3 +27,10 @@ else
     echo "chroot-runner: ssh-keygen non trovato, generazione ignorata."
 fi
 
+# Disinnesca l'attesa dello Swap (Resume) specifico per la famiglia Debian/Ubuntu
+if [ -d "$TARGET_ROOT/etc/initramfs-tools/conf.d" ]; then
+    echo "chroot-runner: Disabilitazione attesa resume (swap) per boot istantaneo..."
+    echo "RESUME=none" > "$TARGET_ROOT/etc/initramfs-tools/conf.d/resume"
+fi
+
+
