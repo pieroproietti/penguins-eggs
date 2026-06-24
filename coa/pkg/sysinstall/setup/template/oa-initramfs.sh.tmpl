@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+
+FAMILY="{{ .Family }}"
+echo "oa-initramfs: Avvio rigenerazione per OS Family: $FAMILY"
+
+if [ "$FAMILY" = "debian" ] || [ "$FAMILY" = "ubuntu" ]; then
+    echo "oa-initramfs: Fix initramfs per famiglia Debian..."
+    if [ -d /etc/initramfs-tools/conf.d ]; then
+        echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
+        update-initramfs -u || true
+    fi
+
+elif [ "$FAMILY" = "archlinux" ] || [ "$FAMILY" = "manjaro" ]; then
+    echo "oa-initramfs: Rigenerazione initramfs per $FAMILY (mkinitcpio)..."
+    if command -v mkinitcpio &> /dev/null; then
+        mkinitcpio -P || true
+    fi
+
+elif [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"redhat"* ]] || [[ "$FAMILY" == *"suse"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
+    echo "oa-initramfs: Rigenerazione initramfs per $FAMILY (Dracut)..."
+    
+    # Rileviamo il kernel corretto, ignorando la versione rescue
+    KVER_DRACUT=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1 | sed 's|.*/vmlinuz-||')
+    
+    if command -v dracut &> /dev/null && [ -n "$KVER_DRACUT" ]; then
+        INITRD_OUT=$(ls -1 /boot/initramfs-${KVER_DRACUT}* /boot/initrd-${KVER_DRACUT}* 2>/dev/null | grep -v rescue | head -n 1)
+        [ -z "$INITRD_OUT" ] && INITRD_OUT="/boot/initrd-${KVER_DRACUT}"
+        
+        echo "oa-initramfs: Esecuzione dracut su $INITRD_OUT per kernel $KVER_DRACUT..."
+        
+        # IL FIX: Usiamo --force-add per garantire che i moduli dei filesystem vengano inclusi
+        dracut -f "$INITRD_OUT" "$KVER_DRACUT" --no-hostonly --force-add "ext4 btrfs xfs" --omit "dmsquash-live livenet" || true
+    else
+        echo "ATTENZIONE: comando dracut non trovato o kernel non rilevato!"
+    fi
+
+else
+    echo "oa-initramfs: Famiglia OS non riconosciuta. Nessuna operazione specifica richiesta."
+fi
+
+echo "oa-initramfs: Operazione completata."

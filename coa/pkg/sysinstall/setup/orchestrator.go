@@ -38,14 +38,14 @@ func BuildInstaller(oaVersion string) error {
 	// 2. Chiamata in cascata agli Stampatori e ai Payload
 	tasks := []func() error{
 		func() error { return brandingDesc(oaVersion) },
-		func() error { return bootloaderScripts(d) },
+		func() error { return oaScripts(d) },
 		partitionConf,
 		mountConf,
 		userConf,
 		displaymanagerConf,
 		removeuserConf,
 		unpackfsConf,
-		shellprocessBootloaderBridge,
+		shellprocessOaChrootRunner,
 	}
 
 	for _, task := range tasks {

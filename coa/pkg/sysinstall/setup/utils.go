@@ -8,8 +8,8 @@ import (
 	"text/template"
 )
 
-// BootloaderConfig contiene i dati da iniettare nei template
-type BootloaderConfig struct {
+// OaConfig contiene i dati da iniettare nei template
+type OaConfig struct {
 	Family string
 	ID     string
 }
