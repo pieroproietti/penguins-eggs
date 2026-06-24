@@ -29,8 +29,8 @@ elif [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"redhat"* ]] || [[ "$FAMI
         
         echo "oa-initramfs: Esecuzione dracut su $INITRD_OUT per kernel $KVER_DRACUT..."
         
-        # IL FIX: Usiamo --force-add per garantire che i moduli dei filesystem vengano inclusi
-        dracut -f "$INITRD_OUT" "$KVER_DRACUT" --no-hostonly --force-add "ext4 btrfs xfs" --omit "dmsquash-live livenet" || true
+        # IL FIX: Usiamo --force-drivers per garantire che i moduli dei filesystem vengano inclusi
+        dracut -v -f "$INITRD_OUT" "$KVER_DRACUT" --no-hostonly --force-drivers "ext4 btrfs xfs" --omit "dmsquash-live livenet" || true
     else
         echo "ATTENZIONE: comando dracut non trovato o kernel non rilevato!"
     fi
