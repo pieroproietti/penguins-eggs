@@ -17,6 +17,13 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+// isBasicTTY restituisce true quando il terminale non supporta Unicode
+// (console Linux, TERM=dumb, ecc.).
+func isBasicTTY() bool {
+	term := os.Getenv("TERM")
+	return term == "linux" || term == "dumb" || term == ""
+}
+
 // --- DEFINIZIONE DEGLI STATI ---
 type appState int
 
@@ -152,7 +159,11 @@ type model struct {
 // generata dalla pipeline (la stessa di Calamares) e dal sistema live.
 func initialModel(cfg *InstallerConfig) model {
 	s := spinner.New()
-	s.Spinner = spinner.Dot
+	if isBasicTTY() {
+		s.Spinner = spinner.Line
+	} else {
+		s.Spinner = spinner.Dot
+	}
 	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
 	kbd := DetectKeyboard()
@@ -803,10 +814,18 @@ func (m model) viewInstall() string {
 	stepMsg := cyanText.Render(m.installMsg)
 	if m.installDone {
 		if m.installErr != nil {
-			spin = "✗"
+			if isBasicTTY() {
+				spin = "X"
+			} else {
+				spin = "✗"
+			}
 			stepMsg = redBgWhiteText.Render(m.installMsg)
 		} else {
-			spin = "✓"
+			if isBasicTTY() {
+				spin = "*"
+			} else {
+				spin = "✓"
+			}
 		}
 	}
 
