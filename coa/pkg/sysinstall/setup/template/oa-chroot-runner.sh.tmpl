@@ -18,3 +18,12 @@ cp /etc/oa-tools.d/installer.d/oa-bootloader.sh "$TARGET_ROOT/tmp/"
 echo "chroot-runner: esegue gli script in $TARGET_ROOT"
 chroot "$TARGET_ROOT" /bin/bash /tmp/oa-initramfs.sh
 chroot "$TARGET_ROOT" /bin/bash /tmp/oa-bootloader.sh
+
+# Genera le chiavi SSH solo se il pacchetto openssh-server è installato
+if [ -x "$TARGET_ROOT/usr/bin/ssh-keygen" ]; then
+    echo "chroot-runner: generazione chiavi SSH host..."
+    chroot "$TARGET_ROOT" /usr/bin/ssh-keygen -A
+else
+    echo "chroot-runner: ssh-keygen non trovato, generazione ignorata."
+fi
+
