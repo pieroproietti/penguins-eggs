@@ -5,6 +5,7 @@ ISODIR="$1"
 # Estrae il PRETTY_NAME da /etc/os-release
 PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
 BOOT_PARAMS="$2"
+BOOT_COMMON="audit=0 splash quiet loglevel=3 systemd.show_status=auto udev.log_priority=3"
 
 echo "Generazione menu per: $PRETTY_NAME"
 
@@ -58,11 +59,11 @@ menuentry "" {
     true
 }
 menuentry "Start $PRETTY_NAME" {
-    linux /live/vmlinuz $BOOT_PARAMS
+    linux /live/vmlinuz $BOOT_PARAMS $BOOT_COMMON
     initrd /live/initrd.img
 }
 menuentry "Start $PRETTY_NAME - RAM mode" {
-    linux /live/vmlinuz $BOOT_PARAMS toram
+    linux /live/vmlinuz $BOOT_PARAMS $BOOT_COMMON toram
     initrd /live/initrd.img
 }
 EOF
@@ -79,13 +80,13 @@ MENU TITLE penguins-eggs (oa edition)
 LABEL live
     MENU LABEL Start $PRETTY_NAME
     LINUX /live/vmlinuz
-    APPEND $BOOT_PARAMS
+    APPEND $BOOT_PARAMS $BOOT_COMMON
     INITRD /live/initrd.img
 
 LABEL ram
     MENU LABEL Start $PRETTY_NAME - RAM mode
     LINUX /live/vmlinuz
-    APPEND $BOOT_PARAMS toram
+    APPEND $BOOT_PARAMS $BOOT_COMMON toram
     INITRD /live/initrd.img
 EOF
 
