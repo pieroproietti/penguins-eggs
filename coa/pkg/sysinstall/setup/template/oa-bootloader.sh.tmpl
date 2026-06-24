@@ -172,7 +172,7 @@ rm -f /usr/share/applications/install-system.desktop
 rm -f /etc/sudoers.d/00-live
 
 # --- INNESCO AUTORELABEL E SELF-HEALING (Fedora / RedHat) ---
-if [[ "$FAMILY" == *"fedora"* ]] || [[ "$FAMILY" == *"opensuse"* ]]; then
+if [[ "$FAMILY" == *"fedora"* ]]; then
     echo "oa-bootloader: Innesco ricalcolo SELinux e servizio di ripristino..."
     if [ -f /etc/selinux/config ]; then
         sed -i 's/^SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
@@ -196,6 +196,16 @@ EOF
     
     mkdir -p /etc/systemd/system/multi-user.target.wants/
     ln -sf /etc/systemd/system/oa-selinux-enforcer.service /etc/systemd/system/multi-user.target.wants/oa-selinux-enforcer.service
+fi
+
+# --- DISABILITAZIONE TOTALE (Solo per openSUSE) ---
+if [[ "$FAMILY" == *"opensuse"* ]]; then
+    echo "oa-bootloader: Disabilitazione SELinux per openSUSE (modalità 'ruspa')..."
+    if [ -f /etc/selinux/config ]; then
+        sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+    fi
+    # Aggiunta brutale al GRUB per evitare che il kernel lo forzi
+    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="selinux=0 /' /etc/default/grub
 fi
 
 echo "oa-bootloader: Installazione bootloader completata."
