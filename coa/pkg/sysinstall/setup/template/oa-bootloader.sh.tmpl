@@ -201,11 +201,27 @@ fi
 # --- DISABILITAZIONE TOTALE (Solo per openSUSE) ---
 if [[ "$FAMILY" == *"opensuse"* ]]; then
     echo "oa-bootloader: Disabilitazione SELinux per openSUSE (modalità 'ruspa')..."
+    
+    # 1. Disabilita nel file di configurazione principale
     if [ -f /etc/selinux/config ]; then
         sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
     fi
-    # Aggiunta brutale al GRUB per evitare che il kernel lo forzi
-    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="selinux=0 /' /etc/default/grub
+    
+    # 2. Pulisci la riga di GRUB dalle impostazioni SELinux native (Fondamentale!)
+    sed -i 's/security=selinux//g' /etc/default/grub
+    sed -i 's/selinux=1//g' /etc/default/grub
+    
+    # 3. Aggiungi selinux=0 (solo se non è già presente per evitare duplicati nei remaster successivi)
+    if ! grep -q "selinux=0" /etc/default/grub; then
+        sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="selinux=0 /' /etc/default/grub
+    fi
+    
+    # 4. Rigenera la configurazione di GRUB (altrimenti le modifiche al file default sono ignorate)
+    if command -v grub2-mkconfig >/dev/null 2>&1; then
+        grub2-mkconfig -o /boot/grub2/grub.cfg
+    elif command -v grub-mkconfig >/dev/null 2>&1; then
+        grub-mkconfig -o /boot/grub/grub.cfg
+    fi
 fi
 
 echo "oa-bootloader: Installazione bootloader completata."
