@@ -60,7 +60,7 @@ jobs:
             install_cmd: "zypper -n --no-gpg-checks install ./*.rpm"
             
     steps:
-      - name: 🔐 Caricamento Segreti (Air-gapped)
+      - name: 🔐 Air-gapped Secrets Loading
         run: |
           source /etc/p4/secrets.env
           
@@ -72,13 +72,13 @@ jobs:
           echo "VM_PASS=$SSH_PASSWD" >> $GITHUB_ENV
           echo "PVE_PASS=$PROXMOX_PASSWD" >> $GITHUB_ENV
 
-      - name: 🔄 Rollback & Avvio VM
+      - name: 🔄 Rollback & VM Boot
         env:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S sh -c 'qm stop ${{ matrix.vmid }} || true; qm rollback ${{ matrix.vmid }} ${{ matrix.snapshot }}; qm start ${{ matrix.vmid }} || true'"
 
-      - name: 📡 Ricerca IP dinamico
+      - name: 📡 Dynamic IP Discovery
         id: get_ip
         env:
           SSHPASS: ${{ env.PVE_PASS }}
@@ -103,10 +103,10 @@ jobs:
               sleep 2
             done
           ')
-          echo "✅ IP Assegnato: $IP"
+          echo "✅ IP Assigned: $IP"
           echo "VM_IP=$IP" >> $GITHUB_ENV
 
-      - name: ⏳ Attesa demone SSH sulla VM
+      - name: ⏳ Waiting for VM SSH daemon...
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
@@ -121,20 +121,20 @@ jobs:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
-            echo "📦 Preparazione ambiente (${{ matrix.os }})..."
+            echo "📦 Preparing Environment (${{ matrix.os }})..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ matrix.prep_cmd }}
             
-            echo "📥 Download artefatti..."
+            echo "📥 Download artefact..."
             wget -q -O pacchetti.zip "${{ matrix.artifact_url }}"
             unzip -o pacchetti.zip
             
-            echo "⚙️ Installazione oa-tools..."
+            echo "⚙️ oa-tools Installation..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ matrix.install_cmd }}
             
-            echo "💿 Creazione ISO (coa remaster)..."
+            echo "💿 Creating Live ISO (eggs remaster)...""
             echo '${{ env.VM_PASS }}' | sudo -S coa remaster
             
-            echo "🚀 Configurazione SSH ed Esportazione..."
+            echo "🚀 SSH Configuration & ISO Export.."
             mkdir -p /home/${{ env.VM_USER }}/.ssh
             echo "Host *" > /home/${{ env.VM_USER }}/.ssh/config
             echo "    StrictHostKeyChecking no" >> /home/${{ env.VM_USER }}/.ssh/config
@@ -143,7 +143,7 @@ jobs:
             SSHPASS='${{ env.PVE_PASS }}' sshpass -e eggs export iso --clean
           EOF
 
-      - name: 🛑 Spegnimento VM
+      - name: 🛑 VM Shutdown
         if: always()
         env:
           SSHPASS: ${{ env.PVE_PASS }}
