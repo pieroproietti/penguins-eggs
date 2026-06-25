@@ -46,7 +46,7 @@ func (b *Bleach) Clean() error {
 		b.run("apk", "cache", "clean")
 		b.run("apk", "cache", "purge")
 
-	case "archlinux":
+	case "archlinux" || "manjaro":
 		b.run("sh", "-c", "yes | pacman -Scc")
 
 	case "debian":
