@@ -198,7 +198,7 @@ EOF
     ln -sf /etc/systemd/system/oa-selinux-enforcer.service /etc/systemd/system/multi-user.target.wants/oa-selinux-enforcer.service
 fi
 
-# --- DISABILITAZIONE TOTALE (Solo per openSUSE) ---
+# --- DISABILITAZIONE TOTALE E FIX RESUME (Solo per openSUSE) ---
 if [[ "$FAMILY" == *"opensuse"* ]]; then
     echo "oa-bootloader: Disabilitazione SELinux per openSUSE (modalità 'ruspa')..."
     
@@ -211,12 +211,28 @@ if [[ "$FAMILY" == *"opensuse"* ]]; then
     sed -i 's/security=selinux//g' /etc/default/grub
     sed -i 's/selinux=1//g' /etc/default/grub
     
-    # 3. Aggiungi selinux=0 (solo se non è già presente per evitare duplicati nei remaster successivi)
+    # 3. Aggiungi selinux=0 (solo se non è già presente per evitare duplicati)
     if ! grep -q "selinux=0" /etc/default/grub; then
         sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="selinux=0 /' /etc/default/grub
     fi
+
+    # 4. GESTIONE SMART DEL RESUME (Ibernazione)
+    echo "oa-bootloader: Pulizia vecchio parametro resume (eredità della Live)..."
+    sed -i 's/resume=[^ ]*//g' /etc/default/grub
     
-    # 4. Rigenera la configurazione di GRUB (altrimenti le modifiche al file default sono ignorate)
+    # Estrae la partizione di swap (se esiste) leggendo /etc/fstab (creato da Krill)
+    SWAP_PART=$(awk '/^[ \t]*[^#]/ && $3=="swap" {print $1; exit}' /etc/fstab)
+    
+    if [ -n "$SWAP_PART" ]; then
+        echo "oa-bootloader: Rilevata nuova swap in fstab ($SWAP_PART). Configurazione resume..."
+        # Il parametro in fstab (es. UUID=xxx-yyy o /dev/...) è già formattato correttamente per il kernel
+        sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"resume=$SWAP_PART /" /etc/default/grub
+    else
+        echo "oa-bootloader: Nessuna partizione swap in fstab. Salto iniezione resume."
+    fi
+    
+    # 5. Rigenera la configurazione di GRUB
+    echo "oa-bootloader: Rigenerazione GRUB..."
     if command -v grub2-mkconfig >/dev/null 2>&1; then
         grub2-mkconfig -o /boot/grub2/grub.cfg
     elif command -v grub-mkconfig >/dev/null 2>&1; then
