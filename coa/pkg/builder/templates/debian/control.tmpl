@@ -5,6 +5,7 @@ Priority: optional
 Architecture: amd64
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
 Depends: curl, dosfstools, git, gpg, grub-efi-amd64-bin, grub-pc-bin, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq
+Suggest: cryptsetup-initramfs, calamares, pkexec
 Conflicts: penguins-eggs
 Replaces: penguins-eggs
 Description: oa-tools universal Linux remastering
@@ -13,5 +14,5 @@ Description: oa-tools universal Linux remastering
  .
  Optional components:
  - cryptsetup-initramfs: for cryped isos (if needed)
- - pkexec: for privilege elevation (if needed)
  - calamares: for graphical system installation
+ - pkexec: for privilege elevation (if needed)
