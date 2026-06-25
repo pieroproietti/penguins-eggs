@@ -4,10 +4,13 @@ Section: admin
 Priority: optional
 Architecture: amd64
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Suggests: pkexec
 Depends: cryptsetup-initramfs, curl, dosfstools, git, gpg, grub-efi-amd64-bin, grub-pc-bin, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq
 Conflicts: penguins-eggs
 Replaces: penguins-eggs
 Description: oa-tools universal Linux remastering
  coa is the mind, oa is the arm. This suite provides the
  necessary tools for Linux system remastering and administration.
+ .
+ Optional components:
+ - pkexec: for privilege elevation (if needed)
+ - calamares: for graphical system installation
