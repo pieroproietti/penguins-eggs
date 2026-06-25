@@ -71,6 +71,12 @@ and generate a precise execution plan for the OA planner.`,
 
 		var luksPassphrase string
 		if produceMode == "crypted" {
+			// Check dipendenze
+			if err := checkCryptDependencies(); err != nil {
+				fmt.Println(err) // Stampa il messaggio
+				os.Exit(1)       // Esce con codice 1
+			}
+
 			if err := os.MkdirAll(pathDefaults.StagingDir, 0755); err != nil {
 				utils.Fatal("Unable to create %s: %v", pathDefaults.StagingDir, err)
 			}
@@ -212,6 +218,21 @@ var produceCmd = &cobra.Command{
 	Use:   "produce",
 	Short: "Alias for remaster (penguins-eggs compatibility)",
 	Run:   remasterCmd.Run,
+}
+
+func checkCryptDependencies() error {
+	cmd := exec.Command("dpkg", "-s", "cryptsetup-initramfs")
+	if err := cmd.Run(); err != nil {
+		// Controlla se il pacchetto esiste nel database (anche se non configurato)
+		checkCmd := exec.Command("dpkg-query", "-f", "${db:Status-Status}", "-W", "cryptsetup-initramfs")
+		out, _ := checkCmd.Output()
+		if string(out) != "installed" {
+			return fmt.Errorf("encryption requires 'cryptsetup-initramfs'. Please install it using: sudo apt install cryptsetup-initramfs")
+		}
+		// Se è "installed" ma dpkg -s fallisce, forse è un problema temporaneo
+		return fmt.Errorf("cryptsetup-initramfs is installed but not properly configured")
+	}
+	return nil
 }
 
 func init() {
