@@ -91,6 +91,7 @@ jobs:
             image: debian:bookworm
             pkg_pattern: "*.deb"
             prep_cmd: |
+              export DEBIAN_FRONTEND=noninteractive
               apt-get update
               apt-get install -y wget build-essential git sudo dpkg-dev
               wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
