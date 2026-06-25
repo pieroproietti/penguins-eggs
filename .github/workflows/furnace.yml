@@ -87,7 +87,7 @@ jobs:
             # 1. Legge il MAC address in tempo reale direttamente da Proxmox
             MAC=$(echo "${{ env.PVE_PASS }}" | sudo -S qm config ${{ matrix.vmid }} | grep "net0" | grep -o -E "([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}" | tr "[:upper:]" "[:lower:]")
             
-            echo "Sto cercando IP per il MAC: $MAC sulla rete ${{ matrix.subnet }}.x..." >&2
+            echo "Searching for IP address for MAC $MAC on network ${{ matrix.subnet }}.x..." >&2
             
             # 2. Sweep ARP Veloce (Bypassa i blocchi dei kernel moderni)
             while true; do
@@ -114,9 +114,9 @@ jobs:
             sleep 2
             echo -n "s"
           done
-          echo -e "\n✅ SSH Pronto!"
+          echo -e "\n✅ SSH service ready!"
 
-      - name: 🛠️ Setup, Remaster e Export
+      - name: 🛠️ Installa package oa-tools, Remaster and Export
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
@@ -131,7 +131,7 @@ jobs:
             echo "⚙️ oa-tools Installation..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ matrix.install_cmd }}
             
-            echo "💿 Creating Live ISO (eggs remaster)...""
+            echo "💿 Creating Live ISO (eggs remaster)..."
             echo '${{ env.VM_PASS }}' | sudo -S coa remaster
             
             echo "🚀 SSH Configuration & ISO Export.."

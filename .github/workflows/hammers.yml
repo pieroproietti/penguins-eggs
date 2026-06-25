@@ -165,37 +165,37 @@ jobs:
       image: ${{ matrix.image }}
 
     steps:
-      - name: 🧰 Allestimento attrezzi nella officina
+      - name: 🧰 Tool setup in the workshop
         run: ${{ matrix.prep_cmd }}
 
-      - name: 📥 Prelievo codice (Checkout)
+      - name: 📥 Code Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: ⚙️ Compilazione e Preparazione Sorgenti (oa & coa)
+      - name: ⚙️ Compile & Stage Sources (oa & coa)
         run: |
           echo "🔓 Sblocco la repository per root..."
           git config --global --add safe.directory '*'
           echo "🔨 Compilo..."
           make
 
-      - name: 📦 Generazione Pacchetto Nativo (${{ matrix.distro }})
+      - name: 📦 Create Native Package (${{ matrix.distro }})
         run: ${{ matrix.pack_cmd }}
 
-      - name: 🚀 Installazione nel sistema vivo
+      - name: 🚀 Install into Live Environment
         run: ${{ matrix.install_cmd }}
 
       # --------------------------------------------------------------------
       # ESTRAZIONE DEL BOTTINO LOCALE (Scaricabili separatamente)
       # --------------------------------------------------------------------
-      - name: 🗄️ Prepara il pacchetto per l'esportazione
+      - name: 🗄️ Package Export Preparation
         run: |
           mkdir -p export
           cp ${{ matrix.pkg_pattern }} export/ || echo "⚠️ Nessun pacchetto trovato per questa esecuzione"
 
-      - name: 📤 Pubblica il pacchetto ${{ matrix.distro }}
+      - name: 📤 Publish Package as Artifact ${{ matrix.distro }}
         uses: actions/upload-artifact@v4
         with:
           name: oa-tools-${{ matrix.distro }}
