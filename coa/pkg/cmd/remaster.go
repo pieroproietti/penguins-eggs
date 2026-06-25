@@ -76,17 +76,17 @@ and generate a precise execution plan for the OA planner.`,
 			}
 
 			var err error
-			luksPassphrase, err = promptLuksPassword()
-			if err != nil {
-				utils.Fatal("LUKS passphrase error: %v", err)
-			}
-			utils.LogSuccess("LUKS passphrase acquired (will not be written to disk).")
-
 			cryptoCfg := promptCryptoConfig()
 			if err := saveCryptoConfig(cryptoCfg); err != nil {
 				utils.Fatal("Unable to save crypto configuration: %v", err)
 			}
 			utils.LogSuccess("Crypto configuration saved.")
+
+			luksPassphrase, err = promptLuksPassword()
+			if err != nil {
+				utils.Fatal("LUKS passphrase error: %v", err)
+			}
+			utils.LogSuccess("LUKS passphrase acquired (will not be written to disk).")
 		}
 
 		isGitHubAction := false
