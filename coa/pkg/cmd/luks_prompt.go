@@ -10,7 +10,7 @@ import (
 	"coa/pkg/utils"
 )
 
-const luksDefaultPassword = "0"
+const luksDefaultPassword = "evolution"
 
 type CryptoConfig struct {
 	Cipher        string
@@ -27,10 +27,10 @@ var DefaultCryptoConfig = CryptoConfig{
 	Cipher:        "aes-xts-plain64",
 	KeySize:       512,
 	Hash:          "sha256",
-	SectorSize:    512,
 	Pbkdf:         "argon2id",
 	PbkdfMemory:   524288,
 	PbkdfParallel: 4,
+	SectorSize:    512,
 }
 
 func (c CryptoConfig) FormatArgs() string {
@@ -46,6 +46,20 @@ func (c CryptoConfig) FormatArgs() string {
 	return args
 }
 
+// printLuksInfo mostra il profilo di sicurezza corrente all'utente
+func printLuksInfo(cfg CryptoConfig) {
+	fmt.Println("\n================================================================")
+	fmt.Println("🛡️  ENCRYPTION PROFILE SUMMARY")
+	fmt.Println("================================================================")
+	fmt.Printf("  • ENCRYPTION:      %s (%d-bit)\n", cfg.Cipher, cfg.KeySize)
+	fmt.Printf("  • KEY DERIVATION:  %s\n", cfg.Pbkdf)
+	fmt.Printf("  • MEMORY COST:     %d KiB\n", cfg.PbkdfMemory)
+	fmt.Printf("  • CPU EFFORT:      %d thread(s)\n", cfg.PbkdfParallel)
+	fmt.Println("----------------------------------------------------------------")
+	fmt.Println("This configuration provides MAXIMUM security protection.")
+	fmt.Println("================================================================")
+}
+
 func promptLuksPassword() (string, error) {
 	useDefault := tui.RunConfirmDefault(
 		fmt.Sprintf("Use the default password \"%s\" for LUKS encryption?", luksDefaultPassword))
@@ -59,10 +73,11 @@ func promptLuksPassword() (string, error) {
 }
 
 func promptCryptoConfig() CryptoConfig {
-	useDefault := tui.RunConfirmDefault("Use the default LUKS configuration?")
+	useDefault := tui.RunConfirmDefault("Use the default LUKS configuration (Recommended: Maximum Security)?")
 
 	if useDefault {
-		utils.LogNormal("Default LUKS configuration selected.")
+		utils.LogNormal("Default (Maximum Security) configuration selected.")
+		printLuksInfo(DefaultCryptoConfig)
 		return DefaultCryptoConfig
 	}
 
@@ -137,6 +152,11 @@ func promptCryptoConfig() CryptoConfig {
 		}, 0); err == nil {
 			cfg.IterTime, _ = strconv.Atoi(val)
 		}
+	}
+
+	printLuksInfo(cfg)
+	if !tui.RunConfirmDefault("Confirm this encryption profile?") {
+		return promptCryptoConfig()
 	}
 
 	return cfg

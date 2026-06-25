@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"coa/pkg/pathDefaults"
 	"coa/pkg/distro"
 	"coa/pkg/parser"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/planner"
 	"coa/pkg/utils"
 
@@ -230,4 +230,3 @@ func init() {
 	rootCmd.AddCommand(remasterCmd)
 	rootCmd.AddCommand(produceCmd)
 }
-

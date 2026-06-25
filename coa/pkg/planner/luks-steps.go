@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"coa/pkg/pathDefaults"
 	"coa/pkg/parser"
+	"coa/pkg/pathDefaults"
 )
 
 // luksInitrdPrepStep sostituisce il passo "initramfs" in modalità crypted.
 // Prepara il chroot con boot-encrypted-root.sh, hook per losetup/rsync,
-// un crypttab dummy, poi esegue mkinitramfs → /tmp/initrd.img-luks nel liveroot.
+// un crypttab dummy, poi esegue mkinitramfs → /tmp/oa-initrd.img-luks nel liveroot.
 func luksInitrdPrepStep(workPath string) OATask {
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
 	cmd := fmt.Sprintf(`#!/bin/bash
@@ -70,15 +70,6 @@ echo "LUKS: LUKS initrd generated at $LIVEROOT/tmp/oa-initrd.img-luks"
 
 // luksKernelCopyStep sostituisce "copy-kernel-initrd" in modalità crypted.
 func luksKernelCopyStep(workPath string) OATask {
-	// Modifica nel cmd di luksKernelCopyStep
-	if [ ! -f "$LIVEROOT/tmp/oa-initrd.img-luks" ]; then
-		echo "Mode: Standard - Generating standard initrd..."
-		chroot "$LIVEROOT" /bin/bash -c "update-initramfs -u -k $KERNEL"
-		cp "$LIVEROOT/boot/oa-initrd.img-$KERNEL" "$ISODIR/initrd.img"
-	else
-		mv "$LIVEROOT/tmp/initrd.img-luks" "$ISODIR/initrd.img"
-	fi
-
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
 	isoDir := fmt.Sprintf("%s/isodir/live", workPath)
 	cmd := fmt.Sprintf(`#!/bin/bash
@@ -92,11 +83,11 @@ mkdir -p "$ISODIR"
 cp "/boot/vmlinuz-$KERNEL" "$ISODIR/vmlinuz"
 echo "LUKS: vmlinuz copied to $ISODIR"
 
-if [ ! -f "$LIVEROOT/tmp/initrd.img-luks" ]; then
+if [ ! -f "$LIVEROOT/tmp/oa-initrd.img-luks" ]; then
     echo "LUKS ERROR: LUKS initrd not found at $LIVEROOT/tmp/initrd.img-luks"
     exit 1
 fi
-mv "$LIVEROOT/tmp/initrd.img-luks" "$ISODIR/initrd.img"
+mv "$LIVEROOT/tmp/oa-initrd.img-luks" "$ISODIR/initrd.img"
 echo "LUKS: LUKS initrd moved to $ISODIR/initrd.img"
 `, liveRoot, isoDir)
 
@@ -206,8 +197,6 @@ func shellEscape(s string) string {
 	return strings.ReplaceAll(s, "'", "'\\''")
 }
 
-
 // Per rimuovere eventuali residui di LUKS
 // sudo rm /etc/initramfs-tools/scripts/live-premount/ -rf
 // sudo update-inintramfs -u
-
