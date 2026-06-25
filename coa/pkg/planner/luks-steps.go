@@ -52,9 +52,9 @@ done
 
 echo "LUKS: generating initrd (this may take a few minutes)..."
 chroot "$LIVEROOT" /bin/bash -c \
-    "mkinitramfs -o /tmp/initrd.img-luks $KERNEL" > /dev/null
+    "mkinitramfs -o /tmp/oa-initrd.img-luks $KERNEL" > /dev/null
 
-echo "LUKS: LUKS initrd generated at $LIVEROOT/tmp/initrd.img-luks"
+echo "LUKS: LUKS initrd generated at $LIVEROOT/tmp/oa-initrd.img-luks"
 `, liveRoot)
 
 	return OATask{
@@ -70,6 +70,15 @@ echo "LUKS: LUKS initrd generated at $LIVEROOT/tmp/initrd.img-luks"
 
 // luksKernelCopyStep sostituisce "copy-kernel-initrd" in modalità crypted.
 func luksKernelCopyStep(workPath string) OATask {
+	// Modifica nel cmd di luksKernelCopyStep
+	if [ ! -f "$LIVEROOT/tmp/oa-initrd.img-luks" ]; then
+		echo "Mode: Standard - Generating standard initrd..."
+		chroot "$LIVEROOT" /bin/bash -c "update-initramfs -u -k $KERNEL"
+		cp "$LIVEROOT/boot/oa-initrd.img-$KERNEL" "$ISODIR/initrd.img"
+	else
+		mv "$LIVEROOT/tmp/initrd.img-luks" "$ISODIR/initrd.img"
+	fi
+
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
 	isoDir := fmt.Sprintf("%s/isodir/live", workPath)
 	cmd := fmt.Sprintf(`#!/bin/bash
@@ -196,3 +205,9 @@ echo "LUKS: root.img created successfully → $ROOT_IMG"
 func shellEscape(s string) string {
 	return strings.ReplaceAll(s, "'", "'\\''")
 }
+
+
+// Per rimuovere eventuali residui di LUKS
+// sudo rm /etc/initramfs-tools/scripts/live-premount/ -rf
+// sudo update-inintramfs -u
+
