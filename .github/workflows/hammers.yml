@@ -92,7 +92,15 @@ jobs:
             pkg_pattern: "*.deb"
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
+              
               apt-get update
+              
+              # 2. Pre-configura console-setup e keyboard per evitare il blocco Dialog
+              apt-get install -y debconf-utils
+              debconf-set-selections <<< "keyboard-configuration keyboard-configuration/layout select IT"
+              debconf-set-selections <<< "keyboard-configuration keyboard-configuration/modelcode select pc105"
+              debconf-set-selections <<< "console-setup console-setup/detect guess"
+
               apt-get install -y wget build-essential git sudo dpkg-dev
               wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
