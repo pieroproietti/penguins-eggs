@@ -97,9 +97,11 @@ jobs:
               
               # 2. Pre-configura console-setup e keyboard per evitare il blocco Dialog
               apt-get install -y debconf-utils
-              debconf-set-selections <<< "keyboard-configuration keyboard-configuration/layout select IT"
-              debconf-set-selections <<< "keyboard-configuration keyboard-configuration/modelcode select pc105"
-              debconf-set-selections <<< "console-setup console-setup/detect guess"
+              
+              # Usa questo invece di <<<
+              echo "keyboard-configuration keyboard-configuration/layout select IT" | debconf-set-selections
+              echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
+              echo "console-setup console-setup/detect guess" | debconf-set-selections
 
               apt-get install -y wget build-essential git sudo dpkg-dev
               wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
