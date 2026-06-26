@@ -21,7 +21,7 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	var baseDir string
 	pathsToTry := []string{
 		filepath.Join("coa", "brain.d"),
-		"/etc/oa-tools.d/brain.d",
+		"/etc/penguins-eggs.d/brain.d",
 	}
 
 	for _, path := range pathsToTry {
@@ -157,7 +157,7 @@ func mergeCustomSettings(base *RemasterConfig, custom *RemasterConfig) {
 func LoadCustomSettings() (*Settings, error) {
 	v := viper.New()
 	v.SetConfigName("custom")
-	v.AddConfigPath("/etc/oa-tools.d/")
+	v.AddConfigPath("/etc/penguins-eggs.d/")
 	v.AddConfigPath(".")
 
 	if err := v.ReadInConfig(); err != nil {

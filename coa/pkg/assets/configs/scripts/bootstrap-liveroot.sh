@@ -22,8 +22,8 @@ done
 # Vive fuori da installer.d (che viene rigenerato a ogni avvio
 # dell'installer) così BuildInstaller può leggerlo per sapere se gli
 # utenti sono già clonati da /home.
-mkdir -p "$LIVEROOT/etc/oa-tools.d"
-echo "mode: $MODE" > "$LIVEROOT/etc/oa-tools.d/sibling.yaml"
+mkdir -p "$LIVEROOT/etc/penguins-eggs.d"
+echo "mode: $MODE" > "$LIVEROOT/etc/penguins-eggs.d/sibling.yaml"
 
 # 3. BIND MOUNTS E SYMLINK (USRMERGE)
 for e in bin sbin lib lib64 opt root srv; do

@@ -1,8 +1,8 @@
 # Maintainer: Piero Proietti <piero.proietti@gmail.com>
-pkgname=oa-tools-manjaro
+pkgname=penguins-eggs-manjaro
 pkgver={{.BaseVersion}}
 pkgrel={{.Rel}}
-pkgdesc="oa-tools universal Linux remastering"
+pkgdesc="penguins-eggs universal Linux remastering"
 arch=('x86_64')
 url="https://penguins-eggs.net"
 license=('GPL3')
@@ -30,9 +30,9 @@ depends=(
 )
 
 # Gestione pulita della transizione e delle dipendenze
-provides=('oa-tools')
-conflicts=('penguins-eggs' 'oa-tools' 'oa-tools-arch')
-replaces=('penguins-eggs')
+provides=('penguins-eggs')
+conflicts=('oa-tools' 'oa-tools-manjaro' 'penguins-eggs-arch')
+replaces=('oa-tools' 'oa-tools-manjaro')
 
 package() {
     # Tracciamo i confini

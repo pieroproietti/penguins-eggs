@@ -17,7 +17,7 @@ func staging(ctx sysctx.RuntimeContext) string {
 	// Create the clean hierarchy (usr, etc, etc.)
 	// Only files that belong in the package go here
 	os.MkdirAll(filepath.Join(stageDir, "usr/bin"), 0755)
-	os.MkdirAll(filepath.Join(stageDir, "etc/oa-tools.d"), 0755)
+	os.MkdirAll(filepath.Join(stageDir, "etc/penguins-eggs.d"), 0755)
 
 	// stage := filepath.Join(buildDir, dist)
 	// os.RemoveAll(stage)
@@ -25,11 +25,11 @@ func staging(ctx sysctx.RuntimeContext) string {
 	// Define the standard directories every package must have
 	dirs := []string{
 		"usr/bin",
-		"etc/oa-tools.d/brain.d",
-		"etc/oa-tools.d/scripts",
+		"etc/penguins-eggs.d/brain.d",
+		"etc/penguins-eggs.d/scripts",
 		"usr/share/man/man1",
 		"usr/share/bash-completion/completions",
-		"usr/share/zsh/site-functions",
+		"usr/share/zsh/vendor-completions",
 		"usr/share/fish/vendor_completions.d",
 	}
 	for _, d := range dirs {
@@ -42,13 +42,13 @@ func staging(ctx sysctx.RuntimeContext) string {
 	os.Symlink("coa", filepath.Join(stageDir, "usr/bin/eggs"))
 
 	// 2. Configuration (from ProjRoot)
-	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.yaml"), filepath.Join(stageDir, "etc/oa-tools.d/custom.yaml"))
-	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.exclude.list"), filepath.Join(stageDir, "etc/oa-tools.d/custom.exclude.list"))
+	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.yaml"), filepath.Join(stageDir, "etc/penguins-eggs.d/custom.yaml"))
+	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.exclude.list"), filepath.Join(stageDir, "etc/penguins-eggs.d/custom.exclude.list"))
 
-	copyDir(filepath.Join(projRoot, "coa/pkg/assets/configs/scripts"), filepath.Join(stageDir, "etc/oa-tools.d/scripts"))
+	copyDir(filepath.Join(projRoot, "coa/pkg/assets/configs/scripts"), filepath.Join(stageDir, "etc/penguins-eggs.d/scripts"))
 
 	// Recursive copy of brain.d
-	copyDir(filepath.Join(projRoot, "coa/brain.d"), filepath.Join(stageDir, "etc/oa-tools.d/brain.d"))
+	copyDir(filepath.Join(projRoot, "coa/brain.d"), filepath.Join(stageDir, "etc/penguins-eggs.d/brain.d"))
 
 	// 3. Documentation (man pages)
 	manFiles, _ := filepath.Glob(filepath.Join(buildDir, "docs/man/*.1"))

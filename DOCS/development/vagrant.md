@@ -91,9 +91,9 @@ echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
 ```
 
 ### Native build and test
-Your local code is automatically mapped to `/home/vagrant/oa-tools`.
+Your local code is automatically mapped to `/home/vagrant/penguins-eggs`.
 ```bash
-cd /home/vagrant/oa-tools
+cd /home/vagrant/penguins-eggs
 ./m  # or your build command for coa/oa
 
 # Run the full remastering flight on a real kernel

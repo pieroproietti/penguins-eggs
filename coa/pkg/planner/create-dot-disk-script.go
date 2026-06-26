@@ -51,11 +51,11 @@ touch "$DOTDISK/id/%s"
 
 # 4. README.md
 cat << 'EOF' > "$DOTDISK/README.md"
-# oa-tools
+# penguins-eggs
 
 Volinfo: %s
 Image created at: %s
-repo: [oa-tools](https://github.com/pieroproietti/oa-tools)
+repo: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 blog: [penguins-eggs.net](https://penguins-eggs.net)
 author: [Piero Proietti](mailto://piero.proietti@gmail.com)
 EOF

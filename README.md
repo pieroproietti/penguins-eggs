@@ -5,20 +5,19 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 | Past | Present |
 | :--- | :--- |
-| `oa-tools` (C/Go) | → **`penguins-eggs`**  |
+| `oa-tools` (C/Go) | → **`penguins-eggs`** *(this repo)* |
 | `penguins-eggs` (TypeScript) | → **`penguins-eggs-legacy`** maintained |
 
-The `penguins-eggs-legacy` remains supported, the new `penguins-eggs` will be ready soon.
-**Note:** At the moment the packages name are unchanged `penguins-eggs` and `oa-tools`,
+The `penguins-eggs-legacy` remains supported; this C/Go rewrite is now the canonical `penguins-eggs`.
 
-*The rebranding is officially underway.*
+*The rebranding is complete.*
 
 — Piero Proietti
 
 ### 🥚 penguins-eggs
-After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: the old good  penguins-eggs became [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs) and we have [penguins-eggs](https://github.com/pieroproietti/penguins-eggs) oa-edition.
+After years of passionate work on the TypeScript **penguins-eggs**, its next evolution is here: the C/Go rewrite (formerly `oa-tools`) now carries the `penguins-eggs` name. The old TypeScript version lives on as [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs-legacy).
 penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
-The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. oa-tools already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
+The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. penguins-eggs already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 ---
@@ -82,7 +81,7 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
 
 This project collects stars, look to the sky... contribute!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/oa-tools&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/penguins-eggs&Date)
 
 ---
 *Created with passion by Piero Proietti.*

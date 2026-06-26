@@ -3,7 +3,7 @@
 // Il reader della configurazione condivisa: Krill legge gli stessi file
 // generati dalla pipeline di preparazione (prepareInstallerEnvironment)
 // che alimentano Calamares. Il contratto tra i due mondi è la directory
-// /etc/oa-tools.d/installer.d/ a configurazione finita.
+// /etc/penguins-eggs.d/installer.d/ a configurazione finita.
 package krill
 
 import (
@@ -19,7 +19,7 @@ import (
 
 // DefaultConfigRoot è la directory generata dalla pipeline di preparazione.
 // Deve coincidere con InstallerDRoot del pacchetto calamares.
-const DefaultConfigRoot = "/etc/oa-tools.d/installer.d"
+const DefaultConfigRoot = "/etc/penguins-eggs.d/installer.d"
 
 // --- STRUTTURE DEI FILE (formato Calamares) ---
 

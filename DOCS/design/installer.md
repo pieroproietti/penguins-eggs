@@ -21,7 +21,7 @@ The contract between the two worlds is the **finished configuration
 directory**:
 
 ```
-/etc/oa-tools.d/installer.d/
+/etc/penguins-eggs.d/installer.d/
 ├── settings.conf        # the module sequence (show / exec) and instances
 ├── branding/eggs/       # branding.desc: product name, version, URLs
 └── modules/*.conf       # partition, mount, users, unpackfs, removeuser, ...
@@ -32,7 +32,7 @@ The preparation pipeline (`prepareInstallerEnvironment` in `pkg/cmd`) runs
 inspects the live system (firmware, available filesystems, live user, display
 manager, squashfs location) and writes the directory above. From that point on:
 
-* **Calamares** is launched with `-c /etc/oa-tools.d/installer.d/` and does
+* **Calamares** is launched with `-c /etc/penguins-eggs.d/installer.d/` and does
   its own thing with its own C++/Python modules.
 * **Krill** parses the same files (`pkg/krill/config.go`) and executes the
   same logical sequence with its own Go modules (`pkg/krill/engine`).

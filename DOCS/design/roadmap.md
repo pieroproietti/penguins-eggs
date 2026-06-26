@@ -43,7 +43,7 @@ To be integrated in `NewDistro()` before the arm64/riscv64 ports.
 `/home/eggs` appears literally in the shell commands of `base.yaml.tmpl`. If the user changes `settings.remaster.work_dir`, the shell commands do not respect it. Solution: pass it as a template variable inside the shell commands too:
 
 ```yaml
-command: "/etc/oa-tools.d/scripts/copy-kernel-initrd.sh {{ .settings.remaster.work_dir }}"
+command: "/etc/penguins-eggs.d/scripts/copy-kernel-initrd.sh {{ .settings.remaster.work_dir }}"
 ```
 
 ### 4. generate-efi.img as a dedicated module

@@ -44,7 +44,7 @@ Presentation
                 anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h2>eggs: the reproductive system of penguins!</h2>")
+                text: qsTr("<h1>penguins-eggs</h1><br/><h2>eggs: the reproductive system of penguins!</h2>")
             }
         }
     }
@@ -62,7 +62,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Reproduce your system: pack everything into an egg. You can do it!</h2>")
+                text: qsTr("<h1>penguins-eggs</h1><br/><h2>Reproduce your system: pack everything into an egg. You can do it!</h2>")
             }
         }
     }
@@ -80,7 +80,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h2>Take it anywhere! Boot your environment live or install it on any hardware</h2>")
+                text: qsTr("<h1>penguins-eggs</h1><br/><h2>Take it anywhere! Boot your environment live or install it on any hardware</h2>")
             }
         }
     }
@@ -98,7 +98,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h2>It's a CLI tool, but it's simple and intuitive. Just type eggs to get the command list</h2>")
+                text: qsTr("<h1>penguins-eggs</h1><br/><h2>It's a CLI tool, but it's simple and intuitive. Just type eggs to get the command list</h2>")
             }
         }
     }
@@ -116,7 +116,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><br/><h3>Please wait, we're hatching...<br/>Don't interrupt the process,<br/>your new penguin will be ready soon!</h3>")
+                text: qsTr("<h1>penguins-eggs</h1><br/><h3>Please wait, we're hatching...<br/>Don't interrupt the process,<br/>your new penguin will be ready soon!</h3>")
             }
         }
     }
@@ -134,7 +134,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><h3>Join the oa-tools development, it's fun!</h3><h3>Use the tool, enjoy it, and collaborate if you want.</h3><br><h3>That's all, folks!</h3>")
+                text: qsTr("<h1>penguins-eggs</h1><h3>Join the penguins-eggs development, it's fun!</h3><h3>Use the tool, enjoy it, and collaborate if you want.</h3><br><h3>That's all, folks!</h3>")
             }
         }
     }
@@ -152,7 +152,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>oa-tools</h1><h2>Created by Piero Proietti</h2><h4>Issues: <a href='https://github.com/pieroproietti/oa-tools/issues'>github.com/pieroproietti/oa-tools/issues</a></h4><h4>Email: <a href='mailto:piero.proietti@gmail.com'>piero.proietti@gmail.com</a></h4><h4>Website: <a href='https://penguins-eggs.net'>penguins-eggs.net</a></h4>")
+                text: qsTr("<h1>penguins-eggs</h1><h2>Created by Piero Proietti</h2><h4>Issues: <a href='https://github.com/pieroproietti/penguins-eggs/issues'>github.com/pieroproietti/penguins-eggs/issues</a></h4><h4>Email: <a href='mailto:piero.proietti@gmail.com'>piero.proietti@gmail.com</a></h4><h4>Website: <a href='https://penguins-eggs.net'>penguins-eggs.net</a></h4>")
             }
         }
     }

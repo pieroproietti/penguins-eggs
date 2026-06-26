@@ -33,7 +33,7 @@ The plan must contain a top-level `plan` array of tasks. Each task carries at le
 }
 ```
 
-`oa` iterates over the array task by task, logging every step to `/var/log/oa-tools.log`. A failing task is recorded but does **not** abort the run: the loop continues, and the final exit code is non-zero if at least one task failed (the log reports the success/error count).
+`oa` iterates over the array task by task, logging every step to `/var/log/penguins-eggs.log`. A failing task is recorded but does **not** abort the run: the loop continues, and the final exit code is non-zero if at least one task failed (the log reports the success/error count).
 
 ---
 
@@ -93,7 +93,7 @@ This is the same routine behind `coa destroy` and the `oa cleanup` emergency han
 | `src/engine.c` | The dispatcher: routes each task to C (`run_native`) or to the Go worker (`coa ell` via fork + pipe). |
 | `src/native.c` | The native modules: `users` (Purge & Inject) and `umount` (lazy teardown). |
 | `src/oa-yocto.c` | Micro-library for passwd/shadow/group handling (OE-Core UID classification). |
-| `src/logger.c` | Minimal file logger (`/var/log/oa-tools.log`). |
+| `src/logger.c` | Minimal file logger (`/var/log/penguins-eggs.log`). |
 | `src/cJSON.c` | Vendored JSON parser — the only third-party code. |
 
 The philosophy is the one described in [philosophy.md](../design/philosophy.md): `oa` is the site foreman — blind to the overall plan, infallible at its specific task. Everything high-level (SquashFS, ISO generation, bootloaders) belongs to the Go modules executed through `coa ell` — see [ell.md](./ell.md).

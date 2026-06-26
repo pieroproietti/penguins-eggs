@@ -1,13 +1,13 @@
 # Maintainer: Piero Proietti <piero.proietti@gmail.com>
-pkgname=oa-tools
+pkgname=penguins-eggs
 pkgver={{.BaseVersion}}
 pkgrel={{.Rel}}
-pkgdesc="oa-tools universal Linux remastering"
+pkgdesc="penguins-eggs universal Linux remastering"
 url="https://penguins-eggs.net"
 arch="x86_64"
 license="GPL-3.0-only"
 
-# Merged and cleaned dependencies from penguins-eggs and new oa-tools requirements
+# Merged and cleaned dependencies from the former oa-tools and penguins-eggs
 depends="
     alpine-conf
     apk-tools
@@ -15,7 +15,6 @@ depends="
     bash-completion
     btrfs-progs
     cryptsetup
-    curl
     curl
     device-mapper-libs
     dosfstools
@@ -39,8 +38,8 @@ depends="
     zstd
 "
 
-# Handle transition from penguins-eggs
-replaces="penguins-eggs"
+# Handle transition from oa-tools (former package name)
+replaces="oa-tools"
 
 options="!check"
 

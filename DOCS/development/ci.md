@@ -30,7 +30,7 @@ Each leg of the matrix performs the same ritual:
 2. **Checkout & build:** full-history checkout (tags included, used for versioning), then `make` compiles both `oa` (C) and `coa` (Go).
 3. **Native packaging:** `make package` runs as `artisan` and drives the distro-specific packager (`abuild`, `makepkg`-style, `dpkg`, `rpmbuild`).
 4. **Live install test:** the freshly built package is installed on the running container — a real smoke test of the package metadata and file layout.
-5. **Artifact upload:** the package is published as a GitHub artifact (`oa-tools-<distro>`, 7-day retention).
+5. **Artifact upload:** the package is published as a GitHub artifact (`penguins-eggs-<distro>`, 7-day retention).
 
 Hammers therefore answers the question: *does the codebase compile and package cleanly on every supported family?*
 

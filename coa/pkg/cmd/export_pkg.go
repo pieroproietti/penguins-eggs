@@ -36,16 +36,16 @@ func handleExportPkg(clean bool) {
 
 	switch family {
 	case "debian":
-		pattern = "oa-tools*.deb"
+		pattern = "penguins-eggs*.deb"
 		extension = ".deb"
 	case "archlinux":
-		pattern = "oa-tools-arch-*.pkg.tar.zst"
+		pattern = "penguins-eggs-arch-*.pkg.tar.zst"
 		extension = ".pkg.tar.zst"
 	case "fedora":
-		pattern = "oa-tools*.rpm"
+		pattern = "penguins-eggs*.rpm"
 		extension = ".rpm"
 	case "manjaro":
-		pattern = "oa-tools-manjaro-*.pkg.tar.zst"
+		pattern = "penguins-eggs-manjaro-*.pkg.tar.zst"
 		extension = ".pkg.tar.zst"
 	default:
 		utils.Fatal("No specific export rule for distro %s of family: %s", distroID, family)

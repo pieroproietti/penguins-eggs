@@ -71,4 +71,4 @@ oa (C)                          coa ell (Go)
 next task of the plan
 ```
 
-One task, one worker process, one exit code. The output of every worker is teed by the C side into `/var/log/oa-tools.log`, so the whole flight — C and Go alike — lands in a single chronological log.
+One task, one worker process, one exit code. The output of every worker is teed by the C side into `/var/log/penguins-eggs.log`, so the whole flight — C and Go alike — lands in a single chronological log.

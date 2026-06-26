@@ -12,8 +12,8 @@ if [ -z "$TARGET_ROOT" ]; then
 fi
 
 echo "chroot-runner: copia gli script in $TARGET_ROOT"
-cp /etc/oa-tools.d/installer.d/oa-initramfs.sh "$TARGET_ROOT/tmp/"
-cp /etc/oa-tools.d/installer.d/oa-bootloader.sh "$TARGET_ROOT/tmp/"
+cp /etc/penguins-eggs.d/installer.d/oa-initramfs.sh "$TARGET_ROOT/tmp/"
+cp /etc/penguins-eggs.d/installer.d/oa-bootloader.sh "$TARGET_ROOT/tmp/"
 
 echo "chroot-runner: esegue gli script in $TARGET_ROOT"
 chroot "$TARGET_ROOT" /bin/bash /tmp/oa-initramfs.sh

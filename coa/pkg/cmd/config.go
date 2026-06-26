@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	customYAMLPath    = "/etc/oa-tools.d/custom.yaml"
-	customExcludePath = "/etc/oa-tools.d/custom.exclude.list"
+	customYAMLPath    = "/etc/penguins-eggs.d/custom.yaml"
+	customExcludePath = "/etc/penguins-eggs.d/custom.exclude.list"
 )
 
 const (
@@ -440,7 +440,7 @@ func (m configModel) viewSave() string {
 
 func saveConfigState(state configState) error {
 	var b strings.Builder
-	b.WriteString("# custom.yaml - oa-tools configuration overrides\n")
+	b.WriteString("# custom.yaml - penguins-eggs configuration overrides\n")
 	b.WriteString("remaster:\n")
 	b.WriteString(fmt.Sprintf("  password: \"%s\"\n", state.Password))
 	b.WriteString("  compression:\n")
@@ -452,7 +452,7 @@ func saveConfigState(state configState) error {
 		b.WriteString(fmt.Sprintf("  iso_prefix: \"%s\"\n", state.ISOPrefix))
 	}
 
-	if err := os.MkdirAll("/etc/oa-tools.d", 0755); err != nil {
+	if err := os.MkdirAll("/etc/penguins-eggs.d", 0755); err != nil {
 		return err
 	}
 	return os.WriteFile(customYAMLPath, []byte(b.String()), 0644)
@@ -460,9 +460,9 @@ func saveConfigState(state configState) error {
 
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "View and edit oa-tools configuration",
+	Short: "View and edit penguins-eggs configuration",
 	Long: `The 'config' command provides an interactive TUI to view and modify
-the oa-tools configuration stored in /etc/oa-tools.d/custom.yaml.
+the penguins-eggs configuration stored in /etc/penguins-eggs.d/custom.yaml.
 
 You can change the live user password, compression settings, ISO naming,
 and edit the custom exclude list for squashfs generation.`,

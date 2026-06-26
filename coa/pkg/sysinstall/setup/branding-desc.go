@@ -24,7 +24,7 @@ type BrandingConfig struct {
 
 // PrepareBrandingDesc genera dinamicamente il file branding.desc leggendo os-release.
 func brandingDesc(oaVersion string) error {
-	fullVersion := "oa-tools " + oaVersion
+	fullVersion := "penguins-eggs " + oaVersion
 
 	// 1. Carichiamo le info dal sistema (os-release)
 	osInfo := make(map[string]string)
@@ -60,12 +60,12 @@ func brandingDesc(oaVersion string) error {
 
 	supportUrl := osInfo["SUPPORT_URL"]
 	if supportUrl == "" {
-		supportUrl = "https://github.com/pieroproietti/oa-tools/issues/"
+		supportUrl = "https://github.com/pieroproietti/penguins-eggs/issues/"
 	}
 
 	bugReportUrl := osInfo["BUG_REPORT_URL"]
 	if bugReportUrl == "" {
-		bugReportUrl = "https://github.com/pieroproietti/oa-tools/issues/"
+		bugReportUrl = "https://github.com/pieroproietti/penguins-eggs/issues/"
 	}
 
 	releaseNotesUrl := homeUrl

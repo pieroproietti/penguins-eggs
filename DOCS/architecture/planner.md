@@ -23,7 +23,7 @@ The full plan (`OAPlan`) wraps the task array together with the `settings` and t
 `GeneratePlan()` iterates over `profile.Remaster` and switches on each step's `module`. Most steps pass through untouched — the planner just injects `live_root` — but a few modules are *expanded*:
 
 ### `mount_logic` → environment bootstrap
-The single abstract directive becomes one `shell` task invoking `/etc/oa-tools.d/scripts/bootstrap-liveroot.sh <work_dir> <is_github_action>`, the script that builds the whole staging tree (liveroot, overlays, bind mounts, API filesystems).
+The single abstract directive becomes one `shell` task invoking `/etc/penguins-eggs.d/scripts/bootstrap-liveroot.sh <work_dir> <is_github_action>`, the script that builds the whole staging tree (liveroot, overlays, bind mounts, API filesystems).
 
 ### `users` → two concrete tasks (`oa-users.go`)
 1. **`create-live-home`** (`shell`): creates the home directory and populates it from `/etc/skel`.
@@ -66,7 +66,7 @@ Called by `remaster` before planning, it generates `/tmp/coa/excludes.list` — 
 * **The Debian cryptdisks hack:** a single wildcard (`etc/rc*.d/*cryptdisks*`) — `mksquashfs -wildcards` does the scanning, no Go code needed.
 * **Privacy by mode:** in standard mode `root/*` (hidden files included) is razed; with `--clone`/`--crypted` user data survives but shell histories, trash bins and browser caches are still purged.
 * **GitHub Actions slimming:** on a runner, `usr`, `var` and `opt` are stripped — the structural smoketest exercises the whole chain (mksquashfs, xorriso, umount) in minutes, producing a non-functional but valid ISO.
-* **User exclusions:** `/etc/oa-tools.d/custom.exclude.list`, if present, is sanitized (comments skipped, leading slashes removed) and appended.
+* **User exclusions:** `/etc/penguins-eggs.d/custom.exclude.list`, if present, is sanitized (comments skipped, leading slashes removed) and appended.
 
 ---
 

@@ -54,14 +54,14 @@ func writePKGBUILD(ctx sysctx.RuntimeContext, stage string, dist string, data Re
 	return writeTemplate(tmplPath, destPath, data)
 }
 
-// writeSpecFile writes oa-tools.spec for fedora/opensuse
+// writeSpecFile writes penguins-eggs.spec for fedora/opensuse
 func writeSpecFile(ctx sysctx.RuntimeContext, stage string, dist string, data RecipeData) error {
 	// 1. Define the template name (fedora/opensuse)
 	tmplName := fmt.Sprintf("%s.tmpl", dist)
 	tmplPath := filepath.Join(ctx.ProjRoot, "coa/pkg/builder/templates", tmplName)
 
 	// The RPM destination file is conventionally named after the package
-	destPath := filepath.Join(stage, "oa-tools.spec")
+	destPath := filepath.Join(stage, "penguins-eggs.spec")
 
 	// 2. Merge using the helper function
 	return writeTemplate(tmplPath, destPath, data)

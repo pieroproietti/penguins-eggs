@@ -170,7 +170,7 @@ func GeneratePlan(
 
 	if isDebug {
 		fmt.Println("\n====================================================================")
-		fmt.Println("                     [oa-tools] DEBUG JSON PLAN                     ")
+		fmt.Println("                     [penguins-eggs] DEBUG JSON PLAN                     ")
 		fmt.Println("====================================================================")
 
 		jsonDebug, _ := json.MarshalIndent(plan, "", "  ")
