@@ -5,11 +5,11 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 | Past | Present |
 | :--- | :--- |
-| `oa-tools` (C/Go) | → **`penguins-eggs`** stable |
-| `penguins-eggs` (TypeScript) | → **`penguins-eggs (legacy)`** maintained |
+| `oa-tools` (C/Go) | → **`penguins-eggs`**  |
+| `penguins-eggs` (TypeScript) | → **`penguins-eggs-legacy`** maintained |
 
-**Existing users:** The legacy `penguins-eggs` remains supported. 
-**Note:** Package names remain unchanged for now to ensure a seamless transition.
+The `penguins-eggs-legacy` remains supported, the new `penguins-eggs` will be ready soon.
+**Note:** At the moment the packages name are unchanged `penguins-eggs` and `oa-tools`,
 
 *The rebranding is officially underway.*
 
