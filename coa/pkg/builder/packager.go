@@ -30,7 +30,7 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		cmd.Env = append(os.Environ(), fmt.Sprintf("REPODEST=%s", apkOutDir))
 
 	case "arch", "manjaro":
-		pkgFileName = fmt.Sprintf("penguins-eggs-%s-%s-%s-x86_64.pkg.tar.zst", dist, data.BaseVersion, data.Rel)
+		pkgFileName = fmt.Sprintf("penguins-eggs-%s-%s-x86_64.pkg.tar.zst", data.BaseVersion, data.Rel)
 		cmd = exec.Command("makepkg", "-s", "-f", "--noconfirm")
 		cmd.Dir = stage
 
