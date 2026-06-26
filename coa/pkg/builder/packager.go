@@ -40,7 +40,7 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		cmd = exec.Command("dpkg-deb", "--root-owner-group", "--build", stage, finalPath)
 
 	case "fedora", "opensuse":
-		pkgFileName = fmt.Sprintf("penguins-eggs-%s-%s-%s.x86_64.rpm", dist, data.BaseVersion, data.Rel)
+		pkgFileName = fmt.Sprintf("penguins-eggs-%s-%s.x86_64.rpm", data.BaseVersion, data.Rel)
 		rpmOutDir := filepath.Join(stage, "RPMS")
 		os.MkdirAll(rpmOutDir, 0755)
 
