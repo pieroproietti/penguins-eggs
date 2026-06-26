@@ -16,7 +16,7 @@ See AI context: https://penguins-eggs.net/llms.txt
 — Piero Proietti
 
 ### 🥚 penguins-eggs
-After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [oa-tools](https://github.com/pieroproietti/oa-tools).
+After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: the old good  penguins-eggs became [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs) and we have [penguins-eggs](https://github.com/pieroproietti/penguins-eggs) oa-edition.
 penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
 The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. oa-tools already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
 
