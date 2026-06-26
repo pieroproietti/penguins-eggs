@@ -1,7 +1,7 @@
-Name:           oa-tools
+Name:           penguins-eggs
 Version:        {{.BaseVersion}}
 Release:        {{.Rel}}%{?dist}
-Summary:        oa-tools universal Linux remastering
+Summary:        penguins-eggs universal Linux remastering
 License:        GPLv3
 URL:            https://penguins-eggs.net
 
@@ -27,9 +27,9 @@ Requires:       sudo
 Requires:       xorriso
 Requires:       yq
 
-# Gestione della transizione: diciamo a DNF di sostituire penguins-eggs
-Conflicts:      penguins-eggs
-Obsoletes:      penguins-eggs
+# Gestione della transizione: diciamo a DNF di sostituire oa-tools
+Conflicts:      oa-tools
+Obsoletes:      oa-tools
 
 # Disabilitiamo l'estrazione di debug automatica di RPM 
 # (spesso corrompe i binari Go se non configurata a dovere)
@@ -37,7 +37,7 @@ Obsoletes:      penguins-eggs
 %define __os_install_post %{nil}
 
 %description
-oa-tools: universal Linux remastering suite.
+penguins-eggs: universal Linux remastering suite.
 coa is the mind, oa is the arm. This suite provides the
 necessary tools for Linux system remastering and administration.
 
@@ -61,7 +61,7 @@ cp -a %{_stagedir}/etc/* %{buildroot}/etc/
 /usr/bin/oa
 /usr/bin/coa
 /usr/bin/eggs
-/etc/oa-tools.d/
+/etc/penguins-eggs.d/
 /usr/share/man/man1/*
 /usr/share/bash-completion/completions/*
 /usr/share/fish/vendor_completions.d/*
@@ -69,4 +69,4 @@ cp -a %{_stagedir}/etc/* %{buildroot}/etc/
 
 %changelog
 * {{.RpmDate}} Piero Proietti <piero.proietti@gmail.com> - {{.BaseVersion}}-{{.Rel}}
-- Automated build via oa-tools builder
+- Automated build via penguins-eggs builder

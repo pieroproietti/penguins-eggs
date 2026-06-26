@@ -23,7 +23,7 @@ In short: replace `eggs` with `coa` if you want, or keep using `eggs` — both w
 
 ### From packages (recommended)
 
-Packages are built automatically for every supported family. Download the latest from [GitHub Releases](https://github.com/pieroproietti/oa-tools/releases) or add the official repository:
+Packages are built automatically for every supported family. Download the latest from [GitHub Releases](https://github.com/pieroproietti/penguins-eggs/releases) or add the official repository:
 
 ```bash
 sudo coa tools repo add
@@ -32,8 +32,8 @@ sudo coa tools repo add
 ### From source
 
 ```bash
-git clone https://github.com/pieroproietti/oa-tools.git
-cd oa-tools
+git clone https://github.com/pieroproietti/penguins-eggs.git
+cd penguins-eggs
 make
 sudo make install
 ```
@@ -76,7 +76,7 @@ sudo coa remaster
 sudo coa config
 ```
 
-Change the live user password, the compression algorithm (zstd/xz/lz4/gzip), the compression level, the ISO filename prefix, and edit the custom exclude list — all from a single interface. Settings are saved to `/etc/oa-tools.d/custom.yaml` and applied automatically on the next `coa remaster`.
+Change the live user password, the compression algorithm (zstd/xz/lz4/gzip), the compression level, the ISO filename prefix, and edit the custom exclude list — all from a single interface. Settings are saved to `/etc/penguins-eggs.d/custom.yaml` and applied automatically on the next `coa remaster`.
 
 ### Remaster with LUKS encryption (Debian family)
 

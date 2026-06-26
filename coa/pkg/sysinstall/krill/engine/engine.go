@@ -20,7 +20,7 @@ const logPath = "/var/log/krill.log"
 
 // Plan raccoglie tutte le scelte necessarie all'installazione.
 type Plan struct {
-	ConfigRoot string            // /etc/oa-tools.d/installer.d
+	ConfigRoot string            // /etc/penguins-eggs.d/installer.d
 	Exec       []string          // sequenza moduli da settings.conf
 	Instances  map[string]string // id shellprocess -> file di configurazione
 

@@ -22,7 +22,7 @@ HOOKS_DIR="$LIVEROOT/etc/initramfs-tools/hooks"
 
 echo "LUKS: preparing LUKS initrd for kernel $KERNEL..."
 mkdir -p "$PREMOUNT_DIR"
-cp /etc/oa-tools.d/scripts/boot-encrypted-root.sh "$PREMOUNT_DIR/"
+cp /etc/penguins-eggs.d/scripts/boot-encrypted-root.sh "$PREMOUNT_DIR/"
 chmod +x "$PREMOUNT_DIR/boot-encrypted-root.sh"
 echo "LUKS: boot-encrypted-root.sh installed in $PREMOUNT_DIR"
 printf "# Dummy entry to ensure cryptsetup is included\ncryptroot UUID=none none luks\n" \

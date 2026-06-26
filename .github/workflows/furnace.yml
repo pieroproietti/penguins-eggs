@@ -15,7 +15,7 @@ jobs:
             vmid: 301 # 👈 Modifica se l'ID su Proxmox è diverso
             snapshot: virgin
             subnet: "192.168.1"
-            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-alpine.zip"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-alpine.zip"
             prep_cmd: "sh -c 'apk update && apk add wget unzip sshpass'"
             install_cmd: "apk add --allow-untrusted ./*.apk"
 
@@ -23,7 +23,7 @@ jobs:
             vmid: 302
             snapshot: virgin
             subnet: "192.168.1" # 👈 La classe IP della tua rete (senza l'ultimo numero)
-            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-arch.zip"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-arch.zip"
             prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
             
@@ -31,7 +31,7 @@ jobs:
             vmid: 303
             snapshot: virgin
             subnet: "192.168.1" # 👈 La classe IP della tua rete
-            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-debian.zip"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt install -y ./*.deb"
 
@@ -39,7 +39,7 @@ jobs:
             vmid: 304
             snapshot: virgin
             subnet: "192.168.1"
-            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-fedora.zip"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-fedora.zip"
             prep_cmd: "sh -c 'dnf makecache && dnf install -y wget unzip sshpass'"
             install_cmd: "dnf install -y ./*.rpm"
 
@@ -47,7 +47,7 @@ jobs:
             vmid: 305
             snapshot: virgin
             subnet: "192.168.1"
-            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-manjaro.zip"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-manjaro.zip"
             prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
 
@@ -55,7 +55,7 @@ jobs:
             vmid: 306
             snapshot: virgin
             subnet: "192.168.1"
-            artifact_url: "https://github.com/pieroproietti/oa-tools/releases/latest/download/oa-tools-opensuse.zip"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-opensuse.zip"
             prep_cmd: "sh -c 'zypper -n refresh && zypper -n install wget unzip sshpass'"
             install_cmd: "zypper -n --no-gpg-checks install ./*.rpm"
             
@@ -116,7 +116,7 @@ jobs:
           done
           echo -e "\n✅ SSH service ready!"
 
-      - name: 🛠️ Installa package oa-tools, Remaster and Export
+      - name: 🛠️ Installa package penguins-eggs, Remaster and Export
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
@@ -128,7 +128,7 @@ jobs:
             wget -q -O pacchetti.zip "${{ matrix.artifact_url }}"
             unzip -o pacchetti.zip
             
-            echo "⚙️ oa-tools Installation..."
+            echo "⚙️ penguins-eggs Installation..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ matrix.install_cmd }}
             
             echo "💿 Creating Live ISO (eggs remaster)..."

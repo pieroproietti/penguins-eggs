@@ -11,7 +11,7 @@ Its responsibility is purely logical and structural: it turns the *human-readabl
 This function is the beating heart of the package. Instead of forcing the user to specify which profile to use, the parser figures it out by itself:
 
 1. **Identity:** uses `distro.NewDistro()` to read `/etc/os-release` and learn who the host is.
-2. **Dev/Prod fallback:** looks for the Brain intelligently — first the local development path (`coa/brain.d`), then the production system path (`/etc/oa-tools.d/brain.d`). The tool works both while you write code and once installed on the end user's OS.
+2. **Dev/Prod fallback:** looks for the Brain intelligently — first the local development path (`coa/brain.d`), then the production system path (`/etc/penguins-eggs.d/brain.d`). The tool works both while you write code and once installed on the end user's OS.
 3. **Index parsing:** reads `index.yaml`, decoding it into the `BrainIndex` structure.
 4. **Matching engine:** walks the `Distributions` list (`DistroMap` entries: `id`, `like`, `file`), looking for an exact match on the distro ID or an indirect match through the `like` array (e.g. it understands that a Debian derivative must use the Debian module).
 
@@ -51,7 +51,7 @@ The rendered output is finally decoded with `yaml.Unmarshal` into the `Profile` 
 
 ## 🎛️ 4. The Override: `LoadCustomSettings()`
 
-After the profile is built, the parser looks for `custom.yaml`/`custom.yml` (via Viper) in `/etc/oa-tools.d/` or the current directory. If found, its values **replace** `Settings.Remaster` — this is how the end user changes live user, password or compression without ever touching the Brain.
+After the profile is built, the parser looks for `custom.yaml`/`custom.yml` (via Viper) in `/etc/penguins-eggs.d/` or the current directory. If found, its values **replace** `Settings.Remaster` — this is how the end user changes live user, password or compression without ever touching the Brain.
 
 ---
 

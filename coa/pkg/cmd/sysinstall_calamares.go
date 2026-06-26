@@ -38,7 +38,7 @@ func RunCalamaresInstaller(oaVersion string) {
 	}
 	defer logFile.Close()
 
-	cmdExec := exec.Command("calamares", "-d", "-D", "8", "-c", "/etc/oa-tools.d/installer.d/")
+	cmdExec := exec.Command("calamares", "-d", "-D", "8", "-c", "/etc/penguins-eggs.d/installer.d/")
 
 	multiWriter := io.MultiWriter(os.Stdout, logFile)
 	cmdExec.Stdout = multiWriter

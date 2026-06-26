@@ -1,14 +1,14 @@
 See AI context: https://penguins-eggs.net/llms.txt
-### 🥚 oa-tools - A Next-Generation Remastering Suite
-After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [oa-tools](https://github.com/pieroproietti/oa-tools).
-oa-tools is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
-The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. oa-tools already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
+### 🥚 penguins-eggs - A Next-Generation Remastering Suite
+After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs).
+penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
+The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. penguins-eggs already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
-# Changelog - oa-tools
+# Changelog - penguins-eggs
 
-## Release Notes: oa-tools v0.9.1 - "Functional parity" 2026-06-20
+## Release Notes: penguins-eggs v0.9.1 - "Functional parity" 2026-06-20
 
 penguins-eggs (oa edition) has reached functional parity with penguins-egg (legacy).
 
@@ -34,12 +34,12 @@ penguins-eggs (oa edition) has reached functional parity with penguins-egg (lega
 ### Translation
 - All Italian user-facing messages translated to English (Go + C)
 
-**Full Changelog**: https://github.com/pieroproietti/oa-tools/compare/v0.9.0...v0.9.1
+**Full Changelog**: https://github.com/pieroproietti/penguins-eggs/compare/v0.9.0...v0.9.1
 
 ###   added  ISO size and time in a single success line;
 
 
-## Release Notes: oa-tools v0.9.0 - "The Installer" 2026-06-19
+## Release Notes: penguins-eggs v0.9.0 - "The Installer" 2026-06-19
 
 ### Overview
 This release introduces **Krill**, the native TUI installer, and completes a deep reorganization of the installation architecture with the `sysinstall` package. It also includes LUKS encryption support, full English internationalization, and significant security hardening.
@@ -76,10 +76,10 @@ This release introduces **Krill**, the native TUI installer, and completes a dee
 - Makefile refactoring
 - Universal Calamares configuration
 
-## Release Notes: oa-tools v0.8.6 - "The Logic Tractor" 2026-06-10
+## Release Notes: penguins-eggs v0.8.6 - "The Logic Tractor" 2026-06-10
 
 ### Overview
-This release marks a fundamental shift in the development lifecycle of `oa-tools`. We have transitioned from a monolithic, script-based approach to a highly orchestrated, multi-layered architecture. By separating high-level planning from mechanical execution, we have transformed the build process into a robust, predictable pipeline.
+This release marks a fundamental shift in the development lifecycle of `penguins-eggs`. We have transitioned from a monolithic, script-based approach to a highly orchestrated, multi-layered architecture. By separating high-level planning from mechanical execution, we have transformed the build process into a robust, predictable pipeline.
 
 ### The Architectural Shift
 In developing this version, we embraced a design philosophy rooted in the separation of concerns:
@@ -94,7 +94,7 @@ In developing this version, we embraced a design philosophy rooted in the separa
 * **Atomic Cleanup:** Through the integration of the final cleanup phase directly into the deployment logic, we have ensured that no live artifacts persist in the installed environment. The system is now as clean as a fresh, official distribution install, with zero manual overhead.
 
 ### Reflection
-Building this system has been an exercise in structural engineering. Just as modern intelligent systems rely on the separation of data, logic, and execution, `oa-tools` now follows these fundamental laws. The "Logic Tractor" no longer struggles with the "hoe"—the separation of the orchestrator from the machinery has granted us a level of scalability and stability that was previously unattainable.
+Building this system has been an exercise in structural engineering. Just as modern intelligent systems rely on the separation of data, logic, and execution, `penguins-eggs` now follows these fundamental laws. The "Logic Tractor" no longer struggles with the "hoe"—the separation of the orchestrator from the machinery has granted us a level of scalability and stability that was previously unattainable.
 
 This release is not just a collection of bug fixes; it is the foundation for a professional-grade build infrastructure.
 
@@ -128,7 +128,7 @@ With the YAML/Go/C orchestration bridge now fully operational and stable, the fr
   - **Dynamic handling for Arch Linux (Kiro/Archiso)**: Resolved the recovery shell boot hang (`device did not show up`) by injecting the GRUB `probe` module. GRUB dynamically calculates the host partition's UUID at runtime, passing it to Archiso via `img_dev` and `img_loop` parameters.
   - **Native Debian/Ubuntu integration**: Seamless support for the `live-boot` engine by automatically mapping the `findiso` boot parameter.
   - **Automation with `--write` / `-w` flag**: Added the ability to directly inject the generated `menuentry` into `/etc/grub.d/40_custom`.
-  - **Surgical replacement using markers**: The injection mechanism uses unique identifier comments based on the ISO filename (`# >>> oa-tools start...`). This automatically overwrites existing entries when rebuilding the same ISO, preventing file clutter while strictly preserving file execution permissions (`0755`).
+  - **Surgical replacement using markers**: The injection mechanism uses unique identifier comments based on the ISO filename (`# >>> penguins-eggs start...`). This automatically overwrites existing entries when rebuilding the same ISO, preventing file clutter while strictly preserving file execution permissions (`0755`).
   - **Smart host distro detection**: Automatically identifies the host operating system to suggest or run the correct bootloader update command (`update-grub` on Debian/Ubuntu, `grub-mkconfig` on Arch/Fedora).
   
 
@@ -153,27 +153,27 @@ With the YAML/Go/C orchestration bridge now fully operational and stable, the fr
 ### Deprecated / Beta
 - `repo add/rm` commands are currently in Beta for openSUSE and Alpine Linux pending minor compatibility fixes.
 
-## 🚀 oa-tools v0.8.2: Packaging fixes, dynamic exclusions & Config rollout
+## 🚀 penguins-eggs v0.8.2: Packaging fixes, dynamic exclusions & Config rollout
 
 I believe these new features will be highly interesting for many users: the ability to change the live user password and customize the compression algorithm, as well as easily add or remove custom exclusions during the remastering process.
 
-* **feat(config):** officially published the configuration file (`/etc/oa-tools.d/custom.yaml`, previously omitted by mistake). Users can now easily customize system-wide settings, including the live user password, as well as mksquashfs compression algorithms and parameters.
-* **feat(engine):** revamped `/etc/oa-tools.d/custom.exclude.list` with robust parsing (elegantly ignoring comments and blank lines) and populated it with default exclusions for heavy container engines (Docker, Podman, LXC/LXD) and Snap. Users can easily disable these defaults or expand the list at will to keep their generated ISOs perfectly lean.
+* **feat(config):** officially published the configuration file (`/etc/penguins-eggs.d/custom.yaml`, previously omitted by mistake). Users can now easily customize system-wide settings, including the live user password, as well as mksquashfs compression algorithms and parameters.
+* **feat(engine):** revamped `/etc/penguins-eggs.d/custom.exclude.list` with robust parsing (elegantly ignoring comments and blank lines) and populated it with default exclusions for heavy container engines (Docker, Podman, LXC/LXD) and Snap. Users can easily disable these defaults or expand the list at will to keep their generated ISOs perfectly lean.
 
-## 🚀 oa-tools v0.8.0: The Architectural Leap & Expanded Horizons
+## 🚀 penguins-eggs v0.8.0: The Architectural Leap & Expanded Horizons
 
-This is a fundamental release for `oa-tools`, introducing a rock-solid template architecture and extended support for new distributions.
+This is a fundamental release for `penguins-eggs`, introducing a rock-solid template architecture and extended support for new distributions.
 
 ### ✨ Key Features & Improvements
 * **Bulletproof Template Architecture:** Introduced strict `core_` and `hook_` nomenclature for all templates. This eliminates silent "shadowing" conflicts and provides a highly scalable foundation (ready for the upcoming Bianbu OS / RISC-V porting).
 * **Alpine "Sidecar" Parachute:** Implemented a native recovery system in the initramfs for Alpine Linux, ensuring stable OverlayFS mounting and virtual filesystem relocation right before OpenRC boot.
-* **openSUSE Support:** Added full support for openSUSE, bringing `oa-tools` on par with the historical parent distributions supported by `penguins-eggs`.
+* **openSUSE Support:** Added full support for openSUSE, bringing `penguins-eggs` on par with the historical parent distributions supported by `penguins-eggs`.
 * **CLI & UX Enhancements (Cobra):** * Native shell auto-completion (Bash/Zsh/Fish) dynamically generated during `.deb` packaging for both `coa` and the legacy `eggs` alias.
     * New `coa export log` command to instantly extract debug logs to a remote host via SSH.
 * **Semantic Polish:** Renamed the destructive command to `eggs destroy` to align with standard DevOps terminology.
 
 
-### 🐧 oa-tools v0.7.9 - The CI/CD & Architecture Release
+### 🐧 penguins-eggs v0.7.9 - The CI/CD & Architecture Release
 
 **Evolution Architecture**
 * **Decoupled Engine & Pilot:** Completely refactored the Go architecture to eliminate import cycles. Environmental awareness (like detecting GitHub Actions) is now handled natively by the `cmd` package (Command Bridge), leaving `engine` and `pilot` strictly agnostic and modular.
@@ -182,7 +182,7 @@ This is a fundamental release for `oa-tools`, introducing a rock-solid template 
 **CI/CD & Automation Breakthrough**
 * **GitHub Actions Turbo Mode:** Introduced automatic CI detection. When running on GitHub Actions, the system auto-injects a "Turbo" profile for `mksquashfs`, applying aggressive zstd compression and smart exclusions to slash ISO size (down to 6.4GB) and drastically reduce build times.
 
-## 🐧 oa-tools v0.7.8 - 
+## 🐧 penguins-eggs v0.7.8 - 
 
 - **Smart Desktop Management**: Installation links are now dynamically handled and automatically removed after a successful installation, keeping the target `/etc/skel` clean.
 
@@ -210,7 +210,7 @@ This is a fundamental release for `oa-tools`, introducing a rock-solid template 
 
 ## Release v0.7.6: New Template Architecture** - 2026-05-10
 
-This release marks a fundamental structural shift for `oa-tools`: the transition to a modular build system. 
+This release marks a fundamental structural shift for `penguins-eggs`: the transition to a modular build system. 
 
 We have separated the system logic using templates:
 * **Universal framework:** Actions common to all systems are now centralized in `brain.d/base.yaml.tmpl`.
@@ -230,7 +230,7 @@ This approach drastically reduces code complexity compared to previous versions 
 ### Fixed
 - **Fedora UEFI Visibility**: Added `efi_gop` and `efi_uga` modules to GRUB configuration to fix splash screen issues in UEFI mode.
 - **Isolinux Compatibility**: Standardized the `APPEND` syntax for boot parameters, ensuring a successful boot on Fedora and other non-Debian systems even when using Debian bootloaders.
-- **RPM Asset Packaging**: Updated the Go builder to correctly package and deploy branding assets into `/etc/oa-tools.d/brain.d/assets/`.
+- **RPM Asset Packaging**: Updated the Go builder to correctly package and deploy branding assets into `/etc/penguins-eggs.d/brain.d/assets/`.
 
 ### Technical Notes
 - The "oa" dialect is now fully established for egg-based eggs-bananas remastering.
@@ -240,7 +240,7 @@ This approach drastically reduces code complexity compared to previous versions 
 
 Fedora is now aligned to the others distros: arch, debian and manjaro.  
 
-This release marks a turning point for **oa-tools**. We have moved beyond chasing the specific quirks of individual distributions to build a universal, fluid, and frictionless infrastructure. 
+This release marks a turning point for **penguins-eggs**. We have moved beyond chasing the specific quirks of individual distributions to build a universal, fluid, and frictionless infrastructure. 
 
 ### 🏗️ Architectural Evolution
 The core has been surgically redesigned to separate concerns between the "Brain" and the "Muscle":
@@ -284,7 +284,7 @@ This release marks a significant step in the **eggs-bananas** philosophy, delive
 This minor release focuses on code purification and structural robustness, following our core "Eggs & Bananas" philosophy. We've removed redundant configuration files and refined the distro-agnostic engine for better performance and reliability.
 
 ### Added
-- **Smart Directory Management**: The Arch Linux and Manjaro builders now correctly install the `brain.d` logic directory into `/etc/oa-tools.d/`, ensuring agnostic mapping is available immediately after installation.
+- **Smart Directory Management**: The Arch Linux and Manjaro builders now correctly install the `brain.d` logic directory into `/etc/penguins-eggs.d/`, ensuring agnostic mapping is available immediately after installation.
 - **Enhanced Distro Detection**: Integration with system `ID_LIKE` metadata allows for seamless recognition of derivative distributions without external mapping files.
 
 ### Changed

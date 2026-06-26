@@ -1,7 +1,7 @@
-Name:           oa-tools
+Name:           penguins-eggs
 Version:        {{.BaseVersion}}
 Release:        {{.Rel}}
-Summary:        oa-tools universal Linux remastering
+Summary:        penguins-eggs universal Linux remastering
 License:        GPL-3.0-only
 Group:          System/Management
 URL:            https://penguins-eggs.net
@@ -27,15 +27,15 @@ Requires:       xorriso
 Requires:       yq
 
 # Gestione della transizione: diciamo a Zypper di sostituire la vecchia versione
-Conflicts:      penguins-eggs
-Obsoletes:      penguins-eggs
+Conflicts:      oa-tools
+Obsoletes:      oa-tools
 
 # Disabilitiamo l'estrazione di debug automatica e le manipolazioni post-installazione
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
 %description
-oa-tools: universal Linux remastering suite.
+penguins-eggs: universal Linux remastering suite.
 coa is the mind, oa is the arm. This suite provides the
 necessary tools for Linux system remastering and administration.
 
@@ -53,7 +53,7 @@ cp -a %{_stagedir}/etc/* %{buildroot}/etc/
 /usr/bin/oa
 /usr/bin/coa
 /usr/bin/eggs
-/etc/oa-tools.d/
+/etc/penguins-eggs.d/
 /usr/share/man/man1/*
 /usr/share/bash-completion/completions/*
 /usr/share/fish/vendor_completions.d/*
@@ -62,4 +62,4 @@ cp -a %{_stagedir}/etc/* %{buildroot}/etc/
 
 %changelog
 * {{.RpmDate}} Piero Proietti <piero.proietti@gmail.com> - {{.BaseVersion}}-{{.Rel}}
-- Automated build via oa-tools builder for openSUSE
+- Automated build via penguins-eggs builder for openSUSE

@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
       end
 
       # Condivisione con mappatura forzata dell'utente vagrant dentro la VM tramite 9p
-      subconfig.vm.synced_folder ".", "/home/vagrant/oa-tools", 
+      subconfig.vm.synced_folder ".", "/home/vagrant/penguins-eggs", 
         type: "9p", 
         disabled: false, 
         mount_options: ["version=9p2000.L", "trans=virtio", "access=any", "uid=1000", "gid=1000"]

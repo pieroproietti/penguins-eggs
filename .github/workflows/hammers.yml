@@ -198,6 +198,6 @@ jobs:
       - name: 📤 Publish Package as Artifact ${{ matrix.distro }}
         uses: actions/upload-artifact@v4
         with:
-          name: oa-tools-${{ matrix.distro }}
+          name: penguins-eggs-${{ matrix.distro }}
           path: export/
           retention-days: 7

@@ -199,10 +199,10 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	}
 
 	// ==========================================================
-	// 6. Liste Utente (/etc/oa-tools.d/custom.exclude.list)
+	// 6. Liste Utente (/etc/penguins-eggs.d/custom.exclude.list)
 	// ==========================================================
-	// Allineato al nuovo dialetto oa-tools
-	userList := "/etc/oa-tools.d/custom.exclude.list"
+	// Allineato al nuovo dialetto penguins-eggs
+	userList := "/etc/penguins-eggs.d/custom.exclude.list"
 
 	if data, err := os.ReadFile(userList); err == nil {
 		lines := strings.Split(string(data), "\n")

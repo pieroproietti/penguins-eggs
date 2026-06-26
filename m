@@ -11,28 +11,28 @@ make clean package "$@"
 
 case "$ID" in
     alpine)
-        sudo apk add --allow-untrusted oa-tools-alpine*.apk
+        sudo apk add --allow-untrusted penguins-eggs-alpine*.apk
         ;;
 
     arch)
-        sudo pacman -U --noconfirm oa-tools-manjaro*.pkg.tar.zst
+        sudo pacman -U --noconfirm penguins-eggs-manjaro*.pkg.tar.zst
         ;;
 
     debian)
-        sudo dpkg -i oa-tools_*.deb
+        sudo dpkg -i penguins-eggs_*.deb
         ;;
     fedora)
-        sudo dnf install -y oa-tools-fedora*.rpm
+        sudo dnf install -y penguins-eggs-fedora*.rpm
         ;;
     opensuse*)
-        sudo zypper install -y oa-tools-opensuse*.rpm
+        sudo zypper install -y penguins-eggs-opensuse*.rpm
         ;;
     *)
         # fallback su LIKE_ID
         case "$ID_LIKE" in
-            *arch*)   sudo pacman -U --noconfirm oa-tools-arch*.pkg.tar.zst ;;
-            *debian*|*devuan*|*ubuntu*) sudo dpkg -i oa-tools_*.deb ;;
-            *fedora*|*rhel*) sudo dnf install -y oa-tools-fedora*.rpm ;;
+            *arch*)   sudo pacman -U --noconfirm penguins-eggs-arch*.pkg.tar.zst ;;
+            *debian*|*devuan*|*ubuntu*) sudo dpkg -i penguins-eggs_*.deb ;;
+            *fedora*|*rhel*) sudo dnf install -y penguins-eggs-fedora*.rpm ;;
             *) echo "Distro non supportata: $ID"; exit 1 ;;
         esac
         ;;

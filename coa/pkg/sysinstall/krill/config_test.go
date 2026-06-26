@@ -24,7 +24,7 @@ componentName: eggs
 strings:
   productName:      "DEBIAN GNU/LINUX 13"
   shortProductName: "debian gnu/linux 13"
-  version:          "oa-tools 0.8.6"
+  version:          "penguins-eggs 0.8.6"
 `))
 
 	mustWrite(t, filepath.Join(root, "modules", "partition.conf"), []byte(`---

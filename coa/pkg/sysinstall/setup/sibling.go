@@ -10,7 +10,7 @@ import (
 // siblingPath è scritto dal remaster (bootstrap-liveroot.sh) e vive fuori
 // da InstallerDRoot, che BuildInstaller rigenera da zero ad ogni avvio
 // dell'installer: è l'unico stato che sopravvive a quel wipe.
-const siblingPath = "/etc/oa-tools.d/sibling.yaml"
+const siblingPath = "/etc/penguins-eggs.d/sibling.yaml"
 
 // Sibling rispecchia sibling.yaml. Per ora registra solo il mode di
 // remaster (standard/clone/crypted); in futuro potrà crescere.

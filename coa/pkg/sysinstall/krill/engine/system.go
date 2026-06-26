@@ -47,7 +47,7 @@ func runFstab(c *ctx) error {
 	}
 
 	lines := []string{
-		"# /etc/fstab - generato da krill (oa-tools)",
+		"# /etc/fstab - generato da krill (penguins-eggs)",
 		fmt.Sprintf("UUID=%s / %s %s 0 1", c.uuidOf(l.Root), plan.FsType, rootOptions),
 	}
 	if l.Esp != "" {

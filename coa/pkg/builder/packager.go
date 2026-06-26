@@ -19,7 +19,7 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 
 	switch dist {
 	case "alpine":
-		pkgFileName = fmt.Sprintf("oa-tools-%s-r%s.apk", data.BaseVersion, data.Rel)
+		pkgFileName = fmt.Sprintf("penguins-eggs-%s-r%s.apk", data.BaseVersion, data.Rel)
 
 		apkOutDir := filepath.Join(stage, "APK")
 		os.MkdirAll(apkOutDir, 0755)
@@ -30,21 +30,21 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		cmd.Env = append(os.Environ(), fmt.Sprintf("REPODEST=%s", apkOutDir))
 
 	case "arch", "manjaro":
-		pkgFileName = fmt.Sprintf("oa-tools-%s-%s-%s-x86_64.pkg.tar.zst", dist, data.BaseVersion, data.Rel)
+		pkgFileName = fmt.Sprintf("penguins-eggs-%s-%s-%s-x86_64.pkg.tar.zst", dist, data.BaseVersion, data.Rel)
 		cmd = exec.Command("makepkg", "-s", "-f", "--noconfirm")
 		cmd.Dir = stage
 
 	case "debian":
-		pkgFileName = fmt.Sprintf("oa-tools_%s-%s_amd64.deb", data.BaseVersion, data.Rel)
+		pkgFileName = fmt.Sprintf("penguins-eggs_%s-%s_amd64.deb", data.BaseVersion, data.Rel)
 		finalPath := filepath.Join(ctx.ProjRoot, pkgFileName)
 		cmd = exec.Command("dpkg-deb", "--root-owner-group", "--build", stage, finalPath)
 
 	case "fedora", "opensuse":
-		pkgFileName = fmt.Sprintf("oa-tools-%s-%s-%s.x86_64.rpm", dist, data.BaseVersion, data.Rel)
+		pkgFileName = fmt.Sprintf("penguins-eggs-%s-%s-%s.x86_64.rpm", dist, data.BaseVersion, data.Rel)
 		rpmOutDir := filepath.Join(stage, "RPMS")
 		os.MkdirAll(rpmOutDir, 0755)
 
-		specFile := filepath.Join(stage, "oa-tools.spec")
+		specFile := filepath.Join(stage, "penguins-eggs.spec")
 
 		cmd = exec.Command("rpmbuild", "-bb",
 			"--define", fmt.Sprintf("_stagedir %s", stage),

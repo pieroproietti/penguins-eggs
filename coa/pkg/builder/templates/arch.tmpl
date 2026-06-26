@@ -1,8 +1,8 @@
 # Maintainer: Piero Proietti <piero.proietti@gmail.com>
-pkgname=oa-tools-arch
+pkgname=penguins-eggs-arch
 pkgver={{.BaseVersion}}
 pkgrel={{.Rel}}
-pkgdesc="oa-tools universal Linux remastering"
+pkgdesc="penguins-eggs universal Linux remastering"
 arch=('x86_64')
 url="https://penguins-eggs.net"
 license=('GPL3')
@@ -20,7 +20,7 @@ depends=(
 	'glibc'
 	'gnupg'
 	'grub'
-	'jq'
+	'yq'
 	'libarchive'
 	'libisoburn'
 	'mtools'
@@ -31,8 +31,8 @@ depends=(
 )
 
 # Indichiamo a pacman che questo pacchetto sostituisce la vecchia guardia
-conflicts=('penguins-eggs')
-replaces=('penguins-eggs')
+conflicts=('oa-tools-arch' 'oa-tools')
+replaces=('oa-tools-arch' 'oa-tools')
 
 package() {
     # Tracciamo i confini

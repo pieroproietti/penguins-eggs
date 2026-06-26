@@ -1,6 +1,6 @@
 # ==============================================================================
 # FILE: base.yaml.tmpl
-# ROLE: Main orchestration plan (YAML) for oa-tools framework
+# ROLE: Main orchestration plan (YAML) for penguins-eggs framework
 # ==============================================================================
 
 remaster:
@@ -18,7 +18,7 @@ remaster:
     description: "Create a directory and copy the bootloader assets (BIOS/UEFI)"
     module: "shell"
     params:
-      command: "/etc/oa-tools.d/scripts/bootloader-copy.sh /tmp/coa/bootloaders /home/eggs/isodir"
+      command: "/etc/penguins-eggs.d/scripts/bootloader-copy.sh /tmp/coa/bootloaders /home/eggs/isodir"
 
 # ----------------------------------------------------------------------------
 # 3. EFI IMAGE GENERATION
@@ -44,13 +44,13 @@ remaster:
     module: "shell"
     params:
       command: |
-        [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ] && cp -f /etc/oa-tools.d/brain.d/assets/splash.png /home/eggs/isodir/boot/grub/splash.png
-        [ -f "/etc/oa-tools.d/brain.d/assets/splash.png" ] && cp -f /etc/oa-tools.d/brain.d/assets/splash.png /home/eggs/isodir/isolinux/splash.png
+        [ -f "/etc/penguins-eggs.d/brain.d/assets/splash.png" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/splash.png /home/eggs/isodir/boot/grub/splash.png
+        [ -f "/etc/penguins-eggs.d/brain.d/assets/splash.png" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/splash.png /home/eggs/isodir/isolinux/splash.png
 
         if [ -f "/usr/share/grub/unicode.pf2" ]; then
             cp -f /usr/share/grub/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
-        elif [ -f "/etc/oa-tools.d/brain.d/assets/unicode.pf2" ]; then
-            cp -f /etc/oa-tools.d/brain.d/assets/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
+        elif [ -f "/etc/penguins-eggs.d/brain.d/assets/unicode.pf2" ]; then
+            cp -f /etc/penguins-eggs.d/brain.d/assets/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
         fi
 
 # ----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ remaster:
     module: "script"
     chroot: false
     params:
-      src: "/etc/oa-tools.d/scripts/generate-menus.sh"
+      src: "/etc/penguins-eggs.d/scripts/generate-menus.sh"
       args:
         - "/home/eggs/isodir"
         - '{{ template "distro_boot_params" . }}'
@@ -185,7 +185,7 @@ remaster:
     chroot: false
     params:
       command: |
-        cp /etc/oa-tools.d/scripts/trust-desktop.sh /home/eggs/liveroot/usr/local/bin/trust-desktop
+        cp /etc/penguins-eggs.d/scripts/trust-desktop.sh /home/eggs/liveroot/usr/local/bin/trust-desktop
         chmod 755 /home/eggs/liveroot/usr/local/bin/trust-desktop
 
   - name: "trust-agent-autostart"

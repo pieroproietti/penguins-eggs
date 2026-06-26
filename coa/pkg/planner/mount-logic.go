@@ -7,7 +7,7 @@ import (
 
 func mountLogic(basePath string, isGitHubAction bool, mode string) []OATask {
 	// Puntiamo al nuovo script Bash "tuttofare"
-	scriptPath := "/etc/oa-tools.d/scripts/bootstrap-liveroot.sh"
+	scriptPath := "/etc/penguins-eggs.d/scripts/bootstrap-liveroot.sh"
 	cmd := fmt.Sprintf("%s %s %v %s", scriptPath, basePath, isGitHubAction, mode)
 
 	// Ritorna un singolo task moderno di tipo "shell"

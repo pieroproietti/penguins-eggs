@@ -42,7 +42,7 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 			return fmt.Errorf("chroot requested but live_root is missing")
 		}
 
-		chrootWorkDir := filepath.Join(config.LiveRoot, "root", ".oa-tools")
+		chrootWorkDir := filepath.Join(config.LiveRoot, "root", ".penguins-eggs")
 		os.MkdirAll(chrootWorkDir, 0700)
 
 		tmpFile, err := os.CreateTemp(chrootWorkDir, "oa-exec-*.sh")
@@ -53,10 +53,10 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 		tmpFile.Write(scriptContent)
 		tmpFile.Close()
 
-		execPath = "/root/.oa-tools/" + filepath.Base(tmpFilePath)
+		execPath = "/root/.penguins-eggs/" + filepath.Base(tmpFilePath)
 
 	} else {
-		hostWorkDir := "/root/.oa-tools"
+		hostWorkDir := "/root/.penguins-eggs"
 		os.MkdirAll(hostWorkDir, 0700)
 
 		tmpFile, err := os.CreateTemp(hostWorkDir, "oa-exec-*.sh")

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// I quattro ambienti ufficiali di oa-tools
+// I quattro ambienti ufficiali di penguins-eggs
 const (
 	EnvCI   = "ci"   // Docker / GitHub Actions
 	EnvVM   = "vm"   // Macchina virtuale pura (KVM/QEMU)

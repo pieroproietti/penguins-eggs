@@ -58,13 +58,13 @@ var grub40Cmd = &cobra.Command{
 
 		kernelPath, initrdPath, kernelParams, useLoopbackCfg := inspectGenericIso(absPath)
 
-		startMarker := fmt.Sprintf("# >>> oa-tools start: %s <<<", isoName)
-		endMarker := fmt.Sprintf("# >>> oa-tools end: %s <<<", isoName)
+		startMarker := fmt.Sprintf("# >>> penguins-eggs start: %s <<<", isoName)
+		endMarker := fmt.Sprintf("# >>> penguins-eggs end: %s <<<", isoName)
 
 		var grubEntry string
 		if useLoopbackCfg {
 			grubEntry = fmt.Sprintf(`%s
-menuentry "oa-tools: %s (via loopback.cfg)" --class isoboot {
+menuentry "penguins-eggs: %s (via loopback.cfg)" --class isoboot {
     insmod part_gpt
     insmod part_msdos
     insmod ext2
@@ -83,7 +83,7 @@ menuentry "oa-tools: %s (via loopback.cfg)" --class isoboot {
 %s`, startMarker, isoName, grubPath, endMarker)
 		} else {
 			grubEntry = fmt.Sprintf(`%s
-menuentry "oa-tools: %s" --class isoboot {
+menuentry "penguins-eggs: %s" --class isoboot {
     insmod part_gpt
     insmod part_msdos
     insmod ext2
@@ -139,7 +139,7 @@ menuentry "oa-tools: %s" --class isoboot {
 
 		} else {
 			grubTemplate := `
-# oa-tools %s
+# penguins-eggs %s
 # Add to /etc/grub.d/40_custom or run with '--write' to inject automatically.
 # Update GRUB with: '%s'
 #
