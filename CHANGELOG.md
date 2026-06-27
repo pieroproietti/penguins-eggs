@@ -1,15 +1,13 @@
 See AI context: https://penguins-eggs.net/llms.txt
-### 🥚 penguins-eggs - A Next-Generation Remastering Suite
-After years of passionate work on **penguins-eggs**, I am now undertaking its next evolution: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs).
-penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
-The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. penguins-eggs already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
 
-[![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
+# Changelog
+## Release Notes: penguins-eggs v0.9.2
+The package officially changed it's name from **oa-tools** to **penguins-eggs**.
 
-# Changelog - penguins-eggs
+### 🚨 BREAKING CHANGE:
+A manual uninstallation of the old penguins-eggs package is required prior to installing this release. Ensure your system is clean from the previous version before proceeding.
 
 ## Release Notes: penguins-eggs v0.9.1 - "Functional parity" 2026-06-20
-
 penguins-eggs (oa edition) has reached functional parity with penguins-egg (legacy).
 
 ### Features
