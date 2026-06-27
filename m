@@ -11,7 +11,7 @@ make clean package "$@"
 
 case "$ID" in
     alpine)
-        sudo apk add --allow-untrusted penguins-eggs_*.apk
+        sudo apk add --allow-untrusted penguins-eggs-*.apk
         ;;
 
     arch)

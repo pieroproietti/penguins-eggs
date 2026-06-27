@@ -5,7 +5,7 @@ import "path/filepath"
 const (
 	StagingDir      = "/tmp/coa"
 	DefaultWorkPath = "/home/eggs"
-	LogFile         = "/var/log/penguins-eggs.log"
+	LogFile         = "/var/log/oa-tools.log"
 )
 
 var (

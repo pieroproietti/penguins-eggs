@@ -25,7 +25,7 @@ var exportLogCmd = &cobra.Command{
 			LocalPath  string
 			RemoteName string
 		}{
-			{pathDefaults.LogFile, "penguins-eggs.log.txt"},
+			{pathDefaults.LogFile, "oa-tools.log.txt"},
 			{pathDefaults.PlanFile, "oa-plan.json"},
 			{"/tmp/oa-failed-yaml.txt", "oa-failed.yaml"},
 		}

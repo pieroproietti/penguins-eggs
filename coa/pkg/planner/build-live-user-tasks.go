@@ -22,7 +22,9 @@ func buildLiveUserTasks(settings parser.RemasterConfig, step parser.Step, workPa
 
 	// 3. Creiamo i percorsi dinamici per la home directory
 	homeDir := fmt.Sprintf("/home/%s", targetUser)
-	skelCmd := fmt.Sprintf("mkdir -p %s/liveroot%s && cp -a %s/liveroot/etc/skel/. %s/liveroot%s/", workPath, homeDir, workPath, workPath, homeDir)
+	// Aggiungiamo la creazione preventiva di /etc/skel a prova di Alpine!
+	skelCmd := fmt.Sprintf("mkdir -p %s/liveroot/etc/skel && mkdir -p %s/liveroot%s && cp -a %s/liveroot/etc/skel/. %s/liveroot%s/",
+		workPath, workPath, homeDir, workPath, workPath, homeDir)
 
 	// Inseriamo il primo task nella NOSTRA lista locale "tasks"
 	// CORREZIONE: Usiamo Module "shell" e Params "command"

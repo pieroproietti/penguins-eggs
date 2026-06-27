@@ -11,108 +11,7 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
-#!/bin/bash
-set -e
-# alpine: distro_initramfs_cmd
-INIT_FILE="/usr/share/mkinitfs/initramfs-init"
-
-# 1. Creazione fisica della patch (con Modprobe forzati e Mount Move)
-cat << 'EOF' > /tmp/oa-sidecar.patch
-    # --- OA-SIDECAR START ---
-    echo ">>> [OA-SIDECAR] Rilevato fallimento Alpine, avvio paracadute... <<<" > /dev/console
-    
-    modprobe isofs 2>/dev/null
-    modprobe squashfs 2>/dev/null
-    modprobe loop 2>/dev/null
-    modprobe overlay 2>/dev/null
-    
-    CMDLINE=$(cat /proc/cmdline)
-    LABEL=$(echo "$CMDLINE" | tr ' ' '\n' | grep '^alpinelivelabel=' | cut -d= -f2)
-    if [ -n "$LABEL" ]; then
-        echo ">>> [OA-SIDECAR] Cerco il volume con LABEL: $LABEL <<<" > /dev/console
-        
-        # 1. Creiamo SOLO i punti di mount base
-        mkdir -p /mnt /media/root-ro /media/root-rw /sysroot
-        
-        for wait in 1 2 3 4 5 6 7 8 9 10; do
-            ISO_DEV=$(findfs "LABEL=$LABEL" 2>/dev/null)
-            if [ -n "$ISO_DEV" ]; then
-                echo ">>> [OA-SIDECAR] Trovato dispositivo: $ISO_DEV <<<" > /dev/console
-                break
-            fi
-            sleep 1
-        done
-        if [ -n "$ISO_DEV" ]; then
-            if mount -t iso9660 -o ro "$ISO_DEV" /mnt/ 2>/dev/null || mount -o ro "$ISO_DEV" /mnt/ 2>/dev/null; then
-                echo ">>> [OA-SIDECAR] ISO montata. Cerco filesystem.squashfs... <<<" > /dev/console
-                if mount -t squashfs -o ro "/mnt/live/filesystem.squashfs" /media/root-ro 2>/dev/null; then
-                    
-                    # 2. PRIMA montiamo la RAM vuota
-                    mount -t tmpfs tmpfs /media/root-rw
-                    # 3. DOPO creiamo le cartelle per l'overlay DENTRO la RAM
-                    mkdir -p /media/root-rw/root /media/root-rw/work
-                    
-                    # 4. ORA l'overlay troverà le cartelle!
-                    mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
-                    
-                    echo ">>> [OA-SIDECAR] Trasloco filesystem virtuali in corso... <<<" > /dev/console
-                    mkdir -p /sysroot/sys /sysroot/proc /sysroot/dev /sysroot/run
-                    mount --move /sys /sysroot/sys
-                    mount --move /proc /sysroot/proc
-                    mount --move /dev /sysroot/dev
-                    mount --move /run /sysroot/run 2>/dev/null
-                    
-                    # --- DEBUG --- (Possiamo lasciarlo per sicurezza)
-                    echo ">>> [OA-SIDECAR] VERIFICA ESISTENZA /sysroot/sbin/init <<<" > /dev/console
-                    ls -l /sysroot/sbin/init > /dev/console 2>&1
-                    echo ">>> [OA-SIDECAR] FRENO A MANO: Attendi 10 secondi... <<<" > /dev/console
-                    sleep 10
-                    # -------------
-                    
-                    echo ">>> [OA-SIDECAR] SISTEMA PRONTO! Switch_root in corso... <<<" > /dev/console
-                    exec switch_root -c /dev/console /sysroot /sbin/init
-                fi
-            fi
-        fi
-    fi
-    echo ">>> [OA-SIDECAR] Paracadute fallito. Ritorno alla shell di Alpine. <<<" > /dev/console
-    # --- OA-SIDECAR END ---
-EOF
-
-# 2. Pulizia vecchie patch
-sed -i '/# --- OA-SIDECAR START ---/,/# --- OA-SIDECAR END ---/d' "$INIT_FILE"
-
-# 3. INIEZIONE PURA (Wildcard case per bypassare spazi/CRLF)
-while IFS= read -r line || [ -n "$line" ]; do
-    printf "%s\n" "$line"
-    case "$line" in
-        *"recovery_shell() {"*)
-            cat /tmp/oa-sidecar.patch
-            ;;
-    esac
-done < "$INIT_FILE" > "$INIT_FILE.new"
-
-mv "$INIT_FILE.new" "$INIT_FILE"
-chmod +x "$INIT_FILE"
-rm /tmp/oa-sidecar.patch
-
-# 4. LA SOLUZIONE "EGGS": CONFIGURAZIONE LIVE DEDICATA
-mkdir -p /etc/mkinitfs/features.d
-cat << 'MODULES' > /etc/mkinitfs/features.d/oalive.modules
-kernel/fs/isofs
-kernel/fs/squashfs
-kernel/fs/overlayfs
-kernel/fs/loop
-kernel/lib/libcrc32c*
-MODULES
-
-cat << 'EOF' > /etc/mkinitfs/live.conf
-features="ata base ide scsi cdrom usb virtio ext4 squashfs oalive"
-EOF
-
-# 5. GENERAZIONE INITRAMFS
-KVER=$(ls -1 /lib/modules/ | head -n 1)
-mkinitfs -c /etc/mkinitfs/live.conf -o /boot/initramfs-penguins-eggs $KVER
+/etc/penguins-eggs.d/scripts/oa-alpine-custom-mkinitramfs
 {{ end }}
 
 # ----------------------------------------------------------------------------
@@ -166,7 +65,7 @@ rm -f /etc/sudoers.d/00-live
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
 
-# 2. Installazione GRUB (Ricordati che in APKBUILD abbiamo messo grub-efi tra i depends)
+# 2. Installazione GRUB
 if [ -d /sys/firmware/efi ]; then
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck
 else

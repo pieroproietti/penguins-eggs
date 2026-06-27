@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-oa_init_log("/var/log/penguins-eggs.log");
+oa_init_log("/var/log/oa-tools.log");
 
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {
