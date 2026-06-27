@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    oa_init_log("/var/log/penguins-eggs.log");
+oa_init_log("/var/log/penguins-eggs.log");
 
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {
@@ -135,15 +135,22 @@ int main(int argc, char **argv) {
         if (dispatch_task(task) == 0) {
             success_count++;
         } else {
-            LOG_ERR("⚠️  [oa-main] The '%s' task failed.", task_name);
+            // Freno di emergenza attivato!
+            LOG_ERR("🚨 [oa-main] ERRORE FATALE: Il task '%s' ha fallito. Interruzione immediata della catena di montaggio!", task_name);
             error_count++;
+            break; 
         }
     }
 
     cJSON_Delete(root);
     free(json_data);
 
-    LOG_INFO("🏁 [oa-main] Execution complete. Successes: %d, Errors: %d", success_count, error_count);
+    // Responso finale differenziato
+    if (error_count > 0) {
+        LOG_ERR("❌ [oa-main] Esecuzione INTERROTTA a causa di un errore. Successi: %d, Errori: %d", success_count, error_count);
+    } else {
+        LOG_INFO("🏁 [oa-main] Esecuzione completata con successo. Successi: %d, Errori: 0", success_count);
+    }
 
     oa_close_log();
     return (error_count == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
