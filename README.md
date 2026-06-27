@@ -1,28 +1,14 @@
 See AI context: https://penguins-eggs.net/llms.txt
-## ⚡ REBRANDING NOTICE
-
-**`oa-tools` becomes the new `penguins-eggs`**
-
-| Past | Present |
-| :--- | :--- |
-| `oa-tools` (C/Go) | → **`penguins-eggs`** *(this repo)* |
-| `penguins-eggs` (TypeScript) | → **`penguins-eggs-legacy`** maintained |
-
-The `penguins-eggs-legacy` remains supported; this C/Go rewrite is now the canonical `penguins-eggs`.
-
-*The rebranding is complete.*
-
-— Piero Proietti
 
 ### 🥚 penguins-eggs
-After years of passionate work on the TypeScript **penguins-eggs**, its next evolution is here: the C/Go rewrite (formerly `oa-tools`) now carries the `penguins-eggs` name. The old TypeScript version lives on as [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs-legacy).
+After years of passionate work on the TypeScript **penguins-eggs**, its next evolution is here: the C/Go rewrite now carries the `penguins-eggs` name. The old TypeScript version lives on as [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs-legacy).
 penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
 The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. penguins-eggs already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 ---
 
-## 🏗 penguins-eggs (oa edition) Architecture
+## 🏗 penguins-eggs
 
 We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
