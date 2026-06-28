@@ -13,14 +13,15 @@
 
 #include "cJSON.h"
 #include "logger.h"
+#include "ethernit.h"
 #include "oa-yocto.h"
+
 
 #ifndef PATH_SAFE
 #define PATH_SAFE 4096
 #endif
 
 int run_native_users(cJSON *task);
-int run_native_umount(cJSON *task);
 static const char* get_json_string(cJSON *obj, const char *key, const char *fallback);
 
 static void generate_salt(char *buf, size_t buf_size) {
@@ -213,52 +214,13 @@ int run_native_users(cJSON *task) {
     return 0;
 }
 
-int run_native_umount(cJSON *task) {
-    const char *work_dir = get_json_string(task, "work_dir", "");
-    if (strlen(work_dir) == 0) {
-        LOG_ERR("❌ [oa-native] Error: 'work_dir' is missing for cleanup.");
-        return 1;
-    }
-
-    char path[4096];
-
-    const char *api_mounts[] = {"dev/pts", "dev", "proc", "sys", "run", "tmp"};
-    for (int i = 0; i < (int)(sizeof(api_mounts) / sizeof(api_mounts[0])); i++) {
-        snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, api_mounts[i]);
-        umount2(path, MNT_DETACH);
-    }
-
-    const char *ovl_mounts[] = {"usr", "var"};
-    for (int i = 0; i < (int)(sizeof(ovl_mounts) / sizeof(ovl_mounts[0])); i++) {
-        snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, ovl_mounts[i]);
-        umount2(path, MNT_DETACH);
-    }
-
-    const char *bind_mounts[] = {"opt", "root", "srv", "home"};
-    for (int i = 0; i < (int)(sizeof(bind_mounts) / sizeof(bind_mounts[0])); i++) {
-        snprintf(path, sizeof(path), "%s/liveroot/%s", work_dir, bind_mounts[i]);
-        umount2(path, MNT_DETACH);
-    }
-
-    for (int i = 0; i < (int)(sizeof(ovl_mounts) / sizeof(ovl_mounts[0])); i++) {
-        snprintf(path, sizeof(path), "%s/.overlay/lowerdir/%s", work_dir, ovl_mounts[i]);
-        umount2(path, MNT_DETACH);
-    }
-
-    snprintf(path, sizeof(path), "%s/liveroot", work_dir);
-    umount2(path, MNT_DETACH);
-
-    LOG_INFO("✅ [oa-native] Safety unmount completed for: %s", work_dir);
-    return 0;
-}
-
 int run_native(const char *module, cJSON *task) {
     if (strcmp(module, "users") == 0) {
         return run_native_users(task);
     }
 
     if (strcmp(module, "umount") == 0) {
-        return run_native_umount(task);
+        return run_ethernit_umount(task);
     }
 
     LOG_ERR("❌ [oa-native] Unknown native C module: %s", module);

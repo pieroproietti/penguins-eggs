@@ -6,6 +6,25 @@
 
 extern int dispatch_task(cJSON *task);
 
+// ---------------------------------------------------------
+// FUNZIONE UNIVERSALE: Sgancio e Pulizia (Emergenza + Successo)
+// ---------------------------------------------------------
+int perform_safety_teardown(const char *target_dir) {
+    LOG_INFO("☣️  [oa-main] Calling the Hazmat team (Eternit) to secure the are: %s", target_dir);
+
+    cJSON *task = cJSON_CreateObject();
+    cJSON_AddStringToObject(task, "module", "umount"); // La parola d'ordine resta sempre "umount"
+    cJSON_AddStringToObject(task, "work_dir", target_dir);
+    cJSON_AddObjectToObject(task, "params");
+
+    int res = dispatch_task(task);
+    cJSON_Delete(task);
+
+    return res;
+}
+// ---------------------------------------------------------
+// FUNZIONI ORIGINALI (Lettura I/O)
+// ---------------------------------------------------------
 char* read_stdin() {
     size_t capacity = 4096;
     size_t size = 0;
@@ -50,8 +69,12 @@ char* read_file(const char *filename) {
     return buffer;
 }
 
+// ---------------------------------------------------------
+// MAIN
+// ---------------------------------------------------------
 int main(int argc, char **argv) {
     char *json_data = NULL;
+    const char *default_work_dir = "/home/eggs"; // Cartella base di fallback
 
     if (argc > 1) {
         if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
@@ -63,22 +86,17 @@ int main(int argc, char **argv) {
             printf("Usage:\n");
             printf("  oa <plan.json>          Runs tasks from a file\n");
             printf("  cat plan.json | oa      Runs tasks from STDIN\n");
-            printf("  oa cleanup              Performs an emergency umount\n");
+            printf("  oa cleanup [dir]        Performs a safety umount\n");
             return EXIT_SUCCESS;
         }
 
+        // Caso comando manuale: oa cleanup
         if (strcmp(argv[1], "cleanup") == 0) {
-            const char *target_dir = (argc > 2) ? argv[2] : "/home/eggs";
-            printf("🚨 [oa-main] EMERGENCY Mode: Run `umount` on %s\n", target_dir);
-
-            cJSON *task = cJSON_CreateObject();
-            cJSON_AddStringToObject(task, "module", "umount");
-            cJSON_AddStringToObject(task, "work_dir", target_dir);
-            cJSON_AddObjectToObject(task, "params");
-
-            int res = dispatch_task(task);
-            cJSON_Delete(task);
-
+            const char *target_dir = (argc > 2) ? argv[2] : default_work_dir;
+            printf("🚨 [oa-main] CLEANUP Mode: Run `umount` on %s\n", target_dir);
+            oa_init_log("/var/log/oa-tools.log"); 
+            int res = perform_safety_teardown(target_dir);
+            oa_close_log();
             return (res == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
@@ -97,7 +115,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-oa_init_log("/var/log/oa-tools.log");
+    oa_init_log("/var/log/oa-tools.log");
 
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {
@@ -122,11 +140,18 @@ oa_init_log("/var/log/oa-tools.log");
 
     int success_count = 0;
     int error_count = 0;
+    const char *current_work_dir = default_work_dir; // Traccia la directory di lavoro
 
     cJSON *task = NULL;
     cJSON_ArrayForEach(task, plan_array) {
         cJSON *name_item = cJSON_GetObjectItemCaseSensitive(task, "name");
         const char *task_name = cJSON_IsString(name_item) ? name_item->valuestring : "Unknown";
+
+        // Aggiorniamo la current_work_dir se questo task la specifica
+        cJSON *work_dir_item = cJSON_GetObjectItemCaseSensitive(task, "work_dir");
+        if (cJSON_IsString(work_dir_item) && work_dir_item->valuestring != NULL) {
+            current_work_dir = work_dir_item->valuestring;
+        }
 
         LOG_INFO("========================================");
         LOG_INFO("▶ Task Execution: %s", task_name);
@@ -135,9 +160,10 @@ oa_init_log("/var/log/oa-tools.log");
         if (dispatch_task(task) == 0) {
             success_count++;
         } else {
-            // Freno di emergenza attivato!
-            LOG_ERR("🚨 [oa-main] ERRORE FATALE: Il task '%s' ha fallito. Interruzione immediata della catena di montaggio!", task_name);
+            // FRENO DI EMERGENZA!
+            LOG_ERR("🚨 [oa-main] ERRORE FATALE: Il task '%s' ha fallito. Interruzione immediata!", task_name);
             error_count++;
+            perform_safety_teardown(current_work_dir);
             break; 
         }
     }
@@ -145,11 +171,15 @@ oa_init_log("/var/log/oa-tools.log");
     cJSON_Delete(root);
     free(json_data);
 
-    // Responso finale differenziato
+    // ---------------------------------------------------------
+    // GRAND FINALE AND DEFINITIVE TEARDOWN
+    // ---------------------------------------------------------
     if (error_count > 0) {
-        LOG_ERR("❌ [oa-main] Esecuzione INTERROTTA a causa di un errore. Successi: %d, Errori: %d", success_count, error_count);
+        LOG_ERR("❌ [oa-main] Execution ABORTED due to an error. Successes: %d, Errors: %d", success_count, error_count);
     } else {
-        LOG_INFO("🏁 [oa-main] Esecuzione completata con successo. Successi: %d, Errori: 0", success_count);
+        LOG_INFO("✨ [oa-main] ISO build completed. Handing over the area to the decontamination team...");
+        perform_safety_teardown(current_work_dir);
+        LOG_INFO("🏁 [oa-main] Site successfully dismantled. Successes: %d, Errors: 0", success_count);
     }
 
     oa_close_log();

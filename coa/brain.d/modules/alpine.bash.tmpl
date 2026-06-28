@@ -8,41 +8,26 @@
 {{ define "distro_boot_params" }}modules=loop,squashfs,sd-mod,usb-storage alpinelivelabel=OA_LIVE alpinelivesquashfs=filesystem.squashfs cow_spacesize=2G quiet{{ end }}
 
 # ----------------------------------------------------------------------------
-# 5. INITRAMFS LIVE
+# 8. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
-/etc/penguins-eggs.d/scripts/oa-alpine-custom-mkinitramfs
+CUSTOM_INIT="/tmp/initramfs-penguins-eggs-init"
+/etc/penguins-eggs.d/scripts/oa-alpine-mkinitfs-custom
+#KVER=$(ls -1 /lib/modules/ | head -n 1)
+#mkinitfs -i "$CUSTOM_INIT" -c /etc/mkinitfs/live.conf -o /boot/initramfs-penguins-eggs $KVER
 {{ end }}
 
 # ----------------------------------------------------------------------------
-# 6. COPY KERNEL/INITRD
+# 9. COPY KERNEL/INITRD
 # ----------------------------------------------------------------------------
 {{ define "distro_copy_kernel_cmd" }}
 #!/bin/bash
 set -e
-# alpine: distro_copy_kernel_cmd
-
-KERNEL_VERSION=$(uname -r)
-
-# Estrae tutto ciò che c'è dopo l'ultimo trattino (es: lts, virt, edge)
-FLAVOR="${KERNEL_VERSION##*-}"
-
-echo "-> Copia Kernel Alpine (Versione: $KERNEL_VERSION, Flavor: $FLAVOR)..."
-
-KERNEL_SRC="/boot/vmlinuz-$FLAVOR"
-INITRD_SRC="/boot/initramfs-$FLAVOR"
-
-# Controllo di sicurezza
-if [ ! -f "$KERNEL_SRC" ] || [ ! -f "$INITRD_SRC" ]; then
-    echo "[ERRORE FATALE] Impossibile trovare i file di boot per Alpine ($FLAVOR) in /boot!"
-    exit 1
-fi
-
-# Copia nella isodir
-cp "$KERNEL_SRC" /home/eggs/isodir/live/vmlinuz
-cp "$INITRD_SRC" /home/eggs/isodir/live/initrd.img
-
-echo "-> Copia completata con successo."
+LIVEROOT="/home/eggs/liveroot"
+ISODIR="/home/eggs/isodir"
+FLAVOR="$(uname -r | awk -F- '{print $NF}')"
+cp "$LIVEROOT/boot/vmlinuz-$FLAVOR" "$ISODIR/live/vmlinuz"
+cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"
 {{ end }}
 
 # ----------------------------------------------------------------------------

@@ -1,0 +1,107 @@
+#!/bin/bash
+# ==============================================================================
+# Script: oa-alpine-mkinitramfs
+# Scopo: Patch e generazione initramfs live per Alpine Linux (Standard Medium)
+# ==============================================================================
+set -e
+
+INIT_FILE="/usr/share/mkinitfs/initramfs-init"
+PATCH_FILE="/tmp/oa-sidecar.patch"
+CUSTOM_INIT="/tmp/initramfs-penguins-eggs-init"
+
+echo "-> 1. Generazione del paracadute OA-SIDECAR (Standard /run/live/medium)..."
+cat << 'EOF' > "$PATCH_FILE"
+    echo ">>> [OA-SIDECAR] Alpine ha fallito il boot. Avvio del paracadute penguins-eggs... <<<" > /dev/console
+    
+    # Moduli necessari per il mount della live
+    modprobe isofs squashfs loop overlay 2>/dev/null
+    
+    # Recupero label dalla cmdline (passata da bootloader)
+    CMDLINE=$(cat /proc/cmdline)
+    LABEL=$(echo "$CMDLINE" | tr ' ' '\n' | grep -o 'alpinelivelabel=[^ ]*' | cut -d= -f2)
+    [ -z "$LABEL" ] && LABEL="OA_LIVE"
+    
+    echo ">>> [OA-SIDECAR] Cerco volume con LABEL: $LABEL <<<" > /dev/console
+    
+    # Attesa hardware e montaggio
+    for wait in 1 2 3 4 5; do
+        mdev -s 2>/dev/null
+        ISO_DEV=$(findfs "LABEL=$LABEL" 2>/dev/null)
+        [ -n "$ISO_DEV" ] && break
+        sleep 1
+    done
+
+    if [ -n "$ISO_DEV" ]; then
+        # 1. Creiamo un tmpfs temporaneo sicuro nell'initramfs chiamato /live_data
+        mkdir -p /live_data
+        mount -t tmpfs tmpfs /live_data
+        
+        # 2. Ricreiamo l'albero di directory al suo interno
+        mkdir -p /live_data/medium /live_data/rootfs/filesystem.squashfs /live_data/overlay /sysroot
+        
+        # 3. Montiamo l'ISO
+        mount -o ro "$ISO_DEV" /live_data/medium
+        
+        # 4. Montiamo lo SquashFS
+        if mount -t squashfs -o ro "/live_data/medium/live/filesystem.squashfs" /live_data/rootfs/filesystem.squashfs; then
+            
+            # 5. Creiamo le cartelle per la RAM
+            mkdir -p /live_data/overlay/rw /live_data/overlay/work
+            
+            # 6. OverlayFS! Notare i nuovi path /live_data/...
+            mount -t overlay overlay -o lowerdir=/live_data/rootfs/filesystem.squashfs,upperdir=/live_data/overlay/rw,workdir=/live_data/overlay/work /sysroot
+            
+            # Trasloco dei filesystem virtuali per switch_root
+            mkdir -p /sysroot/sys /sysroot/proc /sysroot/dev /sysroot/run
+            mount --move /sys /sysroot/sys
+            mount --move /proc /sysroot/proc
+            mount --move /dev /sysroot/dev
+            
+            # --- IL TRUCCO MAGICO ---
+            # Spostiamo tutto il nostro tmpfs /live_data dentro /lib/live/mount di Alpine
+            mkdir -p /sysroot/lib/live/mount
+            mount --move /live_data /sysroot/lib/live/mount 2>/dev/null
+            
+            echo ">>> [OA-SIDECAR] SISTEMA PRONTO! Switch_root in corso... <<<" > /dev/console
+            exec switch_root -c /dev/console /sysroot /sbin/init
+        fi
+    fi    
+    echo ">>> [OA-SIDECAR] Paracadute fallito. Ritorno alla shell di Alpine. <<<" > /dev/console
+EOF
+
+echo "-> 2. Iniezione nel file di init temporaneo (isolas l'host)..."
+# Generiamo il file modificato in /tmp senza toccare l'originale in /usr/share
+while IFS= read -r line || [ -n "$line" ]; do
+    printf "%s\n" "$line"
+    case "$line" in
+        *"recovery_shell() {"*)
+            cat "$PATCH_FILE"
+            ;;
+    esac
+done < "$INIT_FILE" > "$CUSTOM_INIT"
+
+rm -f "$PATCH_FILE"
+chmod +x "$CUSTOM_INIT"
+
+echo "-> 3. Configurazione moduli mkinitfs per la LIVE..."
+mkdir -p /etc/mkinitfs/features.d
+cat << 'MODULES' > /etc/mkinitfs/features.d/oalive.modules
+kernel/fs/isofs
+kernel/fs/squashfs
+kernel/fs/overlayfs
+kernel/fs/loop
+kernel/lib/libcrc32c*
+MODULES
+
+echo 'features="ata base ide scsi cdrom usb virtio ext4 squashfs oalive"' > /etc/mkinitfs/live.conf
+
+echo "-> 4. Compilazione Initramfs con init personalizzato..."
+KVER=$(ls -1 /lib/modules/ | head -n 1)
+
+# Il flag -i include il nostro init modificato direttamente nell'immagine finale
+mkinitfs -i "$CUSTOM_INIT" -c /etc/mkinitfs/live.conf -o /boot/initramfs-penguins-eggs "$KVER"
+
+# Pulizia dei residui in /tmp
+rm -f "$CUSTOM_INIT"
+
+echo "-> oa-alpine-mkinitramfs completato con successo!"
