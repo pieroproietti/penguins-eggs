@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"coa/pkg/pathDefaults"
 	"coa/pkg/parser"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/utils"
 )
 
@@ -96,8 +96,8 @@ func GeneratePlan(
 			}
 
 			if mode == "crypted" && task.Name == "initramfs" {
-				plan.Plan = append(plan.Plan, luksInitrdPrepStep(workPath))
-				utils.LogNormal("[ENGINE] Crypted mode: initramfs replaced with luksInitrdPrepStep.")
+				plan.Plan = append(plan.Plan, buildEncryptedInitramfs(workPath))
+				utils.LogNormal("[ENGINE] Crypted mode: initramfs replaced with buildEncryptedInitramfs.")
 				continue
 			}
 

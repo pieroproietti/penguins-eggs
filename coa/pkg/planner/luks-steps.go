@@ -8,10 +8,10 @@ import (
 	"coa/pkg/pathDefaults"
 )
 
-// luksInitrdPrepStep sostituisce il passo "initramfs" in modalità crypted.
-// Prepara il chroot con boot-encrypted-root.sh, hook per losetup/rsync,
-// un crypttab dummy, poi esegue mkinitramfs → /tmp/oa-initrd.img-luks nel liveroot.
-func luksInitrdPrepStep(workPath string) OATask {
+// buildEncryptedInitramfs sostituisce il passo standard di initramfs.
+// Prepara il chroot (liveroot) per il boot cifrato iniettando gli script necessari
+// e genera l'initrd, disinnescando temporaneamente gli hook di sistema ostili.
+func buildEncryptedInitramfs(workPath string) OATask {
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
 	cmd := fmt.Sprintf(`#!/bin/bash
 set -e
@@ -20,24 +20,26 @@ KERNEL="$(uname -r)"
 PREMOUNT_DIR="$LIVEROOT/etc/initramfs-tools/scripts/live-premount"
 HOOKS_DIR="$LIVEROOT/etc/initramfs-tools/hooks"
 
-echo "LUKS: preparing LUKS initrd for kernel $KERNEL..."
+echo "LUKS: Preparazione initrd cifrato per il kernel $KERNEL..."
+
+# 1. Iniezione script di pre-mount e creazione dummy crypttab
 mkdir -p "$PREMOUNT_DIR"
 cp /etc/penguins-eggs.d/scripts/boot-encrypted-root.sh "$PREMOUNT_DIR/"
 chmod +x "$PREMOUNT_DIR/boot-encrypted-root.sh"
-echo "LUKS: boot-encrypted-root.sh installed in $PREMOUNT_DIR"
-printf "# Dummy entry to ensure cryptsetup is included\ncryptroot UUID=none none luks\n" \
-    > "$LIVEROOT/etc/crypttab"
-echo "LUKS: dummy crypttab written."
+printf "# Dummy entry per forzare l'inclusione dei binari LUKS\ncryptroot UUID=none none luks\n" > "$LIVEROOT/etc/crypttab"
+
+# 2. Generazione dinamica degli hook per losetup e rsync
 mkdir -p "$HOOKS_DIR"
 for CMDPATH in /usr/sbin/losetup /usr/bin/rsync; do
     if [ ! -e "$LIVEROOT/$CMDPATH" ]; then
-        echo "LUKS: WARN: $CMDPATH not found in liveroot, skipping."
+        echo "LUKS: WARN: $CMDPATH non trovato nel sistema guest, lo salto."
         continue
     fi
     BASENAME=$(basename "$CMDPATH")
     HOOK_FILE="$HOOKS_DIR/add-${BASENAME}-hook.sh"
     DESTDIR="/sbin"
     echo "$CMDPATH" | grep -q '/bin/' && DESTDIR="/bin"
+    
     cat > "$HOOK_FILE" << HOOKEOF
 #!/bin/sh
 PREREQ=""
@@ -47,20 +49,31 @@ copy_exec $CMDPATH $DESTDIR || echo "WARN: copy_exec $CMDPATH failed" >&2
 exit 0
 HOOKEOF
     chmod +x "$HOOK_FILE"
-    echo "LUKS: hook $HOOK_FILE created."
 done
 
-echo "LUKS: generating initrd (this may take a few minutes)..."
-chroot "$LIVEROOT" /bin/bash -c \
-    "mkinitramfs -o /tmp/oa-initrd.img-luks $KERNEL" > /dev/null
+# 3. Disinnesco dell'hook cryptroot ufficiale di Debian 
+# Evita l'errore fatale "Couldn't resolve device overlay" durante la generazione
+if [ -f "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot" ]; then
+    echo "LUKS: Disabilitazione temporanea hook cryptroot di sistema..."
+    mv "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot" "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot.disabled"
+fi
 
-echo "LUKS: LUKS initrd generated at $LIVEROOT/tmp/oa-initrd.img-luks"
+# 4. Generazione Initramfs (Senza redirigere l'output su /dev/null per mantenere i log visibili in caso di crash)
+echo "LUKS: Generazione initramfs in corso (potrebbe richiedere qualche minuto)..."
+chroot "$LIVEROOT" env CRYPTSETUP=y mkinitramfs -o /tmp/oa-initrd.img-luks "$KERNEL"
+
+# 5. Pulizia e ripristino dell'hook disabilitato
+if [ -f "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot.disabled" ]; then
+    mv "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot.disabled" "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot"
+fi
+
+echo "✅ LUKS initrd completato con successo: /tmp/oa-initrd.img-luks"
 `, liveRoot)
 
 	return OATask{
 		Step: parser.Step{
 			Module: "shell",
-			Name:   "luks-initrd-prep",
+			Name:   "build-encrypted-initramfs",
 			Params: map[string]interface{}{
 				"command": cmd,
 			},
