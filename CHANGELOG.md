@@ -1,11 +1,14 @@
 See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
-## Release Notes: penguins-eggs v0.9.2
-The package officially changed it's name from **oa-tools** to **penguins-eggs**.
+## Release Notes: penguins-eggs v0.9.2 - 2026-06-29
+The package officially changed its name from **oa-tools** to **penguins-eggs**.
 
 ### 🚨 BREAKING CHANGE:
 A manual uninstallation of the old penguins-eggs package is required prior to installing this release. Ensure your system is clean from the previous version before proceeding.
+
+### Alpine Linux — fully stable
+Alpine live boot is now fully working. A custom **OA-SIDECAR** is injected into the initramfs during remastering: it intercepts Alpine's standard init after `recovery_shell()`, locates the ISO via `findfs LABEL=OA_LIVE`, mounts the squashfs with an overlayFS layer, and performs `switch_root` into the live system. All six supported distributions (Alpine, Arch, Debian, Fedora, Manjaro, openSUSE) are now stable.
 
 ## Release Notes: penguins-eggs v0.9.1 - "Functional parity" 2026-06-20
 penguins-eggs (oa edition) has reached functional parity with penguins-egg (legacy).
