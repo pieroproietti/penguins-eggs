@@ -1,23 +1,5 @@
 # Quick Start
 
-## Coming from penguins-eggs?
-
-penguins-eggs (oa edition) is the next-generation successor of penguins-eggs, rewritten in C+Go for speed and reliability. If you already know `eggs`, you already know penguins-eggs (oa edition): the binary is installed as both `coa` and `eggs`, so your muscle memory keeps working.
-
-| penguins-eggs (legacy) | penguins-eggs (oa edition) | Notes |
-|---|---|---|
-| `sudo eggs produce` | `sudo eggs produce` | Same command, same result |
-| `sudo eggs produce` | `sudo coa remaster` | Native name, identical behavior |
-| `sudo eggs kill` | `sudo eggs kill` | Works as before |
-| `sudo eggs kill` | `sudo coa destroy` | Native name |
-| `sudo eggs install` | `sudo coa sysinstall krill` | TUI installer |
-| `sudo eggs calamares` | `sudo coa sysinstall calamares` | GUI installer |
-| `eggs config` | `coa config` | Interactive configuration TUI |
-| `eggs adapt` | `coa adapt` | VM screen resize |
-| `eggs tools skel` | `coa tools skel` | Rebuild /etc/skel |
-| `eggs wardrobe wear colibri` | `coa wardrobe wear colibri` | Apply a costume |
-
-In short: replace `eggs` with `coa` if you want, or keep using `eggs` — both work.
 
 ## Install
 
