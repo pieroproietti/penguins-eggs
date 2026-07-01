@@ -4,6 +4,7 @@ package engine
 
 import (
 	"os"
+	"path/filepath"
 )
 
 func runMount(c *ctx) error {
@@ -13,8 +14,76 @@ func runMount(c *ctx) error {
 	if err := os.MkdirAll(plan.Target, 0755); err != nil {
 		return err
 	}
-	if err := c.mount(l.Root, plan.Target); err != nil {
-		return err
+
+	if plan.FsType == "btrfs" {
+		// 1. Crea un mount point temporaneo per la root btrfs e crea i subvol
+		tmpMount := "/tmp/btrfs-temp-mount"
+		if err := os.MkdirAll(tmpMount, 0755); err != nil {
+			return err
+		}
+		if err := c.run("mount", l.Root, tmpMount); err != nil {
+			return err
+		}
+
+		subvols := []string{"@", "@home", "@cache", "@log", "@snapshots"}
+		if plan.Swap == "file" {
+			subvols = append(subvols, "@swap")
+		}
+
+		for _, sv := range subvols {
+			svPath := filepath.Join(tmpMount, sv)
+			if !exists(svPath) {
+				if err := c.run("btrfs", "subvolume", "create", svPath); err != nil {
+					c.run("umount", tmpMount)
+					return err
+				}
+			}
+		}
+
+		if err := c.run("umount", tmpMount); err != nil {
+			return err
+		}
+		os.Remove(tmpMount)
+
+		// Opzioni di mount standard per BTRFS
+		opts := "defaults"
+		if plan.TableType == "gpt" {
+			opts = "defaults,compress=zstd:1"
+		}
+
+		// 2. Monta il subvolume root (@) sul target
+		if err := c.mount("-o", "subvol=@,"+opts, l.Root, plan.Target); err != nil {
+			return err
+		}
+
+		// 3. Crea le directory e monta gli altri subvol
+		type btrfsMount struct {
+			subvol string
+			path   string
+		}
+
+		mounts := []btrfsMount{
+			{"@home", c.tpath("home")},
+			{"@cache", c.tpath("var", "cache")},
+			{"@log", c.tpath("var", "log")},
+			{"@snapshots", c.tpath(".snapshots")},
+		}
+		if plan.Swap == "file" {
+			mounts = append(mounts, btrfsMount{"@swap", c.tpath("swap")})
+		}
+
+		for _, m := range mounts {
+			if err := os.MkdirAll(m.path, 0755); err != nil {
+				return err
+			}
+			if err := c.mount("-o", "subvol="+m.subvol+","+opts, l.Root, m.path); err != nil {
+				return err
+			}
+		}
+	} else {
+		if err := c.mount(l.Root, plan.Target); err != nil {
+			return err
+		}
 	}
 
 	if l.Esp != "" {

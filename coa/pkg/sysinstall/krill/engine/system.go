@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -41,26 +42,48 @@ func runFstab(c *ctx) error {
 	plan := c.plan
 	l := partsFor(plan)
 
-	rootOptions := "defaults,noatime"
+	var lines []string
+	lines = append(lines, "# /etc/fstab - generato da krill (penguins-eggs)")
+
 	if plan.FsType == "btrfs" {
-		rootOptions = "defaults"
+		opts := "defaults"
+		if plan.TableType == "gpt" {
+			opts = "defaults,compress=zstd:1"
+		}
+		uuid := c.uuidOf(l.Root)
+
+		// root subvolume
+		lines = append(lines, fmt.Sprintf("UUID=%s / btrfs subvol=/@,%s 0 1", uuid, opts))
+		// subvolumes standard
+		lines = append(lines, fmt.Sprintf("UUID=%s /home btrfs subvol=/@home,%s 0 2", uuid, opts))
+		lines = append(lines, fmt.Sprintf("UUID=%s /var/cache btrfs subvol=/@cache,%s 0 2", uuid, opts))
+		lines = append(lines, fmt.Sprintf("UUID=%s /var/log btrfs subvol=/@log,%s 0 2", uuid, opts))
+		lines = append(lines, fmt.Sprintf("UUID=%s /.snapshots btrfs subvol=/@snapshots,%s 0 2", uuid, opts))
+
+		if plan.Swap == "file" {
+			// Monta il subvolume per lo swap
+			lines = append(lines, fmt.Sprintf("UUID=%s /swap btrfs subvol=/@swap,defaults,noatime 0 2", uuid))
+			if err := c.makeSwapfile(c.tpath("swap", "swapfile")); err != nil {
+				return err
+			}
+			lines = append(lines, "/swap/swapfile none swap sw 0 0")
+		}
+	} else {
+		rootOptions := "defaults,noatime"
+		lines = append(lines, fmt.Sprintf("UUID=%s / %s %s 0 1", c.uuidOf(l.Root), plan.FsType, rootOptions))
+		if plan.Swap == "file" {
+			if err := c.makeSwapfile(c.tpath("swapfile")); err != nil {
+				return err
+			}
+			lines = append(lines, "/swapfile none swap sw 0 0")
+		}
 	}
 
-	lines := []string{
-		"# /etc/fstab - generato da krill (penguins-eggs)",
-		fmt.Sprintf("UUID=%s / %s %s 0 1", c.uuidOf(l.Root), plan.FsType, rootOptions),
-	}
 	if l.Esp != "" {
 		lines = append(lines, fmt.Sprintf("UUID=%s /boot/efi vfat defaults,umask=0077 0 2", c.uuidOf(l.Esp)))
 	}
 	if l.Swap != "" {
 		lines = append(lines, fmt.Sprintf("UUID=%s none swap sw 0 0", c.uuidOf(l.Swap)))
-	}
-	if plan.Swap == "file" {
-		if err := c.makeSwapfile(); err != nil {
-			return err
-		}
-		lines = append(lines, "/swapfile none swap sw 0 0")
 	}
 
 	return os.WriteFile(c.tpath("etc", "fstab"), []byte(strings.Join(lines, "\n")+"\n"), 0644)
@@ -75,19 +98,35 @@ func (c *ctx) uuidOf(device string) string {
 	return strings.TrimSpace(string(out))
 }
 
-// makeSwapfile crea /swapfile da 2GiB nel target.
-func (c *ctx) makeSwapfile() error {
-	swapfile := c.tpath("swapfile")
-	if err := c.run("fallocate", "-l", "2G", swapfile); err != nil {
+// makeSwapfile crea il file di swap da 2GiB nel target.
+func (c *ctx) makeSwapfile(path string) error {
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return err
+	}
+
+	// Su BTRFS dobbiamo disabilitare il CoW prima di scrivere nel file
+	if c.plan.FsType == "btrfs" {
+		f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+		if err != nil {
+			return err
+		}
+		f.Close()
+
+		if err := c.run("chattr", "+C", path); err != nil {
+			c.logf("warning: chattr +C failed on %s: %v", path, err)
+		}
+	}
+
+	if err := c.run("fallocate", "-l", "2G", path); err != nil {
 		// fallback per filesystem senza fallocate
-		if err := c.run("dd", "if=/dev/zero", "of="+swapfile, "bs=1M", "count=2048"); err != nil {
+		if err := c.run("dd", "if=/dev/zero", "of="+path, "bs=1M", "count=2048"); err != nil {
 			return err
 		}
 	}
-	if err := os.Chmod(swapfile, 0600); err != nil {
+	if err := os.Chmod(path, 0600); err != nil {
 		return err
 	}
-	return c.run("mkswap", swapfile)
+	return c.run("mkswap", path)
 }
 
 func runLocale(c *ctx) error {
