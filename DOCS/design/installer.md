@@ -3,7 +3,7 @@
 > **Status: implemented** (June 2026). This document describes the architecture
 > as it exists in the codebase. The original design draft proposed the same
 > "one engine, two faces" vision; what changed during implementation is noted
-> in the [History](#history) section.
+> in the [History](#7-history) section.
 
 ## 1. The Vision: One Engine, Two Faces
 

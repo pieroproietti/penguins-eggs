@@ -59,6 +59,15 @@ and generate a precise execution plan for the OA planner.`,
 			produceMode = "crypted"
 		}
 
+		// Check if Calamares is configured as the preferred installer but is not installed
+		if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil {
+			if customCfg.Remaster.Installer == "calamares" {
+				if _, err := exec.LookPath("calamares"); err != nil {
+					utils.Fatal("Calamares is configured as the installer in custom.yaml, but the 'calamares' package is not installed on this system.")
+				}
+			}
+		}
+
 		startTime := time.Now()
 
 		utils.LogNormal("Starting remastering procedure (mode: %s)...", produceMode)

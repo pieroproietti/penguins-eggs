@@ -123,9 +123,10 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 
 func defaultRemasterConfig() RemasterConfig {
 	return RemasterConfig{
-		User:     "live",
-		Password: "evolution",
-		WorkDir:  "/home/eggs",
+		User:      "live",
+		Password:  "evolution",
+		WorkDir:   "/home/eggs",
+		Installer: "krill",
 		Compression: CompressionConfig{
 			Algorithm: "zstd",
 			Level:     3,
@@ -142,6 +143,9 @@ func mergeCustomSettings(base *RemasterConfig, custom *RemasterConfig) {
 	}
 	if custom.WorkDir != "" {
 		base.WorkDir = custom.WorkDir
+	}
+	if custom.Installer != "" {
+		base.Installer = custom.Installer
 	}
 	if custom.Compression.Algorithm != "" {
 		base.Compression.Algorithm = custom.Compression.Algorithm

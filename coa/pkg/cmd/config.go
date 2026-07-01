@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 
+	"coa/pkg/distro"
 	"coa/pkg/parser"
 	"coa/pkg/utils"
 
@@ -33,6 +35,7 @@ const (
 	cfgAlgorithm
 	cfgLevel
 	cfgISOPrefix
+	cfgInstaller
 	cfgFieldCount
 )
 
@@ -59,6 +62,7 @@ type configModel struct {
 	focus   int
 	inputs  []textinput.Model
 	algoIdx int
+	instIdx int // 0 for krill, 1 for calamares
 
 	saveFocus int
 	saveErr   string
@@ -72,6 +76,7 @@ type configState struct {
 	Algorithm string
 	Level     int
 	ISOPrefix string
+	Installer string
 }
 
 func loadConfigState() configState {
@@ -79,6 +84,7 @@ func loadConfigState() configState {
 		Password:  "evolution",
 		Algorithm: "zstd",
 		Level:     3,
+		Installer: "krill",
 	}
 	settings, err := parser.LoadCustomSettings()
 	if err != nil || settings == nil {
@@ -94,6 +100,9 @@ func loadConfigState() configState {
 		state.Level = settings.Remaster.Compression.Level
 	}
 	state.ISOPrefix = settings.Remaster.ISOPrefix
+	if settings.Remaster.Installer != "" {
+		state.Installer = settings.Remaster.Installer
+	}
 	return state
 }
 
@@ -132,9 +141,15 @@ func newConfigModel() configModel {
 		}
 	}
 
+	instIdx := 0
+	if state.Installer == "calamares" {
+		instIdx = 1
+	}
+
 	return configModel{
 		inputs:  inputs,
 		algoIdx: algoIdx,
+		instIdx: instIdx,
 	}
 }
 
@@ -195,13 +210,26 @@ func (m *configModel) onTabSwitch() tea.Cmd {
 
 func (m *configModel) focusField(idx int) tea.Cmd {
 	m.focus = (idx + cfgFieldCount) % cfgFieldCount
-	if !m.showLevel() && m.focus == cfgLevel {
-		if idx < cfgLevel {
-			m.focus = cfgISOPrefix
-		} else {
-			m.focus = cfgAlgorithm
+	for {
+		if m.focus == cfgLevel && !m.showLevel() {
+			if idx <= cfgLevel {
+				m.focus = (m.focus - 1 + cfgFieldCount) % cfgFieldCount
+			} else {
+				m.focus = (m.focus + 1) % cfgFieldCount
+			}
+			continue
 		}
+		if m.focus == cfgInstaller && !isDesktopConfig() {
+			if idx <= cfgInstaller {
+				m.focus = (m.focus - 1 + cfgFieldCount) % cfgFieldCount
+			} else {
+				m.focus = (m.focus + 1) % cfgFieldCount
+			}
+			continue
+		}
+		break
 	}
+
 	for i := range m.inputs {
 		m.inputs[i].Blur()
 	}
@@ -225,6 +253,10 @@ func (m configModel) updateSettings(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				delta = -1
 			}
 			m.algoIdx = (m.algoIdx + delta + len(cfgAlgorithms)) % len(cfgAlgorithms)
+			return m, nil
+		}
+		if m.focus == cfgInstaller {
+			m.instIdx = 1 - m.instIdx
 			return m, nil
 		}
 	}
@@ -259,6 +291,23 @@ func (m configModel) updateSave(key string) (tea.Model, tea.Cmd) {
 	case "enter":
 		if m.saveFocus == 0 {
 			state := m.buildState()
+			if state.Installer == "calamares" {
+				d := distro.NewDistro()
+				pkgs := getCalamaresPackages(d.FamilyID)
+
+				// 1. Check if packages are installable
+				if err := checkPackagesInstallable(pkgs, d.FamilyID); err != nil {
+					m.saveErr = fmt.Sprintf("Calamares not installable:\n%v", err)
+					return m, nil
+				}
+
+				// 2. Install the packages
+				if err := installPackages(pkgs, d.FamilyID); err != nil {
+					m.saveErr = fmt.Sprintf("Calamares install failed:\n%v", err)
+					return m, nil
+				}
+			}
+
 			if err := saveConfigState(state); err != nil {
 				m.saveErr = fmt.Sprintf("Save failed: %v", err)
 				return m, nil
@@ -279,11 +328,13 @@ func (m configModel) buildState() configState {
 			level = 3
 		}
 	}
+	installers := []string{"krill", "calamares"}
 	return configState{
 		Password:  m.inputs[0].Value(),
 		Algorithm: cfgAlgorithms[m.algoIdx],
 		Level:     level,
 		ISOPrefix: strings.TrimSpace(m.inputs[2].Value()),
+		Installer: installers[m.instIdx],
 	}
 }
 
@@ -351,6 +402,9 @@ func (m configModel) viewSettings() string {
 		fields = append(fields, fieldDef{cfgLevel, "Level"})
 	}
 	fields = append(fields, fieldDef{cfgISOPrefix, "ISO prefix"})
+	if isDesktopConfig() {
+		fields = append(fields, fieldDef{cfgInstaller, "Installer"})
+	}
 
 	var rows []string
 	rows = append(rows, userRow)
@@ -374,11 +428,14 @@ func (m configModel) viewSettings() string {
 			} else {
 				val = m.inputs[2].View()
 			}
+		case cfgInstaller:
+			installers := []string{"krill", "calamares"}
+			val = cfgCyan.Render("‹ " + installers[m.instIdx] + " ›")
 		}
 		rows = append(rows, fmt.Sprintf("%s%-14s: %s", marker, f.label, val))
 	}
 
-	help := "\n↑/↓ move · ←/→ change algorithm · type to edit"
+	help := "\n↑/↓ move · ←/→ change settings · type to edit"
 	content := lipgloss.JoinVertical(lipgloss.Left, rows...)
 	return lipgloss.JoinVertical(lipgloss.Left, tabs, "", content, help)
 }
@@ -451,11 +508,91 @@ func saveConfigState(state configState) error {
 	if state.ISOPrefix != "" {
 		b.WriteString(fmt.Sprintf("  iso_prefix: \"%s\"\n", state.ISOPrefix))
 	}
+	if state.Installer != "" {
+		b.WriteString(fmt.Sprintf("  installer: \"%s\"\n", state.Installer))
+	}
 
 	if err := os.MkdirAll("/etc/penguins-eggs.d", 0755); err != nil {
 		return err
 	}
 	return os.WriteFile(customYAMLPath, []byte(b.String()), 0644)
+}
+
+func isDesktopConfig() bool {
+	if files, _ := filepath.Glob("/usr/share/xsessions/*.desktop"); len(files) > 0 {
+		return true
+	}
+	if files, _ := filepath.Glob("/usr/share/wayland-sessions/*.desktop"); len(files) > 0 {
+		return true
+	}
+	return false
+}
+
+func getCalamaresPackages(family string) []string {
+	switch family {
+	case "debian":
+		return []string{"calamares", "qml-module-qtquick2", "qml-module-qtquick-controls", "qml-module-qtquick-controls2", "qml-module-qtquick-layouts", "qml-module-qtgraphicaleffects"}
+	case "archlinux", "manjaro":
+		return []string{"calamares", "qt5-graphicaleffects"}
+	case "fedora":
+		return []string{"calamares", "qt5-qtgraphicaleffects", "qt5-qtquickcontrols", "qt5-qtquickcontrols2"}
+	case "alpine":
+		return []string{"calamares", "qt5-qtgraphicaleffects", "qt5-qtquickcontrols", "qt5-qtquickcontrols2"}
+	case "opensuse":
+		return []string{"calamares", "libqt5-qtgraphicaleffects", "libqt5-qtquickcontrols", "libqt5-qtquickcontrols2"}
+	default:
+		return []string{"calamares"}
+	}
+}
+
+func checkPackagesInstallable(packages []string, family string) error {
+	var cmd string
+	pkgString := strings.Join(packages, " ")
+	switch family {
+	case "debian":
+		cmd = fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install -y -s %s", pkgString)
+	case "archlinux", "manjaro":
+		cmd = fmt.Sprintf("pacman -Sp %s", pkgString)
+	case "fedora":
+		cmd = fmt.Sprintf("dnf install -y --assumeno %s", pkgString)
+	case "alpine":
+		cmd = fmt.Sprintf("apk add --simulate %s", pkgString)
+	case "opensuse":
+		cmd = fmt.Sprintf("zypper --non-interactive install --dry-run %s", pkgString)
+	default:
+		return fmt.Errorf("unsupported distro family for package check: %s", family)
+	}
+
+	output, err := utils.ExecCapture(cmd)
+	if err != nil {
+		return fmt.Errorf("package check failed: %w\nOutput: %s", err, output)
+	}
+	return nil
+}
+
+func installPackages(packages []string, family string) error {
+	var cmd string
+	pkgString := strings.Join(packages, " ")
+	switch family {
+	case "debian":
+		cmd = fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install -y %s", pkgString)
+	case "archlinux", "manjaro":
+		cmd = fmt.Sprintf("pacman -S --noconfirm %s", pkgString)
+	case "fedora":
+		cmd = fmt.Sprintf("dnf install -y %s", pkgString)
+	case "alpine":
+		cmd = fmt.Sprintf("apk add %s", pkgString)
+	case "opensuse":
+		cmd = fmt.Sprintf("zypper --non-interactive install -y %s", pkgString)
+	default:
+		return fmt.Errorf("unsupported distro family for package install: %s", family)
+	}
+
+	err := utils.Exec(cmd)
+	if err != nil {
+		return fmt.Errorf("package installation failed: %w", err)
+	}
+	return nil
 }
 
 var configCmd = &cobra.Command{

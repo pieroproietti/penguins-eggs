@@ -13,7 +13,7 @@ func buildFixture(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
 
-	settings, err := os.ReadFile("../assets/calamares_base/settings.conf")
+	settings, err := os.ReadFile("../../assets/calamares_base/settings.conf")
 	if err != nil {
 		t.Fatalf("settings.conf non trovato negli asset: %v", err)
 	}
@@ -54,6 +54,12 @@ unpack:
 
 	mustWrite(t, filepath.Join(root, "modules", "removeuser.conf"), []byte(`---
 username: live
+`))
+
+	mustWrite(t, filepath.Join(root, "modules", "finished.conf"), []byte(`---
+restartNowEnabled: true
+restartNowChecked: false
+restartNowCommand: "reboot"
 `))
 
 	return root

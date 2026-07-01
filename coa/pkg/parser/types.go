@@ -41,6 +41,7 @@ type RemasterConfig struct {
 	User        string            `yaml:"user" json:"user" mapstructure:"user"`
 	Password    string            `yaml:"password" json:"password" mapstructure:"password"`
 	WorkDir     string            `yaml:"work_dir" json:"work_dir" mapstructure:"work_dir"`
+	Installer   string            `yaml:"installer,omitempty" json:"installer,omitempty" mapstructure:"installer"`
 	Compression CompressionConfig `yaml:"compression" json:"compression" mapstructure:"compression"`
 	ISOPrefix   string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty" mapstructure:"iso_prefix"`
 }
