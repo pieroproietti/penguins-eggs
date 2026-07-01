@@ -1,5 +1,5 @@
 # Maintainer: Piero Proietti <piero.proietti@gmail.com>
-pkgname=penguins-eggs-arch
+pkgname=penguins-eggs
 pkgver={{.BaseVersion}}
 pkgrel={{.Rel}}
 pkgdesc="penguins-eggs universal Linux remastering"
@@ -10,9 +10,9 @@ options=('!debug')
 
 depends=(
 	'archiso'
-	'mkinitcpio-archiso'
 	'arch-install-scripts'
 	'bash-completion'
+	'btrfs-progs'
 	'curl'
 	'dosfstools'
 	'efibootmgr'
@@ -20,10 +20,11 @@ depends=(
 	'glibc'
 	'gnupg'
 	'grub'
-	'yq'
 	'libarchive'
 	'libisoburn'
+	'mkinitcpio-nfs-utils' # Risolve errore /usr/lib/initcpio/ipconfig e nfsmount
 	'mtools'
+	'nbd'                  # Risolve errore nbd-client
 	'pv'
 	'rsync'
 	'squashfs-tools'
@@ -31,10 +32,6 @@ depends=(
 	'wget'
 	'yq'
 )
-
-# Indichiamo a pacman che questo pacchetto sostituisce la vecchia guardia
-conflicts=('oa-tools-arch' 'oa-tools')
-replaces=('oa-tools-arch' 'oa-tools')
 
 package() {
     # Tracciamo i confini
