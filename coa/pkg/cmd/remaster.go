@@ -125,7 +125,9 @@ and generate a precise execution plan for the OA planner.`,
 		utils.LogSuccess("Profile loaded successfully.")
 
 		utils.LogNormal("Fetching bootloaders (penguins-bootloaders)...")
-		utils.EnsureBootloaders(pathDefaults.BootloadersDir)
+		if err := utils.EnsureBootloaders(pathDefaults.BootloadersDir); err != nil {
+			utils.Fatal("Failed to ensure bootloaders: %v", err)
+		}
 
 		utils.LogNormal("Generating exclude list (%s mode)...", produceMode)
 		excludeListPath := planner.GenerateExcludeList(produceMode, isGitHubAction)

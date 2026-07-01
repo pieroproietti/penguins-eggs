@@ -15,7 +15,7 @@ case "$ID" in
         ;;
 
     arch)
-        sudo pacman -U --noconfirm penguins-eggs_*.pkg.tar.zst
+        sudo pacman -U --noconfirm penguins-eggs-*.pkg.tar.zst
         ;;
 
     debian)
