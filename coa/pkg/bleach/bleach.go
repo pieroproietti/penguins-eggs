@@ -6,7 +6,6 @@ package bleach
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"coa/pkg/distro"
@@ -27,13 +26,12 @@ func (b *Bleach) log(msg string) {
 	}
 }
 
-func (b *Bleach) run(name string, args ...string) {
-	cmd := exec.Command(name, args...)
+func (b *Bleach) run(command string) {
 	if b.Verbose {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		utils.Exec(command)
+	} else {
+		utils.ExecQuiet(command)
 	}
-	cmd.Run()
 }
 
 func (b *Bleach) Clean() error {
@@ -43,23 +41,23 @@ func (b *Bleach) Clean() error {
 
 	switch d.FamilyID {
 	case "alpine":
-		b.run("apk", "cache", "clean")
-		b.run("apk", "cache", "purge")
+		b.run("apk cache clean")
+		b.run("apk cache purge")
 
 	case "archlinux":
-		b.run("sh", "-c", "yes | pacman -Scc")
+		b.run("yes | pacman -Scc")
 
 	case "debian":
-		b.run("apt-get", "clean")
-		b.run("apt-get", "autoclean", "-y")
+		b.run("apt-get clean")
+		b.run("apt-get autoclean -y")
 		os.RemoveAll("/var/lib/apt/lists/lock")
 
 	case "fedora":
-		b.run("sh", "-c", "dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q) -y")
-		b.run("dnf", "clean", "all")
+		b.run("dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q) -y")
+		b.run("dnf clean all")
 
 	case "opensuse":
-		b.run("zypper", "clean")
+		b.run("zypper --non-interactive clean --all")
 	}
 
 	b.log("Cleaning Flatpak and Snap cache")
@@ -76,11 +74,11 @@ func (b *Bleach) Clean() error {
 
 	b.log("Cleaning system logs")
 	if _, err := os.Stat("/run/systemd/system"); err == nil {
-		b.run("journalctl", "--rotate")
-		b.run("journalctl", "--vacuum-time=1s")
+		b.run("journalctl --rotate")
+		b.run("journalctl --vacuum-time=1s")
 	} else {
-		b.run("sh", "-c", "find /var/log -name '*gz' -print0 | xargs -0r rm -f")
-		b.run("sh", "-c", "find /var/log/ -type f -exec truncate -s 0 {} \\;")
+		b.run("find /var/log -name '*gz' -print0 | xargs -0r rm -f")
+		b.run("find /var/log/ -type f -exec truncate -s 0 {} \\;")
 	}
 
 	b.log("Flushing kernel cache (PageCache, dentries and inodes)")

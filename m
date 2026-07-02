@@ -25,7 +25,7 @@ case "$ID" in
         sudo dnf reinstall -y penguins-eggs-*.rpm
         ;;
     opensuse*)
-        sudo zypper install -y penguins-eggs-*.rpm
+        sudo zypper --no-gpg-checks install -y penguins-eggs-*.rpm
         ;;
     *)
         # fallback su LIKE_ID
