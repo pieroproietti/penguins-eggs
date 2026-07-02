@@ -22,17 +22,17 @@ case "$ID" in
         sudo dpkg -i penguins-eggs_*.deb
         ;;
     fedora)
-        sudo dnf install -y penguins-eggs_*.rpm
+        sudo dnf reinstall -y penguins-eggs-*.rpm
         ;;
     opensuse*)
-        sudo zypper install -y penguins-eggs_*.rpm
+        sudo zypper install -y penguins-eggs-*.rpm
         ;;
     *)
         # fallback su LIKE_ID
         case "$ID_LIKE" in
-            *arch*)   sudo pacman -U --noconfirm penguins-eggs_*.pkg.tar.zst ;;
+            *arch*)   sudo pacman -U --noconfirm penguins-eggs-*.pkg.tar.zst ;;
             *debian*|*devuan*|*ubuntu*) sudo dpkg -i penguins-eggs_*.deb ;;
-            *fedora*|*rhel*) sudo dnf install -y penguins-eggs_*.rpm ;;
+            *fedora*|*rhel*) sudo dnf install -y penguins-eggs-*.rpm ;;
             *) echo "Distro non supportata: $ID"; exit 1 ;;
         esac
         ;;
