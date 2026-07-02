@@ -81,7 +81,7 @@ func runMount(c *ctx) error {
 			}
 		}
 	} else {
-		if err := c.mount(l.Root, plan.Target); err != nil {
+		if err := c.mount("-t", plan.FsType, l.Root, plan.Target); err != nil {
 			return err
 		}
 	}

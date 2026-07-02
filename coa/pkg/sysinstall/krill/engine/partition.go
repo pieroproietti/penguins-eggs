@@ -119,15 +119,18 @@ func runPartition(c *ctx) error {
 
 	l := partsFor(plan)
 	if l.Esp != "" {
+		_ = c.run("wipefs", "-a", l.Esp)
 		if err := c.run("mkfs.fat", "-F32", l.Esp); err != nil {
 			return err
 		}
 	}
 	if l.Swap != "" {
+		_ = c.run("wipefs", "-a", l.Swap)
 		if err := c.run("mkswap", l.Swap); err != nil {
 			return err
 		}
 	}
+	_ = c.run("wipefs", "-a", l.Root)
 	return c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), l.Root)...)
 }
 
