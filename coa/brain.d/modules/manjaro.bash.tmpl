@@ -133,6 +133,12 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_6
 # 🎯 INSTALLER
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
+ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+    if ! grep -q "^HOOKS=.*btrfs" /etc/mkinitcpio.conf; then
+        sed -i '/^HOOKS=/ s/\bfilesystems\b/btrfs filesystems/' /etc/mkinitcpio.conf
+    fi
+fi
 mkinitcpio -P
 {{ end }}
 
