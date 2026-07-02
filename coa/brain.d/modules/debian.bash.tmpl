@@ -42,17 +42,14 @@ cp "/boot/initrd.img-$KERNEL_VERSION" /home/eggs/isodir/live/initrd.img
 
 
 # ==============================================================================
-# 🎯 CALAMARES INSTALLER HOOKS
+# 🎯 INSTALLER
 # ==============================================================================
-{{ define "distro_hook_install_logic" }}
-#!/bin/bash
-# debian: distro_hook_install_logic
-set -e
-rm -f /etc/sudoers.d/00-live
-# Applichiamo il fix anche sul sistema installato prima di generare l'initramfs
+{{ define "install_distro_initramfs" }}
 echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
 update-initramfs -u
+{{ end }}
 
+{{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
 else
@@ -61,3 +58,4 @@ else
 fi
 update-grub
 {{ end }}
+

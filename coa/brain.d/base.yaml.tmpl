@@ -270,12 +270,42 @@ remaster:
       isohdpfx: "/tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin"
 
 # ==============================================================================
-# CALAMARES INSTALLER HOOKS
+# 🎯 INSTALLER
 # ==============================================================================
 install:
-  - name: "coa-finalize"
-    description: "Target finalization and host bootloader regeneration"
+  - name: "install-cleanup"
+    description: "remove 00-live"
     module: "shell"
+    chroot: true
     params:
       command: |
-{{ include "distro_hook_install_logic" . | indent 8 }}
+        rm -f /etc/sudoers.d/00-live
+
+  - name: "install-ssh-keys"
+    description: "generate host SSH keys"
+    module: "shell"
+    chroot: true
+    params:
+      command: |
+        if [ -x /usr/bin/ssh-keygen ]; then
+            /usr/bin/ssh-keygen -A
+        fi
+
+  - name: "install-initramfs"
+    description: "update initramfs"
+    module: "shell"
+    chroot: true
+    params:
+      command: |
+{{ include "install_distro_initramfs" . | indent 8 }}
+
+  - name: "install-bootloader"
+    description: "install bootloader"
+    module: "shell"
+    chroot: true
+    params:
+      command: |
+{{ include "install_distro_bootloader" . | indent 8 }}
+
+
+

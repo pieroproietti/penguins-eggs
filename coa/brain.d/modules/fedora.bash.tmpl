@@ -26,7 +26,7 @@ KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
 INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
 DEST_DIR="/home/eggs/isodir/live"
 
-# Controllo di sicurezza sul KERNEL
+# Controllo di sic sul KERNEL
 if [ ! -f "$KERNEL_SRC" ] ; then
     echo "[ERRORE FATALE] Impossibile trovare il kernel in $KERNEL_SRC!"
     exit 1
@@ -65,20 +65,17 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squash
 {{ end }}
 
 # ==============================================================================
-# 🎯 CALAMARES INSTALLER HOOKS
+# 🎯 INSTALLER
 # ==============================================================================
-{{ define "distro_hook_install_logic" }}
-#!/bin/bash
-set -e
-# fedora: distro_hook_install_logic
-rm -f /etc/sudoers.d/00-live
+{{ define "install_distro_initramfs" }}
+dracut -f --regenerate-all
+{{ end }}
+
+{{ define "install_distro_bootloader" }}
 sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
 if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then
       echo "GRUB_ENABLE_BLSCFG=false" >> /etc/default/grub
 fi
-
-dracut -f --regenerate-all
-
 if [ -d /sys/firmware/efi ]; then
       grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=fedora --recheck --force
       grub2-mkconfig -o /boot/grub2/grub.cfg

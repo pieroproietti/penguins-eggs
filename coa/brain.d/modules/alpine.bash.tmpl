@@ -39,25 +39,19 @@ cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"
 {{ end -}}
 
 # ==============================================================================
-# 🎯 CALAMARES INSTALLER HOOKS
+# 🎯 INSTALLER
 # ==============================================================================
-{{ define "distro_hook_install_logic" }}
-#!/bin/bash
-set -e
-# alpine: distro_hook_install_logic
-rm -f /etc/sudoers.d/00-live
-# 1. Rigeneriamo l'initramfs pulito per il sistema installato sul disco
+{{ define "install_distro_initramfs" }}
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
+{{ end }}
 
-# 2. Installazione GRUB
+{{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck
 else
     TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
-
-# 3. Alpine non ha 'update-grub', usiamo il binario nativo
 grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}

@@ -9,9 +9,10 @@ import (
 )
 
 type ShellConfig struct {
-	Chroot   bool   `json:"chroot"`
-	LiveRoot string `json:"live_root,omitempty"`
-	Params   struct {
+	Chroot     bool   `json:"chroot"`
+	LiveRoot   string `json:"live_root,omitempty"`
+	ChrootPath string `json:"chroot_path,omitempty"`
+	Params     struct {
 		Command string   `json:"command,omitempty"`
 		Src     string   `json:"src,omitempty"`
 		Args    []string `json:"args,omitempty"`
@@ -38,11 +39,22 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 	var execPath string
 
 	if config.Chroot {
-		if config.LiveRoot == "" {
-			return fmt.Errorf("chroot requested but live_root is missing")
+		chrootPath := config.ChrootPath
+		if chrootPath == "" {
+			chrootPath = config.LiveRoot
+		}
+		if chrootPath == "" {
+			if envRoot := os.Getenv("TARGET_ROOT"); envRoot != "" {
+				chrootPath = envRoot
+			} else if envRoot := os.Getenv("ROOT"); envRoot != "" {
+				chrootPath = envRoot
+			}
+		}
+		if chrootPath == "" {
+			return fmt.Errorf("chroot requested but chroot path (chroot_path, live_root, TARGET_ROOT or ROOT) is missing")
 		}
 
-		chrootWorkDir := filepath.Join(config.LiveRoot, "root", ".penguins-eggs")
+		chrootWorkDir := filepath.Join(chrootPath, "root", ".penguins-eggs")
 		os.MkdirAll(chrootWorkDir, 0700)
 
 		tmpFile, err := os.CreateTemp(chrootWorkDir, "oa-exec-*.sh")
@@ -76,13 +88,24 @@ func executeUnifiedShell(config ShellConfig, scriptContent []byte) error {
 	var cmd *exec.Cmd
 
 	if config.Chroot {
+		chrootPath := config.ChrootPath
+		if chrootPath == "" {
+			chrootPath = config.LiveRoot
+		}
+		if chrootPath == "" {
+			if envRoot := os.Getenv("TARGET_ROOT"); envRoot != "" {
+				chrootPath = envRoot
+			} else if envRoot := os.Getenv("ROOT"); envRoot != "" {
+				chrootPath = envRoot
+			}
+		}
 		shellPath := "/bin/sh"
-		if _, err := os.Stat(filepath.Join(config.LiveRoot, "bin", "bash")); err == nil {
+		if _, err := os.Stat(filepath.Join(chrootPath, "bin", "bash")); err == nil {
 			shellPath = "/bin/bash"
 		}
 
-		fmt.Printf("📦 [worker core] Running in chroot (via %s)...\n", shellPath)
-		args := []string{config.LiveRoot, shellPath, execPath}
+		fmt.Printf("📦 [worker core] Running in chroot %s (via %s)...\n", chrootPath, shellPath)
+		args := []string{chrootPath, shellPath, execPath}
 		if len(config.Params.Args) > 0 {
 			args = append(args, config.Params.Args...)
 		}

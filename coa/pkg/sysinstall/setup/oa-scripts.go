@@ -1,27 +1,89 @@
 package setup
 
 import (
-	"coa/pkg/distro"
+	"encoding/json"
+	"fmt"
+	"os"
 	"path/filepath"
+	"strings"
+
+	"coa/pkg/parser"
 )
 
-func oaScripts(d *distro.Distro) error {
-	config := OaConfig{Family: d.FamilyID, ID: d.DistroID}
+type EllPayload struct {
+	Module string `json:"module"`
+	Chroot bool   `json:"chroot"`
+	Params struct {
+		Command string `json:"command"`
+	} `json:"params"`
+}
 
-	// Scrive lo script initramfs
-	outInitramfs := filepath.Join(InstallerDRoot, "oa-initramfs.sh")
-	if err := renderAndSaveEmbedded("oa-initramfs.sh.tmpl", outInitramfs, config, 0755); err != nil {
-		return err
+func getStepCommand(step parser.Step) string {
+	if step.RunCommand != "" {
+		return step.RunCommand
+	}
+	if step.Params != nil {
+		if cmd, ok := step.Params["command"].(string); ok {
+			return cmd
+		}
+	}
+	return ""
+}
+
+func generateChrootRunner(profile *parser.Profile) error {
+	var sb strings.Builder
+
+	currentExe, err := os.Executable()
+	if err != nil {
+		currentExe = "coa"
 	}
 
-	// Scrive lo script bootloades
-	outBootloader := filepath.Join(InstallerDRoot, "oa-bootloader.sh")
-	if err := renderAndSaveEmbedded("oa-bootloader.sh.tmpl", outBootloader, config, 0755); err != nil {
-		return err
+	sb.WriteString("#!/bin/bash\n")
+	sb.WriteString("set -e\n\n")
+	sb.WriteString("# Target root detection\n")
+	sb.WriteString("TARGET_ROOT=${ROOT}\n")
+	sb.WriteString("if [ -z \"$TARGET_ROOT\" ]; then\n")
+	sb.WriteString("    TARGET_ROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e \"s#/proc##g\")\n")
+	sb.WriteString("fi\n")
+	sb.WriteString("if [ -z \"$TARGET_ROOT\" ]; then\n")
+	sb.WriteString("    TARGET_ROOT=$(ls -d /tmp/calamares-root-* 2>/dev/null | head -n 1)\n")
+	sb.WriteString("fi\n")
+	sb.WriteString("if [ -z \"$TARGET_ROOT\" ]; then\n")
+	sb.WriteString("    TARGET_ROOT=\"/tmp/calamares-root-krill\"\n")
+	sb.WriteString("fi\n\n")
+	sb.WriteString("export TARGET_ROOT\n")
+	sb.WriteString("export ROOT=\"$TARGET_ROOT\"\n\n")
+	sb.WriteString("echo \"Chroot runner: installing to $TARGET_ROOT\"\n\n")
+
+	for _, step := range profile.Install {
+		cmd := getStepCommand(step)
+		if cmd == "" {
+			continue
+		}
+
+		sb.WriteString(fmt.Sprintf("# --- Step: %s ---\n", step.Name))
+		if step.Description != "" {
+			sb.WriteString(fmt.Sprintf("echo \"Running step: %s...\"\n", step.Description))
+		} else {
+			sb.WriteString(fmt.Sprintf("echo \"Running step: %s...\"\n", step.Name))
+		}
+
+		payload := EllPayload{
+			Module: "shell",
+			Chroot: step.Chroot,
+		}
+		payload.Params.Command = cmd
+
+		jsonBytes, err := json.MarshalIndent(payload, "", "  ")
+		if err != nil {
+			return fmt.Errorf("error marshaling step %s: %w", step.Name, err)
+		}
+
+		sb.WriteString(fmt.Sprintf("%s ell <<'EOF_STEP'\n", currentExe))
+		sb.Write(jsonBytes)
+		sb.WriteString("\nEOF_STEP\n\n")
 	}
 
-	// Scrive il chroot-runner
-	outBridge := filepath.Join(InstallerDRoot, "oa-chroot-runner.sh")
-	return renderAndSaveEmbedded("oa-chroot-runner.sh.tmpl", outBridge, nil, 0755)
-
+	outPath := filepath.Join(InstallerDRoot, "oa-chroot-runner.sh")
+	return os.WriteFile(outPath, []byte(sb.String()), 0755)
 }

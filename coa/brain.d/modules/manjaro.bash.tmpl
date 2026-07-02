@@ -130,14 +130,13 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_6
 {{ end }}
 
 # ==============================================================================
-# 🎯 CALAMARES INSTALLER HOOKS
+# 🎯 INSTALLER
 # ==============================================================================
-{{ define "distro_hook_install_logic" }}
-#!/bin/bash
-set -e
-# manjaro: distro_hook_install_logic
-rm -f /etc/sudoers.d/00-live
+{{ define "install_distro_initramfs" }}
 mkinitcpio -P
+{{ end }}
+
+{{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
       grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
 else

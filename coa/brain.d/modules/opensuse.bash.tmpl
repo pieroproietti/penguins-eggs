@@ -69,22 +69,15 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squash
 {{ end }}
 
 # ==============================================================================
-# 🎯 CALAMARES INSTALLER HOOKS (La vera nuova strategia)
+# 🎯 INSTALLER
 # ==============================================================================
-{{ define "distro_hook_install_logic" }}
-#!/bin/bash
-set -e
-# opensuse: distro_hook_install_logic
-rm -f /etc/sudoers.d/00-live
-# SUSE non usa BLSCFG di default come Fedora, ma rigeneriamo dracut sul ferro
+{{ define "install_distro_initramfs" }}
 dracut -f --regenerate-all
+{{ end }}
 
+{{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
-      # openSUSE vuole il bootloader-id specifico per non sovrascrivere altri sistemi
       grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=opensuse --recheck --force
-      
-      # ATTENZIONE: Su SUSE il grub.cfg standard sta in /boot/grub2/grub.cfg 
-      # e quello EFI punta lì tramite un piccolo stub in /boot/efi/EFI/opensuse/grub.cfg
       grub2-mkconfig -o /boot/grub2/grub.cfg
       mkdir -p /boot/efi/EFI/opensuse
       grub2-mkconfig -o /boot/efi/EFI/opensuse/grub.cfg

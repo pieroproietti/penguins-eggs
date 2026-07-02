@@ -160,3 +160,64 @@ func runUmount(c *ctx) error {
 	c.mounts = nil
 	return nil
 }
+
+// runBtrfsPostFormatHook executes the mounting and subvolume creation hook for Btrfs targets.
+func runBtrfsPostFormatHook(c *ctx, deviceRoot string, deviceBoot string, targetPath string, isBtrfs bool) error {
+	if !isBtrfs {
+		// Montaggio standard
+		if err := os.MkdirAll(targetPath, 0755); err != nil {
+			return err
+		}
+		return c.mount(deviceRoot, targetPath)
+	}
+
+	const tempRawMount = "/mnt/krill_temp_raw"
+
+	// 1. Monta temporaneamente il blocco appena formattato
+	if err := os.MkdirAll(tempRawMount, 0755); err != nil {
+		return err
+	}
+	if err := c.run("mount", deviceRoot, tempRawMount); err != nil {
+		return err
+	}
+
+	// 2. Crea i subvolumi @ e @home
+	subvols := []string{"@", "@home"}
+	for _, sv := range subvols {
+		svPath := filepath.Join(tempRawMount, sv)
+		if !exists(svPath) {
+			if err := c.run("btrfs", "subvolume", "create", svPath); err != nil {
+				_ = c.run("umount", tempRawMount)
+				return err
+			}
+		}
+	}
+
+	// 3. Smonta il blocco raw
+	if err := c.run("umount", tempRawMount); err != nil {
+		return err
+	}
+	_ = os.Remove(tempRawMount)
+
+	// 4. Monta il subvolume @ come root ufficiale per il processo successivo
+	if err := os.MkdirAll(targetPath, 0755); err != nil {
+		return err
+	}
+	// Registra il mount tramite c.mount così verrà smontato a fine installazione
+	if err := c.mount("-o", "subvol=@", deviceRoot, targetPath); err != nil {
+		return err
+	}
+
+	// 5. Crea e monta la cartella di boot (se separata)
+	if deviceBoot != "" {
+		bootDir := filepath.Join(targetPath, "boot")
+		if err := os.MkdirAll(bootDir, 0755); err != nil {
+			return err
+		}
+		if err := c.mount(deviceBoot, bootDir); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
