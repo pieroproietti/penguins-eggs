@@ -1,4 +1,4 @@
-name: "🏭 Furnace: Install and Remaster"
+name: "🏭 Furnaces: Install and Remaster"
 
 on:
   workflow_dispatch:
@@ -35,8 +35,16 @@ jobs:
             prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
             install_cmd: "apt install -y ./*.deb"
 
-          - os: fedora
+          - os: devuan
             vmid: 304
+            snapshot: virgin
+            subnet: "192.168.1"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
+            install_cmd: "apt install -y ./*.deb"
+
+          - os: fedora
+            vmid: 305
             snapshot: virgin
             subnet: "192.168.1"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-fedora.zip"
@@ -44,7 +52,7 @@ jobs:
             install_cmd: "dnf install -y ./*.rpm"
 
           - os: manjaro
-            vmid: 305
+            vmid: 306
             snapshot: virgin
             subnet: "192.168.1"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-manjaro.zip"
@@ -52,12 +60,20 @@ jobs:
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
 
           - os: opensuse
-            vmid: 306
+            vmid: 307
             snapshot: virgin
             subnet: "192.168.1"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-opensuse.zip"
             prep_cmd: "sh -c 'zypper -n refresh && zypper -n install wget unzip sshpass'"
             install_cmd: "zypper -n --no-gpg-checks install ./*.rpm"
+            
+          - os: ubuntu
+            vmid: 308
+            snapshot: virgin
+            subnet: "192.168.1"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
+            install_cmd: "apt install -y ./*.deb"
             
     steps:
       - name: 🔐 Air-gapped Secrets Loading
