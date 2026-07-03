@@ -12,8 +12,10 @@ depends=(
 	'manjaro-tools-iso'
 	'arch-install-scripts'
 	'bash-completion'
+	'btrfs-progs'
 	'curl'
 	'dosfstools'
+	'e2fsprogs'
 	'efibootmgr'
 	'git'
 	'glibc'
@@ -21,7 +23,9 @@ depends=(
 	'grub'
 	'libarchive'
 	'libisoburn'
+	'mkinitcpio-nfs-utils' # Risolve errore /usr/lib/initcpio/ipconfig e nfsmount
 	'mtools'
+	'nbd'                  # Risolve errore nbd-client
 	'pv'
 	'rsync'
 	'squashfs-tools'

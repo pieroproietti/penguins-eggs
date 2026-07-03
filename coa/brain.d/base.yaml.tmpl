@@ -185,6 +185,7 @@ remaster:
     chroot: false
     params:
       command: |
+        mkdir -p /home/eggs/liveroot/usr/local/bin
         cp /etc/penguins-eggs.d/scripts/trust-desktop.sh /home/eggs/liveroot/usr/local/bin/trust-desktop
         chmod 755 /home/eggs/liveroot/usr/local/bin/trust-desktop
 

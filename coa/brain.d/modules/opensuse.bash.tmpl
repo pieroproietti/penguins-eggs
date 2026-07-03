@@ -76,10 +76,19 @@ dracut -f --regenerate-all
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
+# Disabilita SELinux per evitare errori di permessi all'avvio (Permission denied su bash/sh)
+if [ -f /etc/selinux/config ]; then
+      sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+fi
+
+if [ -f /etc/default/grub ]; then
+      if ! grep -q "selinux=0" /etc/default/grub; then
+            sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="selinux=0 /g' /etc/default/grub
+      fi
+fi
+
 # Rilevamento automatico e dispatch del bootloader
-if [ -d /sys/firmware/efi ] && command -v bootctl &> /dev/null; then
-    {{ include "install_distro_systemd_boot" . }}
-elif command -v limine &> /dev/null; then
+if command -v limine &> /dev/null; then
     {{ include "install_distro_limine" . }}
 else
     {{ include "install_distro_grub" . }}
@@ -87,15 +96,44 @@ fi
 {{ end }}
 
 {{ define "install_distro_grub" }}
+# Rileva Btrfs e crea il symlink di boot al livello root del filesystem
+if [ "$(findmnt -n -o FSTYPE /)" = "btrfs" ]; then
+      echo "-> Configurazione Btrfs rilevata. Creazione del symlink /boot al livello root..."
+      ROOT_DEV=$(findmnt -n -o SOURCE /)
+      mkdir -p /tmp/btrfs-raw
+      mount "$ROOT_DEV" /tmp/btrfs-raw
+      ln -sf @/boot /tmp/btrfs-raw/boot
+      umount /tmp/btrfs-raw
+      rmdir /tmp/btrfs-raw
+fi
+
 if [ -d /sys/firmware/efi ]; then
       grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=opensuse --recheck --force
+      
+      # Fallback UEFI Absolute (Garantisce l'avvio anche se la NVRAM fa i capricci)
+      mkdir -p /boot/efi/EFI/BOOT
+      if [ -f /boot/efi/EFI/opensuse/shim.efi ]; then
+          cp /boot/efi/EFI/opensuse/shim.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
+          if [ -f /boot/efi/EFI/opensuse/grubx64.efi ]; then
+              cp /boot/efi/EFI/opensuse/grubx64.efi /boot/efi/EFI/BOOT/grubx64.efi
+          elif [ -f /boot/efi/EFI/opensuse/grub.efi ]; then
+              cp /boot/efi/EFI/opensuse/grub.efi /boot/efi/EFI/BOOT/grubx64.efi
+          fi
+      else
+          if [ -f /boot/efi/EFI/opensuse/grubx64.efi ]; then
+              cp /boot/efi/EFI/opensuse/grubx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
+          elif [ -f /boot/efi/EFI/opensuse/grub.efi ]; then
+              cp /boot/efi/EFI/opensuse/grub.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
+          fi
+      fi
+
       grub2-mkconfig -o /boot/grub2/grub.cfg
       mkdir -p /boot/efi/EFI/opensuse
       grub2-mkconfig -o /boot/efi/EFI/opensuse/grub.cfg
 else
       TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
       grub2-install --target=i386-pc --recheck "$TARGET_DISK"
-      grub2-makeconfig -o /boot/grub2/grub.cfg
+      grub2-mkconfig -o /boot/grub2/grub.cfg
 fi
 {{ end }}
 
@@ -106,10 +144,10 @@ bootctl install --esp-path=/boot/efi
 mkdir -p /boot/efi/loader/entries
 
 KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1 | xargs basename)
-INITRD_FILE=$(ls -1 /boot/initramfs-*.img /boot/initrd-*.img 2>/dev/null | grep -v rescue | head -n 1 | xargs basename)
+INITRD_FILE=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1 | xargs basename)
 
-cp /boot/$KERNEL_FILE /boot/efi/
-cp /boot/$INITRD_FILE /boot/efi/
+cp -L /boot/$KERNEL_FILE /boot/efi/
+cp -L /boot/$INITRD_FILE /boot/efi/
 
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
 ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
@@ -141,7 +179,7 @@ if [ -d /sys/firmware/efi ]; then
     cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
     
     KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
-    INITRD_FILE=$(ls -1 /boot/initramfs-*.img /boot/initrd-*.img 2>/dev/null | grep -v rescue | head -n 1)
+    INITRD_FILE=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
     ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
     ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
     ROOTFLAGS=""
@@ -163,7 +201,7 @@ else
     limine bios-install "$TARGET_DISK"
     
     KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
-    INITRD_FILE=$(ls -1 /boot/initramfs-*.img /boot/initrd-*.img 2>/dev/null | grep -v rescue | head -n 1)
+    INITRD_FILE=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
     ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
     ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
     ROOTFLAGS=""
