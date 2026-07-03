@@ -50,6 +50,7 @@ func loadSuit(yamlFile string) (*Suit, error) {
 	if err := yaml.Unmarshal(data, &suit); err != nil {
 		return nil, err
 	}
+	suit.normalize()
 
 	return &suit, nil
 }
@@ -84,6 +85,16 @@ func getAvailablePackages() map[string]struct{} {
 }
 
 func installWithRetries(packages []string, retries int) {
+	installPackagesImpl(packages, retries, false)
+}
+
+// installNoRecommends installa pacchetti con --no-install-recommends,
+// usato dai costume che dichiarano packages_no_install_recommends.
+func installNoRecommends(packages []string) {
+	installPackagesImpl(packages, 3, true)
+}
+
+func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 	if len(packages) == 0 {
 		return
 	}
@@ -119,7 +130,11 @@ func installWithRetries(packages []string, retries int) {
 	}
 
 	pkgString := strings.Join(toInstall, " ")
-	cmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install -y %s", pkgString)
+	flags := "-y"
+	if noRecommends {
+		flags = "-y --no-install-recommends"
+	}
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install %s %s", flags, pkgString)
 
 	for i := 1; i <= retries; i++ {
 		logToFile(fmt.Sprintf("Installation attempt %d of %d...", i, retries))

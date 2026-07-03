@@ -49,15 +49,29 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	copySkelToUser()
 
 	utils.LogNormal("✅ Costume applied successfully!")
+
+	if suit.Reboot {
+		utils.LogNormal(utils.ColorYellow + "This costume recommends a reboot to finish applying all changes." + utils.ColorReset)
+	}
+
 	return nil
 }
 
 func applySuit(dir string, suit *Suit) error {
+	if suit.Sequence != nil && suit.Sequence.Repositories != nil {
+		setupRepositories(suit.Sequence.Repositories, suit.Name)
+	}
+
 	if len(suit.Packages) > 0 {
 		utils.LogNormal("[%s] Attempting package installation: %v", suit.Name, suit.Packages)
 		installWithRetries(suit.Packages, 3)
 	} else {
 		utils.LogNormal("[%s] No packages to install.", suit.Name)
+	}
+
+	if len(suit.PackagesNoRecommends) > 0 {
+		utils.LogNormal("[%s] Installing packages without recommends: %v", suit.Name, suit.PackagesNoRecommends)
+		installNoRecommends(suit.PackagesNoRecommends)
 	}
 
 	sysrootPath := filepath.Join(dir, "sysroot")
