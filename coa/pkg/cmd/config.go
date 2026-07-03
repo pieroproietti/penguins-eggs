@@ -31,7 +31,8 @@ const (
 )
 
 const (
-	cfgPassword = iota
+	cfgUser = iota
+	cfgPassword
 	cfgAlgorithm
 	cfgLevel
 	cfgISOPrefix
@@ -72,6 +73,7 @@ type configModel struct {
 }
 
 type configState struct {
+	User      string
 	Password  string
 	Algorithm string
 	Level     int
@@ -81,6 +83,7 @@ type configState struct {
 
 func loadConfigState() configState {
 	state := configState{
+		User:      "live",
 		Password:  "evolution",
 		Algorithm: "zstd",
 		Level:     3,
@@ -89,6 +92,9 @@ func loadConfigState() configState {
 	settings, err := parser.LoadCustomSettings()
 	if err != nil || settings == nil {
 		return state
+	}
+	if settings.Remaster.User != "" {
+		state.User = settings.Remaster.User
 	}
 	if settings.Remaster.Password != "" {
 		state.Password = settings.Remaster.Password
@@ -108,12 +114,14 @@ func loadConfigState() configState {
 
 func cfgInputIdx(field int) int {
 	switch field {
-	case cfgPassword:
+	case cfgUser:
 		return 0
-	case cfgLevel:
+	case cfgPassword:
 		return 1
-	case cfgISOPrefix:
+	case cfgLevel:
 		return 2
+	case cfgISOPrefix:
+		return 3
 	}
 	return -1
 }
@@ -121,17 +129,18 @@ func cfgInputIdx(field int) int {
 func newConfigModel() configModel {
 	state := loadConfigState()
 
-	inputs := make([]textinput.Model, 3)
+	inputs := make([]textinput.Model, 4)
 	for i := range inputs {
 		inputs[i] = textinput.New()
 		inputs[i].Prompt = ""
 		inputs[i].CharLimit = 64
 		inputs[i].Width = 30
 	}
-	inputs[0].SetValue(state.Password)
+	inputs[0].SetValue(state.User)
 	inputs[0].Focus()
-	inputs[1].SetValue(strconv.Itoa(state.Level))
-	inputs[2].SetValue(state.ISOPrefix)
+	inputs[1].SetValue(state.Password)
+	inputs[2].SetValue(strconv.Itoa(state.Level))
+	inputs[3].SetValue(state.ISOPrefix)
 
 	algoIdx := 0
 	for i, a := range cfgAlgorithms {
@@ -323,17 +332,22 @@ func (m configModel) updateSave(key string) (tea.Model, tea.Cmd) {
 func (m configModel) buildState() configState {
 	level := 0
 	if m.showLevel() {
-		level, _ = strconv.Atoi(m.inputs[1].Value())
+		level, _ = strconv.Atoi(m.inputs[2].Value())
 		if level <= 0 {
 			level = 3
 		}
 	}
 	installers := []string{"krill", "calamares"}
+	user := strings.TrimSpace(m.inputs[0].Value())
+	if user == "" {
+		user = "live"
+	}
 	return configState{
-		Password:  m.inputs[0].Value(),
+		User:      user,
+		Password:  m.inputs[1].Value(),
 		Algorithm: cfgAlgorithms[m.algoIdx],
 		Level:     level,
-		ISOPrefix: strings.TrimSpace(m.inputs[2].Value()),
+		ISOPrefix: strings.TrimSpace(m.inputs[3].Value()),
 		Installer: installers[m.instIdx],
 	}
 }
@@ -388,13 +402,12 @@ func (m configModel) showLevel() bool {
 func (m configModel) viewSettings() string {
 	tabs := m.renderTabs()
 
-	userRow := fmt.Sprintf("  %-14s: %s", "User", cfgGreen.Render("live"))
-
 	type fieldDef struct {
 		id    int
 		label string
 	}
 	fields := []fieldDef{
+		{cfgUser, "User"},
 		{cfgPassword, "Password"},
 		{cfgAlgorithm, "Algorithm"},
 	}
@@ -407,7 +420,6 @@ func (m configModel) viewSettings() string {
 	}
 
 	var rows []string
-	rows = append(rows, userRow)
 	for _, f := range fields {
 		marker := "  "
 		if m.focus == f.id {
@@ -416,17 +428,19 @@ func (m configModel) viewSettings() string {
 
 		var val string
 		switch f.id {
-		case cfgPassword:
+		case cfgUser:
 			val = m.inputs[0].View()
+		case cfgPassword:
+			val = m.inputs[1].View()
 		case cfgAlgorithm:
 			val = cfgCyan.Render("‹ " + cfgAlgorithms[m.algoIdx] + " ›")
 		case cfgLevel:
-			val = m.inputs[1].View()
+			val = m.inputs[2].View()
 		case cfgISOPrefix:
-			if m.inputs[2].Value() == "" && m.focus != cfgISOPrefix {
+			if m.inputs[3].Value() == "" && m.focus != cfgISOPrefix {
 				val = cfgDim.Render("(auto)")
 			} else {
-				val = m.inputs[2].View()
+				val = m.inputs[3].View()
 			}
 		case cfgInstaller:
 			installers := []string{"krill", "calamares"}
@@ -499,6 +513,9 @@ func saveConfigState(state configState) error {
 	var b strings.Builder
 	b.WriteString("# custom.yaml - penguins-eggs configuration overrides\n")
 	b.WriteString("remaster:\n")
+	if state.User != "" && state.User != "live" {
+		b.WriteString(fmt.Sprintf("  user: \"%s\"\n", state.User))
+	}
 	b.WriteString(fmt.Sprintf("  password: \"%s\"\n", state.Password))
 	b.WriteString("  compression:\n")
 	b.WriteString(fmt.Sprintf("    algorithm: \"%s\"\n", state.Algorithm))
