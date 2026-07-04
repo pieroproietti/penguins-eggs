@@ -29,10 +29,8 @@ on:
 
 jobs:
   bake-isos:
-    name: 🏭 Build ISO su ${{ matrix.os }} (${{ github.event.inputs.source }})
+    name: 🏭 Build ISO su ${{ matrix.os }} (${{ inputs.source }})
     runs-on: self-hosted
-    # 👇 QUESTA RIGA FILTRA LA MATRICE IN BASE ALLA SCELTA
-    if: ${{ github.event.inputs.distro == 'all' || matrix.os == github.event.inputs.distro || github.event.inputs.distro == '' }}
     
     strategy:
       fail-fast: false
@@ -112,6 +110,7 @@ jobs:
             
     steps:
       - name: 🔐 Air-gapped Secrets Loading
+        if: inputs.distro == 'all' || matrix.os == inputs.distro
         run: |
           source /etc/p4/secrets.env
           echo "::add-mask::$SSH_PASSWD"
@@ -124,7 +123,7 @@ jobs:
       # OPZIONE A: Scarica l'ultimo pacchetto generato da hammers (DEFAULT)
       # --------------------------------------------------------------------
       - name: 📥 Scarica ultima build da hammers
-        if: ${{ github.event.inputs.source == 'artifacts' || github.event.inputs.source == '' }}
+        if: (inputs.distro == 'all' || matrix.os == inputs.distro) && (inputs.source == 'artifacts' || inputs.source == '')
         uses: dawidd6/action-download-artifact@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -137,7 +136,7 @@ jobs:
       # OPZIONE B: Scarica il pacchetto ufficiale dall'ultima Release
       # --------------------------------------------------------------------
       - name: 🌐 Scarica pacchetti da Release Ufficiale
-        if: ${{ github.event.inputs.source == 'release' }}
+        if: (inputs.distro == 'all' || matrix.os == inputs.distro) && inputs.source == 'release'
         run: |
           mkdir -p pacchetti_da_installare
           wget -q -O release_pacchetti.zip "${{ matrix.artifact_url }}"
@@ -145,6 +144,7 @@ jobs:
           rm -f release_pacchetti.zip
 
       - name: 🔄 Rollback & VM Boot
+        if: inputs.distro == 'all' || matrix.os == inputs.distro
         env:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
@@ -152,6 +152,7 @@ jobs:
 
       - name: 📡 Dynamic IP Discovery
         id: get_ip
+        if: inputs.distro == 'all' || matrix.os == inputs.distro
         env:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
@@ -174,6 +175,7 @@ jobs:
           echo "VM_IP=$IP" >> $GITHUB_ENV
 
       - name: ⏳ Waiting for VM SSH daemon...
+        if: inputs.distro == 'all' || matrix.os == inputs.distro
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
@@ -187,12 +189,14 @@ jobs:
       # INVIO UNIFICATO VIA SCP (Invia qualunque cosa sia stata scaricata prima)
       # --------------------------------------------------------------------
       - name: 🚚 Trasferisci i pacchetti alla VM
+        if: inputs.distro == 'all' || matrix.os == inputs.distro
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
           sshpass -e scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r pacchetti_da_installare/* ${{ env.VM_USER }}@${{ env.VM_IP }}:/home/${{ env.VM_USER }}/
 
       - name: 🛠️ Installa package, Remaster and Export
+        if: inputs.distro == 'all' || matrix.os == inputs.distro
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
@@ -216,8 +220,9 @@ jobs:
           EOF
 
       - name: 🛑 VM Shutdown
-        if: always()
+        if: always() && (inputs.distro == 'all' || matrix.os == inputs.distro)
         env:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S qm shutdown ${{ matrix.vmid }}"
+          
