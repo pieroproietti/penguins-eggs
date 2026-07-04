@@ -9,13 +9,31 @@ on:
         default: 'artifacts'
         type: choice
         options:
-          - 'artifacts' # Prende l'ultimo push da hammers (Predefinito)
-          - 'release'   # Prende l'ultima release ufficiale stabile
+          - 'artifacts'
+          - 'release'
+      distro:
+        description: 'Seleziona la distribuzione da compilare (all per tutte)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'alpine'
+          - 'arch'
+          - 'debian'
+          - 'devuan'
+          - 'fedora'
+          - 'manjaro'
+          - 'opensuse'
+          - 'ubuntu'
 
 jobs:
   bake-isos:
     name: 🏭 Build ISO su ${{ matrix.os }} (${{ github.event.inputs.source }})
     runs-on: self-hosted
+    # 👇 QUESTA RIGA FILTRA LA MATRICE IN BASE ALLA SCELTA
+    if: ${{ github.event.inputs.distro == 'all' || matrix.os == github.event.inputs.distro || github.event.inputs.distro == '' }}
+    
     strategy:
       fail-fast: false
       matrix:
@@ -203,4 +221,3 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S qm shutdown ${{ matrix.vmid }}"
-          
