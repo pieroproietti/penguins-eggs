@@ -27,6 +27,53 @@ func runNetworkcfg(c *ctx) error {
 	cidr := fmt.Sprintf("%s/%d", p.NetAddress, prefix)
 	wrote := false
 
+	// Netplan (Ubuntu, etc.)
+	if exists(c.tpath("etc", "netplan")) {
+		renderer := "networkd"
+		if exists(c.tpath("etc", "NetworkManager")) {
+			renderer = "NetworkManager"
+		}
+
+		var dnsList []string
+		if p.NetDns != "" {
+			for _, d := range strings.FieldsFunc(p.NetDns, func(r rune) bool { return r == ',' || r == ' ' }) {
+				d = strings.TrimSpace(d)
+				if d != "" {
+					dnsList = append(dnsList, fmt.Sprintf("          - %s", d))
+				}
+			}
+		}
+
+		dnsSection := ""
+		if len(dnsList) > 0 {
+			dnsSection = "\n      nameservers:\n        addresses:\n" + strings.Join(dnsList, "\n")
+		}
+
+		routeSection := ""
+		if p.NetGateway != "" {
+			routeSection = fmt.Sprintf(`
+      routes:
+        - to: default
+          via: %s`, p.NetGateway)
+		}
+
+		conf := fmt.Sprintf(`network:
+  version: 2
+  renderer: %s
+  ethernets:
+    %s:
+      dhcp4: false
+      addresses:
+        - %s%s%s
+`, renderer, iface, cidr, routeSection, dnsSection)
+
+		if err := os.WriteFile(c.tpath("etc", "netplan", "99-krill-static.yaml"), []byte(conf), 0600); err != nil {
+			return err
+		}
+		c.logf("rete statica scritta per netplan")
+		wrote = true
+	}
+
 	// ifupdown (Debian server, Devuan, Alpine)
 	interfaces := c.tpath("etc", "network", "interfaces")
 	if exists(interfaces) {
@@ -97,7 +144,18 @@ DNS=%s
 	if p.NetDns != "" {
 		resolv := c.tpath("etc", "resolv.conf")
 		if info, err := os.Lstat(resolv); err != nil || info.Mode()&os.ModeSymlink == 0 {
-			os.WriteFile(resolv, []byte("nameserver "+p.NetDns+"\n"), 0644)
+			var sb strings.Builder
+			for _, d := range strings.FieldsFunc(p.NetDns, func(r rune) bool { return r == ',' || r == ' ' }) {
+				d = strings.TrimSpace(d)
+				if d != "" {
+					sb.WriteString("nameserver " + d + "\n")
+				}
+			}
+			if sb.Len() > 0 {
+				if err := os.WriteFile(resolv, []byte(sb.String()), 0644); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
