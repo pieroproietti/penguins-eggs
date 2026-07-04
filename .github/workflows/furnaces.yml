@@ -2,91 +2,129 @@ name: "🏭 Furnaces: Install and Remaster"
 
 on:
   workflow_dispatch:
+    inputs:
+      source:
+        description: 'Seleziona la sorgente dei pacchetti'
+        required: true
+        default: 'artifacts'
+        type: choice
+        options:
+          - 'artifacts' # Prende l'ultimo push da hammers (Predefinito)
+          - 'release'   # Prende l'ultima release ufficiale stabile
 
 jobs:
   bake-isos:
-    name: 🏭 Build ISO su ${{ matrix.os }}
+    name: 🏭 Build ISO su ${{ matrix.os }} (${{ github.event.inputs.source }})
     runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: alpine
-            vmid: 301 # 👈 Modifica se l'ID su Proxmox è diverso
+            vmid: 301
             snapshot: virgin
             subnet: "192.168.1"
+            artifact_name: "penguins-eggs-alpine"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-alpine.zip"
-            prep_cmd: "sh -c 'apk update && apk add wget unzip sshpass'"
+            prep_cmd: "sh -c 'apk update && apk add sshpass'"
             install_cmd: "apk add --allow-untrusted ./*.apk"
 
           - os: arch
             vmid: 302
             snapshot: virgin
-            subnet: "192.168.1" # 👈 La classe IP della tua rete (senza l'ultimo numero)
+            subnet: "192.168.1"
+            artifact_name: "penguins-eggs-arch"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-arch.zip"
-            prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
+            prep_cmd: "sh -c 'pacman -Sy --noconfirm sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
             
           - os: debian
             vmid: 303
             snapshot: virgin
-            subnet: "192.168.1" # 👈 La classe IP della tua rete
+            subnet: "192.168.1"
+            artifact_name: "penguins-eggs-debian"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
-            prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y sshpass'"
             install_cmd: "apt install -y ./*.deb"
 
           - os: devuan
             vmid: 304
             snapshot: virgin
             subnet: "192.168.1"
+            artifact_name: "penguins-eggs-debian"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
-            prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y sshpass'"
             install_cmd: "apt install -y ./*.deb"
 
           - os: fedora
             vmid: 305
             snapshot: virgin
             subnet: "192.168.1"
+            artifact_name: "penguins-eggs-fedora"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-fedora.zip"
-            prep_cmd: "sh -c 'dnf makecache && dnf install -y wget unzip sshpass'"
+            prep_cmd: "sh -c 'dnf makecache && dnf install -y sshpass'"
             install_cmd: "dnf install -y ./*.rpm"
 
           - os: manjaro
             vmid: 306
             snapshot: virgin
             subnet: "192.168.1"
+            artifact_name: "penguins-eggs-manjaro"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-manjaro.zip"
-            prep_cmd: "sh -c 'pacman -Sy --noconfirm wget unzip sshpass'"
+            prep_cmd: "sh -c 'pacman -Sy --noconfirm sshpass'"
             install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
 
           - os: opensuse
             vmid: 307
             snapshot: virgin
             subnet: "192.168.1"
+            artifact_name: "penguins-eggs-opensuse"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-opensuse.zip"
-            prep_cmd: "sh -c 'zypper -n refresh && zypper -n install wget unzip sshpass'"
+            prep_cmd: "sh -c 'zypper -n refresh && zypper -n install sshpass'"
             install_cmd: "zypper -n --no-gpg-checks install ./*.rpm"
             
           - os: ubuntu
             vmid: 308
             snapshot: virgin
             subnet: "192.168.1"
+            artifact_name: "penguins-eggs-debian"
             artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
-            prep_cmd: "sh -c 'apt-get update && apt-get install -y wget unzip sshpass'"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y sshpass'"
             install_cmd: "apt install -y ./*.deb"
             
     steps:
       - name: 🔐 Air-gapped Secrets Loading
         run: |
           source /etc/p4/secrets.env
-          
-          # Ordina a GitHub di censurare queste parole nei log
           echo "::add-mask::$SSH_PASSWD"
           echo "::add-mask::$PROXMOX_PASSWD"
-          
           echo "VM_USER=$SSH_USER" >> $GITHUB_ENV
           echo "VM_PASS=$SSH_PASSWD" >> $GITHUB_ENV
           echo "PVE_PASS=$PROXMOX_PASSWD" >> $GITHUB_ENV
+
+      # --------------------------------------------------------------------
+      # OPZIONE A: Scarica l'ultimo pacchetto generato da hammers (DEFAULT)
+      # --------------------------------------------------------------------
+      - name: 📥 Scarica ultima build da hammers
+        if: ${{ github.event.inputs.source == 'artifacts' || github.event.inputs.source == '' }}
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: hammers.yml
+          workflow_conclusion: success
+          name: ${{ matrix.artifact_name }}
+          path: pacchetti_da_installare/
+
+      # --------------------------------------------------------------------
+      # OPZIONE B: Scarica il pacchetto ufficiale dall'ultima Release
+      # --------------------------------------------------------------------
+      - name: 🌐 Scarica pacchetti da Release Ufficiale
+        if: ${{ github.event.inputs.source == 'release' }}
+        run: |
+          mkdir -p pacchetti_da_installare
+          wget -q -O release_pacchetti.zip "${{ matrix.artifact_url }}"
+          unzip -o release_pacchetti.zip -d pacchetti_da_installare/
+          rm -f release_pacchetti.zip
 
       - name: 🔄 Rollback & VM Boot
         env:
@@ -100,17 +138,12 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           IP=$(sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father '
-            # 1. Legge il MAC address in tempo reale direttamente da Proxmox
             MAC=$(echo "${{ env.PVE_PASS }}" | sudo -S qm config ${{ matrix.vmid }} | grep "net0" | grep -o -E "([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}" | tr "[:upper:]" "[:lower:]")
-            
             echo "Searching for IP address for MAC $MAC on network ${{ matrix.subnet }}.x..." >&2
             
-            # 2. Sweep ARP Veloce (Bypassa i blocchi dei kernel moderni)
             while true; do
               for i in {1..254}; do ping -c 1 -W 1 ${{ matrix.subnet }}.$i >/dev/null 2>&1 & done
               wait
-              
-              # Trova il MAC nella tabella di Proxmox ed estrae solo l IP
               FOUND=$(ip -4 neigh show | grep -i "$MAC" | cut -d" " -f1 | head -n 1)
               if [ -n "$FOUND" ]; then
                 echo "$FOUND"
@@ -132,17 +165,22 @@ jobs:
           done
           echo -e "\n✅ SSH service ready!"
 
-      - name: 🛠️ Installa package penguins-eggs, Remaster and Export
+      # --------------------------------------------------------------------
+      # INVIO UNIFICATO VIA SCP (Invia qualunque cosa sia stata scaricata prima)
+      # --------------------------------------------------------------------
+      - name: 🚚 Trasferisci i pacchetti alla VM
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
+        run: |
+          sshpass -e scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r pacchetti_da_installare/* ${{ env.VM_USER }}@${{ env.VM_IP }}:/home/${{ env.VM_USER }}/
+
+      - name: 🛠️ Installa package, Remaster and Export
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
             echo "📦 Preparing Environment (${{ matrix.os }})..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ matrix.prep_cmd }}
-            
-            echo "📥 Download artefact..."
-            wget -q -O pacchetti.zip "${{ matrix.artifact_url }}"
-            unzip -o pacchetti.zip
             
             echo "⚙️ penguins-eggs Installation..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ matrix.install_cmd }}
@@ -165,3 +203,4 @@ jobs:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S qm shutdown ${{ matrix.vmid }}"
+          
