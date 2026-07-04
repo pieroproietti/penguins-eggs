@@ -243,6 +243,30 @@ func DetectNetwork() NetworkInfo {
 		}
 	}
 
+	// Fallback se non c'è una rotta di default (es. installazione offline)
+	if info.Iface == "" {
+		if ifaces, err := net.Interfaces(); err == nil {
+			for _, iface := range ifaces {
+				if iface.Flags&net.FlagLoopback != 0 || iface.Flags&net.FlagUp == 0 {
+					continue
+				}
+				name := iface.Name
+				if strings.HasPrefix(name, "en") || strings.HasPrefix(name, "eth") || strings.HasPrefix(name, "wl") {
+					info.Iface = name
+					break
+				}
+			}
+			if info.Iface == "" {
+				for _, iface := range ifaces {
+					if iface.Flags&net.FlagLoopback == 0 {
+						info.Iface = iface.Name
+						break
+					}
+				}
+			}
+		}
+	}
+
 	if info.Iface != "" {
 		if out, err := exec.Command("ip", "-4", "-o", "addr", "show", "dev", info.Iface).Output(); err == nil {
 			fields := strings.Fields(string(out))

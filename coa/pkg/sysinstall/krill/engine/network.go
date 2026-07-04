@@ -19,10 +19,7 @@ func runNetworkcfg(c *ctx) error {
 		return nil
 	}
 
-	iface := p.NetIface
-	if iface == "" {
-		iface = "eth0"
-	}
+	iface := resolveInterface(p.NetIface)
 	prefix := maskToPrefix(p.NetNetmask)
 	cidr := fmt.Sprintf("%s/%d", p.NetAddress, prefix)
 	wrote := false
@@ -241,4 +238,36 @@ func randomUUID() string {
 		return "8b29be1d-a92b-4c2b-91b0-4e2cbb149c3a" // fallback statico
 	}
 	return strings.TrimSpace(string(data))
+}
+
+// resolveInterface verifica se l'interfaccia specificata esiste sul sistema,
+// altrimenti ritorna la prima interfaccia fisica/attiva non-loopback rilevata.
+func resolveInterface(iface string) string {
+	if iface == "" {
+		iface = "eth0"
+	}
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return iface
+	}
+	for _, i := range ifaces {
+		if i.Name == iface {
+			return iface
+		}
+	}
+	for _, i := range ifaces {
+		if i.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+		name := i.Name
+		if strings.HasPrefix(name, "en") || strings.HasPrefix(name, "eth") || strings.HasPrefix(name, "wl") {
+			return name
+		}
+	}
+	for _, i := range ifaces {
+		if i.Flags&net.FlagLoopback == 0 {
+			return i.Name
+		}
+	}
+	return iface
 }
