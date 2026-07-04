@@ -8,6 +8,11 @@ import (
 )
 
 func Wear(costumeName string, noAcc bool, noFirm bool) error {
+	if os.Geteuid() != 0 {
+		utils.LogError("'coa wardrobe wear' needs to install packages and write to system paths; run it as root (e.g. 'su' first, or 'sudo coa wardrobe wear %s' if sudo is configured for your user).", costumeName)
+		return fmt.Errorf("must be run as root")
+	}
+
 	utils.LogNormal("Starting costume application for: %s", costumeName)
 
 	root, err := getWardrobeRoot()
@@ -83,7 +88,7 @@ func applySuit(dir string, suit *Suit) error {
 		utils.LogNormal("[%s] Overlay folder found: %s", suit.Name, sysrootPath)
 		utils.LogNormal("[%s] Running rsync to root /...", suit.Name)
 
-		cmd := fmt.Sprintf("sudo rsync -aAXv %s/ /", sysrootPath)
+		cmd := fmt.Sprintf("rsync -aAXv %s/ /", sysrootPath)
 		if err := utils.Exec(cmd); err != nil {
 			utils.LogNormal("[%s] Error during overlay: %v", suit.Name, err)
 		} else {
@@ -105,12 +110,30 @@ func applySuit(dir string, suit *Suit) error {
 }
 
 func copySkelToUser() {
-	userHome, _ := os.UserHomeDir()
-	if sudoUser := os.Getenv("SUDO_USER"); sudoUser != "" {
-		userHome = filepath.Join("/home", sudoUser)
+	targetUser := os.Getenv("SUDO_USER")
+	userHome := ""
+
+	if targetUser != "" {
+		userHome = filepath.Join("/home", targetUser)
+	} else if u := firstHumanUser(); u != nil {
+		// Sin SUDO_USER (p.ej. se entró con 'su' en vez de 'sudo'), no
+		// hay que confiar en $USER: 'su' normalmente lo pisa a "root".
+		targetUser = u.Username
+		userHome = u.HomeDir
+	}
+
+	if targetUser == "" || targetUser == "root" {
+		utils.LogNormal("WARNING: unable to determine a non-root target user, skipping /etc/skel sync to avoid leaving files owned by root")
+		return
 	}
 
 	utils.LogNormal("Syncing /etc/skel -> %s", userHome)
-	cmd := fmt.Sprintf("sudo rsync -a /etc/skel/ %s/", userHome)
+	// IMPORTANTE: 'rsync -a' preserva dueño/grupo del ORIGEN (/etc/skel,
+	// propiedad de root). Sin --chown, cualquier archivo o carpeta que ya
+	// existiera en el home del usuario (incluido el home mismo) quedaba
+	// con su metadata de propietario reescrita a root en cuanto rsync la
+	// tocaba, aunque el contenido no cambiara. --no-o --no-g --chown fija
+	// el dueño real de destino explícitamente en vez de heredarlo.
+	cmd := fmt.Sprintf("rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
 	utils.Exec(cmd)
 }

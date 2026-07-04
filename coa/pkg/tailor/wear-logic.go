@@ -197,7 +197,7 @@ func printAiPrompt(packages []string) {
 		logToFile(fmt.Sprintf("Error creating AIPrompt.txt: %v", err))
 	} else {
 		if sudoUser != "" {
-			utils.Exec(fmt.Sprintf("sudo chown %s:%s %s", sudoUser, sudoUser, promptFile))
+			utils.Exec(fmt.Sprintf("chown %s:%s %s", sudoUser, sudoUser, promptFile))
 		}
 		logToFile(fmt.Sprintf("✅ AIPrompt.txt file generated at: %s", promptFile))
 		utils.LogNormal("Prompt file generated in Home: %s%s%s\n", utils.ColorYellow, promptFile, utils.ColorReset)
