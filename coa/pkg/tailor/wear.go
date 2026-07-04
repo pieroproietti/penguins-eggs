@@ -106,11 +106,26 @@ func applySuit(dir string, suit *Suit) error {
 
 func copySkelToUser() {
 	userHome, _ := os.UserHomeDir()
+	targetUser := os.Getenv("SUDO_USER")
+	if targetUser == "" {
+		targetUser = os.Getenv("USER")
+	}
 	if sudoUser := os.Getenv("SUDO_USER"); sudoUser != "" {
 		userHome = filepath.Join("/home", sudoUser)
 	}
 
+	if targetUser == "" || targetUser == "root" {
+		utils.LogNormal("WARNING: unable to determine a non-root target user, skipping /etc/skel sync to avoid leaving files owned by root")
+		return
+	}
+
 	utils.LogNormal("Syncing /etc/skel -> %s", userHome)
-	cmd := fmt.Sprintf("sudo rsync -a /etc/skel/ %s/", userHome)
+	// IMPORTANTE: 'rsync -a' preserva dueño/grupo del ORIGEN (/etc/skel,
+	// propiedad de root). Sin --chown, cualquier archivo o carpeta que ya
+	// existiera en el home del usuario (incluido el home mismo) quedaba
+	// con su metadata de propietario reescrita a root en cuanto rsync la
+	// tocaba, aunque el contenido no cambiara. --no-o --no-g --chown fija
+	// el dueño real de destino explícitamente en vez de heredarlo.
+	cmd := fmt.Sprintf("sudo rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
 	utils.Exec(cmd)
 }
