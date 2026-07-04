@@ -27,6 +27,17 @@ func runNetworkcfg(c *ctx) error {
 	cidr := fmt.Sprintf("%s/%d", p.NetAddress, prefix)
 	wrote := false
 
+	// Parsing dei DNS in una lista pulita
+	var dnsList []string
+	if p.NetDns != "" {
+		for _, d := range strings.FieldsFunc(p.NetDns, func(r rune) bool { return r == ',' || r == ' ' }) {
+			d = strings.TrimSpace(d)
+			if d != "" {
+				dnsList = append(dnsList, d)
+			}
+		}
+	}
+
 	// Netplan (Ubuntu, etc.)
 	if exists(c.tpath("etc", "netplan")) {
 		renderer := "networkd"
@@ -34,19 +45,14 @@ func runNetworkcfg(c *ctx) error {
 			renderer = "NetworkManager"
 		}
 
-		var dnsList []string
-		if p.NetDns != "" {
-			for _, d := range strings.FieldsFunc(p.NetDns, func(r rune) bool { return r == ',' || r == ' ' }) {
-				d = strings.TrimSpace(d)
-				if d != "" {
-					dnsList = append(dnsList, fmt.Sprintf("          - %s", d))
-				}
-			}
+		var dnsListYaml []string
+		for _, d := range dnsList {
+			dnsListYaml = append(dnsListYaml, fmt.Sprintf("          - %s", d))
 		}
 
 		dnsSection := ""
-		if len(dnsList) > 0 {
-			dnsSection = "\n      nameservers:\n        addresses:\n" + strings.Join(dnsList, "\n")
+		if len(dnsListYaml) > 0 {
+			dnsSection = "\n      nameservers:\n        addresses:\n" + strings.Join(dnsListYaml, "\n")
 		}
 
 		routeSection := ""
@@ -84,8 +90,8 @@ iface %s inet static
     address %s
     gateway %s
 `, iface, iface, cidr, p.NetGateway)
-		if p.NetDns != "" {
-			stanza += fmt.Sprintf("    dns-nameservers %s\n", p.NetDns)
+		if len(dnsList) > 0 {
+			stanza += fmt.Sprintf("    dns-nameservers %s\n", strings.Join(dnsList, " "))
 		}
 		data, _ := os.ReadFile(interfaces)
 		if err := os.WriteFile(interfaces, append(data, []byte(stanza)...), 0644); err != nil {
@@ -101,21 +107,37 @@ iface %s inet static
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return err
 		}
+
+		nmDns := ""
+		if len(dnsList) > 0 {
+			nmDns = strings.Join(dnsList, ";") + ";"
+		}
+
+		nmGatewayLine := ""
+		if p.NetGateway != "" {
+			nmGatewayLine = fmt.Sprintf("gateway=%s\n", p.NetGateway)
+		}
+		nmDnsLine := ""
+		if nmDns != "" {
+			nmDnsLine = fmt.Sprintf("dns=%s\n", nmDns)
+		}
+
 		conf := fmt.Sprintf(`[connection]
 id=krill-static
 uuid=%s
 type=ethernet
 interface-name=%s
+autoconnect=true
+autoconnect-priority=100
 
 [ipv4]
 method=manual
-address1=%s,%s
-dns=%s;
-ignore-auto-dns=true
+address1=%s
+%s%signore-auto-dns=true
 
 [ipv6]
 method=auto
-`, randomUUID(), iface, cidr, p.NetGateway, p.NetDns)
+`, randomUUID(), iface, cidr, nmGatewayLine, nmDnsLine)
 		if err := os.WriteFile(dir+"/krill-static.nmconnection", []byte(conf), 0600); err != nil {
 			return err
 		}
@@ -125,31 +147,60 @@ method=auto
 
 	// systemd-networkd
 	if exists(c.tpath("etc", "systemd", "network")) {
-		conf := fmt.Sprintf(`[Match]
-Name=%s
+		sdDns := strings.Join(dnsList, " ")
+		var sb strings.Builder
+		sb.WriteString("[Match]\n")
+		sb.WriteString(fmt.Sprintf("Name=%s\n\n", iface))
+		sb.WriteString("[Network]\n")
+		sb.WriteString(fmt.Sprintf("Address=%s\n", cidr))
+		if p.NetGateway != "" {
+			sb.WriteString(fmt.Sprintf("Gateway=%s\n", p.NetGateway))
+		}
+		if sdDns != "" {
+			sb.WriteString(fmt.Sprintf("DNS=%s\n", sdDns))
+		}
+		conf := sb.String()
 
-[Network]
-Address=%s
-Gateway=%s
-DNS=%s
-`, iface, cidr, p.NetGateway, p.NetDns)
-		if err := os.WriteFile(c.tpath("etc", "systemd", "network", "20-krill-static.network"), []byte(conf), 0644); err != nil {
+		if err := os.WriteFile(c.tpath("etc", "systemd", "network", "10-krill-static.network"), []byte(conf), 0644); err != nil {
 			return err
 		}
+		// Rimuove eventuale vecchio file 20-krill-static.network per evitare conflitti
+		_ = os.Remove(c.tpath("etc", "systemd", "network", "20-krill-static.network"))
+
 		c.logf("rete statica scritta per systemd-networkd")
 		wrote = true
 	}
 
+	// dhcpcd (e.g. Arch, Gentoo, etc.)
+	dhcpcdConf := c.tpath("etc", "dhcpcd.conf")
+	if exists(dhcpcdConf) {
+		sdDns := strings.Join(dnsList, " ")
+		var sb strings.Builder
+		sb.WriteString("\n# krill: configurazione statica\n")
+		sb.WriteString(fmt.Sprintf("interface %s\n", iface))
+		sb.WriteString(fmt.Sprintf("static ip_address=%s\n", cidr))
+		if p.NetGateway != "" {
+			sb.WriteString(fmt.Sprintf("static routers=%s\n", p.NetGateway))
+		}
+		if sdDns != "" {
+			sb.WriteString(fmt.Sprintf("static domain_name_servers=%s\n", sdDns))
+		}
+
+		data, _ := os.ReadFile(dhcpcdConf)
+		if err := os.WriteFile(dhcpcdConf, append(data, []byte(sb.String())...), 0644); err != nil {
+			return err
+		}
+		c.logf("rete statica scritta in /etc/dhcpcd.conf")
+		wrote = true
+	}
+
 	// resolv.conf statico, solo dove non è gestito da un symlink
-	if p.NetDns != "" {
+	if len(dnsList) > 0 {
 		resolv := c.tpath("etc", "resolv.conf")
 		if info, err := os.Lstat(resolv); err != nil || info.Mode()&os.ModeSymlink == 0 {
 			var sb strings.Builder
-			for _, d := range strings.FieldsFunc(p.NetDns, func(r rune) bool { return r == ',' || r == ' ' }) {
-				d = strings.TrimSpace(d)
-				if d != "" {
-					sb.WriteString("nameserver " + d + "\n")
-				}
+			for _, d := range dnsList {
+				sb.WriteString("nameserver " + d + "\n")
 			}
 			if sb.Len() > 0 {
 				if err := os.WriteFile(resolv, []byte(sb.String()), 0644); err != nil {
