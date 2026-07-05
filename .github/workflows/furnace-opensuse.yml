@@ -1,0 +1,28 @@
+name: "🏭 Furnace: openSUSE"
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Seleziona la sorgente dei pacchetti'
+        required: true
+        default: 'artifacts'
+        type: choice
+        options:
+          - 'artifacts'
+          - 'release'
+
+jobs:
+  build:
+    uses: ./.github/workflows/furnace-core.yml
+    secrets: inherit
+    with:
+      source: ${{ inputs.source }}
+      os: 'opensuse'
+      vmid: 307
+      snapshot: 'virgin'
+      subnet: '192.168.1'
+      artifact_name: 'penguins-eggs-opensuse'
+      artifact_url: 'https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-opensuse.zip'
+      prep_cmd: "sh -c 'zypper -n refresh && zypper -n install sshpass'"
+      install_cmd: "zypper -n --no-gpg-checks install ./*.rpm"

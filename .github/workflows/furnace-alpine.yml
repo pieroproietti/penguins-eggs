@@ -1,0 +1,29 @@
+name: "🏭 Furnace: Alpine"
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Seleziona la sorgente dei pacchetti'
+        required: true
+        default: 'artifacts'
+        type: choice
+        options:
+          - 'artifacts'
+          - 'release'
+
+jobs:
+  build:
+    uses: ./.github/workflows/furnace-core.yml
+    secrets: inherit
+    with:
+      source: ${{ inputs.source }}
+      os: 'alpine'
+      vmid: 301
+      snapshot: 'virgin'
+      subnet: '192.168.1'
+      artifact_name: 'penguins-eggs-alpine'
+      artifact_url: 'https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-alpine.zip'
+      prep_cmd: "sh -c 'apk update && apk add sshpass'"
+      install_cmd: "apk add --allow-untrusted ./*.apk"
+      

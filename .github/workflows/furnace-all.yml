@@ -1,0 +1,91 @@
+name: "🏭 Furnace: ALL (Mass Production)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Seleziona la sorgente dei pacchetti'
+        required: true
+        default: 'artifacts'
+        type: choice
+        options:
+          - 'artifacts'
+          - 'release'
+
+jobs:
+  bake-all:
+    name: 🏭 ${{ matrix.os }}
+    uses: ./.github/workflows/furnace-core.yml
+    secrets: inherit
+    strategy:
+      fail-fast: false
+      max-parallel: 2 # Puoi alzare questo valore se Proxmox regge l'avvio simultaneo di più VM, o impostarlo a 1 per una coda strettamente sequenziale
+      matrix:
+        include:
+          - os: alpine
+            vmid: 301
+            artifact_name: "penguins-eggs-alpine"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-alpine.zip"
+            prep_cmd: "sh -c 'apk update && apk add sshpass'"
+            install_cmd: "apk add --allow-untrusted ./*.apk"
+
+          - os: arch
+            vmid: 302
+            artifact_name: "penguins-eggs-arch"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-arch.zip"
+            prep_cmd: "sh -c 'pacman -Sy --noconfirm sshpass'"
+            install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
+            
+          - os: debian
+            vmid: 303
+            artifact_name: "penguins-eggs-debian"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y sshpass'"
+            install_cmd: "apt install -y ./*.deb"
+
+          - os: devuan
+            vmid: 304
+            artifact_name: "penguins-eggs-debian"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y sshpass'"
+            install_cmd: "apt install -y ./*.deb"
+
+          - os: fedora
+            vmid: 305
+            artifact_name: "penguins-eggs-fedora"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-fedora.zip"
+            prep_cmd: "sh -c 'dnf makecache && dnf install -y sshpass'"
+            install_cmd: "dnf install -y ./*.rpm"
+
+          - os: manjaro
+            vmid: 306
+            artifact_name: "penguins-eggs-manjaro"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-manjaro.zip"
+            prep_cmd: "sh -c 'pacman -Sy --noconfirm sshpass'"
+            install_cmd: "pacman -U --noconfirm *.pkg.tar.zst"
+
+          - os: opensuse
+            vmid: 307
+            artifact_name: "penguins-eggs-opensuse"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-opensuse.zip"
+            prep_cmd: "sh -c 'zypper -n refresh && zypper -n install sshpass'"
+            install_cmd: "zypper -n --no-gpg-checks install ./*.rpm"
+            
+          - os: ubuntu
+            vmid: 308
+            artifact_name: "penguins-eggs-debian"
+            artifact_url: "https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip"
+            prep_cmd: "sh -c 'apt-get update && apt-get install -y sshpass'"
+            install_cmd: "apt install -y ./*.deb"
+            
+    with:
+      source: ${{ inputs.source }}
+      os: ${{ matrix.os }}
+      vmid: ${{ matrix.vmid }}
+      snapshot: 'virgin'
+      subnet: '192.168.1'
+      artifact_name: ${{ matrix.artifact_name }}
+      artifact_url: ${{ matrix.artifact_url }}
+      prep_cmd: ${{ matrix.prep_cmd }}
+      install_cmd: ${{ matrix.install_cmd }}
+      

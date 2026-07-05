@@ -1,0 +1,28 @@
+name: "🏭 Furnace: Fedora"
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Seleziona la sorgente dei pacchetti'
+        required: true
+        default: 'artifacts'
+        type: choice
+        options:
+          - 'artifacts'
+          - 'release'
+
+jobs:
+  build:
+    uses: ./.github/workflows/furnace-core.yml
+    secrets: inherit
+    with:
+      source: ${{ inputs.source }}
+      os: 'fedora'
+      vmid: 305
+      snapshot: 'virgin'
+      subnet: '192.168.1'
+      artifact_name: 'penguins-eggs-fedora'
+      artifact_url: 'https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-fedora.zip'
+      prep_cmd: "sh -c 'dnf makecache && dnf install -y sshpass'"
+      install_cmd: "dnf install -y ./*.rpm"
