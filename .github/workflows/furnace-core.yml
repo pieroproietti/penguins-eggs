@@ -1,0 +1,152 @@
+name: "🏭 Furnace Core Engine"
+
+on:
+  workflow_call:
+    inputs:
+      source:
+        required: true
+        type: string
+        default: 'artifacts'
+      os:
+        required: true
+        type: string
+      vmid:
+        required: true
+        type: number
+      snapshot:
+        required: true
+        type: string
+        default: 'virgin'
+      subnet:
+        required: true
+        type: string
+        default: '192.168.1'
+      artifact_name:
+        required: true
+        type: string
+      artifact_url:
+        required: true
+        type: string
+      prep_cmd:
+        required: true
+        type: string
+      install_cmd:
+        required: true
+        type: string
+
+jobs:
+  bake:
+    name: 🏭 Build ISO su ${{ inputs.os }} (${{ inputs.source }})
+    runs-on: self-hosted
+
+    steps:
+      - name: 🔐 Air-gapped Secrets Loading
+        run: |
+          source /etc/p4/secrets.env
+          echo "::add-mask::$SSH_PASSWD"
+          echo "::add-mask::$PROXMOX_PASSWD"
+          echo "VM_USER=$SSH_USER" >> $GITHUB_ENV
+          echo "VM_PASS=$SSH_PASSWD" >> $GITHUB_ENV
+          echo "PVE_PASS=$PROXMOX_PASSWD" >> $GITHUB_ENV
+
+      # --------------------------------------------------------------------
+      # OPZIONE A: Scarica l'ultimo pacchetto generato da hammers (DEFAULT)
+      # --------------------------------------------------------------------
+      - name: 📥 Scarica ultima build da hammers
+        if: inputs.source == 'artifacts' || inputs.source == ''
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: hammers.yml
+          workflow_conclusion: success
+          name: ${{ inputs.artifact_name }}
+          path: pacchetti_da_installare/
+
+      # --------------------------------------------------------------------
+      # OPZIONE B: Scarica il pacchetto ufficiale dall'ultima Release
+      # --------------------------------------------------------------------
+      - name: 🌐 Scarica pacchetti da Release Ufficiale
+        if: inputs.source == 'release'
+        run: |
+          mkdir -p pacchetti_da_installare
+          wget -q -O release_pacchetti.zip "${{ inputs.artifact_url }}"
+          unzip -o release_pacchetti.zip -d pacchetti_da_installare/
+          rm -f release_pacchetti.zip
+
+      # --------------------------------------------------------------------
+      # OPERAZIONI SU PROXMOX E COA REMASTER
+      # --------------------------------------------------------------------
+      - name: 🔄 Rollback & VM Boot
+        env:
+          SSHPASS: ${{ env.PVE_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S sh -c 'qm stop ${{ inputs.vmid }} || true; qm rollback ${{ inputs.vmid }} ${{ inputs.snapshot }}; qm start ${{ inputs.vmid }} || true'"
+
+      - name: 📡 Dynamic IP Discovery
+        id: get_ip
+        env:
+          SSHPASS: ${{ env.PVE_PASS }}
+        run: |
+          IP=$(sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father '
+            MAC=$(echo "${{ env.PVE_PASS }}" | sudo -S qm config ${{ inputs.vmid }} | grep "net0" | grep -o -E "([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}" | tr "[:upper:]" "[:lower:]")
+            echo "Searching for IP address for MAC $MAC on network ${{ inputs.subnet }}.x..." >&2
+            
+            while true; do
+              for i in {1..254}; do ping -c 1 -W 1 ${{ inputs.subnet }}.$i >/dev/null 2>&1 & done
+              wait
+              FOUND=$(ip -4 neigh show | grep -i "$MAC" | cut -d" " -f1 | head -n 1)
+              if [ -n "$FOUND" ]; then
+                echo "$FOUND"
+                break
+              fi
+              sleep 2
+            done
+          ')
+          echo "✅ IP Assigned: $IP"
+          echo "VM_IP=$IP" >> $GITHUB_ENV
+
+      - name: ⏳ Waiting for VM SSH daemon...
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
+        run: |
+          while ! sshpass -e ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${{ env.VM_USER }}@${{ env.VM_IP }} exit; do
+            sleep 2
+            echo -n "s"
+          done
+          echo -e "\n✅ SSH service ready!"
+
+      - name: 🚚 Trasferisci i pacchetti alla VM
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
+        run: |
+          sshpass -e scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r pacchetti_da_installare/* ${{ env.VM_USER }}@${{ env.VM_IP }}:/home/${{ env.VM_USER }}/
+
+      - name: 🛠️ Installa package, Remaster and Export
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
+            echo "📦 Preparing Environment (${{ inputs.os }})..."
+            echo '${{ env.VM_PASS }}' | sudo -S ${{ inputs.prep_cmd }}
+            
+            echo "⚙️ penguins-eggs Installation..."
+            echo '${{ env.VM_PASS }}' | sudo -S ${{ inputs.install_cmd }}
+            
+            echo "💿 Creating Live ISO (eggs remaster)..."
+            echo '${{ env.VM_PASS }}' | sudo -S coa remaster
+            
+            echo "🚀 SSH Configuration & ISO Export.."
+            mkdir -p /home/${{ env.VM_USER }}/.ssh
+            echo "Host *" > /home/${{ env.VM_USER }}/.ssh/config
+            echo "    StrictHostKeyChecking no" >> /home/${{ env.VM_USER }}/.ssh/config
+            echo "    UserKnownHostsFile /dev/null" >> /home/${{ env.VM_USER }}/.ssh/config
+            
+            SSHPASS='${{ env.PVE_PASS }}' sshpass -e eggs export iso --clean
+          EOF
+
+      - name: 🛑 VM Shutdown
+        if: always()
+        env:
+          SSHPASS: ${{ env.PVE_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S qm shutdown ${{ inputs.vmid }}"

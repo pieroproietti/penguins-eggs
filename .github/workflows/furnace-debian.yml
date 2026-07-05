@@ -1,0 +1,29 @@
+name: "🏭 Furnace: Debian"
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Seleziona la sorgente dei pacchetti'
+        required: true
+        default: 'artifacts'
+        type: choice
+        options:
+          - 'artifacts'
+          - 'release'
+
+jobs:
+  build:
+    uses: ./.github/workflows/furnace-core.yml
+    secrets: inherit
+    with:
+      source: ${{ inputs.source }}
+      os: 'debian'
+      vmid: 303
+      snapshot: 'virgin'
+      subnet: '192.168.1'
+      artifact_name: 'penguins-eggs-debian'
+      artifact_url: 'https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-debian.zip'
+      prep_cmd: "sh -c 'apt-get update && apt-get install -y sshpass'"
+      install_cmd: "apt install -y ./*.deb"
+      
