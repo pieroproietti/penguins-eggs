@@ -2,8 +2,8 @@
 # Override the embedded default settings here.
 
 remaster:
-  # Cannot change the default live user
-  # user: "live"
+  # Custom username for the live session (default: "live")
+  # user: "quirinux"
 
   # You can set a custom password for the live session
   # password: "evolution"
