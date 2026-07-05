@@ -165,19 +165,25 @@ jobs:
           # 🚀 DEBIAN RISC-V (The Cosmic Vineyard)
           # ==========================================
           - distro: debian-riscv64
-            image: ubuntu:22.04  # Cambio di banco di lavoro: pacchetti cross nativi e massima compatibilità!
+            image: ubuntu:22.04
             pkg_pattern: "*.deb"
             
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
+              
+              # 1. LA MAGIA DEI REPOSITORY MULTI-ARCH: Separiamo i server!
+              dpkg --add-architecture riscv64
+              sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
+              echo "deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy main universe" > /etc/apt/sources.list.d/riscv64.list
+              
               apt-get update
               apt-get install -y debconf-utils
               echo "keyboard-configuration keyboard-configuration/layout select IT" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
               
-              # LA MAGIA PULITA: Usiamo il pacchetto cross per crypt offerto da Ubuntu!
-              apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support libcrypt-dev-riscv64-cross
+              # 2. Toolchain + Emulatore + libcrypt nativa RISC-V (presa dal server ports!)
+              apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support libcrypt-dev:riscv64
               
               # Scarichiamo il Go per x86_64
               wget -q https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
@@ -201,7 +207,7 @@ jobs:
               "
             # CRITICO: Non possiamo installare un binario RISC-V su un kernel x86_64!
             install_cmd: echo "✅ Pacchetto RISC-V generato. Salto il test di installazione sul runner x86_64."
-
+            
     container:
       image: ${{ matrix.image }}
 
