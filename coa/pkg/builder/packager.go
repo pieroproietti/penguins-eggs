@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -35,7 +36,7 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		cmd.Dir = stage
 
 	case "debian":
-		pkgFileName = fmt.Sprintf("penguins-eggs_%s-%s_amd64.deb", data.BaseVersion, data.Rel)
+		pkgFileName = fmt.Sprintf("penguins-eggs_%s-%s_%s.deb", data.BaseVersion, data.Rel, getDebianArch())
 		finalPath := filepath.Join(ctx.ProjRoot, pkgFileName)
 		cmd = exec.Command("dpkg-deb", "--root-owner-group", "--build", stage, finalPath)
 
@@ -101,4 +102,14 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 	}
 
 	utils.LogSuccess("Package %s: %s, created in: %s", dist, pkgFileName, ctx.ProjRoot)
+}
+
+// Aggiungi questa piccola funzione helper nel file (se non c'è già)
+func getDebianArch() string {
+	arch := runtime.GOARCH
+	if arch == "386" {
+		return "i386" // Unica eccezione di nomenclatura tra Go e Debian
+	}
+	// amd64, arm64 e riscv64 coincidono perfettamente!
+	return arch
 }
