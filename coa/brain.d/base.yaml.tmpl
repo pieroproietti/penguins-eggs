@@ -232,8 +232,9 @@ remaster:
   - name: autologin-gui
     description: "Set up autologin for the live user"
     module: "autologin-gui"
+    chroot: true
     params:
-      user: "live"
+      user: "{{.LiveUser}}"
       is_gui: true
 
 # ----------------------------------------------------------------------------

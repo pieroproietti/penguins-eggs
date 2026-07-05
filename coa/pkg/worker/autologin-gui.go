@@ -25,7 +25,7 @@ func RunAutologin(payload []byte) error {
 	user := config.Params.User
 
 	if user == "" {
-		user = "pippo"
+		user = "live"
 	}
 
 	fmt.Printf("📦 [worker] Running autologin-gui for user '%s'\n", user)
