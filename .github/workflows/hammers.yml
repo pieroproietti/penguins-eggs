@@ -175,10 +175,10 @@ jobs:
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
               
-              # LA MAGIA: Aggiungiamo il cross-compiler per C!
-              apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu
+              # LA MAGIA: gcc per RISC-V e qemu-user-static per ESEGUIRE i binari RISC-V sull'host!
+              apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support
               
-              # Scarichiamo il Go per x86_64 (il compilatore deve girare sul runner)
+              # Scarichiamo il Go per x86_64
               wget -q https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
               ln -s /usr/local/go/bin/go /usr/bin/go
