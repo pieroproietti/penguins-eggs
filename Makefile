@@ -1,5 +1,8 @@
 VERSION := $(shell git describe --tags --always 2>/dev/null | sed 's/-g[0-9a-f]*$$//' || echo "0.0.0-dev")
 
+# 1. DEFINIAMO IL RUNNER (vuoto di default, si riempirà solo quando lo passiamo da fuori)
+RUNNER ?=
+
 OA_DIR  = oa
 COA_DIR = coa
 
@@ -41,11 +44,13 @@ $(OA_BUILD_DIR):
 docs: build_coa
 	@echo "  GENERATING DOCUMENTATION & COMPLETIONS..."
 	@mkdir -p docs
-	@-$(COA_BIN) _gen_docs --target $(OA_BUILD_DIR)/docs
+	# 2. AGGIUNTO IL RUNNER QUI (se pieno, avvierà qemu, altrimenti non farà nulla)
+	@-$(RUNNER) $(COA_BIN) _gen_docs --target $(OA_BUILD_DIR)/docs
 
 package: all
 	@echo "  PACKAGING NATIVE OS DISTRIBUTION..."
-	@OA_BUILD_DIR=$(OA_BUILD_DIR) OA_PROJ_ROOT=$(PWD) $(COA_BIN) tools build
+	# 3. AGGIUNTO IL RUNNER QUI (fondamentale per impacchettare il .deb)
+	@OA_BUILD_DIR=$(OA_BUILD_DIR) OA_PROJ_ROOT=$(PWD) $(RUNNER) $(COA_BIN) tools build
 
 # -----------------------------------------------------------
 # Clean
