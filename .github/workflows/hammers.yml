@@ -193,7 +193,10 @@ jobs:
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
                 
-                # LA MAGIA BLINDATA: Passiamo tutte le variabili inline, impossibile perderle!
+                # 🧹 LA MAGIA DELLA SCOPA: Eliminiamo i vecchi file .o generati per x86_64
+                make clean
+                
+                # LA MAGIA BLINDATA: Compiliamo tutto da zero per la Vigna Spaziale
                 make package GOOS=linux GOARCH=riscv64 CC=riscv64-linux-gnu-gcc RUNNER=qemu-riscv64-static
               "
             # CRITICO: Non possiamo installare un binario RISC-V su un kernel x86_64!
