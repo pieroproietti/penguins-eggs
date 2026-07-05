@@ -165,23 +165,19 @@ jobs:
           # 🚀 DEBIAN RISC-V (The Cosmic Vineyard)
           # ==========================================
           - distro: debian-riscv64
-            image: debian:bookworm
+            image: ubuntu:22.04  # Cambio di banco di lavoro: pacchetti cross nativi e massima compatibilità!
             pkg_pattern: "*.deb"
             
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
-              
-              # 1. Abilitiamo la Multi-Architettura per RISC-V
-              dpkg --add-architecture riscv64
-              
               apt-get update
               apt-get install -y debconf-utils
               echo "keyboard-configuration keyboard-configuration/layout select IT" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
               
-              # 2. Installiamo la toolchain e la libreria crypt nativa RISC-V (libcrypt-dev:riscv64)
-              apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support libcrypt-dev:riscv64
+              # LA MAGIA PULITA: Usiamo il pacchetto cross per crypt offerto da Ubuntu!
+              apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support libcrypt-dev-riscv64-cross
               
               # Scarichiamo il Go per x86_64
               wget -q https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
@@ -197,14 +193,13 @@ jobs:
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
                 
-                # 🧹 LA MAGIA DELLA SCOPA: Eliminiamo i vecchi file .o generati per x86_64
+                # 🧹 LA MAGIA DELLA SCOPA: Eliminiamo i vecchi file .o
                 make clean
                 
-                # LA MAGIA BLINDATA: Compiliamo tutto da zero per la Vigna Spaziale
+                # LA MAGIA BLINDATA: Compiliamo per la Vigna Spaziale
                 make package GOOS=linux GOARCH=riscv64 CC=riscv64-linux-gnu-gcc RUNNER=qemu-riscv64-static
               "
             # CRITICO: Non possiamo installare un binario RISC-V su un kernel x86_64!
-            # Quindi saltiamo il test e andiamo dritti all'estrazione dell'artefatto.
             install_cmd: echo "✅ Pacchetto RISC-V generato. Salto il test di installazione sul runner x86_64."
 
     container:
