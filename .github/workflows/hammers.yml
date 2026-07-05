@@ -171,10 +171,16 @@ jobs:
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
               
-              # 1. LA MAGIA DEI REPOSITORY MULTI-ARCH: Separiamo i server!
+              # 1. LA MAGIA MULTI-ARCH: Aggiungiamo anche gli aggiornamenti per allineare le versioni!
               dpkg --add-architecture riscv64
               sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
-              echo "deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy main universe" > /etc/apt/sources.list.d/riscv64.list
+              
+              # Inseriamo il repo base, gli updates e le patch di sicurezza per RISC-V
+              cat <<EOF > /etc/apt/sources.list.d/riscv64.list
+              deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
+              deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
+              deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
+              EOF
               
               apt-get update
               apt-get install -y debconf-utils
@@ -182,7 +188,7 @@ jobs:
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
               
-              # 2. Toolchain + Emulatore + libcrypt nativa RISC-V (presa dal server ports!)
+              # 2. Toolchain + Emulatore + libcrypt nativa RISC-V (ora le versioni coincideranno!)
               apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support libcrypt-dev:riscv64
               
               # Scarichiamo il Go per x86_64
@@ -199,13 +205,12 @@ jobs:
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
                 
-                # 🧹 LA MAGIA DELLA SCOPA: Eliminiamo i vecchi file .o
+                # 🧹 LA MAGIA DELLA SCOPA
                 make clean
                 
-                # LA MAGIA BLINDATA: Compiliamo per la Vigna Spaziale
+                # LA MAGIA BLINDATA
                 make package GOOS=linux GOARCH=riscv64 CC=riscv64-linux-gnu-gcc RUNNER=qemu-riscv64-static
               "
-            # CRITICO: Non possiamo installare un binario RISC-V su un kernel x86_64!
             install_cmd: echo "✅ Pacchetto RISC-V generato. Salto il test di installazione sul runner x86_64."
             
     container:
