@@ -162,7 +162,7 @@ jobs:
             install_cmd: zypper -n --no-gpg-checks install ./*.rpm
 
           # ==========================================
-          # 🚀 DEBIAN RISC-V (Il cantiere spaziale)
+          # 🚀 DEBIAN RISC-V (The Cosmic Vineyard)
           # ==========================================
           - distro: debian-riscv64
             image: debian:bookworm
@@ -197,12 +197,14 @@ jobs:
                 export GOARCH=riscv64
                 export CC=riscv64-linux-gnu-gcc
                 
+                # LA MAGIA MANUALE: Diciamo al Makefile di usare QEMU per eseguire i binari
+                export RUNNER=qemu-riscv64-static
+                
                 make package
               "
             # CRITICO: Non possiamo installare un binario RISC-V su un kernel x86_64!
             # Quindi saltiamo il test e andiamo dritti all'estrazione dell'artefatto.
             install_cmd: echo "✅ Pacchetto RISC-V generato. Salto il test di installazione sul runner x86_64."
-
     container:
       image: ${{ matrix.image }}
 
