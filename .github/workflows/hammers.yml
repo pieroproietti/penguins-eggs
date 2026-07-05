@@ -167,6 +167,7 @@ jobs:
           - distro: debian-riscv64
             image: debian:bookworm
             pkg_pattern: "*.deb"
+            
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
               apt-get update
@@ -192,15 +193,8 @@ jobs:
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
                 
-                # Esportiamo le variabili d'ambiente per il cross-compiling
-                export GOOS=linux
-                export GOARCH=riscv64
-                export CC=riscv64-linux-gnu-gcc
-                
-                # LA MAGIA MANUALE: Diciamo al Makefile di usare QEMU per eseguire i binari
-                export RUNNER=qemu-riscv64-static
-                
-                make package
+                # LA MAGIA BLINDATA: Passiamo tutte le variabili inline, impossibile perderle!
+                make package GOOS=linux GOARCH=riscv64 CC=riscv64-linux-gnu-gcc RUNNER=qemu-riscv64-static
               "
             # CRITICO: Non possiamo installare un binario RISC-V su un kernel x86_64!
             # Quindi saltiamo il test e andiamo dritti all'estrazione dell'artefatto.
