@@ -128,12 +128,6 @@ func copySkelToUser() {
 	}
 
 	utils.LogNormal("Syncing /etc/skel -> %s", userHome)
-	// IMPORTANTE: 'rsync -a' preserva dueño/grupo del ORIGEN (/etc/skel,
-	// propiedad de root). Sin --chown, cualquier archivo o carpeta que ya
-	// existiera en el home del usuario (incluido el home mismo) quedaba
-	// con su metadata de propietario reescrita a root en cuanto rsync la
-	// tocaba, aunque el contenido no cambiara. --no-o --no-g --chown fija
-	// el dueño real de destino explícitamente en vez de heredarlo.
 	cmd := fmt.Sprintf("rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
 	utils.Exec(cmd)
 }
