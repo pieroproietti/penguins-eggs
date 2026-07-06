@@ -44,6 +44,7 @@ type RemasterConfig struct {
 	Installer   string            `yaml:"installer,omitempty" json:"installer,omitempty" mapstructure:"installer"`
 	Compression CompressionConfig `yaml:"compression" json:"compression" mapstructure:"compression"`
 	ISOPrefix   string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty" mapstructure:"iso_prefix"`
+	RamMode     *bool             `yaml:"ram_mode,omitempty" json:"ram_mode,omitempty" mapstructure:"ram_mode"`
 }
 
 type CompressionConfig struct {
@@ -56,6 +57,7 @@ type TemplateContext struct {
 	Family         string
 	DistroID       string
 	IsGitHubAction bool
+	RamModeEnabled bool
 }
 
 type BrainIndex struct {

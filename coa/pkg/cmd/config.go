@@ -36,6 +36,7 @@ const (
 	cfgAlgorithm
 	cfgLevel
 	cfgISOPrefix
+	cfgRamMode
 	cfgInstaller
 	cfgFieldCount
 )
@@ -64,6 +65,7 @@ type configModel struct {
 	inputs  []textinput.Model
 	algoIdx int
 	instIdx int // 0 for krill, 1 for calamares
+	ramModeIdx int // 0 for enabled, 1 for disabled
 
 	saveFocus int
 	saveErr   string
@@ -79,6 +81,7 @@ type configState struct {
 	Level     int
 	ISOPrefix string
 	Installer string
+	RamMode   bool
 }
 
 func loadConfigState() configState {
@@ -88,6 +91,7 @@ func loadConfigState() configState {
 		Algorithm: "zstd",
 		Level:     3,
 		Installer: "krill",
+		RamMode:   true,
 	}
 	settings, err := parser.LoadCustomSettings()
 	if err != nil || settings == nil {
@@ -108,6 +112,9 @@ func loadConfigState() configState {
 	state.ISOPrefix = settings.Remaster.ISOPrefix
 	if settings.Remaster.Installer != "" {
 		state.Installer = settings.Remaster.Installer
+	}
+	if settings.Remaster.RamMode != nil {
+		state.RamMode = *settings.Remaster.RamMode
 	}
 	return state
 }
@@ -155,10 +162,16 @@ func newConfigModel() configModel {
 		instIdx = 1
 	}
 
+	ramModeIdx := 0
+	if !state.RamMode {
+		ramModeIdx = 1
+	}
+
 	return configModel{
-		inputs:  inputs,
-		algoIdx: algoIdx,
-		instIdx: instIdx,
+		inputs:     inputs,
+		algoIdx:    algoIdx,
+		instIdx:    instIdx,
+		ramModeIdx: ramModeIdx,
 	}
 }
 
@@ -260,6 +273,10 @@ func (m configModel) updateSettings(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.instIdx = 1 - m.instIdx
 			return m, nil
 		}
+		if m.focus == cfgRamMode {
+			m.ramModeIdx = 1 - m.ramModeIdx
+			return m, nil
+		}
 	}
 
 	if ii := cfgInputIdx(m.focus); ii >= 0 {
@@ -341,6 +358,7 @@ func (m configModel) buildState() configState {
 		Level:     level,
 		ISOPrefix: strings.TrimSpace(m.inputs[3].Value()),
 		Installer: installers[m.instIdx],
+		RamMode:   m.ramModeIdx == 0,
 	}
 }
 
@@ -407,6 +425,7 @@ func (m configModel) viewSettings() string {
 		fields = append(fields, fieldDef{cfgLevel, "Level"})
 	}
 	fields = append(fields, fieldDef{cfgISOPrefix, "ISO prefix"})
+	fields = append(fields, fieldDef{cfgRamMode, "RAM mode option"})
 	if isDesktopConfig() {
 		fields = append(fields, fieldDef{cfgInstaller, "Installer"})
 	}
@@ -437,6 +456,9 @@ func (m configModel) viewSettings() string {
 		case cfgInstaller:
 			installers := []string{"krill", "calamares"}
 			val = cfgCyan.Render("‹ " + installers[m.instIdx] + " ›")
+		case cfgRamMode:
+			ramModeLabels := []string{"enabled", "disabled"}
+			val = cfgCyan.Render("‹ " + ramModeLabels[m.ramModeIdx] + " ›")
 		}
 		rows = append(rows, fmt.Sprintf("%s%-14s: %s", marker, f.label, val))
 	}
@@ -519,6 +541,9 @@ func saveConfigState(state configState) error {
 	}
 	if state.Installer != "" {
 		b.WriteString(fmt.Sprintf("  installer: \"%s\"\n", state.Installer))
+	}
+	if !state.RamMode {
+		b.WriteString("  ram_mode: false\n")
 	}
 
 	if err := os.MkdirAll("/etc/penguins-eggs.d", 0755); err != nil {

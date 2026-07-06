@@ -24,6 +24,9 @@ if [ -f "/etc/penguins-eggs.d/brain.d/assets/menu-strings.conf" ]; then
     . "/etc/penguins-eggs.d/brain.d/assets/menu-strings.conf"
 fi
 
+# Optional "RAM mode" entry: some vendors (systems typically installed
+# on low-RAM hardware) prefer to omit it to avoid confusion.
+# Controlled via 'coa config' (custom.yaml: ram_mode).
 GRUB_RAM_ENTRY=""
 ISOLINUX_RAM_ENTRY=""
 if [ "$RAM_MODE_ENABLED" = "1" ]; then
