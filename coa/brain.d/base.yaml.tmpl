@@ -208,6 +208,16 @@ remaster:
         Hidden=false
         NoDisplay=true
 
+# ----------------------------------------------------------------------------
+# 14. AUTOLOGIN
+# ----------------------------------------------------------------------------
+  - name: autologin-gui
+    description: "Set up autologin for the live user"
+    module: "autologin-gui"
+    params:
+      user: "live"
+      is_gui: true
+
 
 
 # ----------------------------------------------------------------------------
