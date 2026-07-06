@@ -75,11 +75,6 @@ func GeneratePlan(
 			plan.Plan = append(plan.Plan, task)
 
 		default:
-			if mode == "crypted" && step.Module == "autologin-gui" {
-				utils.LogNormal("[ENGINE] Crypted mode: skipping autologin-gui.")
-				continue
-			}
-
 			task := OATask{
 				Step:     step,
 				LiveRoot: getActualLiveFs(workPath),
