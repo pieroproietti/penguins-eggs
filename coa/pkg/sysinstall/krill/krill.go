@@ -157,7 +157,7 @@ type model struct {
 
 // initialModel costruisce il modello a partire dalla configurazione
 // generata dalla pipeline (la stessa di Calamares) e dal sistema live.
-func initialModel(cfg *InstallerConfig) model {
+func initialModel(cfg *InstallerConfig, fstype string) model {
 	s := spinner.New()
 	if isBasicTTY() {
 		s.Spinner = spinner.Line
@@ -178,6 +178,18 @@ func initialModel(cfg *InstallerConfig) model {
 	fsTypes := cfg.Partition.AvailableFileSystemTypes
 	if len(fsTypes) == 0 {
 		fsTypes = []string{"ext4"}
+	}
+	if fstype != "" {
+		found := false
+		for _, ft := range fsTypes {
+			if ft == fstype {
+				found = true
+				break
+			}
+		}
+		if !found {
+			fsTypes = append(fsTypes, fstype)
+		}
 	}
 
 	swapTypes := cfg.Partition.UserSwapChoices
@@ -236,7 +248,7 @@ func initialModel(cfg *InstallerConfig) model {
 		disks:     disks,
 		diskIdx:   0,
 		fsTypes:   fsTypes,
-		fsIdx:     indexOf(fsTypes, orDefault(cfg.Partition.DefaultFileSystemType, "ext4")),
+		fsIdx:     indexOf(fsTypes, orDefault(orDefault(fstype, cfg.Partition.DefaultFileSystemType), "ext4")),
 		swapTypes: swapTypes,
 		swapIdx:   indexOf(swapTypes, orDefault(cfg.Partition.InitialSwapChoice, "none")),
 
@@ -956,7 +968,7 @@ func insertAfter(seq []string, after, module string) []string {
 
 // Run è l'entry point pubblico per invocare l'installer da linea di comando.
 // Legge la configurazione generata dalla pipeline e avvia l'interfaccia TUI.
-func Run() error {
+func Run(fstype string) error {
 	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
 	if err != nil {
 		return fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
@@ -965,7 +977,7 @@ func Run() error {
 		fmt.Fprintf(os.Stderr, "[krill] warning: %s\n", w)
 	}
 
-	m := initialModel(cfg)
+	m := initialModel(cfg, fstype)
 
 	// Inizializziamo il programma usando l'AltScreen per non sporcare la history del terminale
 	p := tea.NewProgram(m, tea.WithAltScreen())

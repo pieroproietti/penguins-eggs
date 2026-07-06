@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"time"
 
 	"coa/pkg/distro"
@@ -23,6 +25,7 @@ var (
 	debugPlan   bool
 	cloneFlag   bool
 	cryptedFlag bool
+	fdtFlag     string
 )
 
 var remasterCmd = &cobra.Command{
@@ -46,7 +49,7 @@ and generate a precise execution plan for the OA planner.`,
   # Print the generated JSON plan and exit
   sudo ./coa remaster --debug`,
 	Run: func(cmd *cobra.Command, args []string) {
-		CheckSudoRequirements(cmd.Name(), true)
+		CheckSudoRequirements(cmd.Name(), !debugPlan)
 
 		if cloneFlag && cryptedFlag {
 			utils.Fatal("The --clone and --crypted flags are mutually exclusive.")
@@ -109,14 +112,59 @@ and generate a precise execution plan for the OA planner.`,
 			isGitHubAction = true
 		}
 
+		var fdtDir, fdtFile string
+		if fdtFlag == "" && runtime.GOARCH == "riscv64" {
+			// Try auto-detection
+			filepath.Walk("/boot", func(path string, info os.FileInfo, err error) error {
+				if err == nil && !info.IsDir() && strings.HasSuffix(info.Name(), ".dtb") {
+					fdtFlag = path
+					return filepath.SkipAll
+				}
+				return nil
+			})
+			if fdtFlag != "" {
+				utils.LogWarning("Auto-detected FDT/DTB path on riscv64: %s", fdtFlag)
+			} else {
+				utils.LogWarning("No FDT/DTB file auto-detected in /boot. Image creation might fail if not specified via --fdt.")
+			}
+		}
+
+		if fdtFlag != "" && fdtFlag != "none" {
+			fi, err := os.Stat(fdtFlag)
+			if err != nil {
+				utils.Fatal("FDT path %s not found: %v", fdtFlag, err)
+			}
+			if fi.IsDir() {
+				fdtDir = fdtFlag
+				fdtFile = "k1-x_MUSE-Book.dtb" // legacy fallback
+			} else {
+				fdtDir = filepath.Dir(fdtFlag)
+				fdtFile = filepath.Base(fdtFlag)
+			}
+			fdtDir = strings.TrimSuffix(fdtDir, "/")
+		}
+
 		isoName := myDistro.GetISOName(produceMode)
+		if fdtDir != "" {
+			if strings.HasSuffix(isoName, ".iso") {
+				isoName = strings.TrimSuffix(isoName, ".iso") + ".img"
+			}
+		}
 
 		if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil && customCfg.Remaster.ISOPrefix != "" {
-			isoName = fmt.Sprintf("%s-%s.iso", customCfg.Remaster.ISOPrefix, time.Now().Format("2006-01-02_1504"))
+			ext := ".iso"
+			if runtime.GOARCH == "riscv64" || fdtDir != "" {
+				ext = ".img"
+			}
+			isoName = fmt.Sprintf("%s-%s%s", customCfg.Remaster.ISOPrefix, time.Now().Format("2006-01-02_1504"), ext)
 		}
 
 		finalIsoPath := filepath.Join(producePath, isoName)
-		utils.LogNormal("ISO will be generated at: %s", finalIsoPath)
+		if strings.HasSuffix(finalIsoPath, ".img") {
+			utils.LogNormal("Image will be generated at: %s", finalIsoPath)
+		} else {
+			utils.LogNormal("ISO will be generated at: %s", finalIsoPath)
+		}
 
 		profile, err := parser.DetectAndLoad(isGitHubAction)
 		if err != nil {
@@ -179,6 +227,8 @@ and generate a precise execution plan for the OA planner.`,
 			debugPlan,
 			produceMode,
 			luksPassphrase,
+			fdtDir,
+			fdtFile,
 		)
 		if err != nil {
 			utils.Fatal("Unable to generate the flight plan: %v", err)
@@ -212,11 +262,15 @@ and generate a precise execution plan for the OA planner.`,
 			if info, err := os.Stat(finalIsoPath); err == nil {
 				sizeBytes := info.Size()
 				sizeGiB := float64(sizeBytes) / 1024.0 / 1024.0 / 1024.0
+				fileType := "ISO"
+				if strings.HasSuffix(finalIsoPath, ".img") {
+					fileType = "Image"
+				}
 				if sizeGiB >= 1.0 {
-					utils.LogSuccess("ISO: %.2f GiB in %02d:%02d:%02d — the egg is ready!", sizeGiB, h, m, s)
+					utils.LogSuccess("%s: %.2f GiB in %02d:%02d:%02d — the egg is ready!", fileType, sizeGiB, h, m, s)
 				} else {
 					sizeMiB := float64(sizeBytes) / 1024.0 / 1024.0
-					utils.LogSuccess("ISO: %.1f MiB in %02d:%02d:%02d — the egg is ready!", sizeMiB, h, m, s)
+					utils.LogSuccess("%s: %.1f MiB in %02d:%02d:%02d — the egg is ready!", fileType, sizeMiB, h, m, s)
 				}
 			} else {
 				utils.LogSuccess("Remastering completed in %02d:%02d:%02d — the egg is ready!", h, m, s)
@@ -252,12 +306,14 @@ func init() {
 	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Create an ISO with LUKS-encrypted filesystem.squashfs")
 	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Stop execution after a specific step (e.g. coa-initrd)")
 	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Print the JSON plan and exit without remastering")
+	remasterCmd.Flags().StringVar(&fdtFlag, "fdt", "", "path to Flattened Device Tree (DTB) file or directory")
 
 	produceCmd.Flags().StringVar(&producePath, "path", pathDefaults.DefaultWorkPath, "working directory")
 	produceCmd.Flags().BoolVar(&cloneFlag, "clone", false, "Clone the system preserving users and /home")
 	produceCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Create an ISO with LUKS-encrypted filesystem.squashfs")
 	produceCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Stop execution after a specific step (e.g. coa-initrd)")
 	produceCmd.Flags().BoolVar(&debugPlan, "debug", false, "Print the JSON plan and exit without remastering")
+	produceCmd.Flags().StringVar(&fdtFlag, "fdt", "", "path to Flattened Device Tree (DTB) file or directory")
 
 	rootCmd.AddCommand(remasterCmd)
 	rootCmd.AddCommand(produceCmd)

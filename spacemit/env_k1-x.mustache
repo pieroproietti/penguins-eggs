@@ -1,0 +1,43 @@
+# env_k1-x.txt
+fdt_addr_r=0x1F000000
+fdtoverlay_addr_r=0x01000000
+kernel_addr_r=0x10000000
+kernel_comp_addr_r=0x18000000
+pxefile_addr_r=0x0c200000
+ramdisk_addr_r=0x20000000
+scriptaddr=0x0c100000
+
+stdout=serial,vidconsole
+stderr=serial,vidconsole
+
+bootcmd= \
+    if test -z "${fdtfile}"; then setenv fdtfile {{{fdt_file}}}; fi; \
+    usb start; \
+    if load usb 0:5 ${kernel_addr_r} {{{kernel_name}}}; then \
+        setenv devtype usb; \
+        setenv devnum 0; \
+        setenv bootpart 1; \
+        setenv boot_type ''; \
+    else \
+        if test -z "${devtype}"; then setenv devtype mmc; fi; \
+        if test -z "${devnum}"; then setenv devnum 0; fi; \
+        setenv bootpart 5; \
+        setenv boot_type 'boot=live components'; \
+        load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} {{{kernel_name}}}; \
+    fi; \
+    \
+    echo "--- Booting from ${devtype} ${devnum}:${bootpart} ---"; \
+    \
+    load ${devtype} ${devnum}:${bootpart} ${fdt_addr_r} {{{fdt_dir}}}/${fdtfile}; \
+    load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} {{{initrd_name}}}; \
+    \
+    setenv bootargs "earlycon=sbi \
+    quiet splash \
+    ${boot_type} \
+
+    locales=en_US.UTF-8 \
+    clk_ignore_unused \
+    swiotlb=65536 \
+    console=ttyS0,115200"; \
+    \
+    booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}

@@ -22,7 +22,9 @@ func GeneratePlan(
 	stopAfter string,
 	isDebug bool,
 	mode string,
-	luksPassphrase string) (string, []byte, error) {
+	luksPassphrase string,
+	fdtDir string,
+	fdtFile string) (string, []byte, error) {
 
 	var plan OAPlan
 
@@ -124,24 +126,48 @@ func GeneratePlan(
 			}
 
 			if task.Name == "xorriso" {
-				task.Params["output_file"] = finalIsoPath
-				task.Params["source_dir"] = filepath.Join(workPath, "isodir")
+				if fdtDir != "" {
+					spacemitDir := "./spacemit"
+					if fi, err := os.Stat(spacemitDir); err != nil || !fi.IsDir() {
+						spacemitDir = "/usr/share/penguins-eggs/spacemit"
+					}
 
-				outputFile := task.Params["output_file"].(string)
-				sourceDir := task.Params["source_dir"].(string)
+					scriptContent, err := BuildMakeImgStep(workPath, finalIsoPath, fdtDir, fdtFile, spacemitDir)
+					if err != nil {
+						return "", nil, fmt.Errorf("failed to build make-img step: %w", err)
+					}
 
-				scriptContent := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
-				plan.Plan = append(plan.Plan, OATask{
-					Step: parser.Step{
-						Name:        "coa-dot-disk",
-						Description: "Creazione metadati .disk (Standard Debian per live-boot)",
-						Module:      "shell",
-						Params: map[string]interface{}{
-							"command": scriptContent,
+					task = OATask{
+						Step: parser.Step{
+							Name:        "make-img",
+							Description: "Generating Live Raw Image (RISC-V Spacemit K1) - genimage Mode",
+							Module:      "shell",
+							Params: map[string]interface{}{
+								"command": scriptContent,
+							},
 						},
-					},
-				})
-				utils.LogNormal("\n[ENGINE] .disk metadata injection completed for live-boot.")
+					}
+					utils.LogNormal("\n[ENGINE] xorriso step replaced with make-img (.img) generator.")
+				} else {
+					task.Params["output_file"] = finalIsoPath
+					task.Params["source_dir"] = filepath.Join(workPath, "isodir")
+
+					outputFile := task.Params["output_file"].(string)
+					sourceDir := task.Params["source_dir"].(string)
+
+					scriptContent := createDotDiskScript(sourceDir, filepath.Base(outputFile), "", "")
+					plan.Plan = append(plan.Plan, OATask{
+						Step: parser.Step{
+							Name:        "coa-dot-disk",
+							Description: "Creazione metadati .disk (Standard Debian per live-boot)",
+							Module:      "shell",
+							Params: map[string]interface{}{
+								"command": scriptContent,
+							},
+						},
+					})
+					utils.LogNormal("\n[ENGINE] .disk metadata injection completed for live-boot.")
+				}
 			}
 
 			plan.Plan = append(plan.Plan, task)

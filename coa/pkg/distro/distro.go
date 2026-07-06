@@ -126,7 +126,15 @@ func (d *Distro) identityParts() (distroName, codeName, hostName, arch string) {
 func (d *Distro) GetISOName(variant string) string {
 	timestamp := time.Now().Format("2006-01-02_1504")
 	prefix := d.GetISOPrefix(variant)
-	return fmt.Sprintf("%s%s.iso", prefix, timestamp)
+	ext := ".iso"
+	arch := d.Arch
+	if arch == "" {
+		arch = runtime.GOARCH
+	}
+	if arch == "riscv64" {
+		ext = ".img"
+	}
+	return fmt.Sprintf("%s%s%s", prefix, timestamp, ext)
 }
 
 func (d *Distro) GetISOPrefix(variant string) string {

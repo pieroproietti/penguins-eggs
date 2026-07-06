@@ -10,7 +10,7 @@ import (
 
 const UnattendedPassword = "evolution"
 
-func RunUnattended() error {
+func RunUnattended(fstype string) error {
 	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
 	if err != nil {
 		return fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
@@ -19,7 +19,7 @@ func RunUnattended() error {
 		fmt.Fprintf(os.Stderr, "[krill] warning: %s\n", w)
 	}
 
-	m := initialModel(cfg)
+	m := initialModel(cfg, fstype)
 	m.userInputs[fieldUserPass].SetValue(UnattendedPassword)
 	plan := m.buildPlan()
 
