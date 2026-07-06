@@ -121,6 +121,10 @@ remaster:
       permissions: 288 # 0440 octal
       content: |
         live ALL=(ALL) NOPASSWD:ALL
+        liveuser ALL=(ALL) NOPASSWD:ALL
+        linux ALL=(ALL) NOPASSWD:ALL
+        %wheel ALL=(ALL) NOPASSWD:ALL
+        %sudo ALL=(ALL) NOPASSWD:ALL
 
 # ----------------------------------------------------------------------------
 # 11. LIVE USER PRIVILEGES (polkit)
