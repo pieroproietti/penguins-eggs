@@ -35,6 +35,12 @@ func RunAutologin(payload []byte) error {
 	exec.Command("chroot", root, "passwd", "-d", user).Run()
 	exec.Command("chroot", root, "usermod", "-U", user).Run()
 
+	// Enable nullok in PAM configurations to allow empty password logins on Fedora/openSUSE
+	fmt.Println(" -> Configuring PAM to allow empty passwords (nullok)...")
+	enablePamNullok(root, "etc/pam.d/system-auth")
+	enablePamNullok(root, "etc/pam.d/password-auth")
+	enablePamNullok(root, "etc/pam.d/common-auth")
+
 	session := findPreferredSession(root)
 	fmt.Printf(" -> Desktop session detected: %s\n", session)
 	configureSDDM(root, user, session)
@@ -146,4 +152,28 @@ func appendToFile(path, text string) {
 	}
 	defer f.Close()
 	f.WriteString(text)
+}
+
+func enablePamNullok(root, relPath string) {
+	fullPath := filepath.Join(root, relPath)
+	data, err := os.ReadFile(fullPath)
+	if err != nil {
+		return // File doesn't exist or is not readable
+	}
+
+	lines := strings.Split(string(data), "\n")
+	modified := false
+	for i, line := range lines {
+		if strings.Contains(line, "pam_unix.so") {
+			if !strings.Contains(line, "nullok") {
+				lines[i] = line + " nullok"
+				modified = true
+			}
+		}
+	}
+
+	if modified {
+		fmt.Printf(" -> Enabled nullok in PAM config: %s\n", relPath)
+		_ = os.WriteFile(fullPath, []byte(strings.Join(lines, "\n")), 0644)
+	}
 }
