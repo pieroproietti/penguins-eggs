@@ -1,0 +1,115 @@
+name: Incubator - Test ISO eggs su Proxmox
+
+on:
+  workflow_dispatch:
+    inputs:
+      iso_dir:
+        description: "Directory delle ISO da testare (sul nodo Proxmox)"
+        required: true
+        default: "/var/lib/vz/template/iso"
+        type: string
+      vmid:
+        description: "VMID della VM di test"
+        required: false
+        default: "150"
+        type: string
+  # Esempio: run notturno automatico (decommentare se serve)
+  # schedule:
+  #   - cron: "0 2 * * *"
+
+# Una sola esecuzione alla volta: la VM di test è unica.
+# cancel-in-progress: false -> i run in coda aspettano invece di uccidere quello attivo
+concurrency:
+  group: incubator-vm-${{ inputs.vmid || '150' }}
+  cancel-in-progress: false
+
+jobs:
+  incubator:
+    name: Batch test ISO
+    # Etichette del runner: registra il runner sul nodo Proxmox con il label "proxmox"
+    runs-on: [self-hosted, proxmox]
+    # 1h di install timeout per ISO + boot/verifica: dimensiona in base a quante ISO testi
+    timeout-minutes: 720
+
+    env:
+      ISO_DIR: ${{ inputs.iso_dir || '/var/lib/vz/template/iso' }}
+      VMID: ${{ inputs.vmid || '150' }}
+      STORAGE: ${{ vars.INCUBATOR_STORAGE || 'father-zfs' }}
+      ISO_STORAGE: ${{ vars.INCUBATOR_ISO_STORAGE || 'father-local' }}
+      BRIDGE: ${{ vars.INCUBATOR_BRIDGE || 'eggsnet' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Preflight - verifica ambiente Proxmox
+        run: |
+          echo "Runner: $(hostname) - utente: $(whoami)"
+          MISSING=""
+          for cmd in qm pvesm socat jq virt-cat flock; do
+            command -v "$cmd" >/dev/null 2>&1 || MISSING="$MISSING $cmd"
+          done
+          if [ -n "$MISSING" ]; then
+            echo "::error::Comandi mancanti sul runner:$MISSING"
+            exit 1
+          fi
+          if [ ! -d "$ISO_DIR" ]; then
+            echo "::error::La directory ISO '$ISO_DIR' non esiste sul nodo"
+            exit 1
+          fi
+          COUNT=$(find "$ISO_DIR" -maxdepth 1 -name '*.iso' | wc -l)
+          echo "Trovate $COUNT ISO in $ISO_DIR"
+          echo "iso_count=$COUNT" >> "$GITHUB_OUTPUT"
+        id: preflight
+
+      - name: Esegui incubator
+        run: |
+          chmod +x scripts/incubator.sh
+          # Il runner deve girare come root, oppure configura sudoers NOPASSWD
+          # per l'utente del runner sui comandi qm/pvesm/virt-cat/socat.
+          if [ "$(id -u)" -eq 0 ]; then
+            ./scripts/incubator.sh "$ISO_DIR"
+          else
+            sudo --preserve-env=VMID,STORAGE,ISO_STORAGE,BRIDGE ./scripts/incubator.sh "$ISO_DIR"
+          fi
+
+      - name: Pubblica riepilogo nel job summary
+        if: always()
+        run: |
+          {
+            echo "## Risultati Incubator"
+            echo ""
+            if [ -f incubator.log ]; then
+              echo '```'
+              cat incubator.log
+              echo '```'
+            else
+              echo "_Nessun report generato (fallimento prima dell'avvio del batch)._"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Carica log e report come artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: incubator-report-${{ github.run_number }}
+          path: |
+            incubator.log
+            console-SUCCESS-*.log
+            console-FAILED-*.log
+            krill-output-*.txt
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Cleanup di sicurezza VM
+        if: always()
+        run: |
+          # Se il job viene cancellato o va in timeout, non lasciare la VM accesa
+          RUN_QM="qm"
+          [ "$(id -u)" -ne 0 ] && RUN_QM="sudo qm"
+          if $RUN_QM status "$VMID" >/dev/null 2>&1; then
+            echo "Spengo e distruggo la VM $VMID rimasta dal run..."
+            $RUN_QM stop "$VMID" --timeout 30 || true
+            sleep 5
+            $RUN_QM destroy "$VMID" --purge 1 --destroy-unreferenced-disks 1 || true
+          fi
