@@ -74,6 +74,20 @@ jobs:
           rm -f release_pacchetti.zip
 
       # --------------------------------------------------------------------
+      # NUOVO STEP: FILTRO ARTEFATTI
+      # --------------------------------------------------------------------
+      - name: 🧹 Isola solo l'artefatto più recente
+        run: |
+          cd pacchetti_da_installare
+          # Identifica il file più recente nella cartella
+          LATEST_FILE=$(ls -t | head -n 1)
+          echo "Il file più recente è: $LATEST_FILE"
+          
+          # Cancella tutti gli altri file presenti per evitare "duplicate targets" o trasferimenti inutili
+          find . -type f ! -name "$LATEST_FILE" -exec rm -f {} +
+          echo "Pulizia completata. Verrà trasferito solo l'ultimo pacchetto."
+
+      # --------------------------------------------------------------------
       # OPERAZIONI SU PROXMOX E COA REMASTER
       # --------------------------------------------------------------------
       - name: 🔄 Rollback & VM Boot
