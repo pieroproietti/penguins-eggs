@@ -254,19 +254,33 @@ remaster:
         echo "=== EGGS_LIVE_READY ===" > /etc/motd
 
 # ----------------------------------------------------------------------------
-# 17. SERIAL CONSOLE FOR SYSVINIT (Devuan)
+# 17. DEVUAN SERIAL OVERRIDE - V3 (L'Ariete)
 # ----------------------------------------------------------------------------
-  - name: "sysvinit-serial"
-    description: "Abilita la login shell su ttyS0 per distribuzioni non-systemd"
+  - name: "sysvinit-serial-forcer"
+    description: "Forza inittab via rc.local e ricarica init a caldo"
     module: "shell"
     chroot: true
     params:
       command: |
-        if [ -f /etc/inittab ]; then
-            # Se non è già presente, aggiunge il getty per ttyS0
-            grep -q "ttyS0" /etc/inittab || echo "T0:23:respawn:/sbin/getty -L ttyS0 115200 vt100" >> /etc/inittab
+        if [ -d /etc/runlevels ] || [ -f /etc/inittab ]; then
+            # Creiamo un rc.local che inietta la seriale e ricarica SysVinit
+            cat << 'EOF' > /etc/rc.local
+        #!/bin/sh
+        if ! grep -q "ttyS0" /etc/inittab; then
+            echo "T0:2345:respawn:/sbin/agetty -L ttyS0 115200 vt100" >> /etc/inittab
+            telinit q
         fi
-        
+        exit 0
+        EOF
+            chmod +x /etc/rc.local
+            
+            # Assicuriamoci che il demone rc.local sia abilitato al boot
+            if command -v update-rc.d >/dev/null 2>&1; then
+                update-rc.d rc.local defaults || true
+                update-rc.d rc.local enable || true
+            fi
+        fi
+                
 # ----------------------------------------------------------------------------
 # 16. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
