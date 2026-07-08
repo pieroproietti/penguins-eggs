@@ -50,6 +50,15 @@ jobs:
           echo "PVE_PASS=$PROXMOX_PASSWD" >> $GITHUB_ENV
 
       # --------------------------------------------------------------------
+      # NUOVO STEP: PULIZIA AMBIENTE SELF-HOSTED
+      # --------------------------------------------------------------------
+      - name: 🧹 Tabula Rasa Workspace
+        run: |
+          echo "Rimozione residui di build precedenti sul runner locale..."
+          rm -rf pacchetti_da_installare
+          mkdir -p pacchetti_da_installare
+
+      # --------------------------------------------------------------------
       # OPZIONE A: Scarica l'ultimo pacchetto generato da hammers (DEFAULT)
       # --------------------------------------------------------------------
       - name: 📥 Scarica ultima build da hammers
@@ -72,20 +81,6 @@ jobs:
           wget -q -O release_pacchetti.zip "${{ inputs.artifact_url }}"
           unzip -o release_pacchetti.zip -d pacchetti_da_installare/
           rm -f release_pacchetti.zip
-
-      # --------------------------------------------------------------------
-      # NUOVO STEP: FILTRO ARTEFATTI
-      # --------------------------------------------------------------------
-      - name: 🧹 Isola solo l'artefatto più recente
-        run: |
-          cd pacchetti_da_installare
-          # Identifica il file più recente nella cartella
-          LATEST_FILE=$(ls -t | head -n 1)
-          echo "Il file più recente è: $LATEST_FILE"
-          
-          # Cancella tutti gli altri file presenti per evitare "duplicate targets" o trasferimenti inutili
-          find . -type f ! -name "$LATEST_FILE" -exec rm -f {} +
-          echo "Pulizia completata. Verrà trasferito solo l'ultimo pacchetto."
 
       # --------------------------------------------------------------------
       # OPERAZIONI SU PROXMOX E COA REMASTER
