@@ -245,14 +245,16 @@ remaster:
 # ----------------------------------------------------------------------------
 # 16. CANARY
 # ----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# 16. CANARY
+# ----------------------------------------------------------------------------
   - name: "canary"
-    description: "canary"
+    description: "Inserimento faro inaffondabile per CI/CD"
     module: "shell"
     chroot: true
     params:
       command: |
-        echo 'echo "=== EGGS_LIVE_READY ==="' > /etc/profile.d/canary.sh
-        chmod 644 /etc/profile.d/canary.sh
+        echo "=== EGGS_LIVE_READY ===" >> /etc/motd
 
 # ----------------------------------------------------------------------------
 # 16. FILESYSTEM.SQUASHFS COMPRESSION
