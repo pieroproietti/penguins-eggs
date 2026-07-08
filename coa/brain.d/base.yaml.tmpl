@@ -245,17 +245,28 @@ remaster:
 # ----------------------------------------------------------------------------
 # 16. CANARY
 # ----------------------------------------------------------------------------
-# ----------------------------------------------------------------------------
-# 16. CANARY
-# ----------------------------------------------------------------------------
   - name: "canary"
-    description: "Inserimento faro inaffondabile per CI/CD"
+    description: "Inserimento faro in /etc/motd"
     module: "shell"
     chroot: true
     params:
       command: |
-        echo "=== EGGS_LIVE_READY ===" >> /etc/motd
+        echo "=== EGGS_LIVE_READY ===" > /etc/motd
 
+# ----------------------------------------------------------------------------
+# 17. SERIAL CONSOLE FOR SYSVINIT (Devuan)
+# ----------------------------------------------------------------------------
+  - name: "sysvinit-serial"
+    description: "Abilita la login shell su ttyS0 per distribuzioni non-systemd"
+    module: "shell"
+    chroot: true
+    params:
+      command: |
+        if [ -f /etc/inittab ]; then
+            # Se non è già presente, aggiunge il getty per ttyS0
+            grep -q "ttyS0" /etc/inittab || echo "T0:23:respawn:/sbin/getty -L ttyS0 115200 vt100" >> /etc/inittab
+        fi
+        
 # ----------------------------------------------------------------------------
 # 16. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
