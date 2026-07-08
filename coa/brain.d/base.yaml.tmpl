@@ -243,44 +243,6 @@ remaster:
         </svg>
 
 # ----------------------------------------------------------------------------
-# 16. CANARY
-# ----------------------------------------------------------------------------
-  - name: "canary"
-    description: "Inserimento faro in /etc/motd"
-    module: "shell"
-    chroot: true
-    params:
-      command: |
-        echo "=== EGGS_LIVE_READY ===" > /etc/motd
-
-# ----------------------------------------------------------------------------
-# 17. DEVUAN SERIAL OVERRIDE - V4 (Forza Bruta su rc.local)
-# ----------------------------------------------------------------------------
-  - name: "sysvinit-serial-forcer"
-    description: "Forza la seriale in background ignorando inittab"
-    module: "shell"
-    chroot: true
-    params:
-      command: |
-        cat << 'EOF' > /etc/rc.local
-        #!/bin/sh
-        # Proviamo prima agetty, se non c'è usiamo getty
-        if [ -x /sbin/agetty ]; then
-            /sbin/agetty -L ttyS0 115200 vt100 &
-        elif [ -x /sbin/getty ]; then
-            /sbin/getty -L ttyS0 115200 vt100 &
-        fi
-        exit 0
-        EOF
-        chmod +x /etc/rc.local
-        
-        # Abilitiamo prepotentemente rc.local in sysvinit
-        if command -v update-rc.d >/dev/null 2>&1; then
-            update-rc.d rc.local defaults
-            update-rc.d rc.local enable
-        fi
-                        
-# ----------------------------------------------------------------------------
 # 16. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
   - name: "mksquashfs"
