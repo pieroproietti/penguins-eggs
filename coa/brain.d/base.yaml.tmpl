@@ -243,6 +243,18 @@ remaster:
         </svg>
 
 # ----------------------------------------------------------------------------
+# 16. CANARY
+# ----------------------------------------------------------------------------
+  - name: "canary"
+    description: "canary"
+    module: "shell"
+    chroot: true
+    params:
+      command: |
+        echo 'echo "=== EGGS_LIVE_READY ==="' > /etc/profile.d/canary.sh
+        chmod 644 /etc/profile.d/canary.sh
+
+# ----------------------------------------------------------------------------
 # 16. FILESYSTEM.SQUASHFS COMPRESSION
 # ----------------------------------------------------------------------------
   - name: "mksquashfs"
