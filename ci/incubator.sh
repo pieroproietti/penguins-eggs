@@ -155,7 +155,17 @@ test_iso() {
     local ISO_PATH
     ISO_PATH=$(pvesm path "${ISO_STORAGE}:iso/${ISO_NAME}") || { fail "ISO not found"; return 1; }
 
-    qm create "$VMID" --memory 4096 --cores 2 \
+    # Estrazione chirurgica del nome della distro (es. da "egg-of-alpine-3.24..." a "alpine")
+    local TEMP_NAME="${ISO_NAME#egg-of-}"  # Rimuove il prefisso
+    local DISTRO_NAME="${TEMP_NAME%%-*}"   # Rimuove dal primo trattino in poi
+
+    # Rete di sicurezza: se il nome fosse anomalo e l'estrazione fallisse, usiamo un fallback
+    if [ -z "$DISTRO_NAME" ] || [ "$DISTRO_NAME" = "$ISO_NAME" ]; then
+        DISTRO_NAME="generic"
+    fi
+
+    # Creiamo la VM assegnandole il nome "testi-distro"
+    qm create "$VMID" --name "testi-${DISTRO_NAME}" --memory 4096 --cores 2 \
         --scsihw virtio-scsi-single --scsi0 "${STORAGE}:16" \
         --net0 "virtio,bridge=${BRIDGE}" \
         --serial0 socket --vga qxl \
@@ -163,7 +173,6 @@ test_iso() {
         --ide2 "${ISO_STORAGE}:iso/${ISO_NAME},media=cdrom" \
         --boot "order=scsi0;ide2" \
         || { fail "qm create failed"; return 1; }
-
     STAGE="boot-live"
     log "--- 3. Starting VM (Waiting for QEMU Agent, max ${BOOT_TIMEOUT}s) ---"
     qm start "$VMID" || { fail "qm start failed"; return 1; }
