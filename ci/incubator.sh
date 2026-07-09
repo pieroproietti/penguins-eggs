@@ -161,7 +161,7 @@ test_iso() {
         done
         if [ -S "$SOCK" ]; then
             if [ "$mode" = ">" ]; then
-                # Direttamente su file, zero output sullo schermo per non bloccare SSH
+                # Directly to file, zero output on screen to avoid blocking SSH
                 socat UNIX-CONNECT:"$SOCK" - > "$CONSOLE_LOG" 2>&1 < /dev/null &
             else
                 socat UNIX-CONNECT:"$SOCK" - >> "$CONSOLE_LOG" 2>&1 < /dev/null &
@@ -297,9 +297,6 @@ test_iso() {
 
     virt-cat -a "$DISKPATH" /etc/fstab > "$WORK/fstab.txt" 2>/dev/null || echo "Error reading fstab" > "$WORK/fstab.txt"
 
-    report_entry "$ISO_NAME" "INSTALLATION COMPLETED" "FSTAB:
-$(cat "$WORK/fstab.txt")"
-
     STAGE="verify-boot"
     log "--- 5. Post-installation verify boot (Boot from Hard Disk) ---"
     qm start "$VMID" || { fail "qm start post-install failed"; return 1; }
@@ -308,6 +305,32 @@ $(cat "$WORK/fstab.txt")"
     wait_for_agent "$VERIFY_BOOT_TIMEOUT" || { fail "timeout: installed system on disk is not responding"; return 1; }
 
     log "SUCCESS: Boot completed from new disk! Installed system is stable."
+
+    # --- NEW STAGE: SYSTEM SHOWCASE (STANDALONE NEOFETCH) ---
+    STAGE="neofetch-extraction"
+    
+    log "Quick download of neofetch bypassing package managers..."
+    # Download raw script to /tmp and make it executable. Use curl if available, otherwise wget.
+    agent_exec -- /bin/sh -c "if command -v curl >/dev/null 2>&1; then curl -sL https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch -o /tmp/neofetch; else wget -qO /tmp/neofetch https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch; fi; chmod +x /tmp/neofetch" >/dev/null 2>&1 || true
+
+    log "Retrieving installed system specs for the report..."
+    
+    # 1. Extract clean version (text only) for the incubator.log file
+    local SYS_INFO
+    SYS_INFO=$(agent_exec -- /bin/sh -c "[ -x /tmp/neofetch ] && /tmp/neofetch --stdout 2>/dev/null || (uname -a && cat /etc/os-release | grep PRETTY_NAME)") || SYS_INFO="Info not available"
+
+    # 2. Print the spectacular version (with ASCII logo) directly to the CI console!
+    echo -e "\n${C_BLUE}--- NEWLY INSTALLED SYSTEM IDENTIKIT ---${C_RST}"
+    agent_exec -- /bin/sh -c "[ -x /tmp/neofetch ] && /tmp/neofetch 2>/dev/null || echo 'Neofetch not available for the show'"
+    echo -e "${C_BLUE}-----------------------------------------------${C_RST}\n"
+
+    # 3. Compile the text report for the archive
+    report_entry "$ISO_NAME" "INSTALLATION COMPLETED" "FSTAB:
+$(cat "$WORK/fstab.txt")
+
+SYSTEM SPECS:
+$SYS_INFO"
+    # -------------------------------------------------------
 
     log "Hard stopping the test VM..."
     qm stop "$VMID" >/dev/null 2>&1 || true
