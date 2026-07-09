@@ -308,9 +308,9 @@ $(cat "$WORK/fstab.txt")"
 
     log "SUCCESS: Boot completed from new disk! Installed system is stable."
 
-    agent_exec -- sudo poweroff >/dev/null 2>&1 || true
-    wait_for_stopped "$SHUTDOWN_TIMEOUT" || true
-
+    log "Hard stopping the test VM..."
+    qm stop "$VMID" >/dev/null 2>&1 || true
+    
     return 0
 }
 
