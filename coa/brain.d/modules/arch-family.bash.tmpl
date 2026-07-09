@@ -7,7 +7,7 @@
 # CONSTANTI DICHIARATIVE (Parametri di Boot della Live)
 # ----------------------------------------------------------------------------
 {{ define "distro_boot_params" }}
-{{- if eq .ID "manjaro" -}}
+{{- if eq .id "manjaro" -}}
 misobasedir=manjaro misolabel=OA_LIVE cow_spacesize=2G
 {{- else -}}
 archisobasedir=arch archisolabel=OA_LIVE cow_spacesize=2G
@@ -35,10 +35,10 @@ mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
 rm -rf /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
 ' EXIT
 
-{{ if eq .ID "garuda" }}
+{{ if eq .id "garuda" }}
     echo "-> Rilevato Garuda Linux: Generazione Live via dracut"
     dracut -f --sysroot /home/eggs/liveroot "/boot/oa-initrd.img"
-{{ else if eq .ID "manjaro" }}
+{{ else if eq .id "manjaro" }}
     if ! pacman -Qs manjaro-tools-iso > /dev/null; then 
         echo "[ERRORE FATALE] manjaro-tools-iso non installato."
         exit 1
@@ -138,7 +138,7 @@ if [ ! -f /home/eggs/isodir/live/filesystem.squashfs ]; then
     exit 1
 fi
 
-{{ if eq .ID "manjaro" }}
+{{ if eq .id "manjaro" }}
     mkdir -p /home/eggs/isodir/manjaro/x86_64
     ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_64/livefs.sfs
     echo "-> Hardlink livefs.sfs creato per Manjaro."
@@ -153,7 +153,7 @@ fi
 # 🎯 INSTALLATORE SUL DISCO FINALE (Eseguito in Chroot)
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
-{{ if eq .ID "garuda" }}
+{{ if eq .id "garuda" }}
     echo "-> Rigenerazione initramfs su Garuda tramite dracut..."
     dracut -f --regenerate-all
 {{ else }}
