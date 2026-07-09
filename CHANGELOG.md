@@ -1,6 +1,43 @@
 See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
+## Release Notes: penguins-eggs v0.9.3 - 2026-07-09
+This release introduces **Incubator Batch CI**, a new automated testing framework, along with extensive improvements to the `sysinstall` architecture, Krill installer, security defaults, and cross-distribution support.
+
+### 🐣 Incubator Batch CI (Automated ISO Testing)
+* Developed the **Incubator Batch CI** (`ci/incubator.sh` and `.github/workflows/incubator.yml`) to orchestrate automated, end-to-end testing of remastered live ISOs on a Proxmox VE host.
+* Deploys and configures a clean QEMU virtual machine for each distribution, booting the generated ISO and executing a fully automated `krill` unattended installation.
+* Interacts with the VM via QEMU Guest Agent (`qemu-guest-agent`) to monitor execution, collect installer output, retrieve serial logs, and verify successful boot of the installed system.
+* Automatically captures console outputs (`console-SUCCESS-*.log`/`console-FAILED-*.log`) and publishes comprehensive batch reports to GitHub Actions.
+
+### 🛠️ sysinstall & Krill Installer
+* **Filesystem & Partitioning**:
+  * Added `--fstype` flag to specify partition filesystem type (e.g., ext4, btrfs) during unattended install.
+  * Added automatic partition signature wiping and specified filesystem mount types to prevent Btrfs volume collisions.
+  * Integrated dedicated, modular bootloader templates for GRUB, systemd-boot, and Limine on Fedora, openSUSE, Arch, and Manjaro.
+  * Full support for Btrfs subvolumes in Krill.
+* **Network & Adaptations**:
+  * Added Netplan configuration support and fixed DNS formatting in `resolv.conf`.
+  * Fallback to active physical network interfaces when the default network route is missing.
+  * Improved static IP configuration for Arch Linux (covering dhcpcd, NetworkManager, and systemd-networkd).
+* **Hardware & CLI**:
+  * Added poweroff option to unattended installations to support automated VM shutdown.
+  * Added support for StarFive/Spacemit RISC-V platforms.
+  * Dynamic plan execution in the installer using `coa ell`.
+  * Configured `calamares` and live-user options directly via the TUI configuration module.
+
+### 🐧 Distribution Compatibility
+* **Fedora**: Implemented a "Kamikaze" service to bypass SELinux blocking during the first post-installation boot, automatically restoring SELinux enforcing mode once the relabel process is complete.
+* **openSUSE**: Fixed UEFI/Btrfs bootloader installation and disabled SELinux by default.
+* **Devuan**: Added full Devuan support as a Debian-family distribution.
+* **Non-systemd Distros**: Enabled tty/console support by forcing `inittab` reloading and hot-reloading configurations.
+
+### 🔒 Security & Autologin
+* Removed `autologin-gui` from default plans to disable automatic GUI login by default, enhancing security.
+* Restored desktop autologin wrapper to preserve passwords for CLI and SSH logins.
+* Fixed live user sudo permissions by adding explicit passwordless rules for `liveuser`, `linux`, `wheel`, and `sudo` groups in the templates.
+* Enabled `nullok` in PAM configuration files during autologin setups to support passwordless credentials.
+
 ## Release Notes: penguins-eggs v0.9.2 - 2026-06-29
 The package officially changed its name from **oa-tools** to **penguins-eggs**.
 
