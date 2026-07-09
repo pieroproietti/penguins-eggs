@@ -289,21 +289,25 @@ test_iso() {
     STAGE="neofetch-extraction"
     
     log "Quick download of neofetch bypassing package managers..."
-    # Download raw script to /tmp and make it executable. Use curl if available, otherwise wget.
     agent_exec -- /bin/sh -c "if command -v curl >/dev/null 2>&1; then curl -sL https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch -o /tmp/neofetch; else wget -qO /tmp/neofetch https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch; fi; chmod +x /tmp/neofetch" >/dev/null 2>&1 || true
 
     log "Retrieving installed system specs for the report..."
     
-    # Extract clean version (text only)
-    local SYS_INFO
-    SYS_INFO=$(agent_exec -- /bin/sh -c "[ -x /tmp/neofetch ] && /tmp/neofetch --stdout 2>/dev/null || (uname -a && cat /etc/os-release | grep PRETTY_NAME)") || SYS_INFO="Info not available"
+    # Estraiamo il JSON grezzo dall'agente
+    local RAW_JSON
+    RAW_JSON=$(agent_exec -- /bin/sh -c "[ -x /tmp/neofetch ] && /tmp/neofetch --stdout 2>/dev/null || (uname -a && cat /etc/os-release | grep PRETTY_NAME)") || RAW_JSON=""
 
-    # Print the clean version directly to the CI console!
+    # Decodifichiamo il JSON in testo puro usando jq -r
+    local SYS_INFO
+    SYS_INFO=$(echo "$RAW_JSON" | jq -r '."out-data" // empty' 2>/dev/null) || SYS_INFO=""
+    [ -z "$SYS_INFO" ] && SYS_INFO="Info not available"
+
+    # Ora stampiamo la versione testuale pulita direttamente nella console della CI!
     echo -e "\n${C_BLUE}--- NEWLY INSTALLED SYSTEM IDENTIKIT ---${C_RST}"
     echo "$SYS_INFO"
     echo -e "${C_BLUE}-----------------------------------------------${C_RST}\n"
 
-    # Compile the text report for the archive
+    # E compiliamo il referto per l'archivio
     report_entry "$ISO_NAME" "INSTALLATION COMPLETED" "FSTAB:
 $(cat "$WORK/fstab.txt")
 
