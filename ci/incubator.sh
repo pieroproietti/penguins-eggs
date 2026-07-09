@@ -161,9 +161,10 @@ test_iso() {
         done
         if [ -S "$SOCK" ]; then
             if [ "$mode" = ">" ]; then
-                socat UNIX-CONNECT:"$SOCK" - > >(tee "$CONSOLE_LOG") 2>&1 < /dev/null &
+                # Direttamente su file, zero output sullo schermo per non bloccare SSH
+                socat UNIX-CONNECT:"$SOCK" - > "$CONSOLE_LOG" 2>&1 < /dev/null &
             else
-                socat UNIX-CONNECT:"$SOCK" - > >(tee -a "$CONSOLE_LOG") 2>&1 < /dev/null &
+                socat UNIX-CONNECT:"$SOCK" - >> "$CONSOLE_LOG" 2>&1 < /dev/null &
             fi
             SOCAT_PID=$!
         fi
