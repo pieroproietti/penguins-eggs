@@ -39,6 +39,15 @@ jobs:
       BRIDGE: ${{ vars.INCUBATOR_BRIDGE || 'eggsnet' }}
 
     steps:
+      - name: 🔐 Air-gapped Secrets Loading
+        run: |
+          source /etc/p4/secrets.env
+          echo "::add-mask::$SSH_PASSWD"
+          echo "::add-mask::$PROXMOX_PASSWD"
+          echo "VM_USER=$SSH_USER" >> $GITHUB_ENV
+          echo "VM_PASS=$SSH_PASSWD" >> $GITHUB_ENV
+          echo "PVE_PASS=$PROXMOX_PASSWD" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
 
