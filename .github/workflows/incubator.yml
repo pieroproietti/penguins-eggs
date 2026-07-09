@@ -6,14 +6,14 @@ on:
 
 jobs:
   collaudo-batch:
-    name: 🐣 Schiusa e Collaudo Batch
+    name: 🐣 Batch Hatching and Testing
     runs-on: self-hosted
 
     steps:
-      - name: 📥 Checkout del Repository
+      - name: 📥 Repository Checkout
         uses: actions/checkout@v4
 
-      - name: 🚚 Deploy di incubator.sh dal Repo al Cantiere (Proxmox)
+      - name: 🚚 Deploy incubator.sh from Repo to Proxmox
         run: |
           # 1. Distruggiamo e ri-creiamo la cartella sull'host
           ssh root@father "rm -fr /root/ci"
@@ -26,11 +26,11 @@ jobs:
           # 3. Lo rendiamo eseguibile
           ssh root@father "chmod +x /root/ci/incubator.sh"
 
-      - name: ⚙️ Avvio Nastro Trasportatore (Incubator)
+      - name: ⚙️ Run Incubator Batch
         run: |
           ssh root@father "cd /root/ci && ./incubator.sh /var/lib/vz/template/iso/"
 
-      - name: 📋 Recupero di TUTTI i Referti (Artefatti)
+      - name: 📋 Collect ALL Reports (Artifacts)
         if: always() 
         run: |
           mkdir -p ./incubator-logs
@@ -39,7 +39,7 @@ jobs:
           scp root@father:/root/ci/console-FAILED-*.log ./incubator-logs/ 2>/dev/null || true
           scp root@father:/root/ci/krill-output-*.txt ./incubator-logs/ 2>/dev/null || true
 
-      - name: 📤 Upload Artefatti su Web
+      - name: 📤 Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:

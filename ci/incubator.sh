@@ -2,17 +2,17 @@
 set -euo pipefail
 
 # =====================================================================
-# incubator.sh - Test batch di ISO eggs su Proxmox via QEMU Guest Agent
-# (Versione CI/CD - parametri via variabili d'ambiente)
-# Uso: ./incubator.sh /percorso/della/directory/iso
+# incubator.sh - Batch test of eggs ISOs on Proxmox via QEMU Guest Agent
+# (CI/CD Version - parameters via environment variables)
+# Usage: ./incubator.sh /path/to/iso/directory
 #
-# Override via env (impostati dal workflow GitHub Actions):
+# Env override (set by GitHub Actions workflow):
 #   VMID, STORAGE, ISO_STORAGE, BRIDGE
 # =====================================================================
 
-TARGET_DIR="${1:?Uso: $0 /percorso/della/directory/iso}"
+TARGET_DIR="${1:?Usage: $0 /path/to/iso/directory}"
 
-# --- Configurazione (env-override per la CI) ---
+# --- Configuration (env-override for CI) ---
 VMID="${VMID:-150}"
 STORAGE="${STORAGE:-father-zfs}"
 ISO_STORAGE="${ISO_STORAGE:-father-local}"
@@ -22,7 +22,7 @@ SOCK="/var/run/qemu-server/${VMID}.serial0"
 REPORT_FILE="$(pwd)/incubator.log"
 LOCK_FILE="/var/lock/incubator-${VMID}.lock"
 
-# Timeout (secondi)
+# Timeouts (seconds)
 BOOT_TIMEOUT="${BOOT_TIMEOUT:-300}"
 INSTALL_TIMEOUT="${INSTALL_TIMEOUT:-3600}"
 SHUTDOWN_TIMEOUT="${SHUTDOWN_TIMEOUT:-120}"
@@ -30,7 +30,7 @@ VERIFY_BOOT_TIMEOUT="${VERIFY_BOOT_TIMEOUT:-300}"
 AGENT_SETTLE=10
 AGENT_RETRY_WINDOW=180
 
-# Colori: disattivati automaticamente in CI o senza TTY
+# Colors: automatically disabled in CI or without TTY
 if [ -t 1 ] && [ -z "${CI:-}" ]; then
     C_BLUE='\033[1;34m'; C_GREEN='\033[1;32m'; C_RED='\033[1;31m'; C_RST='\033[0m'
 else
@@ -43,7 +43,7 @@ require_cmds() {
         command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
     done
     if [ ${#missing[@]} -gt 0 ]; then
-        echo "ERRORE: comandi mancanti: ${missing[*]}" >&2
+        echo "ERROR: missing commands: ${missing[*]}" >&2
         exit 1
     fi
 }
@@ -51,7 +51,7 @@ require_cmds() {
 acquire_lock() {
     exec 200>"$LOCK_FILE"
     if ! flock -n 200; then
-        echo "ERRORE: un'altra istanza sta già usando il VMID $VMID (lock: $LOCK_FILE)" >&2
+        echo "ERROR: another instance is already using VMID $VMID (lock: $LOCK_FILE)" >&2
         exit 1
     fi
 }
@@ -60,12 +60,12 @@ log()  { echo -e "$*"; }
 report() { echo "$*" >> "$REPORT_FILE"; }
 
 report_entry() {
-    local iso="$1" esito="$2" dettagli="${3:-}"
+    local iso="$1" result="$2" details="${3:-}"
     report "================================================="
-    report "DATA:  $(date '+%Y-%m-%d %H:%M:%S')"
-    report "ISO:   $iso"
-    report "ESITO: $esito"
-    [ -n "$dettagli" ] && report "$dettagli"
+    report "DATE:   $(date '+%Y-%m-%d %H:%M:%S')"
+    report "ISO:    $iso"
+    report "RESULT: $result"
+    [ -n "$details" ] && report "$details"
     report "================================================="
 }
 
@@ -96,18 +96,18 @@ agent_exec() {
                 printf '%s' "$res"
                 return 0
             else
-                echo ">>> [DEBUG] Comando qm guest exec rifiutato da Proxmox: $res" >&2
+                echo ">>> [DEBUG] qm guest exec command rejected by Proxmox: $res" >&2
                 if echo "$res" | grep -q -i -E "unknown option|executable not found|parameter verification failed"; then
                     printf '%s' "$res"
                     return 1
                 fi
             fi
         fi
-        echo ">>> Agent occupato o in riavvio, attendo (${waited}s/${AGENT_RETRY_WINDOW}s)..." >&2
+        echo ">>> Agent busy or restarting, waiting (${waited}s/${AGENT_RETRY_WINDOW}s)..." >&2
         sleep 5
         waited=$((waited + 5))
     done
-    printf '%s' "Timeout: Agent non disponibile dopo ${AGENT_RETRY_WINDOW}s"
+    printf '%s' "Timeout: Agent unavailable after ${AGENT_RETRY_WINDOW}s"
     return 1
 }
 
@@ -128,7 +128,7 @@ wait_for_stopped() {
 }
 
 # =====================================================================
-# LA FUNZIONE MOTORE
+# THE ENGINE FUNCTION
 # =====================================================================
 test_iso() {
     local ISO_NAME="$1"
@@ -146,9 +146,9 @@ test_iso() {
     trap cleanup EXIT
 
     fail() {
-        log "ERRORE [$STAGE]: $*"
+        log "ERROR [$STAGE]: $*"
         echo "$STAGE" > "${WORK}/failed_stage.txt" 2>/dev/null || true
-        # Annotazione visibile nella UI di GitHub Actions
+        # Annotation visible in GitHub Actions UI
         [ -n "${GITHUB_ACTIONS:-}" ] && echo "::error title=Incubator [$STAGE]::${ISO_NAME}: $*"
         return 1
     }
@@ -169,8 +169,8 @@ test_iso() {
         fi
     }
 
-    STAGE="pulizia"
-    log "--- 1. Pulizia vecchia VM $VMID ---"
+    STAGE="cleanup"
+    log "--- 1. Purging old VM $VMID ---"
     if qm status "$VMID" >/dev/null 2>&1; then
         qm stop "$VMID" --timeout 30 2>/dev/null || true
         wait_for_stopped 60 || true
@@ -179,10 +179,10 @@ test_iso() {
     rm -rf "$WORK" && mkdir -p "$WORK"
     touch "$CONSOLE_LOG"
 
-    STAGE="creazione-vm"
-    log "--- 2. Creazione VM e Configurazione Boot Sequenziale ---"
+    STAGE="vm-creation"
+    log "--- 2. VM Creation and Sequential Boot Configuration ---"
     local ISO_PATH
-    ISO_PATH=$(pvesm path "${ISO_STORAGE}:iso/${ISO_NAME}") || { fail "ISO non trovata"; return 1; }
+    ISO_PATH=$(pvesm path "${ISO_STORAGE}:iso/${ISO_NAME}") || { fail "ISO not found"; return 1; }
 
     qm create "$VMID" --memory 4096 --cores 2 \
         --scsihw virtio-scsi-single --scsi0 "${STORAGE}:16" \
@@ -191,48 +191,48 @@ test_iso() {
         --agent 1 \
         --ide2 "${ISO_STORAGE}:iso/${ISO_NAME},media=cdrom" \
         --boot "order=scsi0;ide2" \
-        || { fail "qm create fallito"; return 1; }
+        || { fail "qm create failed"; return 1; }
 
     STAGE="boot-live"
-    log "--- 3. Avvio VM (Attesa QEMU Agent, max ${BOOT_TIMEOUT}s) ---"
-    qm start "$VMID" || { fail "qm start fallito"; return 1; }
+    log "--- 3. Starting VM (Waiting for QEMU Agent, max ${BOOT_TIMEOUT}s) ---"
+    qm start "$VMID" || { fail "qm start failed"; return 1; }
     attach_console ">"
 
     wait_for_agent "$BOOT_TIMEOUT" \
-        || { fail "timeout: l'agente non ha risposto, boot live fallito"; return 1; }
-    log "SUCCESSO: Sistema Live avviato! Attendo ${AGENT_SETTLE}s di stabilizzazione..."
+        || { fail "timeout: agent did not respond, live boot failed"; return 1; }
+    log "SUCCESS: Live System booted! Waiting ${AGENT_SETTLE}s to settle..."
     sleep "$AGENT_SETTLE"
 
-    STAGE="installazione-krill"
-    log "--- 4. Avvio installazione Krill via Agent ---"
+    STAGE="krill-installation"
+    log "--- 4. Starting Krill installation via Agent ---"
 
     local EXEC_RES EXEC_PID
 
-    # Esecuzione cieca universale (compatibile con BusyBox/Alpine)
+    # Universal blind execution (compatible with BusyBox/Alpine)
     if ! EXEC_RES=$(agent_exec -- /bin/sh -c "sudo eggs sysinstall krill --unattended --fstype=ext4 > /tmp/krill.log 2>&1"); then
-        fail "qm guest exec fallito: $EXEC_RES"
+        fail "qm guest exec failed: $EXEC_RES"
         return 1
     fi
 
     EXEC_PID=$(echo "$EXEC_RES" | sed -n 's/.*"pid" *: *\([0-9]*\).*/\1/p')
     if [ -z "$EXEC_PID" ]; then
-        fail "impossibile ottenere il PID di installazione. Output: $EXEC_RES"
+        fail "unable to get installation PID. Output: $EXEC_RES"
         return 1
     fi
 
-    log "Installazione Krill in corso (PID interno: $EXEC_PID, timeout ${INSTALL_TIMEOUT}s)..."
+    log "Krill installation in progress (Internal PID: $EXEC_PID, timeout ${INSTALL_TIMEOUT}s)..."
 
     > "${WORK}/krill_output.txt"
 
     local EXIT_CODE="" STATUS IS_EXITED waited=0 status_fails=0 LOG_OFFSET=0 CHUNK
     while true; do
         if qm status "$VMID" 2>/dev/null | grep -q "stopped"; then
-            log "La VM si è spenta autonomamente. Krill ha terminato con successo!"
+            log "VM powered off autonomously. Krill finished successfully!"
             EXIT_CODE=0
             break
         fi
 
-        # Recupero incrementale del log in tempo reale
+        # Incremental real-time log recovery
         CHUNK=$(qm guest exec "$VMID" -- /bin/sh -c "tail -c +$((LOG_OFFSET + 1)) /tmp/krill.log 2>/dev/null" 2>/dev/null \
             | jq -r '."out-data" // empty' 2>/dev/null) || CHUNK=""
         if [ -n "$CHUNK" ]; then
@@ -243,14 +243,14 @@ test_iso() {
         if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
             sleep 3
             if qm status "$VMID" 2>/dev/null | grep -q "stopped"; then
-                log "La VM si è spenta durante il controllo di stato. Installazione completata."
+                log "VM powered off during status check. Installation completed."
                 EXIT_CODE=0
                 break
             fi
 
             status_fails=$((status_fails + 1))
             if [ "$status_fails" -ge 5 ]; then
-                fail "exec-status fallito ripetutamente (l'agente è sparito senza spegnere la VM): $STATUS"
+                fail "exec-status failed repeatedly (agent disappeared without powering off VM): $STATUS"
                 return 1
             fi
             sleep 5; waited=$((waited + 5)); continue
@@ -266,47 +266,47 @@ test_iso() {
         sleep 5
         waited=$((waited + 5))
         if [ "$waited" -ge "$INSTALL_TIMEOUT" ]; then
-            fail "timeout: installazione Krill non terminata"
+            fail "timeout: Krill installation not finished"
             return 1
         fi
     done
     echo
 
     if [ -z "$EXIT_CODE" ]; then
-        fail "Krill terminato in modo anomalo senza generare exit code"
+        fail "Krill terminated abnormally without generating an exit code"
         return 1
     fi
     if [ "$EXIT_CODE" -ne 0 ]; then
-        fail "Krill ha fallito con EXIT_CODE = $EXIT_CODE (vedi krill_output.txt)"
+        fail "Krill failed with EXIT_CODE = $EXIT_CODE (see krill_output.txt)"
         return 1
     fi
-    log "SUCCESSO: Installazione Krill terminata correttamente."
+    log "SUCCESS: Krill installation finished correctly."
 
-    STAGE="spegnimento"
-    log "Verifica spegnimento VM..."
-    wait_for_stopped "$SHUTDOWN_TIMEOUT" || { fail "la VM è rimasta appesa durante lo spegnimento"; return 1; }
+    STAGE="poweroff"
+    log "Verifying VM poweroff..."
+    wait_for_stopped "$SHUTDOWN_TIMEOUT" || { fail "VM hung during poweroff"; return 1; }
 
     cleanup
     SOCAT_PID=""
 
-    STAGE="estrazione-fstab"
+    STAGE="fstab-extraction"
     local DISKVOL DISKPATH
     DISKVOL=$(qm config "$VMID" | sed -n 's/^scsi0: \([^,]*\).*/\1/p')
-    DISKPATH=$(pvesm path "$DISKVOL") || { fail "impossibile risolvere il percorso del disco"; return 1; }
+    DISKPATH=$(pvesm path "$DISKVOL") || { fail "unable to resolve disk path"; return 1; }
 
-    virt-cat -a "$DISKPATH" /etc/fstab > "$WORK/fstab.txt" 2>/dev/null || echo "Errore lettura fstab" > "$WORK/fstab.txt"
+    virt-cat -a "$DISKPATH" /etc/fstab > "$WORK/fstab.txt" 2>/dev/null || echo "Error reading fstab" > "$WORK/fstab.txt"
 
-    report_entry "$ISO_NAME" "INSTALLAZIONE COMPLETATA" "FSTAB:
+    report_entry "$ISO_NAME" "INSTALLATION COMPLETED" "FSTAB:
 $(cat "$WORK/fstab.txt")"
 
-    STAGE="boot-verifica"
-    log "--- 5. Boot di verifica post-installazione (Avvio da Hard Disk) ---"
-    qm start "$VMID" || { fail "qm start post-install fallito"; return 1; }
+    STAGE="verify-boot"
+    log "--- 5. Post-installation verify boot (Boot from Hard Disk) ---"
+    qm start "$VMID" || { fail "qm start post-install failed"; return 1; }
     attach_console ">>"
 
-    wait_for_agent "$VERIFY_BOOT_TIMEOUT" || { fail "timeout: il sistema installato su disco non risponde"; return 1; }
+    wait_for_agent "$VERIFY_BOOT_TIMEOUT" || { fail "timeout: installed system on disk is not responding"; return 1; }
 
-    log "SUCCESSO: Boot completato dal nuovo disco! Il sistema installato è stabile."
+    log "SUCCESS: Boot completed from new disk! Installed system is stable."
 
     agent_exec -- sudo poweroff >/dev/null 2>&1 || true
     wait_for_stopped "$SHUTDOWN_TIMEOUT" || true
@@ -315,23 +315,23 @@ $(cat "$WORK/fstab.txt")"
 }
 
 # =====================================================================
-# CICLO BATCH PRINCIPALE
+# MAIN BATCH CYCLE
 # =====================================================================
 require_cmds
 acquire_lock
 
-[ -d "$TARGET_DIR" ] || { echo "ERRORE: '$TARGET_DIR' non è una directory." >&2; exit 1; }
+[ -d "$TARGET_DIR" ] || { echo "ERROR: '$TARGET_DIR' is not a directory." >&2; exit 1; }
 
 shopt -s nullglob
 ISOS=("$TARGET_DIR"/*.iso)
 shopt -u nullglob
 if [ ${#ISOS[@]} -eq 0 ]; then
-    echo "Nessuna ISO trovata in $TARGET_DIR."
+    echo "No ISO found in $TARGET_DIR."
     exit 0
 fi
 
-echo "Inizio sessione batch: $(date '+%Y-%m-%d %H:%M:%S')" > "$REPORT_FILE"
-echo "Directory bersaglio: $TARGET_DIR (${#ISOS[@]} ISO)" >> "$REPORT_FILE"
+echo "Batch session started: $(date '+%Y-%m-%d %H:%M:%S')" > "$REPORT_FILE"
+echo "Target directory: $TARGET_DIR (${#ISOS[@]} ISOs)" >> "$REPORT_FILE"
 
 PASSED=0
 FAILED=0
@@ -339,23 +339,23 @@ FAILED=0
 for ISO_FULL_PATH in "${ISOS[@]}"; do
     ISO_NAME=$(basename "$ISO_FULL_PATH")
 
-    # Raggruppa l'output di ogni ISO nella UI di GitHub Actions
+    # Group output of each ISO in GitHub Actions UI
     [ -n "${GITHUB_ACTIONS:-}" ] && echo "::group::TEST ISO: $ISO_NAME"
 
     echo -e "\n\n${C_BLUE}===================================================================${C_RST}"
-    echo -e "${C_BLUE}>>> INIZIO TEST PER ISO: $ISO_NAME${C_RST}"
+    echo -e "${C_BLUE}>>> STARTING TEST FOR ISO: $ISO_NAME${C_RST}"
     echo -e "${C_BLUE}===================================================================${C_RST}"
 
     if ( test_iso "$ISO_NAME" ); then
         PASSED=$((PASSED + 1))
-        echo -e "${C_GREEN}>>> TEST COMPLETATO CON SUCCESSO: $ISO_NAME${C_RST}"
+        echo -e "${C_GREEN}>>> TEST COMPLETED SUCCESSFULLY: $ISO_NAME${C_RST}"
         cp "${WORK}/console_log.txt" "$(pwd)/console-SUCCESS-${ISO_NAME}.log" 2>/dev/null || true
     else
         FAILED=$((FAILED + 1))
-        echo -e "${C_RED}>>> TEST FALLITO: $ISO_NAME${C_RST}"
-        FAILED_STAGE=$(cat "${WORK}/failed_stage.txt" 2>/dev/null || echo "sconosciuto")
-        report_entry "$ISO_NAME" "FALLITO (stadio: $FAILED_STAGE)" \
-            "Vedi console-FAILED-${ISO_NAME}.log e krill-output-${ISO_NAME}.txt per i dettagli"
+        echo -e "${C_RED}>>> TEST FAILED: $ISO_NAME${C_RST}"
+        FAILED_STAGE=$(cat "${WORK}/failed_stage.txt" 2>/dev/null || echo "unknown")
+        report_entry "$ISO_NAME" "FAILED (stage: $FAILED_STAGE)" \
+            "See console-FAILED-${ISO_NAME}.log and krill-output-${ISO_NAME}.txt for details"
 
         cp "${WORK}/console_log.txt"    "$(pwd)/console-FAILED-${ISO_NAME}.log"  2>/dev/null || true
         cp "${WORK}/krill_output.txt"   "$(pwd)/krill-output-${ISO_NAME}.txt"    2>/dev/null || true
@@ -366,11 +366,11 @@ done
 
 {
     echo "================================================="
-    echo "FINE SESSIONE: $(date '+%Y-%m-%d %H:%M:%S')"
-    echo "TOTALE: ${#ISOS[@]} | SUCCESSI: $PASSED | FALLIMENTI: $FAILED"
+    echo "END OF SESSION: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "TOTAL: ${#ISOS[@]} | SUCCESSES: $PASSED | FAILURES: $FAILED"
     echo "================================================="
 } >> "$REPORT_FILE"
 
-echo -e "\n\n>>> BATCH COMPLETATO: $PASSED/${#ISOS[@]} ISO superate. Risultati in: $REPORT_FILE"
+echo -e "\n\n>>> BATCH COMPLETED: $PASSED/${#ISOS[@]} ISOs passed. Results in: $REPORT_FILE"
 
 [ "$FAILED" -eq 0 ]
