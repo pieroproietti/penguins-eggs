@@ -18,7 +18,6 @@ STORAGE="${STORAGE:-father-zfs}"
 ISO_STORAGE="${ISO_STORAGE:-father-local}"
 BRIDGE="${BRIDGE:-eggsnet}"
 WORK="/var/tmp/eggs-minimal-${VMID}"
-SOCK="/var/run/qemu-server/${VMID}.serial0"
 REPORT_FILE="$(pwd)/incubator.log"
 LOCK_FILE="/var/lock/incubator-${VMID}.lock"
 
@@ -39,7 +38,7 @@ fi
 
 require_cmds() {
     local missing=()
-    for cmd in qm pvesm socat jq virt-cat; do
+    for cmd in qm pvesm jq virt-cat; do
         command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
     done
     if [ ${#missing[@]} -gt 0 ]; then
@@ -132,18 +131,7 @@ wait_for_stopped() {
 # =====================================================================
 test_iso() {
     local ISO_NAME="$1"
-    local CONSOLE_LOG="${WORK}/console_log.txt"
     local STAGE="init"
-    SOCAT_PID=""
-
-    cleanup() {
-        local pid="${SOCAT_PID:-}"
-        if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
-            kill "$pid" 2>/dev/null || true
-            wait "$pid" 2>/dev/null || true
-        fi
-    }
-    trap cleanup EXIT
 
     fail() {
         log "ERROR [$STAGE]: $*"
@@ -151,23 +139,6 @@ test_iso() {
         # Annotation visible in GitHub Actions UI
         [ -n "${GITHUB_ACTIONS:-}" ] && echo "::error title=Incubator [$STAGE]::${ISO_NAME}: $*"
         return 1
-    }
-
-    attach_console() {
-        local i mode="$1"
-        for i in $(seq 1 20); do
-            [ -S "$SOCK" ] && break
-            sleep 1
-        done
-        if [ -S "$SOCK" ]; then
-            if [ "$mode" = ">" ]; then
-                # Directly to file, zero output on screen to avoid blocking SSH
-                socat UNIX-CONNECT:"$SOCK" - > "$CONSOLE_LOG" 2>&1 < /dev/null &
-            else
-                socat UNIX-CONNECT:"$SOCK" - >> "$CONSOLE_LOG" 2>&1 < /dev/null &
-            fi
-            SOCAT_PID=$!
-        fi
     }
 
     STAGE="cleanup"
@@ -178,7 +149,6 @@ test_iso() {
         qm destroy "$VMID" --purge 1 --destroy-unreferenced-disks 1 2>/dev/null || true
     fi
     rm -rf "$WORK" && mkdir -p "$WORK"
-    touch "$CONSOLE_LOG"
 
     STAGE="vm-creation"
     log "--- 2. VM Creation and Sequential Boot Configuration ---"
@@ -197,7 +167,6 @@ test_iso() {
     STAGE="boot-live"
     log "--- 3. Starting VM (Waiting for QEMU Agent, max ${BOOT_TIMEOUT}s) ---"
     qm start "$VMID" || { fail "qm start failed"; return 1; }
-    attach_console ">"
 
     wait_for_agent "$BOOT_TIMEOUT" \
         || { fail "timeout: agent did not respond, live boot failed"; return 1; }
@@ -241,7 +210,7 @@ test_iso() {
             LOG_OFFSET=$((LOG_OFFSET + $(LC_ALL=C printf '%s' "$CHUNK" | wc -c)))
         fi
 
-if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
+        if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
             sleep 3
             if qm status "$VMID" 2>/dev/null | grep -q "stopped"; then
                 log "VM powered off during status check. Installation completed."
@@ -249,21 +218,21 @@ if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
                 break
             fi
 
-            # --- CONTROMISURA ANTI-HANG ("PRESS ENTER") ---
-            # L'agente QEMU è morto perché Krill ha chiamato il poweroff,
-            # ma la VM è ancora accesa (probabilmente bloccata sul prompt).
+            # --- ANTI-HANG COUNTERMEASURE ("PRESS ENTER") ---
+            # The QEMU agent is dead because Krill called poweroff,
+            # but the VM is still running (likely stuck on a prompt).
             
-            # 1. Il "Dito Fantasma": simuliamo la pressione del tasto INVIO (ret)
+            # 1. The "Ghost Finger": simulate pressing ENTER (ret)
             qm sendkey "$VMID" ret >/dev/null 2>&1 || true
 
             status_fails=$((status_fails + 1))
             if [ "$status_fails" -ge 4 ]; then
                 log "Agent offline and VM stuck. Krill successfully triggered poweroff. Applying guillotine!"
-                # 2. La Ghigliottina: tagliamo la corrente definitivamente
+                # 2. The Guillotine: cut power entirely
                 qm stop "$VMID" >/dev/null 2>&1 || true
                 wait_for_stopped 15 || true
                 
-                # 3. Dichiariamo il successo: se siamo arrivati a spegnere, Krill aveva finito!
+                # 3. Declare success: if we reached shutdown, Krill finished!
                 EXIT_CODE=0
                 break
             fi
@@ -301,9 +270,6 @@ if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
     qm stop "$VMID" >/dev/null 2>&1 || true
     wait_for_stopped 15 || true
 
-    cleanup
-    SOCAT_PID=""
-
     STAGE="fstab-extraction"
     local DISKVOL DISKPATH
     DISKVOL=$(qm config "$VMID" | sed -n 's/^scsi0: \([^,]*\).*/\1/p')
@@ -314,7 +280,6 @@ if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
     STAGE="verify-boot"
     log "--- 5. Post-installation verify boot (Boot from Hard Disk) ---"
     qm start "$VMID" || { fail "qm start post-install failed"; return 1; }
-    attach_console ">>"
 
     wait_for_agent "$VERIFY_BOOT_TIMEOUT" || { fail "timeout: installed system on disk is not responding"; return 1; }
 
@@ -388,15 +353,13 @@ for ISO_FULL_PATH in "${ISOS[@]}"; do
     if ( test_iso "$ISO_NAME" ); then
         PASSED=$((PASSED + 1))
         echo -e "${C_GREEN}>>> TEST COMPLETED SUCCESSFULLY: $ISO_NAME${C_RST}"
-        cp "${WORK}/console_log.txt" "$(pwd)/console-SUCCESS-${ISO_NAME}.log" 2>/dev/null || true
     else
         FAILED=$((FAILED + 1))
         echo -e "${C_RED}>>> TEST FAILED: $ISO_NAME${C_RST}"
         FAILED_STAGE=$(cat "${WORK}/failed_stage.txt" 2>/dev/null || echo "unknown")
         report_entry "$ISO_NAME" "FAILED (stage: $FAILED_STAGE)" \
-            "See console-FAILED-${ISO_NAME}.log and krill-output-${ISO_NAME}.txt for details"
+            "See krill-output-${ISO_NAME}.txt for details"
 
-        cp "${WORK}/console_log.txt"    "$(pwd)/console-FAILED-${ISO_NAME}.log"  2>/dev/null || true
         cp "${WORK}/krill_output.txt"   "$(pwd)/krill-output-${ISO_NAME}.txt"    2>/dev/null || true
     fi
 
