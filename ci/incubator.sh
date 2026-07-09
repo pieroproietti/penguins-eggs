@@ -306,7 +306,7 @@ test_iso() {
 
     log "SUCCESS: Boot completed from new disk! Installed system is stable."
 
-    # --- NEW STAGE: SYSTEM SHOWCASE (STANDALONE NEOFETCH) ---
+    # --- NEW STAGE: SYSTEM SHOWCASE (STANDALONE NEOFETCH CLEAN TEXT) ---
     STAGE="neofetch-extraction"
     
     log "Quick download of neofetch bypassing package managers..."
@@ -315,16 +315,16 @@ test_iso() {
 
     log "Retrieving installed system specs for the report..."
     
-    # 1. Extract clean version (text only) for the incubator.log file
+    # Extract clean version (text only)
     local SYS_INFO
     SYS_INFO=$(agent_exec -- /bin/sh -c "[ -x /tmp/neofetch ] && /tmp/neofetch --stdout 2>/dev/null || (uname -a && cat /etc/os-release | grep PRETTY_NAME)") || SYS_INFO="Info not available"
 
-    # 2. Print the spectacular version (with ASCII logo) directly to the CI console!
+    # Print the clean version directly to the CI console!
     echo -e "\n${C_BLUE}--- NEWLY INSTALLED SYSTEM IDENTIKIT ---${C_RST}"
-    agent_exec -- /bin/sh -c "[ -x /tmp/neofetch ] && /tmp/neofetch 2>/dev/null || echo 'Neofetch not available for the show'"
+    echo "$SYS_INFO"
     echo -e "${C_BLUE}-----------------------------------------------${C_RST}\n"
 
-    # 3. Compile the text report for the archive
+    # Compile the text report for the archive
     report_entry "$ISO_NAME" "INSTALLATION COMPLETED" "FSTAB:
 $(cat "$WORK/fstab.txt")
 
