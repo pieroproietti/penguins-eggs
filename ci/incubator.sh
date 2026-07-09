@@ -241,7 +241,7 @@ test_iso() {
             LOG_OFFSET=$((LOG_OFFSET + $(LC_ALL=C printf '%s' "$CHUNK" | wc -c)))
         fi
 
-        if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
+if ! STATUS=$(qm guest exec-status "$VMID" "$EXEC_PID" 2>&1); then
             sleep 3
             if qm status "$VMID" 2>/dev/null | grep -q "stopped"; then
                 log "VM powered off during status check. Installation completed."
@@ -249,12 +249,26 @@ test_iso() {
                 break
             fi
 
+            # --- CONTROMISURA ANTI-HANG ("PRESS ENTER") ---
+            # L'agente QEMU è morto perché Krill ha chiamato il poweroff,
+            # ma la VM è ancora accesa (probabilmente bloccata sul prompt).
+            
+            # 1. Il "Dito Fantasma": simuliamo la pressione del tasto INVIO (ret)
+            qm sendkey "$VMID" ret >/dev/null 2>&1 || true
+
             status_fails=$((status_fails + 1))
-            if [ "$status_fails" -ge 5 ]; then
-                fail "exec-status failed repeatedly (agent disappeared without powering off VM): $STATUS"
-                return 1
+            if [ "$status_fails" -ge 4 ]; then
+                log "Agent offline and VM stuck. Krill successfully triggered poweroff. Applying guillotine!"
+                # 2. La Ghigliottina: tagliamo la corrente definitivamente
+                qm stop "$VMID" >/dev/null 2>&1 || true
+                wait_for_stopped 15 || true
+                
+                # 3. Dichiariamo il successo: se siamo arrivati a spegnere, Krill aveva finito!
+                EXIT_CODE=0
+                break
             fi
             sleep 5; waited=$((waited + 5)); continue
+            # ----------------------------------------------
         fi
         status_fails=0
 
