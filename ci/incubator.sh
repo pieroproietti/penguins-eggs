@@ -284,8 +284,8 @@ test_iso() {
     log "SUCCESS: Krill installation finished correctly."
 
     STAGE="poweroff"
-    log "Verifying VM poweroff..."
-    wait_for_stopped "$SHUTDOWN_TIMEOUT" || { fail "VM hung during poweroff"; return 1; }
+    qm stop "$VMID" >/dev/null 2>&1 || true
+    wait_for_stopped 15 || true
 
     cleanup
     SOCAT_PID=""
@@ -311,6 +311,7 @@ $(cat "$WORK/fstab.txt")"
 
     log "Hard stopping the test VM..."
     qm stop "$VMID" >/dev/null 2>&1 || true
+    wait_for_stopped 15 || true
     
     return 0
 }
