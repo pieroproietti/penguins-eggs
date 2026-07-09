@@ -120,12 +120,14 @@ echo "-> Hardlink airootfs.sfs creato con successo."
 # 🎯 INSTALLER
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
+# Assicuriamoci che btrfs sia nei moduli se serve
 ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
 if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     if ! grep -q "^HOOKS=.*btrfs" /etc/mkinitcpio.conf; then
         sed -i '/^HOOKS=/ s/\bfilesystems\b/btrfs filesystems/' /etc/mkinitcpio.conf
     fi
 fi
+echo "-> Generazione initramfs per il target..."
 mkinitcpio -P
 {{ end }}
 
@@ -140,27 +142,28 @@ else
 fi
 {{ end }}
 
-{{ define "install_distro_grub" }}
-if [ -d /sys/firmware/efi ]; then
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
-else
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
-    grub-install --target=i386-pc --recheck "$TARGET_DISK"
-fi
-grub-mkconfig -o /boot/grub/grub.cfg
-{{ end }}
-
 {{ define "install_distro_systemd_boot" }}
 echo "-> Installazione di systemd-boot (bootctl)..."
 bootctl install --esp-path=/boot/efi
-
 mkdir -p /boot/efi/loader/entries
 
-KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | head -n 1 | xargs basename)
-INITRD_FILE=$(ls -1 /boot/initramfs-*.img 2>/dev/null | grep -v fallback | head -n 1 | xargs basename)
+# ----------------------------------------------------------------------------
+# IL FIX NUCLEARE: Rilevamento deterministico del kernel nel chroot
+# ----------------------------------------------------------------------------
+# Leggiamo il pkgbase direttamente dai moduli installati, ignorando uname -r
+PKGBASE_FILE=$(ls -1 /lib/modules/*/pkgbase 2>/dev/null | head -n 1)
+if [ -z "$PKGBASE_FILE" ]; then
+    echo "[ERRORE FATALE] Impossibile determinare il kernel installato nel chroot."
+    exit 1
+fi
 
-cp /boot/$KERNEL_FILE /boot/efi/
-cp /boot/$INITRD_FILE /boot/efi/
+PKG_NAME=$(cat "$PKGBASE_FILE")
+KERNEL_FILE="vmlinuz-$PKG_NAME"
+INITRD_FILE="initramfs-$PKG_NAME.img"
+# ----------------------------------------------------------------------------
+
+cp "/boot/$KERNEL_FILE" /boot/efi/
+cp "/boot/$INITRD_FILE" /boot/efi/
 
 UCODE_LINE=""
 if [ -f /boot/amd-ucode.img ]; then
@@ -196,19 +199,30 @@ EOF
 
 {{ define "install_distro_limine" }}
 echo "-> Installazione di Limine bootloader..."
+
+# ----------------------------------------------------------------------------
+# Stessa logica blindata per il rilevamento del kernel
+# ----------------------------------------------------------------------------
+PKGBASE_FILE=$(ls -1 /lib/modules/*/pkgbase 2>/dev/null | head -n 1)
+if [ -z "$PKGBASE_FILE" ]; then
+    echo "[ERRORE FATALE] Impossibile determinare il kernel per Limine."
+    exit 1
+fi
+PKG_NAME=$(cat "$PKGBASE_FILE")
+KERNEL_FILE="vmlinuz-$PKG_NAME"
+INITRD_FILE="initramfs-$PKG_NAME.img"
+
+ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
+ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+ROOTFLAGS=""
+if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+    ROOTFLAGS="rootflags=subvol=@"
+fi
+
 if [ -d /sys/firmware/efi ]; then
     # UEFI
     mkdir -p /boot/efi/EFI/BOOT
     cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
-    
-    KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | head -n 1)
-    INITRD_FILE=$(ls -1 /boot/initramfs-*.img 2>/dev/null | grep -v fallback | head -n 1)
-    ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
-    ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
-    ROOTFLAGS=""
-    if [ "$ROOT_FSTYPE" = "btrfs" ]; then
-        ROOTFLAGS="rootflags=subvol=@"
-    fi
     
     cat <<EOF > /boot/efi/limine.conf
 timeout: 5
@@ -222,15 +236,6 @@ else
     # BIOS/Legacy
     TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
     limine bios-install "$TARGET_DISK"
-    
-    KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | head -n 1)
-    INITRD_FILE=$(ls -1 /boot/initramfs-*.img 2>/dev/null | grep -v fallback | head -n 1)
-    ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
-    ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
-    ROOTFLAGS=""
-    if [ "$ROOT_FSTYPE" = "btrfs" ]; then
-        ROOTFLAGS="rootflags=subvol=@"
-    fi
     
     cat <<EOF > /boot/limine.conf
 timeout: 5
