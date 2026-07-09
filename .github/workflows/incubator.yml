@@ -1,4 +1,4 @@
-name: Incubator Batch CI
+name: "🐣 Incubator Batch CI"
 
 on:
   workflow_dispatch: 
