@@ -30,6 +30,7 @@ func findSquashfsPath() string {
 		"/run/live/medium/live/filesystem.squashfs",
 		"/lib/live/mount/medium/live/filesystem.squashfs",
 		"/run/archiso/bootmnt/arch/x86_64/airootfs.sfs",
+		"/run/initramfs/live/live/filesystem.squashfs",
 		"/run/initramfs/live/LiveOS/squashfs.img",
 		"/live/filesystem.squashfs",
 	}

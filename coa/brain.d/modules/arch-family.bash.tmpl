@@ -7,7 +7,9 @@
 # CONSTANTI DICHIARATIVE (Parametri di Boot della Live)
 # ----------------------------------------------------------------------------
 {{ define "distro_boot_params" }}
-{{- if eq .DistroID "manjaro" -}}
+{{- if eq .DistroID "garuda" -}}
+root=live:CDLABEL=OA_LIVE rd.live.image rd.live.dir=arch/x86_64 rd.live.squashimg=airootfs.sfs rd.live.overlay.size=2048 quiet
+{{- else if eq .DistroID "manjaro" -}}
 misobasedir=manjaro misolabel=OA_LIVE cow_spacesize=2G
 {{- else -}}
 archisobasedir=arch archisolabel=OA_LIVE cow_spacesize=2G
@@ -23,49 +25,60 @@ set -e
 
 echo "-> Preparazione configurazione Initramfs per Live (Famiglia Arch)..."
 
-cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
-mkdir -p /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
-[ "$(ls -A /etc/mkinitcpio.conf.d/ 2>/dev/null)" ] && mv /etc/mkinitcpio.conf.d/*.conf /etc/mkinitcpio.conf.d.bak/
-[ "$(ls -A /usr/lib/mkinitcpio.conf.d/ 2>/dev/null)" ] && mv /usr/lib/mkinitcpio.conf.d/*.conf /usr/lib/mkinitcpio.conf.d.bak/
-
-trap '
-mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
-[ "$(ls -A /etc/mkinitcpio.conf.d.bak/ 2>/dev/null)" ] && mv /etc/mkinitcpio.conf.d.bak/*.conf /etc/mkinitcpio.conf.d/
-[ "$(ls -A /usr/lib/mkinitcpio.conf.d.bak/ 2>/dev/null)" ] && mv /usr/lib/mkinitcpio.conf.d.bak/*.conf /usr/lib/mkinitcpio.conf.d/
-rm -rf /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
-' EXIT
-
 {{ if eq .DistroID "garuda" }}
+    # ==========================================
+    # RAMO GARUDA (Dracut)
+    # ==========================================
     echo "-> Rilevato Garuda Linux: Generazione Live via dracut"
-    dracut -f --sysroot /home/eggs/liveroot "/boot/oa-initrd.img"
-{{ else if eq .DistroID "manjaro" }}
-    if ! pacman -Qs manjaro-tools-iso > /dev/null; then 
-        echo "[ERRORE FATALE] manjaro-tools-iso non installato."
-        exit 1
-    fi
-    cat << 'EOF' > /etc/mkinitcpio.conf
+    
+    # Siamo già in chroot, quindi dracut lavora direttamente su /boot
+    # Aggiungiamo -N per disabilitare la modalità host-only (fondamentale per le live)
+    dracut -N -f --add "dmsquash-live" "/boot/oa-initrd.img"
+
+{{ else }}
+    # ==========================================
+    # RAMO ARCH / MANJARO (mkinitcpio)
+    # ==========================================
+    cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
+    mkdir -p /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
+    [ "$(ls -A /etc/mkinitcpio.conf.d/ 2>/dev/null)" ] && mv /etc/mkinitcpio.conf.d/*.conf /etc/mkinitcpio.conf.d.bak/
+    [ "$(ls -A /usr/lib/mkinitcpio.conf.d/ 2>/dev/null)" ] && mv /usr/lib/mkinitcpio.conf.d/*.conf /usr/lib/mkinitcpio.conf.d.bak/
+
+    trap '
+    mv /etc/mkinitcpio.conf.bak /etc/mkinitcpio.conf
+    [ "$(ls -A /etc/mkinitcpio.conf.d.bak/ 2>/dev/null)" ] && mv /etc/mkinitcpio.conf.d.bak/*.conf /etc/mkinitcpio.conf.d/
+    [ "$(ls -A /usr/lib/mkinitcpio.conf.d.bak/ 2>/dev/null)" ] && mv /usr/lib/mkinitcpio.conf.d.bak/*.conf /usr/lib/mkinitcpio.conf.d/
+    rm -rf /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
+    ' EXIT
+
+    {{ if eq .DistroID "manjaro" }}
+        if ! pacman -Qs manjaro-tools-iso > /dev/null; then 
+            echo "[ERRORE FATALE] manjaro-tools-iso non installato."
+            exit 1
+        fi
+        cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
 HOOKS=(base udev microcode modconf kms miso miso_loop_mnt miso_pxe_common miso_pxe_nbd miso_pxe_http miso_pxe_nfs block keyboard keymap consolefont filesystems fsck)
 COMPRESSION="zstd"
 EOF
-    KERNEL_VERSION=$(uname -r)
-    echo "-> Generazione initramfs live univoco (Manjaro)..."
-    mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
-{{ else }}
-    if ! pacman -Qs archiso > /dev/null; then 
-        echo "[ERRORE FATALE] archiso non installato."
-        exit 1
-    fi
-    cat << 'EOF' > /etc/mkinitcpio.conf
+    {{ else }}
+        if ! pacman -Qs archiso > /dev/null; then 
+            echo "[ERRORE FATALE] archiso non installato."
+            exit 1
+        fi
+        cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
 HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs block filesystems keyboard keymap consolefont fsck)
 COMPRESSION="zstd"      
 EOF
+    {{ end }}
+    
     KERNEL_VERSION=$(uname -r)
-    echo "-> Generazione initramfs live univoco (Arch)..."
+    echo "-> Generazione initramfs live univoco..."
     mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
 {{ end }}
 {{ end }}
+
 
 # ----------------------------------------------------------------------------
 # 6. COPIA KERNEL/INITRD (Algoritmo di Ricerca Unificato)
@@ -155,7 +168,16 @@ fi
 {{ define "install_distro_initramfs" }}
 {{ if eq .DistroID "garuda" }}
     echo "-> Rigenerazione initramfs su Garuda tramite dracut..."
-    dracut -f --regenerate-all
+    
+    KVER_DIR=$(ls -1 /lib/modules/ | grep -v "extramodules" | head -n 1)
+    if [ -z "$KVER_DIR" ]; then
+        echo "[ERRORE FATALE] Impossibile determinare il kernel nel chroot."
+        exit 1
+    fi
+    
+    # -N (no-hostonly) vitale per generare l'immagine correttamente da dentro il chroot
+    dracut -N -f --add "btrfs" --kver "$KVER_DIR"
+    
 {{ else }}
     echo "-> Rigenerazione initramfs su base mkinitcpio..."
     ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
@@ -168,25 +190,42 @@ fi
 {{ end }}
 {{ end }}
 
+# ==============================================================================
+# 🎯 DISPATCHER BOOTLOADER
+# ==============================================================================
 {{ define "install_distro_bootloader" }}
-echo "-> Rilevamento automatico del bootloader..."
-if [ -d /sys/firmware/efi ] && command -v bootctl &> /dev/null; then
-    {{ include "install_distro_systemd_boot" . }}
-elif command -v limine &> /dev/null; then
-    {{ include "install_distro_limine" . }}
-else
+echo "-> Rilevamento automatico e dispatch del bootloader..."
+
+{{ if or (eq .DistroID "garuda") (eq .DistroID "manjaro") }}
+    echo "-> Rilevato {{ .DistroID }}: Forzo l'installazione di GRUB per mantenere le funzionalità native"
     {{ include "install_distro_grub" . }}
-fi
+{{ else }}
+    # Per Arch puro o altre derivate
+    if [ -d /sys/firmware/efi ] && command -v bootctl &> /dev/null; then
+        {{ include "install_distro_systemd_boot" . }}
+    elif command -v limine &> /dev/null; then
+        {{ include "install_distro_limine" . }}
+    else
+        {{ include "install_distro_grub" . }}
+    fi
+{{ end }}
 {{ end }}
 
 {{ define "install_distro_grub" }}
 echo "-> Installazione di GRUB..."
-if [ -d /sys/firmware/efi ]; then
-      grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
+
+# Controllo assoluto e inconfutabile: chiediamo al kernel se la partizione è montata
+if grep -q "/boot/efi" /proc/mounts; then
+    echo "-> Partizione EFI montata. Procedo con installazione UEFI (con flag --removable per macchine virtuali)..."
+    
+    # IL FLAG --removable È LA CHIAVE: forza la creazione di EFI/BOOT/BOOTX64.EFI
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --removable
 else
-      TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
-      grub-install --target=i386-pc --recheck "$TARGET_DISK"
+    echo "-> Partizione EFI non rilevata. Tento installazione BIOS/Legacy..."
+    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
+
 grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}
 
@@ -195,16 +234,14 @@ echo "-> Installazione di systemd-boot (bootctl)..."
 bootctl install --esp-path=/boot/efi
 mkdir -p /boot/efi/loader/entries
 
-# Rilevamento blindato del kernel per evitare panici da kernel multipli
-PKGBASE_FILE=$(ls -1 /lib/modules/*/pkgbase 2>/dev/null | head -n 1)
-if [ -z "$PKGBASE_FILE" ]; then
+# Rilevamento blindato del kernel senza dipendere da pkgbase
+KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
+INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
+
+if [ -z "$KERNEL_FILE" ] \vert{}\vert{} [ -z "$INITRD_FILE" ]; then
     echo "[ERRORE FATALE] Impossibile determinare il kernel installato nel chroot."
     exit 1
 fi
-
-PKG_NAME=$(cat "$PKGBASE_FILE")
-KERNEL_FILE="vmlinuz-$PKG_NAME"
-INITRD_FILE="initramfs-$PKG_NAME.img"
 
 cp "/boot/$KERNEL_FILE" /boot/efi/
 cp "/boot/$INITRD_FILE" /boot/efi/
@@ -227,10 +264,9 @@ fi
 
 cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
 title   OA Linux
-linux   /$KERNEL_FILE
-$UCODE_LINE
+linux   /$KERNEL_FILE$UCODE_LINE
 initrd  /$INITRD_FILE
-options root=$ROOT_PART rw $ROOTFLAGS
+options root=$ROOT_PART rw$ROOTFLAGS
 EOF
 
 cat <<EOF > /boot/efi/loader/loader.conf
@@ -244,15 +280,14 @@ EOF
 {{ define "install_distro_limine" }}
 echo "-> Installazione di Limine bootloader..."
 
-# Rilevamento blindato del kernel (condiviso con systemd-boot)
-PKGBASE_FILE=$(ls -1 /lib/modules/*/pkgbase 2>/dev/null | head -n 1)
-if [ -z "$PKGBASE_FILE" ]; then
+# Rilevamento blindato del kernel condiviso con systemd-boot
+KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
+INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
+
+if [ -z "$KERNEL_FILE" ] \vert{}\vert{} [ -z "$INITRD_FILE" ]; then
     echo "[ERRORE FATALE] Impossibile determinare il kernel per Limine."
     exit 1
 fi
-PKG_NAME=$(cat "$PKGBASE_FILE")
-KERNEL_FILE="vmlinuz-$PKG_NAME"
-INITRD_FILE="initramfs-$PKG_NAME.img"
 
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
 ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
@@ -272,7 +307,7 @@ timeout: 5
     protocol: linux
     kernel_path: boot://$KERNEL_FILE
     initramfs_path: boot://$INITRD_FILE
-    cmdline: root=$ROOT_PART rw $ROOTFLAGS
+    cmdline: root=$ROOT_PART rw$ROOTFLAGS
 EOF
 else
     # BIOS/Legacy
@@ -285,7 +320,7 @@ timeout: 5
     protocol: linux
     kernel_path: boot://$KERNEL_FILE
     initramfs_path: boot://$INITRD_FILE
-    cmdline: root=$ROOT_PART rw $ROOTFLAGS
+    cmdline: root=$ROOT_PART rw$ROOTFLAGS
 EOF
 fi
 {{ end }}

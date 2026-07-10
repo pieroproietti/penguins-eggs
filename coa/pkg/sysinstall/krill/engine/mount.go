@@ -91,7 +91,9 @@ func runMount(c *ctx) error {
 		if err := os.MkdirAll(espDir, 0755); err != nil {
 			return err
 		}
-		if err := c.mount(l.Esp, espDir); err != nil {
+		// FIX: Forziamo esplicitamente il tipo vfat per evitare che il 
+		// kernel tenti un mount squashfs andando in panic (exit status 32)
+		if err := c.mount("-t", "vfat", l.Esp, espDir); err != nil {
 			return err
 		}
 	}
