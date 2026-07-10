@@ -14,22 +14,33 @@ import (
 
 const BootloaderURL = "https://github.com/pieroproietti/penguins-bootloaders/releases/download/v26.1.16/bootloaders.tar.gz"
 
-// EnsureBootloaders checks if the bootloaders directory exists and is not empty.
-// If not, it downloads and extracts them.
+// completeMarker si scrive solo a estrazione riuscita: distingue una
+// cache valida da una lasciata a metà da un run precedente interrotto
+// (crash, kill, VM riavviata durante il download/estrazione).
+const completeMarker = ".download-complete"
+
+// EnsureBootloaders checks if the bootloaders directory exists and
+// contains a completed download. If not, it (re)downloads and extracts them.
 func EnsureBootloaders(targetDir string) error {
-	// 1. Check if they already exist and contain files
-	if fi, err := os.Stat(targetDir); err == nil && fi.IsDir() {
-		files, err := os.ReadDir(targetDir)
-		if err == nil && len(files) > 0 {
-			return nil
-		}
+	// 1. Check if a previous download completed successfully
+	if _, err := os.Stat(filepath.Join(targetDir, completeMarker)); err == nil {
+		return nil
 	}
 
-	LogNormal("Bootloaders not found in %s. Starting download...", targetDir)
+	LogNormal("Bootloaders not found (or incomplete) in %s. Starting download...", targetDir)
 
-	// 2. Download and extract
+	// 2. Wipe any partial leftovers from an interrupted previous run,
+	// then download and extract fresh.
+	if err := os.RemoveAll(targetDir); err != nil {
+		return fmt.Errorf("unable to clean up %s: %w", targetDir, err)
+	}
 	if err := downloadAndExtract(BootloaderURL, targetDir); err != nil {
 		return fmt.Errorf("failed to download and extract bootloaders: %w", err)
+	}
+
+	// 3. Only now, after everything extracted successfully, mark it complete.
+	if err := os.WriteFile(filepath.Join(targetDir, completeMarker), []byte("ok\n"), 0644); err != nil {
+		return fmt.Errorf("unable to write completion marker: %w", err)
 	}
 
 	return nil
