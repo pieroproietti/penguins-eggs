@@ -238,7 +238,7 @@ mkdir -p /boot/efi/loader/entries
 KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
 INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
 
-if [ -z "$KERNEL_FILE" ] \vert{}\vert{} [ -z "$INITRD_FILE" ]; then
+if [ -z "$KERNEL_FILE" ] || [ -z "$INITRD_FILE" ]; then
     echo "[ERRORE FATALE] Impossibile determinare il kernel installato nel chroot."
     exit 1
 fi
@@ -284,7 +284,7 @@ echo "-> Installazione di Limine bootloader..."
 KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
 INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
 
-if [ -z "$KERNEL_FILE" ] \vert{}\vert{} [ -z "$INITRD_FILE" ]; then
+if [ -z "$KERNEL_FILE" ] || [ -z "$INITRD_FILE" ]; then
     echo "[ERRORE FATALE] Impossibile determinare il kernel per Limine."
     exit 1
 fi
