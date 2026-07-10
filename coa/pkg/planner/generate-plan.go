@@ -87,6 +87,31 @@ func GeneratePlan(
 			task.Description = currentDescription
 			task.RunCommand = currentRunCommand
 
+			if task.Module == "autologin-gui" {
+				if task.Params == nil {
+					task.Params = make(map[string]interface{})
+				}
+				liveUser := profile.Settings.Remaster.User
+				if liveUser == "" {
+					liveUser = "live"
+				}
+				task.Params["user"] = liveUser
+				task.Params["is_gui"] = true
+			}
+
+			if task.Name == "conf-live-sudoers" {
+				if task.Params == nil {
+					task.Params = make(map[string]interface{})
+				}
+				liveUser := profile.Settings.Remaster.User
+				if liveUser == "" {
+					liveUser = "live"
+				}
+				if content, ok := task.Params["content"].(string); ok {
+					task.Params["content"] = content + fmt.Sprintf("\n%s ALL=(ALL) NOPASSWD:ALL\n", liveUser)
+				}
+			}
+
 			if task.Name == "mksquashfs" {
 				comp := profile.Settings.Remaster.Compression
 				if comp.Algorithm != "" {
