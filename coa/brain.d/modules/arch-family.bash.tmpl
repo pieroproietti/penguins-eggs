@@ -214,10 +214,40 @@ echo "-> Rilevamento automatico e dispatch del bootloader..."
 {{ define "install_distro_grub" }}
 echo "-> Installazione di GRUB..."
 
+# === SCATOLA NERA / DEBUG ESTREMO ===
+echo "-> Attivazione scatola nera (debug dell'ambiente)..."
+mkdir -p /boot/efi
+{
+    echo "=== DATE & TIME ==="
+    date
+    echo "=== CURRENT DIR ==="
+    pwd
+    echo "=== PATH ==="
+    echo "$PATH"
+    echo "=== ENVIRONMENT ==="
+    env
+    echo "=== MOUNT STATUS ==="
+    mount
+    echo "=== PROC MOUNTS ==="
+    cat /proc/mounts
+    echo "=== LSBLK ==="
+    lsblk -f
+    echo "=== EFI DIRECTORIES ==="
+    ls -la /sys/firmware/efi/efivars 2>&1
+    echo "=== EFIBOOTMGR ==="
+    efibootmgr -v 2>&1
+    echo "=== GRUB-INSTALL PATH ==="
+    which grub-install 2>&1
+    grub-install --version 2>&1
+} > /boot/debug_krill_env.txt 2>&1
+
 # Controllo assoluto e inconfutabile: chiediamo al kernel se la partizione è montata
 if grep -q "/boot/efi" /proc/mounts; then
     echo "-> Partizione EFI montata. Procedo con installazione UEFI (con flag --removable per macchine virtuali)..."
     
+    # Salva una copia del debug anche nella partizione EFI
+    cp /boot/debug_krill_env.txt /boot/efi/debug_krill_env.txt 2>/dev/null || true
+
     # IL FLAG --removable È LA CHIAVE: forza la creazione di EFI/BOOT/BOOTX64.EFI
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --removable
 else
