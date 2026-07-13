@@ -167,15 +167,15 @@ test_iso() {
     fi
 
     if [ -n "${TEMPLATE:-}" ]; then
-        log "Cloning VM template $TEMPLATE (linked clone) to VMID $VMID as testing-${FSTYPE}-distro..."
+        log "Cloning VM template $TEMPLATE (linked clone) to VMID $VMID as testing-${FSTYPE}-${DISTRO_NAME}..."
         qm clone "$TEMPLATE" "$VMID" --name "testing-${FSTYPE}-${DISTRO_NAME}" --full 0 \
             || { fail "qm clone failed"; return 1; }
         log "Configuring CDROM and boot order on cloned VM $VMID..."
         qm set "$VMID" --ide2 "${ISO_STORAGE}:iso/${ISO_NAME},media=cdrom" --boot "order=scsi0;ide2" \
             || { fail "qm set CDROM failed"; return 1; }
     else
-        # Creiamo la VM assegnandole il nome "testing-distro"
-        qm create "$VMID" --name "testing-${DISTRO_NAME}" --memory 4096 --cores 2 \
+        # Creiamo la VM assegnandole il nome "testing-${FSTYPE}-${DISTRO_NAME}"
+        qm create "$VMID" --name "testing-${FSTYPE}-${DISTRO_NAME}" --memory 4096 --cores 2 \
             --scsihw virtio-scsi-single --scsi0 "${STORAGE}:16" \
             --net0 "virtio,bridge=${BRIDGE}" \
             --serial0 socket --vga qxl \
