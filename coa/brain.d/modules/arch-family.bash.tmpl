@@ -52,33 +52,37 @@ echo "-> Preparazione configurazione Initramfs per Live (Famiglia Arch)..."
     ' EXIT
 
     {{ if eq .DistroID "manjaro" }}
-        if ! pacman -Qs manjaro-tools-iso > /dev/null; then 
-            echo "[ERRORE FATALE] manjaro-tools-iso non installato."
-            exit 1
+        # ATTENZIONE: -Qq controlla il nome esatto
+        if ! pacman -Qq manjaro-tools-iso > /dev/null 2>&1; then 
+            echo "-> manjaro-tools-iso mancante. Installazione in volo..."
+            pacman -Sy --noconfirm manjaro-tools-iso || { echo "[ERRORE FATALE] Impossibile installare manjaro-tools-iso"; exit 1; }
         fi
         cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
-HOOKS=(base udev microcode modconf kms miso miso_loop_mnt miso_pxe_common miso_pxe_nbd miso_pxe_http miso_pxe_nfs block keyboard keymap consolefont filesystems fsck)
+HOOKS=(base udev microcode modconf kms miso miso_loop_mnt block keyboard keymap consolefont filesystems fsck)
 COMPRESSION="zstd"
 EOF
     {{ else }}
-        if ! pacman -Qs archiso > /dev/null; then 
-            echo "[ERRORE FATALE] archiso non installato."
-            exit 1
+        # Se l'hook archiso non è presente (es. a causa di esclusioni rsync), installiamo mkinitcpio-archiso
+        if [ ! -f /usr/lib/initcpio/install/archiso ]; then 
+            echo "-> Hook archiso assente. Installazione in volo di mkinitcpio-archiso..."
+            pacman -Sy --noconfirm mkinitcpio-archiso || { echo "[ERRORE FATALE] Impossibile installare mkinitcpio-archiso"; exit 1; }
         fi
+        
         cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
-HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs block filesystems keyboard keymap consolefont fsck)
+HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt block filesystems keyboard keymap consolefont fsck)
 COMPRESSION="zstd"      
 EOF
     {{ end }}
     
-    KERNEL_VERSION=$(uname -r)
-    echo "-> Generazione initramfs live univoco..."
+    # Prende la versione del kernel dai moduli installati NEL CHROOT, ignorando il kernel host
+    KERNEL_VERSION=$(ls -1 /lib/modules | grep -E '^[0-9]' | head -n 1)
+    
+    echo "-> Generazione initramfs live univoco per kernel $KERNEL_VERSION..."
     mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
 {{ end }}
 {{ end }}
-
 
 # ----------------------------------------------------------------------------
 # 6. COPIA KERNEL/INITRD (Algoritmo di Ricerca Unificato)

@@ -1,12 +1,7 @@
 #!/bin/sh
 set -e
 make clean package "$@"
-#!/bin/sh
-set -e
 
-make clean package "$@"
-
-# rileva la distro
 . /etc/os-release
 
 case "$ID" in
