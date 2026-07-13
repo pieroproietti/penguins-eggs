@@ -25,11 +25,11 @@ jobs:
           CHOICE="${{ github.event.inputs.fstype }}"
           CHOICE="${CHOICE:-all}"
           if [ "$CHOICE" = "ext4" ]; then
-            echo 'matrix={"include":[{"fstype":"ext4","vmid":150,"template":""}]}' >> $GITHUB_OUTPUT
+            echo 'matrix={"include":[{"fstype":"ext4","vmid":150,"template":"90150"}]}' >> $GITHUB_OUTPUT
           elif [ "$CHOICE" = "btrfs" ]; then
             echo 'matrix={"include":[{"fstype":"btrfs","vmid":160,"template":"90160"}]}' >> $GITHUB_OUTPUT
           else
-            echo 'matrix={"include":[{"fstype":"ext4","vmid":150,"template":""},{"fstype":"btrfs","vmid":160,"template":"90160"}]}' >> $GITHUB_OUTPUT
+            echo 'matrix={"include":[{"fstype":"ext4","vmid":150,"template":"90150"},{"fstype":"btrfs","vmid":160,"template":"90160"}]}' >> $GITHUB_OUTPUT
           fi
 
   collaudo-batch:
