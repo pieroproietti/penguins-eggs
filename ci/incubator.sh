@@ -164,8 +164,8 @@ test_iso() {
         DISTRO_NAME="generic"
     fi
 
-    # Creiamo la VM assegnandole il nome "testi-distro"
-    qm create "$VMID" --name "testi-${DISTRO_NAME}" --memory 4096 --cores 2 \
+    # Creiamo la VM assegnandole il nome "testing-distro"
+    qm create "$VMID" --name "testing-${DISTRO_NAME}" --memory 4096 --cores 2 \
         --scsihw virtio-scsi-single --scsi0 "${STORAGE}:16" \
         --net0 "virtio,bridge=${BRIDGE}" \
         --serial0 socket --vga qxl \
