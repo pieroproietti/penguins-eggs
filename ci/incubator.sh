@@ -168,7 +168,7 @@ test_iso() {
 
     if [ -n "${TEMPLATE:-}" ]; then
         log "Cloning VM template $TEMPLATE (linked clone) to VMID $VMID as testing-${FSTYPE}-distro..."
-        qm clone "$TEMPLATE" "$VMID" --name "testing-${FSTYPE}-distro" --full 0 \
+        qm clone "$TEMPLATE" "$VMID" --name "testing-${FSTYPE}-${DISTRO_NAME}" --full 0 \
             || { fail "qm clone failed"; return 1; }
         log "Configuring CDROM and boot order on cloned VM $VMID..."
         qm set "$VMID" --ide2 "${ISO_STORAGE}:iso/${ISO_NAME},media=cdrom" --boot "order=scsi0;ide2" \
