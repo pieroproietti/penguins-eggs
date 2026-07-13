@@ -18,6 +18,7 @@ FSTYPE="${FSTYPE:-ext4}"
 STORAGE="${STORAGE:-father-zfs}"
 ISO_STORAGE="${ISO_STORAGE:-father-local}"
 BRIDGE="${BRIDGE:-eggsnet}"
+TEMPLATE="${TEMPLATE:-}"
 WORK="/var/tmp/eggs-minimal-${VMID}"
 REPORT_FILE="$(pwd)/incubator-${FSTYPE}.log"
 LOCK_FILE="/var/lock/incubator-${VMID}.lock"
@@ -165,15 +166,24 @@ test_iso() {
         DISTRO_NAME="generic"
     fi
 
-    # Creiamo la VM assegnandole il nome "testing-distro"
-    qm create "$VMID" --name "testing-${DISTRO_NAME}" --memory 4096 --cores 2 \
-        --scsihw virtio-scsi-single --scsi0 "${STORAGE}:16" \
-        --net0 "virtio,bridge=${BRIDGE}" \
-        --serial0 socket --vga qxl \
-        --agent 1 \
-        --ide2 "${ISO_STORAGE}:iso/${ISO_NAME},media=cdrom" \
-        --boot "order=scsi0;ide2" \
-        || { fail "qm create failed"; return 1; }
+    if [ -n "${TEMPLATE:-}" ]; then
+        log "Cloning VM template $TEMPLATE (linked clone) to VMID $VMID as testing-${FSTYPE}-distro..."
+        qm clone "$TEMPLATE" "$VMID" --name "testing-${FSTYPE}-distro" --full 0 \
+            || { fail "qm clone failed"; return 1; }
+        log "Configuring CDROM and boot order on cloned VM $VMID..."
+        qm set "$VMID" --ide2 "${ISO_STORAGE}:iso/${ISO_NAME},media=cdrom" --boot "order=scsi0;ide2" \
+            || { fail "qm set CDROM failed"; return 1; }
+    else
+        # Creiamo la VM assegnandole il nome "testing-distro"
+        qm create "$VMID" --name "testing-${DISTRO_NAME}" --memory 4096 --cores 2 \
+            --scsihw virtio-scsi-single --scsi0 "${STORAGE}:16" \
+            --net0 "virtio,bridge=${BRIDGE}" \
+            --serial0 socket --vga qxl \
+            --agent 1 \
+            --ide2 "${ISO_STORAGE}:iso/${ISO_NAME},media=cdrom" \
+            --boot "order=scsi0;ide2" \
+            || { fail "qm create failed"; return 1; }
+    fi
     STAGE="boot-live"
     log "--- 3. Starting VM (Waiting for QEMU Agent, max ${BOOT_TIMEOUT}s) ---"
     qm start "$VMID" || { fail "qm start failed"; return 1; }

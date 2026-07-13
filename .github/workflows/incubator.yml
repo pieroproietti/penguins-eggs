@@ -25,11 +25,11 @@ jobs:
           CHOICE="${{ github.event.inputs.fstype }}"
           CHOICE="${CHOICE:-all}"
           if [ "$CHOICE" = "ext4" ]; then
-            echo 'matrix={"include":[{"fstype":"ext4","vmid":150}]}' >> $GITHUB_OUTPUT
+            echo 'matrix={"include":[{"fstype":"ext4","vmid":150,"template":""}]}' >> $GITHUB_OUTPUT
           elif [ "$CHOICE" = "btrfs" ]; then
-            echo 'matrix={"include":[{"fstype":"btrfs","vmid":160}]}' >> $GITHUB_OUTPUT
+            echo 'matrix={"include":[{"fstype":"btrfs","vmid":160,"template":"90160"}]}' >> $GITHUB_OUTPUT
           else
-            echo 'matrix={"include":[{"fstype":"ext4","vmid":150},{"fstype":"btrfs","vmid":160}]}' >> $GITHUB_OUTPUT
+            echo 'matrix={"include":[{"fstype":"ext4","vmid":150,"template":""},{"fstype":"btrfs","vmid":160,"template":"90160"}]}' >> $GITHUB_OUTPUT
           fi
 
   collaudo-batch:
@@ -59,7 +59,7 @@ jobs:
 
       - name: ⚙️ Run Incubator Batch
         run: |
-          ssh root@father "cd /root/ci-${{ matrix.fstype }} && FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} ./incubator.sh /var/lib/vz/template/iso/"
+          ssh root@father "cd /root/ci-${{ matrix.fstype }} && FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} TEMPLATE=${{ matrix.template }} ./incubator.sh /var/lib/vz/template/iso/"
 
       - name: 📋 Collect ALL Reports (Artifacts)
         if: always() 
