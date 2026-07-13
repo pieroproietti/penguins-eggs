@@ -51,6 +51,7 @@ func BuildInstaller(oaVersion string) error {
 		removeuserConf,
 		unpackfsConf,
 		shellprocessOaChrootRunner,
+		machineIdConf,
 	}
 
 	for _, task := range tasks {
