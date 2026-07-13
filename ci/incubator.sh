@@ -14,11 +14,12 @@ TARGET_DIR="${1:?Usage: $0 /path/to/iso/directory}"
 
 # --- Configuration (env-override for CI) ---
 VMID="${VMID:-150}"
+FSTYPE="${FSTYPE:-ext4}"
 STORAGE="${STORAGE:-father-zfs}"
 ISO_STORAGE="${ISO_STORAGE:-father-local}"
 BRIDGE="${BRIDGE:-eggsnet}"
 WORK="/var/tmp/eggs-minimal-${VMID}"
-REPORT_FILE="$(pwd)/incubator.log"
+REPORT_FILE="$(pwd)/incubator-${FSTYPE}.log"
 LOCK_FILE="/var/lock/incubator-${VMID}.lock"
 
 # Timeouts (seconds)
@@ -188,7 +189,7 @@ test_iso() {
     local EXEC_RES EXEC_PID
 
     # Universal blind execution (compatible with BusyBox/Alpine)
-    if ! EXEC_RES=$(agent_exec -- /bin/sh -c "sudo eggs sysinstall krill --unattended --fstype=ext4 > /tmp/krill.log 2>&1"); then
+    if ! EXEC_RES=$(agent_exec -- /bin/sh -c "sudo eggs sysinstall krill --unattended --fstype=${FSTYPE} > /tmp/krill.log 2>&1"); then
         fail "qm guest exec failed: $EXEC_RES"
         return 1
     fi
@@ -371,9 +372,9 @@ for ISO_FULL_PATH in "${ISOS[@]}"; do
         echo -e "${C_RED}>>> TEST FAILED: $ISO_NAME${C_RST}"
         FAILED_STAGE=$(cat "${WORK}/failed_stage.txt" 2>/dev/null || echo "unknown")
         report_entry "$ISO_NAME" "FAILED (stage: $FAILED_STAGE)" \
-            "See krill-output-${ISO_NAME}.txt for details"
+            "See krill-output-${FSTYPE}-${ISO_NAME}.txt for details"
 
-        cp "${WORK}/krill_output.txt"   "$(pwd)/krill-output-${ISO_NAME}.txt"    2>/dev/null || true
+        cp "${WORK}/krill_output.txt"   "$(pwd)/krill-output-${FSTYPE}-${ISO_NAME}.txt"    2>/dev/null || true
     fi
 
     [ -n "${GITHUB_ACTIONS:-}" ] && echo "::endgroup::"

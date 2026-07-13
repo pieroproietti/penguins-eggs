@@ -1,13 +1,44 @@
 name: "🐣 Incubator Batch CI"
 
 on:
-  workflow_dispatch: 
-  # push: 
+  workflow_dispatch:
+    inputs:
+      fstype:
+        description: 'Seleziona il filesystem da testare'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'ext4'
+          - 'btrfs'
 
 jobs:
-  collaudo-batch:
-    name: 🐣 Batch Hatching and Testing
+  setup:
+    name: ⚙️ Setup Test Matrix
     runs-on: self-hosted
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          CHOICE="${{ github.event.inputs.fstype }}"
+          CHOICE="${CHOICE:-all}"
+          if [ "$CHOICE" = "ext4" ]; then
+            echo 'matrix={"include":[{"fstype":"ext4","vmid":150}]}' >> $GITHUB_OUTPUT
+          elif [ "$CHOICE" = "btrfs" ]; then
+            echo 'matrix={"include":[{"fstype":"btrfs","vmid":160}]}' >> $GITHUB_OUTPUT
+          else
+            echo 'matrix={"include":[{"fstype":"ext4","vmid":150},{"fstype":"btrfs","vmid":160}]}' >> $GITHUB_OUTPUT
+          fi
+
+  collaudo-batch:
+    name: 🐣 Batch Hatching and Testing (${{ matrix.fstype }})
+    needs: setup
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
 
     steps:
       - name: 📥 Repository Checkout
@@ -15,33 +46,33 @@ jobs:
 
       - name: 🚚 Deploy incubator.sh from Repo to Proxmox
         run: |
-          # 1. Distruggiamo e ri-creiamo la cartella sull'host
-          ssh root@father "rm -fr /root/ci"
-          ssh root@father "mkdir -p /root/ci"
+          # 1. Distruggiamo e ri-creiamo la cartella specifica sull'host
+          ssh root@father "rm -fr /root/ci-${{ matrix.fstype }}"
+          ssh root@father "mkdir -p /root/ci-${{ matrix.fstype }}"
           
           # 2. Copiamo lo script DIRETTAMENTE dal repository scaricato all'host Proxmox
           # (Assumiamo che tu abbia salvato incubator.sh dentro una cartella "ci" nel repo)
-          scp ci/incubator.sh root@father:/root/ci/incubator.sh
+          scp ci/incubator.sh root@father:/root/ci-${{ matrix.fstype }}/incubator.sh
           
           # 3. Lo rendiamo eseguibile
-          ssh root@father "chmod +x /root/ci/incubator.sh"
+          ssh root@father "chmod +x /root/ci-${{ matrix.fstype }}/incubator.sh"
 
       - name: ⚙️ Run Incubator Batch
         run: |
-          ssh root@father "cd /root/ci && ./incubator.sh /var/lib/vz/template/iso/"
+          ssh root@father "cd /root/ci-${{ matrix.fstype }} && FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} ./incubator.sh /var/lib/vz/template/iso/"
 
       - name: 📋 Collect ALL Reports (Artifacts)
         if: always() 
         run: |
           mkdir -p ./incubator-logs
-          scp root@father:/root/ci/incubator.log ./incubator-logs/ || true
-          scp root@father:/root/ci/console-SUCCESS-*.log ./incubator-logs/ 2>/dev/null || true
-          scp root@father:/root/ci/console-FAILED-*.log ./incubator-logs/ 2>/dev/null || true
-          scp root@father:/root/ci/krill-output-*.txt ./incubator-logs/ 2>/dev/null || true
+          scp root@father:/root/ci-${{ matrix.fstype }}/incubator-*.log ./incubator-logs/ || true
+          scp root@father:/root/ci-${{ matrix.fstype }}/console-SUCCESS-*.log ./incubator-logs/ 2>/dev/null || true
+          scp root@father:/root/ci-${{ matrix.fstype }}/console-FAILED-*.log ./incubator-logs/ 2>/dev/null || true
+          scp root@father:/root/ci-${{ matrix.fstype }}/krill-output-*.txt ./incubator-logs/ 2>/dev/null || true
 
       - name: 📤 Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: incubator-batch-reports
+          name: incubator-batch-reports-${{ matrix.fstype }}
           path: ./incubator-logs/
