@@ -260,6 +260,17 @@ else
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
 
+# Rileva Btrfs e crea il symlink di boot al livello root del filesystem
+if [ "$(findmnt -n -o FSTYPE /)" = "btrfs" ]; then
+    echo "-> Configurazione Btrfs rilevata. Creazione del symlink /boot al livello root..."
+    ROOT_DEV=$(findmnt -n -o SOURCE /)
+    mkdir -p /tmp/btrfs-raw
+    mount "$ROOT_DEV" /tmp/btrfs-raw
+    ln -sf @/boot /tmp/btrfs-raw/boot
+    umount /tmp/btrfs-raw
+    rmdir /tmp/btrfs-raw
+fi
+
 grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}
 
