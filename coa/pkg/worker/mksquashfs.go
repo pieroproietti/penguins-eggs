@@ -79,7 +79,13 @@ func RunMksquashfs(payload []byte) error {
 	case "zstd":
 		args = append(args, "-comp", "zstd", "-Xcompression-level", level)
 	case "xz":
-		args = append(args, "-comp", "xz")
+		// -Xbcj x86 aplica un filtro de pre-procesamiento pensado para
+		// código x86/x86_64 (reordena offsets de saltos/llamadas para
+		// que se repitan más patrones), mejorando la compresión real de
+		// xz en un sistema Linux típico sin costo de compatibilidad:
+		// mksquashfs/unsquashfs lo soportan de forma nativa y
+		// transparente al montar/leer el squashfs resultante.
+		args = append(args, "-comp", "xz", "-Xbcj", "x86", "-Xdict-size", "1M")
 	case "gzip":
 		args = append(args, "-comp", "gzip")
 	default:
