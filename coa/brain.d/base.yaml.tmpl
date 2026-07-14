@@ -78,7 +78,7 @@ remaster:
 # 7. SYSTEM FILE SANITIZATION
 # ----------------------------------------------------------------------------
   - name: "sanitize-system-files"
-    description: "Sanitize fstab and crypttab for the live system"
+    description: "Sanitize fstab, crypttab and ensure basic system config for the live system"
     module: "shell"
     chroot: false
     params:
@@ -86,6 +86,22 @@ remaster:
         echo "# UNCONFIGURED FSTAB" > /home/eggs/liveroot/etc/fstab
         echo "# UNCONFIGURED CRYPTTAB" > /home/eggs/liveroot/etc/crypttab
         chmod 644 /home/eggs/liveroot/etc/fstab /home/eggs/liveroot/etc/crypttab
+
+        # Prevent systemd-firstboot prompts if the base template has no timezone/localtime configured
+        if [ ! -e /home/eggs/liveroot/etc/localtime ] && [ ! -L /home/eggs/liveroot/etc/localtime ]; then
+            ln -sf /usr/share/zoneinfo/UTC /home/eggs/liveroot/etc/localtime
+        fi
+
+        # Prevent systemd-firstboot locale prompts
+        if [ ! -f /home/eggs/liveroot/etc/locale.conf ]; then
+            echo "LANG=C.UTF-8" > /home/eggs/liveroot/etc/locale.conf
+        fi
+
+        # Prevent systemd-firstboot hostname prompts
+        if [ ! -f /home/eggs/liveroot/etc/hostname ]; then
+            echo "live-system" > /home/eggs/liveroot/etc/hostname
+        fi
+
 
 # ----------------------------------------------------------------------------
 # 8. LIVE INITRAMFS
