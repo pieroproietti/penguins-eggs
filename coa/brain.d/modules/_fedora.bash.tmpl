@@ -1,16 +1,16 @@
 # ==============================================================================
-# 🎩 FEDORA MODULE
+# 🎩 MODULO FEDORA
 # ==============================================================================
 {{ define "distro_boot_params" }}root=live:LABEL=OA_LIVE rd.live.image rd.shell rd.debug selinux=0 cow_spacesize=2G{{ end }}
 
 # ----------------------------------------------------------------------------
-# 5. LIVE INITRAMFS
+# 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
 #!/bin/bash
 set -e
 # fedora: distro_initramfs_cmd
-echo "Generating live initramfs (dracut)..."
+echo "Generazione initramfs live (dracut)..."
 dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img 2>&1 | tail -1
 {{ end }}
 
@@ -19,33 +19,33 @@ dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9
 # ----------------------------------------------------------------------------
 {{ define "distro_copy_kernel_cmd" }}
 KERNEL_VERSION=$(uname -r)
-echo "-> Copying Fedora Kernel ($KERNEL_VERSION)..."
+echo "-> Copia Kernel Fedora ($KERNEL_VERSION)..."
 
-# Using absolute and safe paths, reading and writing only where strictly needed
+# Usiamo i percorsi assoluti e sicuri, leggendo e scrivendo dove serve davvero
 KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
 INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
 DEST_DIR="/home/eggs/isodir/live"
 
-# Safety check on KERNEL
+# Controllo di sic sul KERNEL
 if [ ! -f "$KERNEL_SRC" ] ; then
-    echo "[FATAL ERROR] Cannot find kernel in $KERNEL_SRC!"
+    echo "[ERRORE FATALE] Impossibile trovare il kernel in $KERNEL_SRC!"
     exit 1
 fi
 
-# Safety check on INITRD
+# Controllo di sicurezza sull'INITRD
 if [ ! -f "$INITRD_SRC" ] ; then
-    echo "[FATAL ERROR] Cannot find initrd in $INITRD_SRC! Dracut did not generate it."
+    echo "[ERRORE FATALE] Impossibile trovare l'initrd in $INITRD_SRC! Dracut non lo ha generato."
     exit 1
 fi
 
-# Create destination directory (if it doesn't exist) and copy
+# Creiamo la directory di destinazione (se non esiste) e copiamo
 mkdir -p "$DEST_DIR"
 
 cp "$KERNEL_SRC" "$DEST_DIR/vmlinuz"
-echo "-> Copying oa-initrd.img..."
+echo "-> Copia oa-initrd.img..."
 cp "$INITRD_SRC" "$DEST_DIR/initrd.img"
 
-echo "-> Copy successfully completed."
+echo "-> Copia completata con successo."
 {{ end }}
 
 # ----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squash
 # 🎯 INSTALLER
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
-# 1. Fedora requires a valid machine-id for dracut and systemd-boot
+# 1. Fedora richiede un machine-id valido per dracut e systemd-boot
 if [ ! -s /etc/machine-id ]; then
     systemd-machine-id-setup
 fi
@@ -76,55 +76,55 @@ dracut -f --regenerate-all
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
-# 1. SELinux autorelabel (Without this, Fedora dies post-installation)
+# 1. Autorelabel per SELinux (Senza questo, Fedora post-installazione muore)
 echo "-F" > /.autorelabel
 #touch /.autorelabel
 
-# --- KAMIKAZE INJECTION (Phase 1) ---
-# Add enforcing=0 to allow a painless first boot
+# --- INIEZIONE KAMIKAZE (Fase 1) ---
+# Aggiungiamo enforcing=0 per permettere il primo avvio indolore
 if ! grep -q "enforcing=0" /etc/default/grub; then
     sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="enforcing=0 /' /etc/default/grub
 fi
 # -----------------------------------
 
-# 2. BLS (Boot Loader Specification) Management
+# 2. Gestione BLS (Boot Loader Specification)
 sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
 if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then
       echo "GRUB_ENABLE_BLSCFG=false" >> /etc/default/grub
 fi
 
 if [ -d /sys/firmware/efi ]; then
-      # 3. THE FEDORA TRICK: Recover shimx64.efi hidden under the mount point
+      # 3. IL TRUCCO FEDORA: Recuperiamo shimx64.efi nascosto sotto il mount point
       if [ ! -f /boot/efi/EFI/fedora/shimx64.efi ]; then
-          echo "-> Recovering original Fedora EFI (shim/SecureBoot) files..."
-          # Temporarily unmount the target EFI partition
+          echo "-> Recupero file EFI (shim/SecureBoot) originali di Fedora..."
+          # Smonta temporaneamente la partizione EFI target
           umount /boot/efi 2>/dev/null
           
-          # Now we can see the real live rootfs: let's copy the shim files
+          # Ora vediamo il vero rootfs della live: copiamo i file di shim
           cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
           
-          # Remount the target EFI partition (assuming it's in fstab)
+          # Rimonta la partizione EFI target (assumendo che sia in fstab)
           mount /boot/efi
           
-          # Restore shim into the clean partition
+          # Ripristina shim nella partizione pulita
           if [ -d /tmp/efi-backup ]; then
               mkdir -p /boot/efi/EFI
               cp -r /tmp/efi-backup/* /boot/efi/EFI/ 2>/dev/null || true
           fi
       fi
 
-      # 4. Install GRUB
+      # 4. Installa GRUB
       grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=fedora --recheck --force
       mkdir -p /boot/efi/EFI/fedora
       
-      # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
+      # 5. Fallback UEFI Assoluto (Garantisce l'avvio anche se la NVRAM fa i capricci)
       if [ -f /boot/efi/EFI/fedora/shimx64.efi ]; then
           mkdir -p /boot/efi/EFI/BOOT
           cp /boot/efi/EFI/fedora/shimx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
           cp /boot/efi/EFI/fedora/grubx64.efi /boot/efi/EFI/BOOT/grubx64.efi
       fi
 
-      # 6. Generate configurations
+      # 6. Generazione configurazioni
       grub2-mkconfig -o /boot/grub2/grub.cfg
       grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 else
@@ -135,25 +135,25 @@ else
 fi
 
 
-# --- KAMIKAZE SERVICE (Phase 2: Safe Version) ---
-echo "-> Preparing post-installation service for GRUB cleanup..."
+# --- SERVIZIO KAMIKAZE (Fase 2: Versione Sicura) ---
+echo "-> Preparazione servizio post-installazione per pulizia GRUB..."
 
-# A. Create bash script for text-only cleanup
+# A. Creiamo lo script bash di sola pulizia testuale
 cat << 'EOF' > /usr/local/bin/krill-selinux-cleanup.sh
 #!/bin/bash
-# Remove enforcing=0 from the base configuration file
+# Rimuove enforcing=0 dal file di configurazione base
 sed -i 's/ enforcing=0//g' /etc/default/grub
 sed -i 's/enforcing=0 //g' /etc/default/grub
 sed -i 's/enforcing=0//g' /etc/default/grub
 
-# Safely update the bootloader
+# Aggiorna il bootloader in modo sicuro
 if command -v grubby >/dev/null 2>&1; then
     grubby --remove-args="enforcing=0" --update-kernel=ALL
 else
     grub2-mkconfig -o /boot/grub2/grub.cfg
 fi
 
-# Surgical self-destruction
+# Autodistruzione chirurgica
 systemctl disable krill-selinux-cleanup.service
 rm -f /etc/systemd/system/krill-selinux-cleanup.service
 rm -f /usr/local/bin/krill-selinux-cleanup.sh
@@ -161,11 +161,11 @@ EOF
 
 chmod +x /usr/local/bin/krill-selinux-cleanup.sh
 
-# B. Create the systemd service
+# B. Creiamo il servizio systemd
 cat << 'EOF' > /etc/systemd/system/krill-selinux-cleanup.service
 [Unit]
 Description=Krill SELinux Post-Install Cleanup
-# Triggers only when relabeling has finished its job
+# Si attiva solo quando il relabeling ha finito il suo lavoro
 ConditionPathExists=!/.autorelabel
 After=multi-user.target
 
@@ -178,7 +178,7 @@ RemainAfterExit=no
 WantedBy=multi-user.target
 EOF
 
-# C. Arm the trigger
+# C. Armiamo l'innesco
 systemctl enable krill-selinux-cleanup.service
 # -------------------------------------------------------
 {{ end }}
