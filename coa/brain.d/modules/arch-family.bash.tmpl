@@ -300,7 +300,7 @@ cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
 title   OA Linux
 linux   /$KERNEL_FILE$UCODE_LINE
 initrd  /$INITRD_FILE
-options root=$ROOT_PART rw$ROOTFLAGS
+options root=$ROOT_PART rw $ROOTFLAGS
 EOF
 
 cat <<EOF > /boot/efi/loader/loader.conf
@@ -341,7 +341,7 @@ timeout: 5
     protocol: linux
     kernel_path: boot://$KERNEL_FILE
     initramfs_path: boot://$INITRD_FILE
-    cmdline: root=$ROOT_PART rw$ROOTFLAGS
+    cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 else
     # BIOS/Legacy
@@ -354,7 +354,7 @@ timeout: 5
     protocol: linux
     kernel_path: boot://$KERNEL_FILE
     initramfs_path: boot://$INITRD_FILE
-    cmdline: root=$ROOT_PART rw$ROOTFLAGS
+    cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 fi
 {{ end }}
