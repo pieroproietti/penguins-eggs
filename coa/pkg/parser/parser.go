@@ -73,10 +73,16 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 
 	utils.LogNormal("%s[parser]%s Compilazione: base.yaml.tmpl + %s", utils.ColorCyan, utils.ColorReset, moduleFile)
 
+	ramModeEnabled := true
+	if settings, err := LoadCustomSettings(); err == nil && settings != nil && settings.Remaster.RamMode != nil {
+		ramModeEnabled = *settings.Remaster.RamMode
+	}
+
 	ctx := TemplateContext{
 		Family:         myDistro.FamilyID,
 		DistroID:       myDistro.DistroID,
 		IsGitHubAction: isGitHubAction,
+		RamModeEnabled: ramModeEnabled,
 	}
 
 	tmpl := template.New(filepath.Base(basePath))
