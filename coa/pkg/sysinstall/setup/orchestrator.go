@@ -43,6 +43,7 @@ func BuildInstaller(oaVersion string) error {
 	// 3. Chiamata in cascata agli Stampatori e ai Payload
 	tasks := []func() error{
 		func() error { return brandingDesc(oaVersion) },
+		vendorFinishStep,
 		func() error { return generateChrootRunner(profile) },
 		partitionConf,
 		mountConf,
