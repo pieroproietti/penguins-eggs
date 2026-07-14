@@ -1,10 +1,14 @@
 package tailor
 
 import (
+	"bufio"
 	"coa/pkg/utils"
 	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
+	"strconv"
+	"strings"
 )
 
 func Wear(costumeName string, noAcc bool, noFirm bool) error {
@@ -111,13 +115,16 @@ func applySuit(dir string, suit *Suit) error {
 
 func copySkelToUser() {
 	targetUser := os.Getenv("SUDO_USER")
-	userHome := ""
+	var userHome string
 
 	if targetUser != "" {
 		userHome = filepath.Join("/home", targetUser)
 	} else if u := firstHumanUser(); u != nil {
-		// Sin SUDO_USER (p.ej. se entró con 'su' en vez de 'sudo'), no
-		// hay que confiar en $USER: 'su' normalmente lo pisa a "root".
+		// Sin SUDO_USER (p.ej. se entró con 'su' en vez de 'sudo', como es
+		// habitual en distros sin sudo configurado, como Quirinux/Devuan),
+		// no hay que confiar en $USER/os.UserHomeDir(): 'su' normalmente
+		// deja HOME=/root, así que antes se sincronizaba /etc/skel en la
+		// carpeta equivocada.
 		targetUser = u.Username
 		userHome = u.HomeDir
 	}
@@ -130,10 +137,45 @@ func copySkelToUser() {
 	utils.LogNormal("Syncing /etc/skel -> %s", userHome)
 	// IMPORTANTE: 'rsync -a' preserva dueño/grupo del ORIGEN (/etc/skel,
 	// propiedad de root). Sin --chown, cualquier archivo o carpeta que ya
-	// existiera en el home del usuario (incluido el home mismo) quedaba
-	// con su metadata de propietario reescrita a root en cuanto rsync la
-	// tocaba, aunque el contenido no cambiara. --no-o --no-g --chown fija
-	// el dueño real de destino explícitamente en vez de heredarlo.
-	cmd := fmt.Sprintf("rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
+	// existiera en el home del usuario (incluido el propio directorio home)
+	// quedaba con su metadata de propietario reescrita a root en cuanto
+	// rsync la tocaba, aunque el contenido no cambiara. Esto es lo que
+	// deja al usuario sin acceso a su propio $HOME tras aplicar un
+	// costume ("Home directory not accessible: Permission denied" en cada
+	// login). --no-o --no-g --chown fija el dueño real de destino
+	// explícitamente en vez de heredarlo de /etc/skel.
+	cmd := fmt.Sprintf("sudo rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
 	utils.Exec(cmd)
+}
+
+// firstHumanUser scans /etc/passwd for the first real (non-system) user:
+// UID between 1000 and 59999 with a valid login shell. Used as a fallback
+// when SUDO_USER isn't set (e.g. the invoking shell was reached via 'su'
+// rather than 'sudo').
+func firstHumanUser() *user.User {
+	f, err := os.Open("/etc/passwd")
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		fields := strings.Split(scanner.Text(), ":")
+		if len(fields) < 7 {
+			continue
+		}
+		uid, err := strconv.Atoi(fields[2])
+		if err != nil || uid < 1000 || uid >= 60000 {
+			continue
+		}
+		shell := fields[6]
+		if strings.HasSuffix(shell, "nologin") || strings.HasSuffix(shell, "/false") {
+			continue
+		}
+		if u, err := user.Lookup(fields[0]); err == nil {
+			return u
+		}
+	}
+	return nil
 }
