@@ -184,7 +184,7 @@ fi
     
 {{ else }}
     echo "-> Rigenerazione initramfs su base mkinitcpio..."
-    ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+    ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
     if [ "$ROOT_FSTYPE" = "btrfs" ]; then
         if ! grep -q "^HOOKS=.*btrfs" /etc/mkinitcpio.conf; then
             sed -i '/^HOOKS=/ s/\bfilesystems\b/btrfs filesystems/' /etc/mkinitcpio.conf
@@ -290,7 +290,7 @@ elif [ -f /boot/intel-ucode.img ]; then
 fi
 
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
-ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
 ROOTFLAGS=""
 if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     ROOTFLAGS="rootflags=subvol=@"
@@ -324,7 +324,7 @@ if [ -z "$KERNEL_FILE" ] || [ -z "$INITRD_FILE" ]; then
 fi
 
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
-ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
 ROOTFLAGS=""
 if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     ROOTFLAGS="rootflags=subvol=@"

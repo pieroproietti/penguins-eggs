@@ -150,7 +150,7 @@ cp -L /boot/$KERNEL_FILE /boot/efi/
 cp -L /boot/$INITRD_FILE /boot/efi/
 
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
-ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
 ROOTFLAGS=""
 if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     ROOTFLAGS="rootflags=subvol=@"
@@ -181,7 +181,7 @@ if [ -d /sys/firmware/efi ]; then
     KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
     INITRD_FILE=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
     ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
-    ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+    ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
     ROOTFLAGS=""
     if [ "$ROOT_FSTYPE" = "btrfs" ]; then
         ROOTFLAGS="rootflags=subvol=@"
@@ -203,7 +203,7 @@ else
     KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
     INITRD_FILE=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
     ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
-    ROOT_FSTYPE=$(findmnt -n -o FSTYPE /)
+    ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
     ROOTFLAGS=""
     if [ "$ROOT_FSTYPE" = "btrfs" ]; then
         ROOTFLAGS="rootflags=subvol=@"
