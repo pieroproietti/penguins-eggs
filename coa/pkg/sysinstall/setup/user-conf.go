@@ -2,7 +2,6 @@ package setup
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -121,4 +120,3 @@ func firstHumanUser() *struct{ HomeDir string } {
 	}
 	return nil
 }
-
