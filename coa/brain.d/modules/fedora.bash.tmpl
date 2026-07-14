@@ -146,11 +146,10 @@ sed -i 's/ enforcing=0//g' /etc/default/grub
 sed -i 's/enforcing=0 //g' /etc/default/grub
 sed -i 's/enforcing=0//g' /etc/default/grub
 
-# Safely update the bootloader
-if command -v grubby >/dev/null 2>&1; then
-    grubby --remove-args="enforcing=0" --update-kernel=ALL
-else
-    grub2-mkconfig -o /boot/grub2/grub.cfg
+# Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
+grub2-mkconfig -o /boot/grub2/grub.cfg
+if [ -d /boot/efi/EFI/fedora ]; then
+    grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 fi
 
 # Surgical self-destruction
