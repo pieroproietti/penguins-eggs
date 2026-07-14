@@ -38,7 +38,7 @@ func setupRepositories(repos *Repositories, suitName string) {
 
 	if repos.Upgrade {
 		logToFile(WarnPrefix(suitName) + "apt-get upgrade...")
-		utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get upgrade -y")
+		utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confold' upgrade -y")
 	}
 }
 

@@ -134,7 +134,7 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 	if noRecommends {
 		flags = "-y --no-install-recommends"
 	}
-	cmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install %s %s", flags, pkgString)
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install -o Dpkg::Options::='--force-confold' %s %s", flags, pkgString)
 
 	for i := 1; i <= retries; i++ {
 		logToFile(fmt.Sprintf("Installation attempt %d of %d...", i, retries))
