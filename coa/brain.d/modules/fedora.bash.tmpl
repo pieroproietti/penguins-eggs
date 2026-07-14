@@ -77,7 +77,8 @@ dracut -f --regenerate-all
 
 {{ define "install_distro_bootloader" }}
 # 1. Autorelabel per SELinux (Senza questo, Fedora post-installazione muore)
-touch /.autorelabel
+echo "-F" > /.autorelabel
+#touch /.autorelabel
 
 # --- INIEZIONE KAMIKAZE (Fase 1) ---
 # Aggiungiamo enforcing=0 per permettere il primo avvio indolore
@@ -150,7 +151,7 @@ else
 fi
 
 # Riattiva SELinux istantaneamente per questa sessione
-command -v setenforce >/dev/null 2>&1 && setenforce 1
+#command -v setenforce >/dev/null 2>&1 && setenforce 1
 
 # Autodistruzione
 systemctl disable krill-selinux-cleanup.service
