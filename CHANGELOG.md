@@ -1,6 +1,37 @@
 See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
+## Release Notes: penguins-eggs v0.9.5 - 2026-07-14
+This release introduces **Universal Btrfs Support** across all distributions, along with bootloader customizations, compression optimizations, installer flexibility, and critical robustness enhancements.
+
+### 💾 Universal Btrfs Support
+* **Btrfs GRUB Boot Symlink**: Automatically creates a `/boot` to `/@/boot` symbolic link at the Btrfs partition root level for Arch Linux and Manjaro. This resolves boot failures when GRUB boots from the generic removable UEFI path.
+* **Krill Btrfs Detection**: Improved detection logic within the Krill installer to reliably configure Btrfs hooks and initramfs settings when executing inside a chroot environment.
+* **Btrfs Batch CI Integration**: Fully automated and verified Btrfs UEFI template cloning and testing within the Incubator Batch CI framework.
+
+### 🗜️ Compression & Boot Customizations
+* **XZ Compression Filter**: Applies the x86 BCJ filter (`-Xbcj x86`) when squashing filesystems using the `xz` algorithm, significantly improving compression ratios on x86/x64 systems.
+* **RAM Mode Toggle**: Added configuration options to allow disabling the 'RAM mode' (toram) entry in the generated GRUB and ISOLINUX bootloader menus.
+* **Vendor Theme Customization**: Supported custom, vendor-supplied GRUB and ISOLINUX themes and menu labels (`menu-strings.conf`) for complete branding of the boot process.
+
+### 🛠️ Remastering Robustness
+* **Resilient Builds**: Automatically clean up residual mountpoints and staging assets from previous interrupted runs to prevent build contamination.
+* **Bypass systemd-firstboot**: Automatically pre-populate essential settings (defaulting `localtime` to UTC, generating a basic locale and hostname) when they are missing in the build source, preventing interactive systemd setup prompts on boot.
+* **Idempotent Bootstrapping**: Improved safety and idempotency of the live root bootstrap script.
+* **Non-Interactive Tailoring**: Passes `--force-confold` during package installation tasks to guarantee non-interactive executions on Debian-family hosts.
+
+### ⚙️ sysinstall & Calamares Enhancements
+* **Init-Aware machine-id**: Dynamically configures the machine ID setup module based on the host's running init system (supporting both systemd and non-systemd setups).
+* **Vendor Users.conf Override**: Allows vendors and costumes to override default Calamares user configurations and password UI requirements.
+* **Group Membership Safeguards**: Resolves a bug where the live user could lose their default groups if the remaster was executed from a root shell.
+* **Calamares Mount Options Fix**: Fixed a template bug by correcting `extraMounts` options type from list to string.
+
+### 🏹 Distribution & TUI Adjustments
+* **Garuda Linux**: Included full setup support for Garuda Linux in the Arch-family module.
+* **Quirinux**: Properly recognized Quirinux as a Debian-family derivative.
+* **Sudo-less Wardrobes**: Fixed path resolution for wardrobe configuration detection on systems running without `sudo`.
+* **TUI Navigation**: Fixed configuration TUI navigation bugs when skipping hidden fields.
+
 ## Release Notes: penguins-eggs v0.9.3 - 2026-07-09
 This release introduces **Incubator Batch CI**, a new automated testing framework, along with extensive improvements to the `sysinstall` architecture, Krill installer, security defaults, and cross-distribution support.
 
