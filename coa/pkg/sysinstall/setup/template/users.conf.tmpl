@@ -16,7 +16,7 @@ sudoersConfigureWithGroup: false
 
 # --- IL FIX PER LE PASSWORD ---
 # Permettiamo esplicitamente password deboli e lo impostiamo come default
-allowWeakPasswords: true
+allowWeakPasswords: {{ .AllowWeakPasswords }}
 allowWeakPasswordsDefault: true
 
 passwordRequirements:
