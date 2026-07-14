@@ -85,11 +85,11 @@ jobs:
       # --------------------------------------------------------------------
       # OPERAZIONI SU PROXMOX E COA REMASTER
       # --------------------------------------------------------------------
-      - name: 🔄 Rollback & VM Boot
+      - name: 🔄 VM Boot
         env:
           SSHPASS: ${{ env.PVE_PASS }}
         run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S sh -c 'qm stop ${{ inputs.vmid }} || true; qm rollback ${{ inputs.vmid }} ${{ inputs.snapshot }}; qm start ${{ inputs.vmid }} || true'"
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null artisan@father "echo '${{ env.PVE_PASS }}' | sudo -S sh -c 'qm stop ${{ inputs.vmid }} || true; qm start ${{ inputs.vmid }} || true'"
 
       - name: 📡 Dynamic IP Discovery
         id: get_ip

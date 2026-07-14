@@ -138,7 +138,7 @@ jobs:
                 git config --global --add safe.directory '*'
                 make package
               "
-            install_cmd: dnf install -y ./*.rpm
+            install_cmd: "sh -c 'dnf remove -y penguins-eggs || true && dnf install -y ./*.rpm'"
 
           # ==========================================
           # 🦎 openSUSE (Tumbleweed)
