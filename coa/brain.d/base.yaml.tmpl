@@ -46,7 +46,8 @@ remaster:
       command: |
         [ -f "/etc/penguins-eggs.d/brain.d/assets/splash.png" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/splash.png /home/eggs/isodir/boot/grub/splash.png
         [ -f "/etc/penguins-eggs.d/brain.d/assets/splash.png" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/splash.png /home/eggs/isodir/isolinux/splash.png
-
+        [ -f "/etc/penguins-eggs.d/brain.d/assets/grub-theme.cfg" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/grub-theme.cfg /home/eggs/isodir/boot/grub/theme.cfg
+        [ -f "/etc/penguins-eggs.d/brain.d/assets/isolinux-theme.cfg" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/isolinux-theme.cfg /home/eggs/isodir/isolinux/isolinux.theme.cfg
         if [ -f "/usr/share/grub/unicode.pf2" ]; then
             cp -f /usr/share/grub/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
         elif [ -f "/etc/penguins-eggs.d/brain.d/assets/unicode.pf2" ]; then
