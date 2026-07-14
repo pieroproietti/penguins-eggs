@@ -217,23 +217,15 @@ func (m *configModel) onTabSwitch() tea.Cmd {
 	return nil
 }
 
-func (m *configModel) focusField(idx int) tea.Cmd {
+func (m *configModel) focusField(idx int, direction int) tea.Cmd {
 	m.focus = (idx + cfgFieldCount) % cfgFieldCount
 	for {
 		if m.focus == cfgLevel && !m.showLevel() {
-			if idx <= cfgLevel {
-				m.focus = (m.focus - 1 + cfgFieldCount) % cfgFieldCount
-			} else {
-				m.focus = (m.focus + 1) % cfgFieldCount
-			}
+			m.focus = (m.focus + direction + cfgFieldCount) % cfgFieldCount
 			continue
 		}
 		if m.focus == cfgInstaller && !isDesktopConfig() {
-			if idx <= cfgInstaller {
-				m.focus = (m.focus - 1 + cfgFieldCount) % cfgFieldCount
-			} else {
-				m.focus = (m.focus + 1) % cfgFieldCount
-			}
+			m.focus = (m.focus + direction + cfgFieldCount) % cfgFieldCount
 			continue
 		}
 		break
@@ -252,9 +244,9 @@ func (m configModel) updateSettings(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	key := msg.String()
 	switch key {
 	case "up":
-		return m, m.focusField(m.focus - 1)
+		return m, m.focusField(m.focus-1, -1)
 	case "down":
-		return m, m.focusField(m.focus + 1)
+		return m, m.focusField(m.focus+1, 1)
 	case "left", "right":
 		if m.focus == cfgAlgorithm {
 			delta := 1
