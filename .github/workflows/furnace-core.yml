@@ -142,6 +142,9 @@ jobs:
             echo "⚙️ penguins-eggs Installation..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ inputs.install_cmd }}
             
+            echo "🧹 Cleaning up old ISOs to free space..."
+            echo '${{ env.VM_PASS }}' | sudo -S eggs kill
+            
             echo "💿 Creating Live ISO (eggs remaster)..."
             echo '${{ env.VM_PASS }}' | sudo -S coa remaster
             
