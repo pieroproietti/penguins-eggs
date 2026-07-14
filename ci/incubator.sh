@@ -14,13 +14,14 @@ TARGET_DIR="${1:?Usage: $0 /path/to/iso/directory}"
 
 # --- Configuration (env-override for CI) ---
 VMID="${VMID:-150}"
+FIRMWARE="${FIRMWARE:-bios}"
 FSTYPE="${FSTYPE:-ext4}"
 STORAGE="${STORAGE:-father-zfs}"
 ISO_STORAGE="${ISO_STORAGE:-father-local}"
 BRIDGE="${BRIDGE:-eggsnet}"
 TEMPLATE="${TEMPLATE:-}"
 WORK="/var/tmp/eggs-minimal-${VMID}"
-REPORT_FILE="$(pwd)/incubator-${FSTYPE}.log"
+REPORT_FILE="$(pwd)/incubator-${FIRMWARE}-${FSTYPE}.log"
 LOCK_FILE="/var/lock/incubator-${VMID}.lock"
 
 # Timeouts (seconds)
@@ -382,9 +383,9 @@ for ISO_FULL_PATH in "${ISOS[@]}"; do
         echo -e "${C_RED}>>> TEST FAILED: $ISO_NAME${C_RST}"
         FAILED_STAGE=$(cat "${WORK}/failed_stage.txt" 2>/dev/null || echo "unknown")
         report_entry "$ISO_NAME" "FAILED (stage: $FAILED_STAGE)" \
-            "See krill-output-${FSTYPE}-${ISO_NAME}.txt for details"
+            "See krill-output-${FIRMWARE}-${FSTYPE}-${ISO_NAME}.txt for details"
 
-        cp "${WORK}/krill_output.txt"   "$(pwd)/krill-output-${FSTYPE}-${ISO_NAME}.txt"    2>/dev/null || true
+        cp "${WORK}/krill_output.txt"   "$(pwd)/krill-output-${FIRMWARE}-${FSTYPE}-${ISO_NAME}.txt"    2>/dev/null || true
     fi
 
     [ -n "${GITHUB_ACTIONS:-}" ] && echo "::endgroup::"
