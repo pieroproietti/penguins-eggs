@@ -1,7 +1,7 @@
 # Mappatura: a quale file .yaml corrisponde ogni ID o ID_LIKE
 distributions:
   - id: "debian"
-    like: ["ubuntu", "linuxmint", "kali", "pop", "devuan"]
+    like: ["ubuntu", "linuxmint", "kali", "pop", "devuan", "quirinux"]
     file: "debian.bash.tmpl"
   
   # - id: "arch"
