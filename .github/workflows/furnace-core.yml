@@ -128,6 +128,7 @@ jobs:
         env:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} "rm -f /home/${{ env.VM_USER }}/*.rpm /home/${{ env.VM_USER }}/*.deb /home/${{ env.VM_USER }}/*.pkg.tar.zst"
           sshpass -e scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r pacchetti_da_installare/* ${{ env.VM_USER }}@${{ env.VM_IP }}:/home/${{ env.VM_USER }}/
 
       - name: 🛠️ Installa package, Remaster and Export
