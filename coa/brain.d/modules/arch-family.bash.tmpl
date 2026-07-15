@@ -208,7 +208,13 @@ echo "-> Automatic detection and bootloader dispatch..."
     if [ -d /sys/firmware/efi ] && command -v bootctl &> /dev/null; then
         {{ include "install_distro_systemd_boot" . }}
     elif command -v limine &> /dev/null; then
-        {{ include "install_distro_limine" . }}
+        ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+        if [ ! -d /sys/firmware/efi ] && [ "$ROOT_FSTYPE" = "ext4" ]; then
+            echo "-> BIOS and ext4 detected: Forcing GRUB instead of Limine"
+            {{ include "install_distro_grub" . }}
+        else
+            {{ include "install_distro_limine" . }}
+        fi
     else
         {{ include "install_distro_grub" . }}
     fi
@@ -217,6 +223,11 @@ echo "-> Automatic detection and bootloader dispatch..."
 
 {{ define "install_distro_grub" }}
 echo "-> Installing GRUB..."
+
+if ! command -v grub-install &> /dev/null; then
+    echo "-> grub package is missing. Installing it on the fly..."
+    pacman -Sy --noconfirm grub || { echo "[WARNING] Failed to install grub"; }
+fi
 
 # === BLACK BOX / EXTREME DEBUG ===
 echo "-> Activating black box (environment debug)..."
