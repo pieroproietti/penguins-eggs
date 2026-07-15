@@ -135,27 +135,40 @@ else
 fi
 
 
-# --- KAMIKAZE SERVICE (Phase 2: Safe Version) ---
+# --- KAMIKAZE SERVICE (Phase 2: Bulletproof Version) ---
 echo "-> Preparing post-installation service for GRUB cleanup..."
 
 # A. Create bash script for text-only cleanup
 cat << 'EOF' > /usr/local/bin/krill-selinux-cleanup.sh
 #!/bin/bash
-# Remove enforcing=0 from the base configuration file
+# 1. Imposta un ambiente sicuro e traccia l'output in un log
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+exec > /var/log/krill-selinux-cleanup.log 2>&1
+
+echo "[$(date)] Inizio pulizia parametri SELinux da GRUB..."
+
+# 2. Rimuove enforcing=0 dal file di configurazione base
 sed -i 's/ enforcing=0//g' /etc/default/grub
 sed -i 's/enforcing=0 //g' /etc/default/grub
 sed -i 's/enforcing=0//g' /etc/default/grub
 
-# Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
+echo "[$(date)] File /etc/default/grub aggiornato. Esecuzione grub2-mkconfig..."
+
+# 3. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
 grub2-mkconfig -o /boot/grub2/grub.cfg
 if [ -d /boot/efi/EFI/fedora ]; then
     grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 fi
 
-# Surgical self-destruction
+echo "[$(date)] GRUB rigenerato con successo. Disabilitazione servizio..."
+
+# 4. Surgical self-destruction (Sicura)
+# ATTENZIONE: systemctl disable è sufficiente. 
+# NON cancellare il file .service con rm -f, altrimenti systemd andrà in crash
+# e interromperà brutalmente questo script prima della fine!
 systemctl disable krill-selinux-cleanup.service
-rm -f /etc/systemd/system/krill-selinux-cleanup.service
-rm -f /usr/local/bin/krill-selinux-cleanup.sh
+
+echo "[$(date)] Operazione Kamikaze completata."
 EOF
 
 chmod +x /usr/local/bin/krill-selinux-cleanup.sh
