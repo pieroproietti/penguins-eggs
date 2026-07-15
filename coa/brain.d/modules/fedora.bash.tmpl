@@ -80,10 +80,12 @@ dracut -f --regenerate-all
 echo "-F" > /.autorelabel
 
 # --- KAMIKAZE INJECTION (Phase 1) ---
-# Add enforcing=0 to allow a painless first boot
+# Add enforcing=0 to allow a painless first boot and speed up technical reboots
 if ! grep -q "enforcing=0" /etc/default/grub; then
     sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="enforcing=0 /' /etc/default/grub
 fi
+# Fast boot: set timeout to 1 second for the relabeling and kamikaze reboots
+sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
 # -----------------------------------
 
 # 2. BLS (Boot Loader Specification) Management
@@ -144,9 +146,12 @@ sed -i 's/ enforcing=0//g' /etc/default/grub
 sed -i 's/enforcing=0 //g' /etc/default/grub
 sed -i 's/enforcing=0//g' /etc/default/grub
 
+# 3. Restore the normal boot timeout for the final user (5 seconds)
+sed -i 's/^GRUB_TIMEOUT=1/GRUB_TIMEOUT=5/' /etc/default/grub
+
 echo "[$(date)] /etc/default/grub updated. Executing grub2-mkconfig..."
 
-# 3. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
+# 4. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
 grub2-mkconfig -o /boot/grub2/grub.cfg
 if [ -d /boot/efi/EFI/fedora ]; then
     grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
@@ -154,12 +159,12 @@ fi
 
 echo "[$(date)] GRUB successfully regenerated. Disabling service..."
 
-# 4. Surgical self-destruction (Safe)
+# 5. Surgical self-destruction (Safe)
 systemctl disable krill-selinux-cleanup.service
 
 echo "[$(date)] Kamikaze operation completed. Executing final reboot..."
 
-# 5. The Final Touch: Notify the user and reboot the machine
+# 6. The Final Touch: Notify the user and reboot the machine
 wall "Krill: Post-installation and SELinux configuration completed. Final reboot in progress..."
 sleep 2
 systemctl reboot
