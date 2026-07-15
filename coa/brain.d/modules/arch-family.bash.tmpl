@@ -257,16 +257,21 @@ if grep -q "/boot/efi" /proc/mounts; then
 else
     echo "-> EFI partition not detected. Attempting BIOS/Legacy installation..."
     
-    # Bulletproof physical disk detection for BIOS MBR
-    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null || echo "/dev/sda1")
-    TARGET_DISK_NAME=$(lsblk -no pkname "$ROOT_DEV" 2>/dev/null | head -n 1 | tr -d ' ')
+    # Bulletproof text-based physical disk extraction
+    # 1. Get the source partition and strip any Btrfs subvolume brackets (e.g., /dev/sda1[/@])
+    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null | cut -d '[' -f 1 || echo "/dev/sda1")
     
-    if [ -n "$TARGET_DISK_NAME" ]; then
-        TARGET_DISK="/dev/$TARGET_DISK_NAME"
+    # 2. String manipulation to isolate the base drive
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]]; then
+        # For NVMe and eMMC, partitions are marked with 'p' (e.g., /dev/nvme0n1p1 -> /dev/nvme0n1)
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
     else
-        # Fallback if lsblk fails
-        TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+        # For standard drives (e.g., /dev/sda1 -> /dev/sda, /dev/vda2 -> /dev/vda)
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
     fi
+    
+    # Absolute fallback
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
     
     echo "-> Target disk for BIOS/Legacy installation: $TARGET_DISK"
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
@@ -370,17 +375,19 @@ else
     # BIOS/Legacy
     echo "-> EFI partition not detected. Attempting Limine BIOS/Legacy installation..."
     
-    # Bulletproof physical disk detection for BIOS MBR
-    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null || echo "/dev/sda1")
-    TARGET_DISK_NAME=$(lsblk -no pkname "$ROOT_DEV" 2>/dev/null | head -n 1 | tr -d ' ')
+    # Bulletproof text-based physical disk extraction
+    # 1. Get the source partition and strip any Btrfs subvolume brackets
+    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null | cut -d '[' -f 1 || echo "/dev/sda1")
     
-    if [ -n "$TARGET_DISK_NAME" ]; then
-        TARGET_DISK="/dev/$TARGET_DISK_NAME"
+    # 2. String manipulation to isolate the base drive
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]]; then
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
     else
-        # Fallback if lsblk fails (strips numbers from partition name as last resort)
-        TARGET_DISK=$(echo "$ROOT_DEV" | sed 's/[0-9]*$//' | sed 's/p$//')
-        [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
     fi
+    
+    # Absolute fallback
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
     
     echo "-> Target disk for Limine BIOS/Legacy installation: $TARGET_DISK"
     limine bios-install "$TARGET_DISK"
@@ -394,4 +401,5 @@ timeout: 5
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 fi
+
 {{ end }}
