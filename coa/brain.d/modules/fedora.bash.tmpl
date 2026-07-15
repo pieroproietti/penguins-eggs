@@ -80,79 +80,24 @@ dracut -f --regenerate-all
 echo "-F" > /.autorelabel
 #touch /.autorelabel
 
-# --- KAMIKAZE INJECTION (Phase 1) ---
-# Add enforcing=0 to allow a painless first boot
-if ! grep -q "enforcing=0" /etc/default/grub; then
-    sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="enforcing=0 /' /etc/default/grub
-fi
-# -----------------------------------
-
-# 2. BLS (Boot Loader Specification) Management
-sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
-if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then
-      echo "GRUB_ENABLE_BLSCFG=false" >> /etc/default/grub
-fi
-
-if [ -d /sys/firmware/efi ]; then
-      # 3. THE FEDORA TRICK: Recover shimx64.efi hidden under the mount point
-      if [ ! -f /boot/efi/EFI/fedora/shimx64.efi ]; then
-          echo "-> Recovering original Fedora EFI (shim/SecureBoot) files..."
-          # Temporarily unmount the target EFI partition
-          umount /boot/efi 2>/dev/null
-          
-          # Now we can see the real live rootfs: let's copy the shim files
-          cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
-          
-          # Remount the target EFI partition (assuming it's in fstab)
-          mount /boot/efi
-          
-          # Restore shim into the clean partition
-          if [ -d /tmp/efi-backup ]; then
-              mkdir -p /boot/efi/EFI
-              cp -r /tmp/efi-backup/* /boot/efi/EFI/ 2>/dev/null || true
-          fi
-      fi
-
-      # 4. Install GRUB
-      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=fedora --recheck --force
-      mkdir -p /boot/efi/EFI/fedora
-      
-      # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
-      if [ -f /boot/efi/EFI/fedora/shimx64.efi ]; then
-          mkdir -p /boot/efi/EFI/BOOT
-          cp /boot/efi/EFI/fedora/shimx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
-          cp /boot/efi/EFI/fedora/grubx64.efi /boot/efi/EFI/BOOT/grubx64.efi
-      fi
-
-      # 6. Generate configurations
-      grub2-mkconfig -o /boot/grub2/grub.cfg
-      grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
-else
-      # BIOS/Legacy
-      TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
-      grub2-install --target=i386-pc --recheck "$TARGET_DISK"
-      grub2-mkconfig -o /boot/grub2/grub.cfg
-fi
-
-
-# --- KAMIKAZE SERVICE (Phase 2: Bulletproof Version) ---
+# --- KAMIKAZE SERVICE (Phase 2: Final Reset Version) ---
 echo "-> Preparing post-installation service for GRUB cleanup..."
 
-# A. Create bash script for text-only cleanup
+# A. Create bash script for text-only cleanup and final reboot
 cat << 'EOF' > /usr/local/bin/krill-selinux-cleanup.sh
 #!/bin/bash
-# 1. Imposta un ambiente sicuro e traccia l'output in un log
+# 1. Set a safe environment and trace the output to a log
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 exec > /var/log/krill-selinux-cleanup.log 2>&1
 
-echo "[$(date)] Inizio pulizia parametri SELinux da GRUB..."
+echo "[$(date)] Starting SELinux parameter cleanup from GRUB..."
 
-# 2. Rimuove enforcing=0 dal file di configurazione base
+# 2. Remove enforcing=0 from the base configuration file
 sed -i 's/ enforcing=0//g' /etc/default/grub
 sed -i 's/enforcing=0 //g' /etc/default/grub
 sed -i 's/enforcing=0//g' /etc/default/grub
 
-echo "[$(date)] File /etc/default/grub aggiornato. Esecuzione grub2-mkconfig..."
+echo "[$(date)] /etc/default/grub updated. Executing grub2-mkconfig..."
 
 # 3. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
 grub2-mkconfig -o /boot/grub2/grub.cfg
@@ -160,15 +105,17 @@ if [ -d /boot/efi/EFI/fedora ]; then
     grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 fi
 
-echo "[$(date)] GRUB rigenerato con successo. Disabilitazione servizio..."
+echo "[$(date)] GRUB successfully regenerated. Disabling service..."
 
-# 4. Surgical self-destruction (Sicura)
-# ATTENZIONE: systemctl disable è sufficiente. 
-# NON cancellare il file .service con rm -f, altrimenti systemd andrà in crash
-# e interromperà brutalmente questo script prima della fine!
+# 4. Surgical self-destruction (Safe)
 systemctl disable krill-selinux-cleanup.service
 
-echo "[$(date)] Operazione Kamikaze completata."
+echo "[$(date)] Kamikaze operation completed. Executing final reboot..."
+
+# 5. The Final Touch: Notify the user and reboot the machine
+wall "Krill: Post-installation and SELinux configuration completed. Final reboot in progress..."
+sleep 2
+systemctl reboot
 EOF
 
 chmod +x /usr/local/bin/krill-selinux-cleanup.sh
@@ -192,5 +139,4 @@ EOF
 
 # C. Arm the trigger
 systemctl enable krill-selinux-cleanup.service
-# -------------------------------------------------------
-{{ end }}
+# -------------------------------------------------------{{ end }}
