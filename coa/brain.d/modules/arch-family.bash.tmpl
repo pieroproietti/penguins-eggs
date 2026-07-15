@@ -247,13 +247,22 @@ mkdir -p /boot/efi
 
 # Absolute and irrefutable check: asking the kernel if the partition is mounted
 if grep -q "/boot/efi" /proc/mounts; then
-    echo "-> EFI partition mounted. Proceeding with UEFI installation (with --removable flag for virtual machines)..."
-    
+    echo "-> EFI partition mounted. Proceeding with UEFI installation..."
+
     # Save a copy of the debug log in the EFI partition too
     cp /boot/debug_krill_env.txt /boot/efi/debug_krill_env.txt 2>/dev/null || true
 
-    # THE --removable FLAG IS THE KEY: forces the creation of EFI/BOOT/BOOTX64.EFI
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --removable
+    # Vendor install: writes /boot/efi/EFI/{{ .DistroID }}/grubx64.efi and
+    # registers the NVRAM boot entry real firmware boots from. --removable
+    # alone would skip both of these and only write the fallback below.
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck
+
+    # Removable fallback: firmware (notably some VM/OVMF setups) that has no
+    # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI. Copy the just-installed
+    # binary there too instead of using --removable, which would replace the
+    # vendor path above rather than add to it.
+    mkdir -p /boot/efi/EFI/BOOT
+    cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
 else
     echo "-> EFI partition not detected. Attempting BIOS/Legacy installation..."
     TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
