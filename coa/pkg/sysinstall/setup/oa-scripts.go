@@ -79,9 +79,12 @@ func generateChrootRunner(profile *parser.Profile) error {
 			return fmt.Errorf("error marshaling step %s: %w", step.Name, err)
 		}
 
-		sb.WriteString(fmt.Sprintf("%s ell <<'EOF_STEP'\n", currentExe))
+		sb.WriteString(fmt.Sprintf("if ! %s ell <<'EOF_STEP'\n", currentExe))
 		sb.Write(jsonBytes)
-		sb.WriteString("\nEOF_STEP\n\n")
+		sb.WriteString("\nEOF_STEP\n")
+		sb.WriteString("then\n")
+		sb.WriteString(fmt.Sprintf("    echo \"[WARNING] Step '%s' failed, continuing with remaining steps...\"\n", step.Name))
+		sb.WriteString("fi\n\n")
 	}
 
 	outPath := filepath.Join(InstallerDRoot, "oa-chroot-runner.sh")
