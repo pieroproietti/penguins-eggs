@@ -1,0 +1,80 @@
+name: "🐣 A Go Incubator Batch CI"
+
+on:
+  workflow_dispatch:
+    inputs:
+      fstype:
+        description: 'Seleziona il filesystem da testare'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'ext4'
+          - 'btrfs'
+
+jobs:
+  setup:
+    name: ⚙️ Setup Test Matrix
+    runs-on: self-hosted
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          CHOICE="${{ github.event.inputs.fstype }}"
+          CHOICE="${CHOICE:-all}"
+          if [ "$CHOICE" = "ext4" ]; then
+            # Notare la spaziatura dei VMID: 150 e 160
+            echo 'matrix={"include":[{"fstype":"ext4","firmware":"bios","vmid":150},{"fstype":"ext4","firmware":"uefi","vmid":160}]}' >> $GITHUB_OUTPUT
+          elif [ "$CHOICE" = "btrfs" ]; then
+            echo 'matrix={"include":[{"fstype":"btrfs","firmware":"uefi","vmid":170}]}' >> $GITHUB_OUTPUT
+          else
+            # Spaziatura: 150, 160, 170
+            echo 'matrix={"include":[{"fstype":"ext4","firmware":"bios","vmid":150},{"fstype":"ext4","firmware":"uefi","vmid":160},{"fstype":"btrfs","firmware":"uefi","vmid":170}]}' >> $GITHUB_OUTPUT
+          fi
+
+  collaudo-batch:
+    name: 🐣 Hatching (${{ matrix.firmware }} ${{ matrix.fstype }})
+    needs: setup
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+
+    steps:
+      - name: ⚙️ Run Incubator Go
+        run: |
+          # Chiamiamo direttamente l'eseguibile di sistema. 
+          # Niente più scp, chmod o setup di cartelle temporanee!
+          FIRMWARE=${{ matrix.firmware }} FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} incubator-go /var/lib/vz/template/iso/
+
+      - name: 📋 Collect Go Reports
+        if: always() 
+        run: |
+          mkdir -p ./incubator-logs
+          # L'incubator in Go salva il file .md direttamente nella directory in cui viene eseguito
+          cp incubator-summary-${{ matrix.firmware }}-${{ matrix.fstype }}.md ./incubator-logs/ || true
+
+      - name: 📤 Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: incubator-go-reports-${{ matrix.firmware }}-${{ matrix.fstype }}
+          path: ./incubator-logs/
+
+  summary:
+    name: 📊 Generate Summary Report
+    needs: collaudo-batch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: 🔨 Merge Markdown Tables
+        run: |
+          # Niente più Python! Concateniamo semplicemente le tabelle Markdown già pronte
+          cat artifacts/incubator-go-reports-*/incubator-summary-*.md >> $GITHUB_STEP_SUMMARY
