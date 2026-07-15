@@ -256,7 +256,19 @@ if grep -q "/boot/efi" /proc/mounts; then
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --removable
 else
     echo "-> EFI partition not detected. Attempting BIOS/Legacy installation..."
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    
+    # Bulletproof physical disk detection for BIOS MBR
+    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null || echo "/dev/sda1")
+    TARGET_DISK_NAME=$(lsblk -no pkname "$ROOT_DEV" 2>/dev/null | head -n 1 | tr -d ' ')
+    
+    if [ -n "$TARGET_DISK_NAME" ]; then
+        TARGET_DISK="/dev/$TARGET_DISK_NAME"
+    else
+        # Fallback if lsblk fails
+        TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    fi
+    
+    echo "-> Target disk for BIOS/Legacy installation: $TARGET_DISK"
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
 
@@ -356,7 +368,21 @@ timeout: 5
 EOF
 else
     # BIOS/Legacy
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    echo "-> EFI partition not detected. Attempting Limine BIOS/Legacy installation..."
+    
+    # Bulletproof physical disk detection for BIOS MBR
+    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null || echo "/dev/sda1")
+    TARGET_DISK_NAME=$(lsblk -no pkname "$ROOT_DEV" 2>/dev/null | head -n 1 | tr -d ' ')
+    
+    if [ -n "$TARGET_DISK_NAME" ]; then
+        TARGET_DISK="/dev/$TARGET_DISK_NAME"
+    else
+        # Fallback if lsblk fails (strips numbers from partition name as last resort)
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed 's/[0-9]*$//' | sed 's/p$//')
+        [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
+    fi
+    
+    echo "-> Target disk for Limine BIOS/Legacy installation: $TARGET_DISK"
     limine bios-install "$TARGET_DISK"
     
     cat <<EOF > /boot/limine.conf
