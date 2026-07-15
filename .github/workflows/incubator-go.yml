@@ -47,7 +47,7 @@ jobs:
         run: |
           # Chiamiamo direttamente l'eseguibile di sistema. 
           # Niente più scp, chmod o setup di cartelle temporanee!
-          FIRMWARE=${{ matrix.firmware }} FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} incubator-go /var/lib/vz/template/iso/
+          FIRMWARE=${{ matrix.firmware }} FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} incubator /var/lib/vz/template/iso/
 
       - name: 📋 Collect Go Reports
         if: always() 
