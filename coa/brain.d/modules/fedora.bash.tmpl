@@ -78,7 +78,54 @@ dracut -f --regenerate-all
 {{ define "install_distro_bootloader" }}
 # 1. SELinux autorelabel (Without this, Fedora dies post-installation)
 echo "-F" > /.autorelabel
-#touch /.autorelabel
+
+# --- KAMIKAZE INJECTION (Phase 1) ---
+# Add enforcing=0 to allow a painless first boot
+if ! grep -q "enforcing=0" /etc/default/grub; then
+    sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="enforcing=0 /' /etc/default/grub
+fi
+# -----------------------------------
+
+# 2. BLS (Boot Loader Specification) Management
+sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
+if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then
+      echo "GRUB_ENABLE_BLSCFG=false" >> /etc/default/grub
+fi
+
+if [ -d /sys/firmware/efi ]; then
+      # 3. THE FEDORA TRICK: Recover shimx64.efi hidden under the mount point
+      if [ ! -f /boot/efi/EFI/fedora/shimx64.efi ]; then
+          echo "-> Recovering original Fedora EFI (shim/SecureBoot) files..."
+          umount /boot/efi 2>/dev/null
+          cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
+          mount /boot/efi
+          if [ -d /tmp/efi-backup ]; then
+              mkdir -p /boot/efi/EFI
+              cp -r /tmp/efi-backup/* /boot/efi/EFI/ 2>/dev/null || true
+          fi
+      fi
+
+      # 4. Install GRUB
+      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=fedora --recheck --force
+      mkdir -p /boot/efi/EFI/fedora
+      
+      # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
+      if [ -f /boot/efi/EFI/fedora/shimx64.efi ]; then
+          mkdir -p /boot/efi/EFI/BOOT
+          cp /boot/efi/EFI/fedora/shimx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
+          cp /boot/efi/EFI/fedora/grubx64.efi /boot/efi/EFI/BOOT/grubx64.efi
+      fi
+
+      # 6. Generate configurations
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+      grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+else
+      # BIOS/Legacy
+      TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
+      grub2-install --target=i386-pc --recheck "$TARGET_DISK"
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+fi
+
 
 # --- KAMIKAZE SERVICE (Phase 2: Final Reset Version) ---
 echo "-> Preparing post-installation service for GRUB cleanup..."
@@ -140,5 +187,4 @@ EOF
 # C. Arm the trigger
 systemctl enable krill-selinux-cleanup.service
 # -------------------------------------------------------
-
 {{ end }}
