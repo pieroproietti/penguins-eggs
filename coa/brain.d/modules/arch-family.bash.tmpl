@@ -268,12 +268,17 @@ if grep -q "/boot/efi" /proc/mounts; then
 else
     echo "-> EFI partition not detected. Attempting BIOS/Legacy installation..."
     
-    # Bulletproof text-based physical disk extraction
-    # 1. Get the source partition and strip any Btrfs subvolume brackets (e.g., /dev/sda1[/@])
-    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null | cut -d '[' -f 1 || echo "/dev/sda1")
+    # Bulletproof text-based physical disk extraction using fstab
+    # This avoids issues inside plain chroots where findmnt / sees the host overlay
+    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
+    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
+        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB" 2>/dev/null || echo "/dev/sda1")
+    else
+        ROOT_DEV=${ROOT_PART_FSTAB:-"/dev/sda1"}
+    fi
     
     # 2. String manipulation to isolate the base drive
-    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]]; then
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]] || [[ "$ROOT_DEV" == *loop* ]]; then
         # For NVMe and eMMC, partitions are marked with 'p' (e.g., /dev/nvme0n1p1 -> /dev/nvme0n1)
         TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
     else
@@ -289,9 +294,15 @@ else
 fi
 
 # Detect Btrfs and create the boot symlink at the filesystem root level
-if [ "$(findmnt -n -o FSTYPE /)" = "btrfs" ]; then
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     echo "-> Btrfs configuration detected. Creating /boot symlink at the root level..."
-    ROOT_DEV=$(findmnt -n -o SOURCE /)
+    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
+    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
+        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB")
+    else
+        ROOT_DEV=$ROOT_PART_FSTAB
+    fi
     mkdir -p /tmp/btrfs-raw
     mount "$ROOT_DEV" /tmp/btrfs-raw
     ln -sf @/boot /tmp/btrfs-raw/boot
@@ -386,12 +397,16 @@ else
     # BIOS/Legacy
     echo "-> EFI partition not detected. Attempting Limine BIOS/Legacy installation..."
     
-    # Bulletproof text-based physical disk extraction
-    # 1. Get the source partition and strip any Btrfs subvolume brackets
-    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null | cut -d '[' -f 1 || echo "/dev/sda1")
+    # Bulletproof text-based physical disk extraction using fstab
+    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
+    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
+        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB" 2>/dev/null || echo "/dev/sda1")
+    else
+        ROOT_DEV=${ROOT_PART_FSTAB:-"/dev/sda1"}
+    fi
     
     # 2. String manipulation to isolate the base drive
-    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]]; then
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]] || [[ "$ROOT_DEV" == *loop* ]]; then
         TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
     else
         TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
