@@ -315,6 +315,19 @@ install:
             /usr/bin/ssh-keygen -A
         fi
 
+  - name: "enable-network-services"
+    description: "Ensure NetworkManager and systemd-resolved are enabled on the target"
+    module: "shell"
+    chroot: true
+    params:
+      command: |
+        if [ -f /usr/lib/systemd/system/NetworkManager.service ] || [ -f /etc/systemd/system/NetworkManager.service ]; then
+            systemctl enable NetworkManager.service 2>/dev/null || true
+        fi
+        if [ -f /usr/lib/systemd/system/systemd-resolved.service ]; then
+            systemctl enable systemd-resolved.service 2>/dev/null || true
+        fi
+
   - name: "install-initramfs"
     description: "update initramfs"
     module: "shell"
