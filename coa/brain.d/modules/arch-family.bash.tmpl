@@ -200,25 +200,19 @@ fi
 {{ define "install_distro_bootloader" }}
 echo "-> Automatic detection and bootloader dispatch..."
 
-{{ if or (eq .DistroID "garuda") (eq .DistroID "manjaro") }}
-    echo "-> Detected {{ .DistroID }}: Forcing GRUB installation to keep native features"
-    {{ include "install_distro_grub" . }}
-{{ else }}
-    # For pure Arch or other derivatives
-    if [ -d /sys/firmware/efi ] && command -v bootctl &> /dev/null; then
+if [ -d /sys/firmware/efi ]; then
+    echo "-> UEFI environment detected."
+    if command -v limine &> /dev/null; then
+        {{ include "install_distro_limine" . }}
+    elif command -v bootctl &> /dev/null; then
         {{ include "install_distro_systemd_boot" . }}
-    elif command -v limine &> /dev/null; then
-        ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
-        if [ ! -d /sys/firmware/efi ] && [ "$ROOT_FSTYPE" = "ext4" ]; then
-            echo "-> BIOS and ext4 detected: Forcing GRUB instead of Limine"
-            {{ include "install_distro_grub" . }}
-        else
-            {{ include "install_distro_limine" . }}
-        fi
     else
         {{ include "install_distro_grub" . }}
     fi
-{{ end }}
+else
+    echo "-> BIOS/Legacy environment detected. Forcing GRUB."
+    {{ include "install_distro_grub" . }}
+fi
 {{ end }}
 
 {{ define "install_distro_grub" }}
@@ -229,47 +223,11 @@ if ! command -v grub-install &> /dev/null; then
     pacman -Sy --noconfirm grub || { echo "[WARNING] Failed to install grub"; }
 fi
 
-# === BLACK BOX / EXTREME DEBUG ===
-echo "-> Activating black box (environment debug)..."
-mkdir -p /boot/efi
-{
-    echo "=== DATE & TIME ==="
-    date
-    echo "=== CURRENT DIR ==="
-    pwd
-    echo "=== PATH ==="
-    echo "$PATH"
-    echo "=== ENVIRONMENT ==="
-    env
-    echo "=== MOUNT STATUS ==="
-    mount
-    echo "=== PROC MOUNTS ==="
-    cat /proc/mounts
-    echo "=== LSBLK ==="
-    lsblk -f
-    echo "=== EFI DIRECTORIES ==="
-    ls -la /sys/firmware/efi/efivars 2>&1
-    echo "=== EFIBOOTMGR ==="
-    efibootmgr -v 2>&1
-    echo "=== GRUB-INSTALL PATH ==="
-    which grub-install 2>&1
-    grub-install --version 2>&1
-} > /boot/debug_krill_env.txt 2>&1
-
-# Absolute and irrefutable check: asking the kernel if the partition is mounted
-if grep -q "/boot/efi" /proc/mounts; then
-    echo "-> EFI partition mounted. Proceeding with UEFI installation (with --removable flag for virtual machines)..."
-    
-    # Save a copy of the debug log in the EFI partition too
-    cp /boot/debug_krill_env.txt /boot/efi/debug_krill_env.txt 2>/dev/null || true
-
-    # THE --removable FLAG IS THE KEY: forces the creation of EFI/BOOT/BOOTX64.EFI
+if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
+    echo "-> UEFI installation..."
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --removable
 else
-    echo "-> EFI partition not detected. Attempting BIOS/Legacy installation..."
-    
-    # Bulletproof text-based physical disk extraction using fstab
-    # This avoids issues inside plain chroots where findmnt / sees the host overlay
+    echo "-> BIOS/Legacy installation..."
     ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
     if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
         ROOT_DEV=$(findfs "$ROOT_PART_FSTAB" 2>/dev/null || echo "/dev/sda1")
@@ -277,23 +235,17 @@ else
         ROOT_DEV=${ROOT_PART_FSTAB:-"/dev/sda1"}
     fi
     
-    # 2. String manipulation to isolate the base drive
     if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]] || [[ "$ROOT_DEV" == *loop* ]]; then
-        # For NVMe and eMMC, partitions are marked with 'p' (e.g., /dev/nvme0n1p1 -> /dev/nvme0n1)
         TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
     else
-        # For standard drives (e.g., /dev/sda1 -> /dev/sda, /dev/vda2 -> /dev/vda)
         TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
     fi
-    
-    # Absolute fallback
     [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
     
-    echo "-> Target disk for BIOS/Legacy installation: $TARGET_DISK"
+    echo "-> Target disk: $TARGET_DISK"
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
 
-# Detect Btrfs and create the boot symlink at the filesystem root level
 ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
 if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     echo "-> Btrfs configuration detected. Creating /boot symlink at the root level..."
@@ -318,7 +270,6 @@ echo "-> Installing systemd-boot (bootctl)..."
 bootctl install --esp-path=/boot/efi
 mkdir -p /boot/efi/loader/entries
 
-# Bulletproof kernel detection without relying on pkgbase
 KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
 INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
 
@@ -362,9 +313,8 @@ EOF
 {{ end }}
 
 {{ define "install_distro_limine" }}
-echo "-> Installing Limine bootloader..."
+echo "-> Installing Limine bootloader (UEFI)..."
 
-# Bulletproof kernel detection shared with systemd-boot
 KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
 INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
 
@@ -380,52 +330,15 @@ if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     ROOTFLAGS="rootflags=subvol=@"
 fi
 
-if [ -d /sys/firmware/efi ]; then
-    # UEFI
-    mkdir -p /boot/efi/EFI/BOOT
-    cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
-    
-    cat <<EOF > /boot/efi/limine.conf
-timeout: 5
-/OA Linux
-    protocol: linux
-    kernel_path: boot://$KERNEL_FILE
-    initramfs_path: boot://$INITRD_FILE
-    cmdline: root=$ROOT_PART rw $ROOTFLAGS
-EOF
-else
-    # BIOS/Legacy
-    echo "-> EFI partition not detected. Attempting Limine BIOS/Legacy installation..."
-    
-    # Bulletproof text-based physical disk extraction using fstab
-    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
-    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
-        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB" 2>/dev/null || echo "/dev/sda1")
-    else
-        ROOT_DEV=${ROOT_PART_FSTAB:-"/dev/sda1"}
-    fi
-    
-    # 2. String manipulation to isolate the base drive
-    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]] || [[ "$ROOT_DEV" == *loop* ]]; then
-        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
-    else
-        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
-    fi
-    
-    # Absolute fallback
-    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
-    
-    echo "-> Target disk for Limine BIOS/Legacy installation: $TARGET_DISK"
-    limine bios-install "$TARGET_DISK"
-    
-    cat <<EOF > /boot/limine.conf
-timeout: 5
-/OA Linux
-    protocol: linux
-    kernel_path: boot://$KERNEL_FILE
-    initramfs_path: boot://$INITRD_FILE
-    cmdline: root=$ROOT_PART rw $ROOTFLAGS
-EOF
-fi
+mkdir -p /boot/efi/EFI/BOOT
+cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
 
+cat <<EOF > /boot/efi/limine.conf
+timeout: 5
+/OA Linux
+    protocol: linux
+    kernel_path: boot://$KERNEL_FILE
+    initramfs_path: boot://$INITRD_FILE
+    cmdline: root=$ROOT_PART rw $ROOTFLAGS
+EOF
 {{ end }}
