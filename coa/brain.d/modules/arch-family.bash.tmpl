@@ -265,7 +265,24 @@ if grep -q "/boot/efi" /proc/mounts; then
     cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
 else
     echo "-> EFI partition not detected. Attempting BIOS/Legacy installation..."
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    
+    # Bulletproof text-based physical disk extraction
+    # 1. Get the source partition and strip any Btrfs subvolume brackets (e.g., /dev/sda1[/@])
+    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null | cut -d '[' -f 1 || echo "/dev/sda1")
+    
+    # 2. String manipulation to isolate the base drive
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]]; then
+        # For NVMe and eMMC, partitions are marked with 'p' (e.g., /dev/nvme0n1p1 -> /dev/nvme0n1)
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
+    else
+        # For standard drives (e.g., /dev/sda1 -> /dev/sda, /dev/vda2 -> /dev/vda)
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
+    fi
+    
+    # Absolute fallback
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
+    
+    echo "-> Target disk for BIOS/Legacy installation: $TARGET_DISK"
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
 
@@ -365,7 +382,23 @@ timeout: 5
 EOF
 else
     # BIOS/Legacy
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    echo "-> EFI partition not detected. Attempting Limine BIOS/Legacy installation..."
+    
+    # Bulletproof text-based physical disk extraction
+    # 1. Get the source partition and strip any Btrfs subvolume brackets
+    ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null | cut -d '[' -f 1 || echo "/dev/sda1")
+    
+    # 2. String manipulation to isolate the base drive
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]]; then
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
+    else
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
+    fi
+    
+    # Absolute fallback
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
+    
+    echo "-> Target disk for Limine BIOS/Legacy installation: $TARGET_DISK"
     limine bios-install "$TARGET_DISK"
     
     cat <<EOF > /boot/limine.conf
@@ -377,4 +410,5 @@ timeout: 5
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 fi
+
 {{ end }}
