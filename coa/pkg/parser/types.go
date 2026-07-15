@@ -58,6 +58,7 @@ type TemplateContext struct {
 	DistroID       string
 	IsGitHubAction bool
 	RamModeEnabled bool
+	LiveUser       string
 }
 
 type BrainIndex struct {
