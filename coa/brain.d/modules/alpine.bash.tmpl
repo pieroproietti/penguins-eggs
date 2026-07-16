@@ -42,6 +42,12 @@ cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"
 # 🎯 INSTALLER
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+    if ! grep -q 'features=.*btrfs' /etc/mkinitfs/mkinitfs.conf; then
+        sed -i '/^features=/ s/"$/ btrfs"/' /etc/mkinitfs/mkinitfs.conf
+    fi
+fi
 KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
 {{ end }}
