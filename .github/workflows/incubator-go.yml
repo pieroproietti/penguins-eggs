@@ -48,7 +48,7 @@ jobs:
         run: |
           # The runner connects to Proxmox via SSH, passes the variables, and runs the Go binary
           # PROXMOX_IP 192.168.1.2
-          ssh -o StrictHostKeyChecking=no root@192.168.1.2 "FIRMWARE=${{ matrix.firmware }} FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} /usr/local/bin/incubator-go incubators /var/lib/vz/template/iso/"
+          ssh -o StrictHostKeyChecking=no root@192.168.1.2 "FIRMWARE=${{ matrix.firmware }} FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} /usr/local/bin/incubator-go /var/lib/vz/template/iso/"
 
       - name: 📋 Collect Go Reports via SCP
         if: always() 
