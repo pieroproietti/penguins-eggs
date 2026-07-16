@@ -54,6 +54,7 @@ func generateChrootRunner(profile *parser.Profile) error {
 	sb.WriteString("export TARGET_ROOT\n")
 	sb.WriteString("export ROOT=\"$TARGET_ROOT\"\n\n")
 	sb.WriteString("echo \"Chroot runner: installing to $TARGET_ROOT\"\n\n")
+	sb.WriteString("FAILED=0\n\n")
 
 	for _, step := range profile.Install {
 		cmd := getStepCommand(step)
@@ -79,10 +80,16 @@ func generateChrootRunner(profile *parser.Profile) error {
 			return fmt.Errorf("error marshaling step %s: %w", step.Name, err)
 		}
 
-		sb.WriteString(fmt.Sprintf("%s ell <<'EOF_STEP'\n", currentExe))
+		sb.WriteString(fmt.Sprintf("if ! %s ell <<'EOF_STEP'\n", currentExe))
 		sb.Write(jsonBytes)
-		sb.WriteString("\nEOF_STEP\n\n")
+		sb.WriteString("\nEOF_STEP\n")
+		sb.WriteString("then\n")
+		sb.WriteString(fmt.Sprintf("    echo \"[WARNING] Step '%s' failed, continuing with remaining steps...\"\n", step.Name))
+		sb.WriteString("    FAILED=1\n")
+		sb.WriteString("fi\n\n")
 	}
+
+	sb.WriteString("exit $FAILED\n")
 
 	outPath := filepath.Join(InstallerDRoot, "oa-chroot-runner.sh")
 	return os.WriteFile(outPath, []byte(sb.String()), 0755)

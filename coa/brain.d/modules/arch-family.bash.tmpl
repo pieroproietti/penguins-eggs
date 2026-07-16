@@ -225,7 +225,17 @@ fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
     echo "-> UEFI installation..."
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --removable
+
+    # Vendor install: writes /boot/efi/EFI/{{ .DistroID }}/grubx64.efi and
+    # registers the NVRAM boot entry real firmware boots from. --removable
+    # alone would skip both of these and only write the fallback below.
+    # Tolerate NVRAM-only failures so the fallback below still runs.
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+
+    # Removable fallback: firmware (notably some VM/OVMF setups) with no
+    # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
+    mkdir -p /boot/efi/EFI/BOOT
+    [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
 else
     echo "-> BIOS/Legacy installation..."
     ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
