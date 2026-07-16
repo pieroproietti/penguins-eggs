@@ -309,7 +309,8 @@ fi
 
 cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
 title   OA Linux
-linux   /$KERNEL_FILE$UCODE_LINE
+linux   /$KERNEL_FILE
+${UCODE_LINE}
 initrd  /$INITRD_FILE
 options root=$ROOT_PART rw $ROOTFLAGS
 EOF
