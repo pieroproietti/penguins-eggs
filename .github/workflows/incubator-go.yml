@@ -44,11 +44,14 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
 
     steps:
+      - name: 🧹 Clean Workspace Log Directory
+        run: |
+          rm -rf ./incubator-logs
+
       - name: 🚀 Trigger Incubator Remotely via SSH
         run: |
-          # The runner connects to Proxmox via SSH, passes the variables, and runs the Go binary
-          # PROXMOX_IP 192.168.1.2
-          ssh -o StrictHostKeyChecking=no root@192.168.1.2 "FIRMWARE=${{ matrix.firmware }} FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} /usr/local/bin/incubator-go /var/lib/vz/template/iso/"
+          # Clean up any old report file on Proxmox first, then run the tests
+          ssh -o StrictHostKeyChecking=no root@192.168.1.2 "rm -f /root/incubator-summary-${{ matrix.firmware }}-${{ matrix.fstype }}.md && FIRMWARE=${{ matrix.firmware }} FSTYPE=${{ matrix.fstype }} VMID=${{ matrix.vmid }} /usr/local/bin/incubator-go /var/lib/vz/template/iso/"
 
       - name: 📋 Collect Go Reports via SCP
         if: always() 
@@ -70,12 +73,18 @@ jobs:
     if: always()
     runs-on: self-hosted
     steps:
+      - name: 🧹 Clean Artifacts Directory
+        run: |
+          rm -rf artifacts
+
       - name: 📥 Download all artifacts
         uses: actions/download-artifact@v4
         with:
+          pattern: incubator-go-reports-*
           path: artifacts
+          merge-multiple: true
 
       - name: 🔨 Merge Markdown Tables
         run: |
           # Concatenate all retrieved tables into the GitHub step summary
-          cat artifacts/incubator-go-reports-*/incubator-summary-*.md >> $GITHUB_STEP_SUMMARY
+          cat artifacts/incubator-summary-*.md >> $GITHUB_STEP_SUMMARY
