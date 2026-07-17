@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
             success_count++;
         } else {
             // FRENO DI EMERGENZA!
-            LOG_ERR("🚨 [oa-main] ERRORE FATALE: Il task '%s' ha fallito. Interruzione immediata!", task_name);
+            LOG_ERR("🚨 [oa-main] FATAL ERROR: Task '%s' failed. Aborting immediately!", task_name);
             error_count++;
             perform_safety_teardown(current_work_dir);
             break; 
