@@ -1,6 +1,38 @@
 See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
+## Release Notes: penguins-eggs v0.9.6 - 2026-07-16
+This release introduces a new **Go-based Incubator CI** for automated ISO testing, alongside critical bootloader installer fixes, user creation safeguards, vendor branding custom steps, and wardrobe permission enhancements.
+
+### 🐣 Go-based Incubator CI
+* **Native Go Testing**: Replaced the legacy 400-line bash script (`ci/incubator.sh`) with a native Go orchestrator (`incubator-go`) installed on Proxmox.
+* **Refined Test Matrix**: Configured automated test runs for `ext4` BIOS, `ext4` UEFI, and `btrfs` UEFI target installs sequentially to prevent server overload.
+* **Integrated GHA Reports**: Automatically fetches Markdown test logs from Proxmox and merges them directly into the GitHub Actions step summary using [.github/workflows/incubator-go.yml](file:///home/artisan/forge/penguins-eggs/.github/workflows/incubator-go.yml).
+
+### 💾 sysinstall & Bootloader Improvements
+* **Resilient UEFI Boot**: Tolerate NVRAM registry failures during `grub-install` on UEFI target environments and always populate the `EFI/BOOT/BOOTX64.EFI` fallback inside [coa/brain.d/modules/arch-family.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/arch-family.bash.tmpl), [coa/brain.d/modules/alpine.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/alpine.bash.tmpl), and [coa/brain.d/modules/debian.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/debian.bash.tmpl).
+* **Arch UEFI Fallback Fix**: Restored vendor directory and NVRAM registrations for Arch Linux targets by running a standard install first, followed by manual fallback file copying (bypassing the limiting `--removable` flag).
+* **systemd-boot Microcode Fix**: Resolved a kernel file corruption issue in systemd-boot configuration templates inside [coa/brain.d/modules/arch-family.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/arch-family.bash.tmpl) where the microcode initrd line was appended to the kernel line without a newline.
+* **Target Network Activation**: Added a dedicated step to enable `NetworkManager` and `systemd-resolved` units inside the chroot in [coa/brain.d/base.yaml.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/base.yaml.tmpl), ensuring DNS and network work out-of-the-box on the installed target.
+* **Mount Bind Fix**: Corrected `extraMounts` options in [coa/pkg/sysinstall/setup/template/mount.conf.tmpl](file:///home/artisan/forge/penguins-eggs/coa/pkg/sysinstall/setup/template/mount.conf.tmpl) back to a YAML list, fixing broken `/dev` and `/run/udev` bind mounts inside Calamares.
+
+### ⚙️ Calamares & User Management
+* **User Creation Collision Fix**: Moved the `removeuser` module right after `unpackfs` in [coa/pkg/assets/calamares_base/settings.conf](file:///home/artisan/forge/penguins-eggs/coa/pkg/assets/calamares_base/settings.conf). This avoids conflicts and failures (exit 9) when creating the new target user with the same username as the live user.
+* **Target Failures Monitoring**: The chroot runner script now returns a non-zero exit code if any execution step fails, ensuring installation failures are visible in logs.
+* **Autologin Recovery**: Enabled `chroot: true` for the `autologin-gui` module in [coa/brain.d/base.yaml.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/base.yaml.tmpl) and updated [RunAutologin()](file:///home/artisan/forge/penguins-eggs/coa/pkg/worker/autologin-gui.go#L12) to dynamically handle the custom live username instead of using a hardcoded placeholder.
+
+### 👔 Wardrobe & tailor Enhancements
+* **su Elevation Support**: Enhanced [getWardrobeRoot()](file:///home/artisan/forge/penguins-eggs/coa/pkg/tailor/get-wardrobe-root.go#L24) to resolve the real user's home directory using kernel audit `logname` and `/etc/passwd` scanning, ensuring wardrobe functions work on distros using `su` instead of `sudo`.
+* **Early Privilege Check**: Force `coa wardrobe wear` to exit immediately if executed without root privileges, removing redundant internal `sudo` command executions.
+* **skel Sync Permissions**: Sincronized `/etc/skel` files using `rsync` with explicit non-root user chown arguments, preventing target home folder assets from being locked by root ownership.
+
+### 🎨 Custom Vendor Branding
+* **Vendor Custom Finish Step**: Support executing a custom vendor `finish.sh` script via [vendorFinishStep()](file:///home/artisan/forge/penguins-eggs/coa/pkg/sysinstall/setup/vendor-finish.go#L25) during the Calamares sequence before the bootloader installation, allowing costumes to customize configuration templates.
+* **Branding Asset Overlays**: Allow wardrobes to supply customized logos, slideshows, and `branding.desc` descriptors under the `/etc/penguins-eggs.d/brain.d/assets/calamares/` path.
+
+### 🛠️ Core Optimizations
+* **Native SHA-512 Hashing**: Replaced external `openssl` shell calls with the native Go `sha512_crypt` library in [hashPassword()](file:///home/artisan/forge/penguins-eggs/coa/pkg/planner/hash-password.go#L10) for hashing password inputs during planning.
+
 ## Release Notes: penguins-eggs v0.9.5 - 2026-07-14
 This release introduces **Universal Btrfs Support** across all distributions, along with bootloader customizations, compression optimizations, installer flexibility, and critical robustness enhancements.
 

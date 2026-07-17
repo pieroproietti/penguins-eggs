@@ -13,7 +13,7 @@
 
 #include "cJSON.h"
 #include "logger.h"
-#include "ethernit.h"
+#include "eternit.h"
 #include "oa-yocto.h"
 
 
@@ -220,7 +220,7 @@ int run_native(const char *module, cJSON *task) {
     }
 
     if (strcmp(module, "umount") == 0) {
-        return run_ethernit_umount(task);
+        return run_eternit_umount(task);
     }
 
     LOG_ERR("❌ [oa-native] Unknown native C module: %s", module);
