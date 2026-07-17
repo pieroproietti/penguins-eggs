@@ -129,11 +129,13 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 		return
 	}
 
-	pkgString := strings.Join(toInstall, " ")
 	flags := "-y"
 	if noRecommends {
 		flags = "-y --no-install-recommends"
 	}
+
+	// First attempt: install all packages together (fast path)
+	pkgString := strings.Join(toInstall, " ")
 	cmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install -o Dpkg::Options::='--force-confold' %s %s", flags, pkgString)
 
 	for i := 1; i <= retries; i++ {
@@ -145,7 +147,23 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 		time.Sleep(2 * time.Second)
 	}
 
-	logToFile("❌ Critical error during package installation after all retries.")
+	// Fallback: install one by one so a single broken package
+	// does not prevent the rest from being installed.
+	logToFile("⚠️  Bulk install failed. Retrying package by package to isolate failures...")
+	var failed []string
+	for _, pkg := range toInstall {
+		singleCmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get install -o Dpkg::Options::='--force-confold' %s %s", flags, pkg)
+		if err := utils.Exec(singleCmd); err != nil {
+			logToFile(fmt.Sprintf("⚠️  Could not install: %s", pkg))
+			failed = append(failed, pkg)
+		}
+	}
+
+	if len(failed) > 0 {
+		logToFile(fmt.Sprintf("⚠️  %d packages could not be installed: %v", len(failed), failed))
+	} else {
+		logToFile("✅ All packages installed successfully (one by one).")
+	}
 }
 
 func printAiPrompt(packages []string) {
@@ -197,7 +215,7 @@ func printAiPrompt(packages []string) {
 		logToFile(fmt.Sprintf("Error creating AIPrompt.txt: %v", err))
 	} else {
 		if sudoUser != "" {
-			utils.Exec(fmt.Sprintf("chown %s:%s %s", sudoUser, sudoUser, promptFile))
+			utils.Exec(fmt.Sprintf("sudo chown %s:%s %s", sudoUser, sudoUser, promptFile))
 		}
 		logToFile(fmt.Sprintf("✅ AIPrompt.txt file generated at: %s", promptFile))
 		utils.LogNormal("Prompt file generated in Home: %s%s%s\n", utils.ColorYellow, promptFile, utils.ColorReset)
