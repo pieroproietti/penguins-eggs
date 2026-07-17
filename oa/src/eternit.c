@@ -4,7 +4,7 @@
 #include <sys/mount.h>
 #include "cJSON.h"
 #include "logger.h"
-#include "ethernit.h"
+#include "eternit.h"
 
 // Bottom-up sorting (longest path to shortest)
 static int compare_path_length(const void *a, const void *b) {
@@ -23,16 +23,16 @@ static const char* get_json_string(cJSON *obj, const char *key, const char *fall
 }
 
 // Main dynamic unmount function
-int run_ethernit_umount(cJSON *task) {
+int run_eternit_umount(cJSON *task) {
     const char *work_dir = get_json_string(task, "work_dir", "");
     if (strlen(work_dir) == 0) {
-        LOG_ERR("❌ [ethernit] Error: 'work_dir' missing for decontamination.");
+        LOG_ERR("❌ [eternit] Error: 'work_dir' missing for decontamination.");
         return 1;
     }
 
     FILE *fp = fopen("/proc/mounts", "r");
     if (!fp) {
-        LOG_ERR("❌ [ethernit] Unable to read /proc/mounts");
+        LOG_ERR("❌ [eternit] Unable to read /proc/mounts");
         return 1;
     }
 
@@ -60,7 +60,7 @@ int run_ethernit_umount(cJSON *task) {
         qsort(mounts, count, sizeof(char*), compare_path_length);
     }
 
-    LOG_INFO("☣️  [ethernit] Environmental decontamination initiated: Found %d mount points in %s", count, work_dir);
+    LOG_INFO("☣️  [eternit] Environmental decontamination initiated: Found %d mount points in %s", count, work_dir);
     
     // Surgical dismantling
     for (int i = 0; i < count; i++) {
@@ -71,6 +71,6 @@ int run_ethernit_umount(cJSON *task) {
     
     if (mounts) free(mounts);
 
-    LOG_INFO("✅ [ethernit] Area secured. Decontamination completed for: %s", work_dir);
+    LOG_INFO("✅ [eternit] Area secured. Decontamination completed for: %s", work_dir);
     return 0;
 }
