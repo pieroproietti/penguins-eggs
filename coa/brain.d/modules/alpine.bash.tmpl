@@ -42,11 +42,55 @@ cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"
 # 🎯 INSTALLER
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
-KVER=$(ls -1 /lib/modules/ | head -n 1)
-mkinitfs -o /boot/initramfs-$KVER $KVER
+# Inject target filesystem support into mkinitfs.conf if it's btrfs
+if [ -f /etc/mkinitfs/mkinitfs.conf ]; then
+    TARGET_FS=$(awk '$2 == "/" {print $3}' /etc/fstab)
+    [ -z "$TARGET_FS" ] && TARGET_FS="ext4"
+    if [ "$TARGET_FS" = "btrfs" ]; then
+        if ! grep -E "^features=.*btrfs" /etc/mkinitfs/mkinitfs.conf >/dev/null; then
+            sed -i -E 's/features="([^"]*)"/features="\1 btrfs"/g' /etc/mkinitfs/mkinitfs.conf
+        fi
+    fi
+fi
+
+# Rebuild initramfs for all installed kernel versions
+for KDIR in /lib/modules/*; do
+    [ -d "$KDIR" ] || continue
+    KVER=$(basename "$KDIR")
+    FLAVOR="${KVER##*-}"
+    if [ -n "$FLAVOR" ]; then
+        mkinitfs -o "/boot/initramfs-$FLAVOR" "$KVER"
+    fi
+done
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
+if [ -f /etc/default/grub ]; then
+    TARGET_FS=$(awk '$2 == "/" {print $3}' /etc/fstab)
+    [ -z "$TARGET_FS" ] && TARGET_FS="ext4"
+
+    # Replace rootfstype=...
+    if grep -q "rootfstype=" /etc/default/grub; then
+        sed -i -E "s/rootfstype=[^ \"]+/rootfstype=$TARGET_FS/g" /etc/default/grub
+    else
+        sed -i -E "s/(GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*)/\1 rootfstype=$TARGET_FS/g" /etc/default/grub
+    fi
+
+    # Replace modules=...
+    if grep -q "modules=" /etc/default/grub; then
+        OLD_MODS=$(grep -oE "modules=[^\"]+" /etc/default/grub | head -n 1)
+        if ! echo "$OLD_MODS" | grep -q "$TARGET_FS"; then
+            if echo "$OLD_MODS" | grep -qE "(ext4|ext3|ext2|xfs|btrfs|zfs|f2fs)"; then
+                sed -i -E "s/(modules=[^\"]*)(ext4|ext3|ext2|xfs|btrfs|zfs|f2fs)/\1$TARGET_FS/g" /etc/default/grub
+            else
+                sed -i -E "s/(modules=[^\"]+)/\1,$TARGET_FS/g" /etc/default/grub
+            fi
+        fi
+    else
+        sed -i -E "s/(GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*)/\1 modules=sd-mod,usb-storage,$TARGET_FS/g" /etc/default/grub
+    fi
+fi
+
 if [ -d /sys/firmware/efi ]; then
     # Tolerate NVRAM-only failures so the fallback below still runs.
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
@@ -61,3 +105,4 @@ else
 fi
 grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}
+
