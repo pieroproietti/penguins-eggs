@@ -4,24 +4,12 @@ distributions:
     like: ["ubuntu", "linuxmint", "kali", "pop", "devuan", "quirinux"]
     file: "debian.bash.tmpl"
   
-  # - id: "arch"
-  #   like: ["endeavouros", "cachyos"]
-  #   file: "arch.bash.tmpl"
-
-  # - id: "manjaro"
-  #   like: ["manjaro", "bigcommunity"]
-  #   file: "manjaro.bash.tmpl"
-  
   - id: "arch"
-    like: ["endeavouros", "cachyos"]
+    like: ["endeavouros", "cachyos", "garuda"]
     file: "arch-family.bash.tmpl"
 
   - id: "manjaro"
-    like: ["manjaro", "bigcommunity"]
-    file: "arch-family.bash.tmpl"
-
-  - id: "garuda"
-    like: []
+    like: ["manjaro", "bigcommunity", "biglinux"]
     file: "arch-family.bash.tmpl"
 
   - id: "fedora"
