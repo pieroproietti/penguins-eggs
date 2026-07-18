@@ -50,6 +50,9 @@ if [ -f /etc/mkinitfs/mkinitfs.conf ]; then
         if ! grep -E "^features=.*btrfs" /etc/mkinitfs/mkinitfs.conf >/dev/null; then
             sed -i -E 's/features="([^"]*)"/features="\1 btrfs"/g' /etc/mkinitfs/mkinitfs.conf
         fi
+        if [ -x /sbin/rc-update ]; then
+            rc-update add btrfs-scan boot || true
+        fi
     fi
 fi
 
@@ -65,10 +68,16 @@ done
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
-if [ -f /etc/default/grub ]; then
-    TARGET_FS=$(awk '$2 == "/" {print $3}' /etc/fstab)
-    [ -z "$TARGET_FS" ] && TARGET_FS="ext4"
+TARGET_FS=$(awk '$2 == "/" {print $3}' /etc/fstab)
+[ -z "$TARGET_FS" ] && TARGET_FS="ext4"
 
+# If the target filesystem is Btrfs, bind mount / to / inside chroot
+# to allow grub-probe/grub-install to correctly detect the Btrfs subvolume layout.
+if [ "$TARGET_FS" = "btrfs" ]; then
+    mount --bind / /
+fi
+
+if [ -f /etc/default/grub ]; then
     # Replace rootfstype=...
     if grep -q "rootfstype=" /etc/default/grub; then
         sed -i -E "s/rootfstype=[^ \"]+/rootfstype=$TARGET_FS/g" /etc/default/grub
@@ -93,7 +102,11 @@ fi
 
 if [ -d /sys/firmware/efi ]; then
     # Tolerate NVRAM-only failures so the fallback below still runs.
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+    if [ "$TARGET_FS" = "btrfs" ]; then
+        grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck --modules="btrfs zstd" || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+    else
+        grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+    fi
 
     # Removable fallback: firmware (notably some VM/OVMF setups) with no
     # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
@@ -104,5 +117,10 @@ else
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
 grub-mkconfig -o /boot/grub/grub.cfg
+
+# Cleanup the bind mount if we created it
+if [ "$TARGET_FS" = "btrfs" ]; then
+    umount -l /
+fi
 {{ end }}
 
