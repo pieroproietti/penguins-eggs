@@ -44,7 +44,18 @@ cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"
 {{ define "install_distro_initramfs" }}
 # Inject target filesystem support into mkinitfs.conf if it's btrfs
 if [ -f /etc/mkinitfs/mkinitfs.conf ]; then
-    TARGET_FS=$(awk '$2 == "/" {print $3}' /etc/fstab)
+    TARGET_FS=""
+    if [ -f /etc/fstab ]; then
+        while read -r dev mnt fs opts dump pass; do
+            case "$dev" in
+                \#*|"") continue ;;
+            esac
+            if [ "$mnt" = "/" ]; then
+                TARGET_FS="$fs"
+                break
+            fi
+        done < /etc/fstab
+    fi
     [ -z "$TARGET_FS" ] && TARGET_FS="ext4"
     if [ "$TARGET_FS" = "btrfs" ]; then
         if ! grep -E "^features=.*btrfs" /etc/mkinitfs/mkinitfs.conf >/dev/null; then
@@ -68,7 +79,18 @@ done
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
-TARGET_FS=$(awk '$2 == "/" {print $3}' /etc/fstab)
+TARGET_FS=""
+if [ -f /etc/fstab ]; then
+    while read -r dev mnt fs opts dump pass; do
+        case "$dev" in
+            \#*|"") continue ;;
+        esac
+        if [ "$mnt" = "/" ]; then
+            TARGET_FS="$fs"
+            break
+        fi
+    done < /etc/fstab
+fi
 [ -z "$TARGET_FS" ] && TARGET_FS="ext4"
 
 # If the target filesystem is Btrfs, bind mount / to / inside chroot
@@ -78,6 +100,11 @@ if [ "$TARGET_FS" = "btrfs" ]; then
 fi
 
 if [ -f /etc/default/grub ]; then
+    # Ensure GRUB_CMDLINE_LINUX_DEFAULT is defined so that sed replacements can match
+    if ! grep -q "^GRUB_CMDLINE_LINUX_DEFAULT=" /etc/default/grub; then
+        echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet"' >> /etc/default/grub
+    fi
+
     # Replace rootfstype=...
     if grep -q "rootfstype=" /etc/default/grub; then
         sed -i -E "s/rootfstype=[^ \"]+/rootfstype=$TARGET_FS/g" /etc/default/grub
@@ -100,6 +127,79 @@ if [ -f /etc/default/grub ]; then
     fi
 fi
 
+if [ -f /etc/update-extlinux.conf ]; then
+    # Replace rootfstype=... in default_kernel_opts
+    if grep -q "rootfstype=" /etc/update-extlinux.conf; then
+        sed -i -E "s/rootfstype=[^ \"]+/rootfstype=$TARGET_FS/g" /etc/update-extlinux.conf
+    else
+        sed -i -E "s/(default_kernel_opts=\"[^\"]*)/\1 rootfstype=$TARGET_FS/g" /etc/update-extlinux.conf
+    fi
+
+    # Replace modules=...
+    if grep -q "modules=" /etc/update-extlinux.conf; then
+        OLD_MODS=$(grep -oE "modules=[^\"]+" /etc/update-extlinux.conf | head -n 1)
+        if ! echo "$OLD_MODS" | grep -q "$TARGET_FS"; then
+            if echo "$OLD_MODS" | grep -qE "(ext4|ext3|ext2|xfs|btrfs|zfs|f2fs)"; then
+                sed -i -E "s/(modules=[^\"]*)(ext4|ext3|ext2|xfs|btrfs|zfs|f2fs)/\1$TARGET_FS/g" /etc/update-extlinux.conf
+            else
+                sed -i -E "s/(modules=[^\"]+)/\1,$TARGET_FS/g" /etc/update-extlinux.conf
+            fi
+        fi
+    fi
+fi
+
+# Save /etc/mtab state and write static mtab to resolve grub-probe / grub-install in chroot
+[ -L /etc/mtab ] && WAS_SYMLINK=1 || WAS_SYMLINK=0
+rm -f /etc/mtab
+
+ROOT_DEV=""
+if [ -f /etc/fstab ]; then
+    while read -r dev mnt fs opts dump pass; do
+        case "$dev" in
+            \#*|"") continue ;;
+        esac
+        if [ "$mnt" = "/" ]; then
+            ROOT_DEV="$dev"
+            break
+        fi
+    done < /etc/fstab
+fi
+[ -z "$ROOT_DEV" ] && ROOT_DEV="/dev/sda2"
+if [[ "$ROOT_DEV" == UUID=* ]] || [[ "$ROOT_DEV" == LABEL=* ]]; then
+    REAL_ROOT_DEV=$(findfs "$ROOT_DEV" 2>/dev/null || echo "/dev/sda2")
+else
+    REAL_ROOT_DEV="$ROOT_DEV"
+fi
+
+EFI_DEV=""
+if [ -f /etc/fstab ]; then
+    while read -r dev mnt fs opts dump pass; do
+        case "$dev" in
+            \#*|"") continue ;;
+        esac
+        if [ "$mnt" = "/boot/efi" ] || [ "$mnt" = "/boot/EFI" ]; then
+            EFI_DEV="$dev"
+            break
+        fi
+    done < /etc/fstab
+fi
+if [ -n "$EFI_DEV" ]; then
+    if [[ "$EFI_DEV" == UUID=* ]] || [[ "$EFI_DEV" == LABEL=* ]]; then
+        REAL_EFI_DEV=$(findfs "$EFI_DEV" 2>/dev/null || echo "/dev/sda1")
+    else
+        REAL_EFI_DEV="$EFI_DEV"
+    fi
+fi
+
+MTAB_OPTS="rw,relatime"
+if [ "$TARGET_FS" = "btrfs" ]; then
+    MTAB_OPTS="rw,relatime,subvol=/@"
+fi
+echo "$REAL_ROOT_DEV / $TARGET_FS $MTAB_OPTS 0 0" > /etc/mtab
+if [ -n "$REAL_EFI_DEV" ]; then
+    echo "$REAL_EFI_DEV /boot/efi vfat rw,relatime 0 0" >> /etc/mtab
+fi
+
 if [ -d /sys/firmware/efi ]; then
     # Tolerate NVRAM-only failures so the fallback below still runs.
     if [ "$TARGET_FS" = "btrfs" ]; then
@@ -117,6 +217,14 @@ else
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
 fi
 grub-mkconfig -o /boot/grub/grub.cfg
+
+# Restore /etc/mtab state
+rm -f /etc/mtab
+if [ "$WAS_SYMLINK" = "1" ]; then
+    ln -sf /proc/mounts /etc/mtab
+else
+    touch /etc/mtab
+fi
 
 # Cleanup the bind mount if we created it
 if [ "$TARGET_FS" = "btrfs" ]; then
