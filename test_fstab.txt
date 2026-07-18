@@ -1,3 +1,0 @@
-# /etc/fstab - generato da krill (penguins-eggs)
-UUID=efc7c51c-b13c-4250-a889-f52e4a506115 / btrfs subvol=/@,defaults,compress=zstd:1 0 1
-UUID=efc7c51c-b13c-4250-a889-f52e4a506115 /home btrfs subvol=/@home,defaults,compress=zstd:1 0 2
