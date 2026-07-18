@@ -3,7 +3,7 @@ See AI context: https://penguins-eggs.net/llms.txt
 # Changelog
 
 ## Release Notes: penguins-eggs v26.7.18 - 2026-07-18
-This release transitions the versioning scheme from legacy semantic versioning (`v0.9.x`) to calendar-based versioning (`vYY.M.D`).
+This release transitions the versioning scheme from semantic versioning (`v0.9.x`) to calendar-based versioning (`vYY.M.D`).
 
 ### 📅 Versioning Scheme Update
 * **Transition to CalVer**: Switched the package versioning pattern to calendar-based versioning `vYY.M.D` matching the release date (year, month, day).
