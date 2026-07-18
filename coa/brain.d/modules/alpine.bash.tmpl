@@ -103,9 +103,9 @@ fi
 if [ -d /sys/firmware/efi ]; then
     # Tolerate NVRAM-only failures so the fallback below still runs.
     if [ "$TARGET_FS" = "btrfs" ]; then
-        grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck --modules="btrfs zstd" || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+        grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck --no-nvram --modules="btrfs zstd" || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
     else
-        grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+        grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck --no-nvram || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
     fi
 
     # Removable fallback: firmware (notably some VM/OVMF setups) with no
