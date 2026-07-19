@@ -31,7 +31,6 @@ const (
 	StateWelcome appState = iota
 	StateLocation
 	StateKeyboard
-	StateNetwork
 	StateDisk
 	StateUsers
 	StateSummary
@@ -313,8 +312,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateLocation(key)
 		case StateKeyboard:
 			return m.updateKeyboard(key)
-		case StateNetwork:
-			return m.updateNetwork(msg)
 		case StateDisk:
 			return m.updateDisk(key)
 		case StateUsers:
@@ -423,7 +420,7 @@ func (m model) updateKeyboard(key string) (tea.Model, tea.Cmd) {
 	case "right":
 		m.kbdIdx = cycle(m.kbdIdx, 1, len(kbdLayouts))
 	case "enter":
-		m.state = StateNetwork
+		m.state = StateDisk
 	}
 	return m, nil
 }
@@ -587,8 +584,6 @@ func (m model) View() string {
 		insideBox = m.viewLocation()
 	case StateKeyboard:
 		insideBox = m.viewKeyboard()
-	case StateNetwork:
-		insideBox = m.viewNetwork()
 	case StateDisk:
 		insideBox = m.viewDisk()
 	case StateUsers:
@@ -626,7 +621,7 @@ func (m model) View() string {
 // Tab orizzontale sopra il contenuto: con un terminale 80x24 una colonna
 // laterale toglie troppo spazio utile, una riga in alto no.
 func renderSteps(currentStep int) string {
-	steps := []string{"Welcome", "Location", "Keyboard", "Network", "Disk", "Users", "Summary", "Install"}
+	steps := []string{"Welcome", "Location", "Keyboard", "Disk", "Users", "Summary", "Install"}
 	var renderedSteps []string
 	for i, step := range steps {
 		if i+1 == currentStep {
@@ -722,7 +717,7 @@ func (m model) viewNetwork() string {
 }
 
 func (m model) viewDisk() string {
-	stepsView := renderSteps(5)
+	stepsView := renderSteps(4)
 
 	device := m.disks[m.diskIdx]
 	row1 := fmt.Sprintf("BIOS: %s | Installation mode: %s", cyanText.Render(m.diskBios), cyanText.Render(m.diskMode))
@@ -750,7 +745,7 @@ func (m model) selectorRow(field int, label, value string) string {
 }
 
 func (m model) viewUsers() string {
-	stepsView := renderSteps(6)
+	stepsView := renderSteps(5)
 
 	labels := []string{"fullname", "login", "user password", "root password", "hostname"}
 	var rows []string
@@ -778,7 +773,7 @@ func (m model) viewUsers() string {
 }
 
 func (m model) viewSummary() string {
-	stepsView := renderSteps(7)
+	stepsView := renderSteps(6)
 
 	login := m.userInputs[fieldLogin].Value()
 	hostname := m.userInputs[fieldHostname].Value()
@@ -796,12 +791,6 @@ func (m model) viewSummary() string {
 	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(kbdLayouts[m.kbdIdx]))
 	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(m.swapTypes[m.swapIdx]))
 	row8 := "Network: " + greenText.Render("dhcp")
-	if m.netStatic {
-		row8 = fmt.Sprintf("Network: %s on %s gw %s",
-			greenText.Render("static "+m.netInputs[0].Value()),
-			greenText.Render(orDefault(m.network.Iface, "eth0")),
-			greenText.Render(m.netInputs[2].Value()))
-	}
 
 	eraseWarning := "Erase all data on disk"
 	msgBox := redBgWhiteText.Render("installation device: " + device)
@@ -819,7 +808,7 @@ func maskPassword(pass string) string {
 }
 
 func (m model) viewInstall() string {
-	stepsView := renderSteps(8)
+	stepsView := renderSteps(7)
 	header := fmt.Sprintf("Installing: %s\n", cyanText.Render(m.productName))
 
 	spin := m.spinner.View()
@@ -907,14 +896,7 @@ func (m *model) buildPlan() *engine.Plan {
 		instances[inst.Id] = inst.Config
 	}
 
-	// networkcfg è un modulo solo-Krill (Calamares non configura la rete):
-	// lo inseriamo dopo 'users' senza toccare il settings.conf condiviso.
-	exec := insertAfter(cfg.Settings.Exec(), "users", "networkcfg")
-
-	netType := "dhcp"
-	if m.netStatic {
-		netType = "static"
-	}
+	exec := cfg.Settings.Exec()
 
 	return &engine.Plan{
 		ConfigRoot: cfg.Root,
@@ -941,13 +923,12 @@ func (m *model) buildPlan() *engine.Plan {
 		KbdModel:  m.kbdModel,
 		KbdLayout: kbdLayouts[m.kbdIdx],
 
-		NetIface:   orDefault(m.network.Iface, "eth0"),
-		NetType:    netType,
-		NetAddress: m.netInputs[0].Value(),
-		NetNetmask: m.netInputs[1].Value(),
-		NetGateway: m.netInputs[2].Value(),
-		NetDns:     m.netInputs[3].Value(),
-
+		NetIface:     orDefault(m.network.Iface, "eth0"),
+		NetType:      "dhcp",
+		NetAddress:   "",
+		NetNetmask:   "",
+		NetGateway:   "",
+		NetDns:       "",
 		UnpackSource: cfg.SquashfsSource(),
 		RemoveUser:   cfg.Removeuser.Username,
 	}

@@ -21,7 +21,7 @@
 - [Building](./development/building.md) — Requirements and toolchain for native packages.
 - [CI Architecture](./development/ci.md) — Hammers (packaging) and Furnace (remastering) pipelines.
 - [Proxmox Integration](./development/proxmox.md) — VirtFS, Guest Agent, serial console setup.
-- [Vagrant Lab](./development/vagrant.md) — Local test lab with KVM/libvirt (legacy).
+
 
 ## Other
 - [Manifestum](./manifestum.md) — The founding manifesto: origins, vision and call to action.

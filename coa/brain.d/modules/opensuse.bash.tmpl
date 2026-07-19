@@ -156,8 +156,13 @@ if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     ROOTFLAGS="rootflags=subvol=@"
 fi
 
+PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+if [ -z "$PRETTY_NAME" ]; then
+    PRETTY_NAME="openSUSE"
+fi
+
 cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
-title   OA Linux (openSUSE)
+title   $PRETTY_NAME
 linux   /$KERNEL_FILE
 initrd  /$INITRD_FILE
 options root=$ROOT_PART rw $ROOTFLAGS
@@ -187,9 +192,14 @@ if [ -d /sys/firmware/efi ]; then
         ROOTFLAGS="rootflags=subvol=@"
     fi
     
+    PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+    if [ -z "$PRETTY_NAME" ]; then
+        PRETTY_NAME="openSUSE"
+    fi
+
     cat <<EOF > /boot/efi/limine.conf
 timeout: 5
-/OA Linux (openSUSE)
+/$PRETTY_NAME
     protocol: linux
     kernel_path: boot://$KERNEL_FILE
     initramfs_path: boot://$INITRD_FILE
@@ -209,9 +219,14 @@ else
         ROOTFLAGS="rootflags=subvol=@"
     fi
     
+    PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+    if [ -z "$PRETTY_NAME" ]; then
+        PRETTY_NAME="openSUSE"
+    fi
+
     cat <<EOF > /boot/limine.conf
 timeout: 5
-/OA Linux (openSUSE)
+/$PRETTY_NAME
     protocol: linux
     kernel_path: boot://$KERNEL_FILE
     initramfs_path: boot://$INITRD_FILE

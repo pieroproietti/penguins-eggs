@@ -1,6 +1,14 @@
 See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
+
+## Release Notes: penguins-eggs v26.7.18 - 2026-07-18
+This release transitions the versioning scheme from semantic versioning (`v0.9.x`) to calendar-based versioning (`vYY.M.D`).
+
+### 📅 Versioning Scheme Update
+* **Transition to CalVer**: Switched the package versioning pattern to calendar-based versioning `vYY.M.D` matching the release date (year, month, day).
+* **AUR Compatibility & Versioning**: Adopted this calendar-based format to resolve dependency and update conflicts with the legacy `penguins-eggs` package currently present in the Arch User Repository (AUR). The previous `v0.9.x` versions were treated as older/inferior compared to the old TypeScript-based `penguins-eggs` package versions already in AUR, preventing installation. CalVer solves this upgrade compatibility issue immediately and avoids the need to artificially inflate standard release numbers.
+
 ## Release Notes: penguins-eggs v0.9.6 - 2026-07-16
 This release introduces a new **Go-based Incubator CI** for automated ISO testing, alongside critical bootloader installer fixes, user creation safeguards, vendor branding custom steps, and wardrobe permission enhancements.
 
