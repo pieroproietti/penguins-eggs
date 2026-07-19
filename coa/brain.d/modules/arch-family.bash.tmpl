@@ -31,6 +31,12 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
     # ==========================================
     echo "-> Garuda/EndeavourOS Linux detected: Generating Live via dracut"
     
+    # 1. Controllo dipendenze opzionali: Dracut
+    if ! command -v dracut > /dev/null 2>&1; then
+        echo "-> dracut missing. Installing on the fly..."
+        pacman -Sy --noconfirm dracut || { echo "[FATAL ERROR] Unable to install dracut"; exit 1; }
+    fi
+    
     # We are already in chroot, so dracut works directly on /boot
     # Adding -N to disable host-only mode (crucial for live environments)
     dracut -N -f --add "dmsquash-live" "/boot/oa-initrd.img"
@@ -39,6 +45,13 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
     # ==========================================
     # ARCH / MANJARO BRANCH (mkinitcpio)
     # ==========================================
+    
+    # 2. Controllo dipendenze di rete comuni per mkinitcpio
+    if ! pacman -Qq mkinitcpio-nfs-utils > /dev/null 2>&1; then
+        echo "-> mkinitcpio-nfs-utils missing. Installing on the fly..."
+        pacman -Sy --noconfirm mkinitcpio-nfs-utils || { echo "[WARNING] Unable to install mkinitcpio-nfs-utils"; }
+    fi
+
     cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak
     mkdir -p /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
     [ "$(ls -A /etc/mkinitcpio.conf.d/ 2>/dev/null)" ] && mv /etc/mkinitcpio.conf.d/*.conf /etc/mkinitcpio.conf.d.bak/
@@ -52,6 +65,7 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
     ' EXIT
 
     {{ if eq .DistroID "manjaro" }}
+        # 3. Controllo dipendenze opzionali: Manjaro
         # WARNING: -Qq checks for the exact name
         if ! pacman -Qq manjaro-tools-iso > /dev/null 2>&1; then 
             echo "-> manjaro-tools-iso missing. Installing on the fly..."
@@ -63,9 +77,14 @@ HOOKS=(base udev microcode modconf kms miso miso_loop_mnt block keyboard keymap 
 COMPRESSION="zstd"
 EOF
     {{ else }}
-        # If the archiso hook is missing (e.g., due to rsync exclusions), install mkinitcpio-archiso
-        if [ ! -f /usr/lib/initcpio/install/archiso ]; then 
-            echo "-> archiso hook missing. Installing mkinitcpio-archiso on the fly..."
+        # 4. Controllo dipendenze opzionali: Arch Puro
+        if ! pacman -Qq archiso > /dev/null 2>&1; then 
+            echo "-> archiso missing. Installing on the fly..."
+            pacman -Sy --noconfirm archiso || { echo "[FATAL ERROR] Unable to install archiso"; exit 1; }
+        fi
+        
+        if ! pacman -Qq mkinitcpio-archiso > /dev/null 2>&1; then 
+            echo "-> mkinitcpio-archiso missing. Installing on the fly..."
             pacman -Sy --noconfirm mkinitcpio-archiso || { echo "[FATAL ERROR] Unable to install mkinitcpio-archiso"; exit 1; }
         fi
         
