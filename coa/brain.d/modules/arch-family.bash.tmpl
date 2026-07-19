@@ -7,7 +7,7 @@
 # DECLARATIVE CONSTANTS (Live Boot Parameters)
 # ----------------------------------------------------------------------------
 {{ define "distro_boot_params" }}
-{{- if eq .DistroID "garuda" -}}
+{{- if or (eq .DistroID "garuda") (eq .DistroID "endeavouros") -}}
 root=live:CDLABEL=OA_LIVE rd.live.image rd.live.dir=arch/x86_64 rd.live.squashimg=airootfs.sfs rd.live.overlay.size=2048 quiet
 {{- else if eq .DistroID "manjaro" -}}
 misobasedir=manjaro misolabel=OA_LIVE cow_spacesize=2G
@@ -25,11 +25,11 @@ set -e
 
 echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
 
-{{ if eq .DistroID "garuda" }}
+{{ if or (eq .DistroID "garuda") (eq .DistroID "endeavouros") }}
     # ==========================================
-    # GARUDA BRANCH (Dracut)
+    # GARUDA/ENDEAVOUROS BRANCH (Dracut)
     # ==========================================
-    echo "-> Garuda Linux detected: Generating Live via dracut"
+    echo "-> Garuda/EndeavourOS Linux detected: Generating Live via dracut"
     
     # We are already in chroot, so dracut works directly on /boot
     # Adding -N to disable host-only mode (crucial for live environments)
@@ -162,7 +162,7 @@ fi
 {{ else }}
     mkdir -p /home/eggs/isodir/arch/x86_64
     ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/airootfs.sfs
-    echo "-> airootfs.sfs hardlink created for Arch/Garuda."
+    echo "-> airootfs.sfs hardlink created for Arch/Garuda/EndeavourOS."
 {{ end }}
 {{ end }}
 
@@ -170,8 +170,8 @@ fi
 # 🎯 FINAL DISK INSTALLER (Executed in Chroot)
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
-{{ if eq .DistroID "garuda" }}
-    echo "-> Regenerating initramfs on Garuda via dracut..."
+{{ if or (eq .DistroID "garuda") (eq .DistroID "endeavouros") }}
+    echo "-> Regenerating initramfs on Garuda/EndeavourOS via dracut..."
     
     KVER_DIR=$(ls -1 /lib/modules/ | grep -v "extramodules" | head -n 1)
     if [ -z "$KVER_DIR" ]; then
