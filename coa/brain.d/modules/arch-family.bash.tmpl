@@ -124,24 +124,29 @@ if [ ! -f "$PKGBASE_FILE" ]; then
 fi
 PKG_NAME=$(cat "$PKGBASE_FILE" 2>/dev/null || echo "linux")
 
-# Unified smart search
+# Unified smart search - ORA SUPPORTA ANCHE ENDEAVOUROS
 if [ -f "$LIVEROOT/boot/vmlinuz-$PKG_NAME" ]; then
     KERNEL_SRC="$LIVEROOT/boot/vmlinuz-$PKG_NAME"
 elif [ -f "$LIVEROOT/boot/vmlinuz-${KVER_MAJOR_MINOR}-${ARCH}" ]; then
     KERNEL_SRC="$LIVEROOT/boot/vmlinuz-${KVER_MAJOR_MINOR}-${ARCH}"
+elif [ -f "$LIVEROOT/usr/lib/modules/$KERNEL_VERSION/vmlinuz" ]; then
+    # <<< IL SALVAVITA PER ENDEAVOUROS (e systemd-boot in generale) <<<
+    echo "-> Found kernel inside modules directory (systemd-boot layout detected)"
+    KERNEL_SRC="$LIVEROOT/usr/lib/modules/$KERNEL_VERSION/vmlinuz"
 else
     echo "-> Standard patterns not found, searching for a valid vmlinuz in /boot..."
     KERNEL_SRC=$(find "$LIVEROOT/boot" -maxdepth 1 -name "vmlinuz-*" -type f -print -quit)
 fi
 
 if [ -z "$KERNEL_SRC" ] || [ ! -f "$KERNEL_SRC" ]; then
-    echo "[FATAL ERROR] Unable to determine the kernel file in $LIVEROOT/boot!"
+    echo "[FATAL ERROR] Unable to determine the kernel file in $LIVEROOT!"
     exit 1
 fi
 
 echo "-> Copying from: $KERNEL_SRC"
 cp "$KERNEL_SRC" "$ISODIR/live/vmlinuz"
 
+# L'initrd non è un problema, perché nella sezione 5 dracut lo genera a forza in /boot/oa-initrd.img
 if [ ! -f "$LIVEROOT/boot/oa-initrd.img" ]; then
     echo "[FATAL ERROR] oa-initrd.img not found in $LIVEROOT/boot!"
     exit 1
@@ -244,15 +249,8 @@ fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
     echo "-> UEFI installation..."
-
-    # Vendor install: writes /boot/efi/EFI/{{ .DistroID }}/grubx64.efi and
-    # registers the NVRAM boot entry real firmware boots from. --removable
-    # alone would skip both of these and only write the fallback below.
-    # Tolerate NVRAM-only failures so the fallback below still runs.
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
 
-    # Removable fallback: firmware (notably some VM/OVMF setups) with no
-    # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
     mkdir -p /boot/efi/EFI/BOOT
     [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
 else
@@ -291,6 +289,25 @@ if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     rmdir /tmp/btrfs-raw
 fi
 
+# =====================================================================
+# FIX PER GRUB SU ENDEAVOUROS / SYSTEMD-BOOT LAYOUT
+# Controlliamo se c'è un kernel in /boot. Se manca, lo peschiamo dai moduli.
+# =====================================================================
+if ! ls /boot/vmlinuz-* 1> /dev/null 2>&1; then
+    echo "-> Nessun kernel trovato in /boot. Cerco nei moduli (layout systemd-boot)..."
+    KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
+    
+    if [ -n "$KERNEL_PATH" ]; then
+        # Recupera il nome della versione (es. 6.1.12-arch1-1)
+        KVER=$(basename $(dirname "$KERNEL_PATH"))
+        echo "-> Copio il kernel in /boot/vmlinuz-$KVER per GRUB..."
+        cp "$KERNEL_PATH" "/boot/vmlinuz-$KVER"
+    else
+        echo "[WARNING] Nessun kernel trovato da copiare in /boot per GRUB. La configurazione potrebbe fallire."
+    fi
+fi
+
+# Ora GRUB troverà sicuramente il kernel in /boot!
 grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}
 
@@ -299,16 +316,25 @@ echo "-> Installing systemd-boot (bootctl)..."
 bootctl install --esp-path=/boot/efi
 mkdir -p /boot/efi/loader/entries
 
-KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
-INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
+# Ricerca intelligente del kernel (supporto per layout classico e systemd-boot)
+KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
+if [ -z "$KERNEL_PATH" ]; then
+    KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
+fi
 
-if [ -z "$KERNEL_FILE" ] || [ -z "$INITRD_FILE" ]; then
-    echo "[FATAL ERROR] Unable to determine the installed kernel in the chroot."
+# L'initrd generato poco prima da dracut o mkinitcpio sarà in /boot
+INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+
+if [ -z "$KERNEL_PATH" ] || [ -z "$INITRD_PATH" ]; then
+    echo "[FATAL ERROR] Unable to determine the installed kernel or initrd in the chroot."
     exit 1
 fi
 
-cp "/boot/$KERNEL_FILE" /boot/efi/
-cp "/boot/$INITRD_FILE" /boot/efi/
+KERNEL_FILE=$(basename "$KERNEL_PATH")
+INITRD_FILE=$(basename "$INITRD_PATH")
+
+cp "$KERNEL_PATH" "/boot/efi/$KERNEL_FILE"
+cp "$INITRD_PATH" "/boot/efi/$INITRD_FILE"
 
 UCODE_LINE=""
 if [ -f /boot/amd-ucode.img ]; then
@@ -345,13 +371,21 @@ EOF
 {{ define "install_distro_limine" }}
 echo "-> Installing Limine bootloader (UEFI)..."
 
-KERNEL_FILE=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f -exec basename {} \; | head -n 1)
-INITRD_FILE=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f -exec basename {} \; | head -n 1)
+# Ricerca intelligente del kernel
+KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
+if [ -z "$KERNEL_PATH" ]; then
+    KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
+fi
 
-if [ -z "$KERNEL_FILE" ] || [ -z "$INITRD_FILE" ]; then
-    echo "[FATAL ERROR] Unable to determine the kernel for Limine."
+INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+
+if [ -z "$KERNEL_PATH" ] || [ -z "$INITRD_PATH" ]; then
+    echo "[FATAL ERROR] Unable to determine the kernel or initrd for Limine."
     exit 1
 fi
+
+KERNEL_FILE=$(basename "$KERNEL_PATH")
+INITRD_FILE=$(basename "$INITRD_PATH")
 
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
 ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
@@ -363,12 +397,16 @@ fi
 mkdir -p /boot/efi/EFI/BOOT
 cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
 
+# Limine ha bisogno che il kernel sia accessibile, se usiamo /boot/efi come ESP,
+# dovremmo copiare i file lì, oppure assicurarci che la partizione /boot sia letta.
+# Assumiamo che i percorsi boot:// puntino alla partizione corretta, ma per 
+# consistenza e sicurezza con EndeavourOS usiamo i path completi che abbiamo trovato:
 cat <<EOF > /boot/efi/limine.conf
 timeout: 5
 /OA Linux
     protocol: linux
-    kernel_path: boot://$KERNEL_FILE
-    initramfs_path: boot://$INITRD_FILE
+    kernel_path: boot://${KERNEL_PATH#/boot/}
+    initramfs_path: boot://${INITRD_PATH#/boot/}
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 {{ end }}

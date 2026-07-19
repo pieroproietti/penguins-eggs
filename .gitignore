@@ -43,12 +43,3 @@ coa/plan_coa_tmp.json
 Thumbs.db
 __pycache__
 py_oa_tools.egg-info
-
-# Escludi la cartella di stato locale di Vagrant
-.vagrant/
-
-# Escludi eventuali box impacchettate localmente
-*.box
-
-
-
