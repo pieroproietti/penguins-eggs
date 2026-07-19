@@ -202,10 +202,32 @@ fi
         echo "[FATAL ERROR] Unable to determine the kernel in the chroot."
         exit 1
     fi
-    
-    # -N (no-hostonly) is vital to generate the image correctly from within the chroot
-    dracut -N -f --add "btrfs" --kver "$KVER_DIR"
-    
+
+    INITRD_TARGET="/boot/initramfs-$KVER_DIR.img"
+
+    # The distro's own kernel-package hook may have already dropped a
+    # differently-named initramfs in /boot (e.g. a pkgbase-named image built
+    # before this regen, with no btrfs support). install_distro_systemd_boot/
+    # install_distro_limine pick their INITRD_FILE via an unordered
+    # `find | head -n1` over the same glob, so a stale leftover here could be
+    # silently selected instead of the one we're about to (re)generate below.
+    find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" ! -name "$(basename "$INITRD_TARGET")" -delete
+
+    # -N (no-hostonly) is vital to generate the image correctly from within the chroot.
+    # Explicit outfile is required: Garuda's dracut.conf.d defaults to the BLS/
+    # machine-id layout under /boot/efi/<machine-id>/<kver>/, which doesn't exist
+    # yet at this point in the install and makes dracut fail outright. Naming it
+    # explicitly matches what install_distro_systemd_boot/install_distro_limine
+    # already search for (initramfs-*.img under /boot).
+    if ! dracut -N -f --add "btrfs" --kver "$KVER_DIR" "$INITRD_TARGET"; then
+        echo "[FATAL ERROR] dracut failed to generate $INITRD_TARGET"
+        exit 1
+    fi
+    if [ ! -f "$INITRD_TARGET" ]; then
+        echo "[FATAL ERROR] dracut reported success but $INITRD_TARGET is missing"
+        exit 1
+    fi
+
 {{ else }}
     echo "-> Regenerating mkinitcpio-based initramfs..."
     ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
