@@ -352,8 +352,13 @@ if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     ROOTFLAGS="rootflags=subvol=@"
 fi
 
+PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+if [ -z "$PRETTY_NAME" ]; then
+    PRETTY_NAME="Arch Linux"
+fi
+
 cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
-title   OA Linux
+title   $PRETTY_NAME
 linux   /$KERNEL_FILE
 ${UCODE_LINE}
 initrd  /$INITRD_FILE
@@ -401,9 +406,14 @@ cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
 # dovremmo copiare i file lì, oppure assicurarci che la partizione /boot sia letta.
 # Assumiamo che i percorsi boot:// puntino alla partizione corretta, ma per 
 # consistenza e sicurezza con EndeavourOS usiamo i path completi che abbiamo trovato:
+PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+if [ -z "$PRETTY_NAME" ]; then
+    PRETTY_NAME="Arch Linux"
+fi
+
 cat <<EOF > /boot/efi/limine.conf
 timeout: 5
-/OA Linux
+/$PRETTY_NAME
     protocol: linux
     kernel_path: boot://${KERNEL_PATH#/boot/}
     initramfs_path: boot://${INITRD_PATH#/boot/}
