@@ -280,3 +280,22 @@ func printAiPrompt(packages []string) {
 		utils.LogNormal("Prompt file generated in Home: %s%s%s\n", utils.ColorYellow, promptFile, utils.ColorReset)
 	}
 }
+
+// removePackages removes packages that the vendor does not want on the system.
+// Errors are logged but do not abort the process -- a package may simply
+// not be installed on this particular machine.
+func removePackages(packages []string) {
+	if len(packages) == 0 {
+		return
+	}
+
+	pkgString := strings.Join(packages, " ")
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get remove -o Dpkg::Options::='--force-confold' -y %s", pkgString)
+	logToFile(fmt.Sprintf("Removing packages: %s", pkgString))
+	if err := utils.Exec(cmd); err != nil {
+		logToFile(fmt.Sprintf("⚠️  Some packages could not be removed (may not be installed): %v", err))
+	}
+
+	// Clean up orphaned dependencies
+	utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get autoremove -y")
+}

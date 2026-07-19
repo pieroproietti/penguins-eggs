@@ -79,6 +79,16 @@ func applySuit(dir string, suit *Suit) error {
 		installNoRecommends(suit.PackagesNoRecommends)
 	}
 
+	if len(suit.PackagesInteractive) > 0 {
+		utils.LogNormal("[%s] Installing interactive packages (license prompts may appear): %v", suit.Name, suit.PackagesInteractive)
+		installInteractive(suit.PackagesInteractive)
+	}
+
+	if len(suit.PackagesRemove) > 0 {
+		utils.LogNormal("[%s] Removing packages not needed by this vendor: %v", suit.Name, suit.PackagesRemove)
+		removePackages(suit.PackagesRemove)
+	}
+
 	sysrootPath := filepath.Join(dir, "sysroot")
 	if _, err := os.Stat(sysrootPath); os.IsNotExist(err) {
 		sysrootPath = filepath.Join(dir, "dirs")
@@ -140,6 +150,6 @@ func copySkelToUser() {
 	// costume ("Home directory not accessible: Permission denied" en cada
 	// login). --no-o --no-g --chown fija el dueño real de destino
 	// explícitamente en vez de heredarlo de /etc/skel.
-	cmd := fmt.Sprintf("sudo rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
+	cmd := fmt.Sprintf("rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
 	utils.Exec(cmd)
 }

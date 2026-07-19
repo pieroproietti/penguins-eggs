@@ -10,27 +10,24 @@ type WardrobeInfo struct {
 
 // Suit rappresenta il nuovo standard index.yaml
 type Suit struct {
-	Name        string           `yaml:"name"`
-	Description string           `yaml:"description"`
-	Packages    []string         `yaml:"packages"`    // Pacchetti di riferimento (Debian) - forma piatta (legacy)
-	Accessories []string         `yaml:"accessories"` // Altri vestiti inclusi - forma piatta (legacy)
-	Cmds        []string         `yaml:"cmds"`        // Comandi post-install - forma piatta (legacy)
-	Dress       []planner.OATask `yaml:"dress"`       // Task complessi opzionali
-
-	// Forma annidata, usata dalla maggior parte dei costume attuali
-	// (owl, duck, chicks, albatros, eagle, gypaetus, seagull...).
-	Distributions []string  `yaml:"distributions"`
-	Sequence      *Sequence `yaml:"sequence"`
-	Finalize      *Finalize `yaml:"finalize"`
-	Reboot        bool      `yaml:"reboot"`
-
-	// Popolato da normalize() a partire da Sequence.PackagesNoInstallRecommends.
+	Name          string           `yaml:"name"`
+	Description   string           `yaml:"description"`
+	Packages      []string         `yaml:"packages"`
+	Accessories   []string         `yaml:"accessories"`
+	Cmds          []string         `yaml:"cmds"`
+	Dress         []planner.OATask `yaml:"dress"`
+	Distributions []string         `yaml:"distributions"`
+	Sequence      *Sequence        `yaml:"sequence"`
+	Finalize      *Finalize        `yaml:"finalize"`
+	Reboot        bool             `yaml:"reboot"`
 	PackagesNoRecommends []string `yaml:"-"`
-
 	// Popolato da normalize() a partire da Sequence.PackagesInteractive.
 	// These packages are installed without DEBIAN_FRONTEND=noninteractive
 	// so the user can respond to license prompts and debconf questions.
 	PackagesInteractive []string `yaml:"-"`
+	// Populated from Sequence.PackagesRemove.
+	// Removed after all packages are installed.
+	PackagesRemove []string `yaml:"-"`
 }
 
 // Sequence raccoglie repository, pacchetti e accessori nella forma annidata.
@@ -39,6 +36,7 @@ type Sequence struct {
 	Packages                    []string      `yaml:"packages"`
 	PackagesNoInstallRecommends []string      `yaml:"packages_no_install_recommends"`
 	PackagesInteractive         []string      `yaml:"packages_interactive"`
+	PackagesRemove              []string      `yaml:"packages_remove"`
 	Accessories                 []string      `yaml:"accessories"`
 	Cmds                        []string      `yaml:"cmds"`
 }
@@ -57,9 +55,6 @@ type Finalize struct {
 	Cmds      []string `yaml:"cmds"`
 }
 
-// normalize fonde i campi della forma annidata (Sequence/Finalize) in quelli
-// piatti (Packages/Accessories/Cmds) usati dal resto del pacchetto, cosi'
-// applySuit non deve conoscere la differenza tra le due forme.
 func (s *Suit) normalize() {
 	if s.Sequence != nil {
 		s.Packages = append(s.Packages, s.Sequence.Packages...)
@@ -67,6 +62,7 @@ func (s *Suit) normalize() {
 		s.Cmds = append(s.Cmds, s.Sequence.Cmds...)
 		s.PackagesNoRecommends = append(s.PackagesNoRecommends, s.Sequence.PackagesNoInstallRecommends...)
 		s.PackagesInteractive = append(s.PackagesInteractive, s.Sequence.PackagesInteractive...)
+		s.PackagesRemove = append(s.PackagesRemove, s.Sequence.PackagesRemove...)
 	}
 	if s.Finalize != nil {
 		s.Cmds = append(s.Cmds, s.Finalize.Cmds...)
