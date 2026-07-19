@@ -1,15 +1,30 @@
 # Mappatura: a quale file .yaml corrisponde ogni ID o ID_LIKE
 distributions:
   - id: "debian"
-    like: ["ubuntu", "linuxmint", "kali", "pop", "devuan", "quirinux"]
+    like: [
+      "abellha",
+      "devuan", 
+      "kali", 
+      "linuxmint", 
+      "pop", 
+      "quirinux", 
+      "ubuntu", 
+      ]
     file: "debian.bash.tmpl"
   
   - id: "arch"
-    like: ["endeavouros", "cachyos", "garuda"]
+    like: [
+      "cachyos", 
+      "endeavouros", 
+      "garuda"
+      ]
     file: "arch-family.bash.tmpl"
 
   - id: "manjaro"
-    like: ["manjaro", "bigcommunity", "biglinux"]
+    like: [
+      "bigcommunity", 
+      "biglinux",
+      ]
     file: "arch-family.bash.tmpl"
 
   - id: "fedora"
@@ -17,7 +32,11 @@ distributions:
     file: "fedora.bash.tmpl"
 
   - id: "opensuse"
-    like: ["suse", "opensuse-tumbleweed", "opensuse-slowroll"]
+    like: [
+      "opensuse-slowroll",
+      "opensuse-tumbleweed", 
+      "suse", 
+      ]
     file: "opensuse.bash.tmpl"
 
   - id: "alpine"
