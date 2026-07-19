@@ -61,4 +61,4 @@ The flight plan of each job:
 
 Furnace therefore answers the question: *does the full remastering chain actually produce a bootable ISO on every supported family?*
 
-For the host/guest configuration behind this setup (VirtFS, QEMU Guest Agent, snapshots), see [proxmox.md](./proxmox.md). The older local lab based on Vagrant is documented in [vagrant.md](./vagrant.md).
+For the host/guest configuration behind this setup (VirtFS, QEMU Guest Agent, snapshots), see [proxmox.md](./proxmox.md).
