@@ -48,7 +48,8 @@ if [ "$ROOT_FSTYPE" = "btrfs" ]; then
         sed -i '/^features=/ s/"$/ btrfs"/' /etc/mkinitfs/mkinitfs.conf
     fi
 fi
-KVER=$(ls -1 /lib/modules/ | head -n 1)
+KVER=$(uname -r)
+[ -d "/lib/modules/$KVER" ] || KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
 {{ end }}
 
