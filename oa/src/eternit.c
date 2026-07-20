@@ -28,26 +28,28 @@ static const char* get_json_string(cJSON *obj, const char *key, const char *fall
 // MNT_DETACH only if still busy after retrying (a lazy detach can leave
 // the backing store reclaiming after this returns, racing a remaster
 // that immediately reuses the same work_dir).
-static void umount_path(const char *path) {
-    if (umount(path) == 0) return;
+static int umount_path(const char *path) {
+    if (umount(path) == 0) return 0;
     if (errno != EBUSY) {
         LOG_WARN("⚠️  [eternit] umount('%s') failed: %s", path, strerror(errno));
-        return;
+        return -1;
     }
 
     for (int attempt = 0; attempt < 10; attempt++) {
         usleep(100000); // 100ms
-        if (umount(path) == 0) return;
+        if (umount(path) == 0) return 0;
         if (errno != EBUSY) {
             LOG_WARN("⚠️  [eternit] umount('%s') failed: %s", path, strerror(errno));
-            return;
+            return -1;
         }
     }
 
     LOG_WARN("⚠️  [eternit] '%s' still busy after retries, forcing lazy detach", path);
     if (umount2(path, MNT_DETACH) != 0) {
         LOG_ERR("❌ [eternit] lazy detach of '%s' failed: %s", path, strerror(errno));
+        return -1;
     }
+    return 0;
 }
 
 // Main dynamic unmount function
@@ -92,14 +94,20 @@ int run_eternit_umount(cJSON *task) {
     
     // Surgical dismantling: block until each unmount actually completes,
     // so the caller can trust work_dir is safe to reuse immediately.
+    int had_failure = 0;
     for (int i = 0; i < count; i++) {
-        umount_path(mounts[i]);
+        if (umount_path(mounts[i]) != 0) had_failure = 1;
         free(mounts[i]);
     }
 
     if (mounts) free(mounts);
 
     sync();
+
+    if (had_failure) {
+        LOG_ERR("❌ [eternit] Decontamination incomplete for: %s", work_dir);
+        return 1;
+    }
 
     LOG_INFO("✅ [eternit] Area secured. Decontamination completed for: %s", work_dir);
     return 0;
