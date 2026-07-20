@@ -95,8 +95,10 @@ COMPRESSION="zstd"
 EOF
     {{ end }}
     
-    # Takes the kernel version from the installed modules IN THE CHROOT, ignoring the host kernel
-    KERNEL_VERSION=$(ls -1 /lib/modules | grep -E '^[0-9]' | head -n 1)
+    # Must match distro_copy_kernel_cmd's kernel selection (uname -r): with
+    # both a regular and an -lts kernel installed, picking the alphabetically
+    # first /lib/modules entry silently built the initramfs for the wrong one.
+    KERNEL_VERSION=$(uname -r)
     
     echo "-> Generating unique live initramfs for kernel $KERNEL_VERSION..."
     mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
