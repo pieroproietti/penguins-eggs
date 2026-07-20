@@ -99,7 +99,12 @@ EOF
     # both a regular and an -lts kernel installed, picking the alphabetically
     # first /lib/modules entry silently built the initramfs for the wrong one.
     KERNEL_VERSION=$(uname -r)
-    
+    if [ ! -d "/lib/modules/$KERNEL_VERSION" ]; then
+        # Fall back if uname -r doesn't match an installed kernel (e.g. an
+        # unrebooted upgrade) - matches whichever kernel is actually present.
+        KERNEL_VERSION=$(ls -1 /lib/modules | grep -E '^[0-9]' | head -n 1)
+    fi
+
     echo "-> Generating unique live initramfs for kernel $KERNEL_VERSION..."
     mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
 {{ end }}
@@ -353,8 +358,13 @@ if [ ! -f "$KERNEL_PATH" ]; then
     KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
 fi
 
-# L'initrd generato poco prima da dracut o mkinitcpio sarà in /boot
-INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+# L'initrd generato poco prima da dracut o mkinitcpio sarà in /boot;
+# lo cerchiamo per pkgbase così corrisponde allo stesso kernel di KERNEL_PATH.
+PKGBASE=$(cat "/usr/lib/modules/$(uname -r)/pkgbase" 2>/dev/null || echo "linux")
+INITRD_PATH="/boot/initramfs-$PKGBASE.img"
+if [ ! -f "$INITRD_PATH" ]; then
+    INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+fi
 
 if [ -z "$KERNEL_PATH" ] || [ -z "$INITRD_PATH" ]; then
     echo "[FATAL ERROR] Unable to determine the installed kernel or initrd in the chroot."
@@ -416,7 +426,12 @@ if [ ! -f "$KERNEL_PATH" ]; then
     KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
 fi
 
-INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+# Cerchiamo l'initrd per pkgbase così corrisponde allo stesso kernel di KERNEL_PATH.
+PKGBASE=$(cat "/usr/lib/modules/$(uname -r)/pkgbase" 2>/dev/null || echo "linux")
+INITRD_PATH="/boot/initramfs-$PKGBASE.img"
+if [ ! -f "$INITRD_PATH" ]; then
+    INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+fi
 
 if [ -z "$KERNEL_PATH" ] || [ -z "$INITRD_PATH" ]; then
     echo "[FATAL ERROR] Unable to determine the kernel or initrd for Limine."

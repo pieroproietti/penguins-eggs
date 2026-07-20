@@ -41,7 +41,7 @@ func handledestroy() {
 	utils.LogNormal("Freeing the nest...")
 
 	if err := utils.Exec("oa cleanup"); err != nil {
-		utils.LogError("Cleanup (unmount) failed: %v", err)
+		utils.Fatal("Cleanup (unmount) failed: %v - refusing to remove the workspace while mounts may still be attached; inspect and unmount manually before retrying.", err)
 	}
 
 	workPath := pathDefaults.DefaultWorkPath
