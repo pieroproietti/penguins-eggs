@@ -73,7 +73,7 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
         fi
         cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
-HOOKS=(base udev microcode modconf kms miso miso_loop_mnt block keyboard keymap consolefont filesystems fsck)
+HOOKS=(base udev microcode modconf kms miso miso_loop_mnt block keyboard keymap consolefont filesystems)
 COMPRESSION="zstd"
 EOF
     {{ else }}
@@ -90,7 +90,7 @@ EOF
         
         cat << 'EOF' > /etc/mkinitcpio.conf
 MODULES=(loop dm-snapshot btrfs)
-HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt block filesystems keyboard keymap consolefont fsck)
+HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt block filesystems keyboard keymap consolefont)
 COMPRESSION="zstd"      
 EOF
     {{ end }}
