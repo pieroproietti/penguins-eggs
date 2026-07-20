@@ -72,7 +72,7 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
             pacman -Sy --noconfirm manjaro-tools-iso || { echo "[FATAL ERROR] Unable to install manjaro-tools-iso"; exit 1; }
         fi
         cat << 'EOF' > /etc/mkinitcpio.conf
-MODULES=(loop dm-snapshot btrfs)
+MODULES=(loop dm-snapshot btrfs sr_mod isofs)
 HOOKS=(base udev microcode modconf kms miso miso_loop_mnt block keyboard keymap consolefont filesystems)
 COMPRESSION="zstd"
 EOF
@@ -89,14 +89,16 @@ EOF
         fi
         
         cat << 'EOF' > /etc/mkinitcpio.conf
-MODULES=(loop dm-snapshot btrfs)
+MODULES=(loop dm-snapshot btrfs sr_mod isofs)
 HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt block filesystems keyboard keymap consolefont)
-COMPRESSION="zstd"      
+COMPRESSION="zstd"
 EOF
     {{ end }}
     
-    # Takes the kernel version from the installed modules IN THE CHROOT, ignoring the host kernel
-    KERNEL_VERSION=$(ls -1 /lib/modules | grep -E '^[0-9]' | head -n 1)
+    # Must match distro_copy_kernel_cmd's kernel selection (uname -r): with
+    # both a regular and an -lts kernel installed, picking the alphabetically
+    # first /lib/modules entry silently built the initramfs for the wrong one.
+    KERNEL_VERSION=$(uname -r)
     
     echo "-> Generating unique live initramfs for kernel $KERNEL_VERSION..."
     mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
@@ -263,7 +265,7 @@ fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
     echo "-> UEFI installation..."
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck
 
     mkdir -p /boot/efi/EFI/BOOT
     [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
