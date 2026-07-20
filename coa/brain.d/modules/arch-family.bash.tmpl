@@ -358,16 +358,31 @@ if [ ! -f "$KERNEL_PATH" ]; then
     KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
 fi
 
-# L'initrd generato poco prima da dracut o mkinitcpio sarà in /boot;
-# lo cerchiamo per pkgbase così corrisponde allo stesso kernel di KERNEL_PATH.
-PKGBASE=$(cat "/usr/lib/modules/$(uname -r)/pkgbase" 2>/dev/null || echo "linux")
-INITRD_PATH="/boot/initramfs-$PKGBASE.img"
-if [ ! -f "$INITRD_PATH" ]; then
+if [ -z "$KERNEL_PATH" ] || [ ! -f "$KERNEL_PATH" ]; then
+    echo "[FATAL ERROR] Unable to determine the installed kernel in the chroot."
+    exit 1
+fi
+
+# L'initrd va derivato dal kernel EFFETTIVAMENTE risolto sopra, non da una
+# ricerca indipendente: se uname -r non corrisponde (es. chroot d'installazione
+# con kernel diverso da quello live), le due ricerche potrebbero altrimenti
+# scegliere due kernel diversi (visto su CachyOS con linux-cachyos/-lts).
+case "$KERNEL_PATH" in
+    /usr/lib/modules/*/vmlinuz)
+        KVER=$(basename "$(dirname "$KERNEL_PATH")")
+        PKGBASE=$(cat "/usr/lib/modules/$KVER/pkgbase" 2>/dev/null || echo "$KVER")
+        INITRD_PATH="/boot/initramfs-$PKGBASE.img"
+        ;;
+    /boot/vmlinuz-*)
+        INITRD_PATH="/boot/initramfs-${KERNEL_PATH#/boot/vmlinuz-}.img"
+        ;;
+esac
+if [ -z "$INITRD_PATH" ] || [ ! -f "$INITRD_PATH" ]; then
     INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
 fi
 
-if [ -z "$KERNEL_PATH" ] || [ -z "$INITRD_PATH" ]; then
-    echo "[FATAL ERROR] Unable to determine the installed kernel or initrd in the chroot."
+if [ -z "$INITRD_PATH" ]; then
+    echo "[FATAL ERROR] Unable to determine the installed initrd in the chroot."
     exit 1
 fi
 
@@ -426,15 +441,31 @@ if [ ! -f "$KERNEL_PATH" ]; then
     KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
 fi
 
-# Cerchiamo l'initrd per pkgbase così corrisponde allo stesso kernel di KERNEL_PATH.
-PKGBASE=$(cat "/usr/lib/modules/$(uname -r)/pkgbase" 2>/dev/null || echo "linux")
-INITRD_PATH="/boot/initramfs-$PKGBASE.img"
-if [ ! -f "$INITRD_PATH" ]; then
+if [ -z "$KERNEL_PATH" ] || [ ! -f "$KERNEL_PATH" ]; then
+    echo "[FATAL ERROR] Unable to determine the kernel for Limine."
+    exit 1
+fi
+
+# L'initrd va derivato dal kernel EFFETTIVAMENTE risolto sopra, non da una
+# ricerca indipendente: se uname -r non corrisponde (es. chroot d'installazione
+# con kernel diverso da quello live), le due ricerche potrebbero altrimenti
+# scegliere due kernel diversi (visto su CachyOS con linux-cachyos/-lts).
+case "$KERNEL_PATH" in
+    /usr/lib/modules/*/vmlinuz)
+        KVER=$(basename "$(dirname "$KERNEL_PATH")")
+        PKGBASE=$(cat "/usr/lib/modules/$KVER/pkgbase" 2>/dev/null || echo "$KVER")
+        INITRD_PATH="/boot/initramfs-$PKGBASE.img"
+        ;;
+    /boot/vmlinuz-*)
+        INITRD_PATH="/boot/initramfs-${KERNEL_PATH#/boot/vmlinuz-}.img"
+        ;;
+esac
+if [ -z "$INITRD_PATH" ] || [ ! -f "$INITRD_PATH" ]; then
     INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
 fi
 
-if [ -z "$KERNEL_PATH" ] || [ -z "$INITRD_PATH" ]; then
-    echo "[FATAL ERROR] Unable to determine the kernel or initrd for Limine."
+if [ -z "$INITRD_PATH" ]; then
+    echo "[FATAL ERROR] Unable to determine the initrd for Limine."
     exit 1
 fi
 
