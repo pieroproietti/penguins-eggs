@@ -193,7 +193,7 @@ remaster:
         Name=Install System
         GenericName=Live Installer
         Comment=Install this system to your hard disk
-        Exec=pkexec eggs sysinstall calamares
+        Exec=env SUDO_ASKPASS=/usr/bin/ksshaskpass sudo -A eggs sysinstall calamares
         Icon=penguins-eggs
         Terminal=false
         Categories=System;
