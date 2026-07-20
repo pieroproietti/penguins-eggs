@@ -1,1 +1,51 @@
-arch-family.tmpl
+# Maintainer: Piero Proietti <piero.proietti@gmail.com>
+pkgname=penguins-eggs
+pkgver={{.BaseVersion}}
+pkgrel={{.Rel}}
+pkgdesc="penguins-eggs universal Linux remastering"
+arch=('x86_64')
+url="https://penguins-eggs.net"
+license=('GPL3')
+options=('!debug')
+
+depends=(
+	'manjaro-tools-iso'
+	'arch-install-scripts'
+	'bash-completion'
+	'btrfs-progs'
+	'curl'
+	'dosfstools'
+	'e2fsprogs'
+	'efibootmgr'
+	'git'
+	'glibc'
+	'gnupg'
+	'grub'
+	'libarchive'
+	'libisoburn'
+	'mkinitcpio-nfs-utils' # Risolve errore /usr/lib/initcpio/ipconfig e nfsmount
+	'mtools'
+	'nbd'                  # Risolve errore nbd-client
+	'pv'
+	'rsync'
+	'squashfs-tools'
+	'sudo'
+	'wget'
+	'yq'
+	'qemu-guest-agent'
+)
+
+# Gestione pulita della transizione e delle dipendenze
+provides=('penguins-eggs')
+conflicts=('oa-tools' 'oa-tools-manjaro')
+replaces=('oa-tools' 'oa-tools-manjaro')
+
+package() {
+    # Tracciamo i confini
+    mkdir -p "${pkgdir}/usr"
+    mkdir -p "${pkgdir}/etc"
+
+    # Usiamo $startdir per puntare alla root dello staging (/tmp/oa-stage-dir)
+    cp -a "${startdir}/usr/"* "${pkgdir}/usr/"
+    cp -a "${startdir}/etc/"* "${pkgdir}/etc/"
+}

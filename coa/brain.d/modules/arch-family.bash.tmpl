@@ -9,7 +9,7 @@
 {{ define "distro_boot_params" }}
 {{- if or (eq .DistroID "garuda") (eq .DistroID "endeavouros") -}}
 root=live:CDLABEL=OA_LIVE rd.live.image rd.live.dir=arch/x86_64 rd.live.squashimg=airootfs.sfs rd.live.overlay.size=2048 quiet
-{{- else if eq .DistroID "manjaro" -}}
+{{- else if eq .Family "manjaro" -}}
 misobasedir=manjaro misolabel=OA_LIVE cow_spacesize=2G
 {{- else -}}
 archisobasedir=arch archisolabel=OA_LIVE cow_spacesize=2G
@@ -64,7 +64,7 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
     rm -rf /etc/mkinitcpio.conf.d.bak /usr/lib/mkinitcpio.conf.d.bak
     ' EXIT
 
-    {{ if eq .DistroID "manjaro" }}
+    {{ if eq .Family "manjaro" }}
         # 3. Controllo dipendenze opzionali: Manjaro
         # WARNING: -Qq checks for the exact name
         if ! pacman -Qq manjaro-tools-iso > /dev/null 2>&1; then 
@@ -179,7 +179,7 @@ if [ ! -f /home/eggs/isodir/live/filesystem.squashfs ]; then
     exit 1
 fi
 
-{{ if eq .DistroID "manjaro" }}
+{{ if eq .Family "manjaro" }}
     mkdir -p /home/eggs/isodir/manjaro/x86_64
     ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_64/livefs.sfs
     echo "-> livefs.sfs hardlink created for Manjaro."
