@@ -51,7 +51,9 @@ update-initramfs -u
 
 {{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
+    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck; then
+        [ -f /boot/efi/EFI/oa-live/grubx64.efi ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+    fi
 
     # Removable fallback: firmware (notably some VM/OVMF setups) with no
     # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.

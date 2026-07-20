@@ -199,7 +199,12 @@ fi
 {{ if or (eq .DistroID "garuda") (eq .DistroID "endeavouros") }}
     echo "-> Regenerating initramfs on Garuda/EndeavourOS via dracut..."
     
-    KVER_DIR=$(ls -1 /lib/modules/ | grep -v "extramodules" | head -n 1)
+    KVER_DIR=$(uname -r)
+    if [ ! -d "/lib/modules/$KVER_DIR" ]; then
+        # Fall back if uname -r doesn't match an installed kernel (e.g. an
+        # unrebooted upgrade) - matches whichever kernel is actually present.
+        KVER_DIR=$(ls -1 /lib/modules/ | grep -v "extramodules" | head -n 1)
+    fi
     if [ -z "$KVER_DIR" ]; then
         echo "[FATAL ERROR] Unable to determine the kernel in the chroot."
         exit 1
@@ -265,7 +270,12 @@ fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
     echo "-> UEFI installation..."
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck
+    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
+        # NVRAM-registration can fail (e.g. OVMF/VM firmware) even though the
+        # EFI binary was written correctly; only abort if it genuinely wasn't.
+        [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+        echo "-> WARNING: grub-install failed (likely NVRAM-only); EFI binary is present, continuing with removable fallback."
+    fi
 
     mkdir -p /boot/efi/EFI/BOOT
     [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
@@ -311,8 +321,9 @@ fi
 # =====================================================================
 if ! ls /boot/vmlinuz-* 1> /dev/null 2>&1; then
     echo "-> Nessun kernel trovato in /boot. Cerco nei moduli (layout systemd-boot)..."
-    KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
-    
+    KERNEL_PATH="/usr/lib/modules/$(uname -r)/vmlinuz"
+    [ -f "$KERNEL_PATH" ] || KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
+
     if [ -n "$KERNEL_PATH" ]; then
         # Recupera il nome della versione (es. 6.1.12-arch1-1)
         KVER=$(basename $(dirname "$KERNEL_PATH"))
@@ -332,9 +343,13 @@ echo "-> Installing systemd-boot (bootctl)..."
 bootctl install --esp-path=/boot/efi
 mkdir -p /boot/efi/loader/entries
 
-# Ricerca intelligente del kernel (supporto per layout classico e systemd-boot)
-KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
-if [ -z "$KERNEL_PATH" ]; then
+# Ricerca intelligente del kernel (supporto per layout classico e systemd-boot),
+# preferendo la versione realmente in esecuzione se più kernel sono installati.
+KERNEL_PATH="/usr/lib/modules/$(uname -r)/vmlinuz"
+if [ ! -f "$KERNEL_PATH" ]; then
+    KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
+fi
+if [ ! -f "$KERNEL_PATH" ]; then
     KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
 fi
 
@@ -392,9 +407,12 @@ EOF
 {{ define "install_distro_limine" }}
 echo "-> Installing Limine bootloader (UEFI)..."
 
-# Ricerca intelligente del kernel
-KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
-if [ -z "$KERNEL_PATH" ]; then
+# Ricerca intelligente del kernel, preferendo la versione realmente in esecuzione.
+KERNEL_PATH="/usr/lib/modules/$(uname -r)/vmlinuz"
+if [ ! -f "$KERNEL_PATH" ]; then
+    KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
+fi
+if [ ! -f "$KERNEL_PATH" ]; then
     KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
 fi
 

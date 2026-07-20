@@ -48,13 +48,16 @@ if [ "$ROOT_FSTYPE" = "btrfs" ]; then
         sed -i '/^features=/ s/"$/ btrfs"/' /etc/mkinitfs/mkinitfs.conf
     fi
 fi
-KVER=$(ls -1 /lib/modules/ | head -n 1)
+KVER=$(uname -r)
+[ -d "/lib/modules/$KVER" ] || KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck
+    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck; then
+        [ -f /boot/efi/EFI/alpine/grubx64.efi ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+    fi
 
     # Removable fallback: firmware (notably some VM/OVMF setups) with no
     # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
