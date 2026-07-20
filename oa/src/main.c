@@ -163,8 +163,10 @@ int main(int argc, char **argv) {
             // FRENO DI EMERGENZA!
             LOG_ERR("🚨 [oa-main] FATAL ERROR: Task '%s' failed. Aborting immediately!", task_name);
             error_count++;
-            perform_safety_teardown(current_work_dir);
-            break; 
+            if (perform_safety_teardown(current_work_dir) != 0) {
+                LOG_ERR("❌ [oa-main] Emergency teardown also failed to fully unmount %s.", current_work_dir);
+            }
+            break;
         }
     }
 
@@ -178,8 +180,12 @@ int main(int argc, char **argv) {
         LOG_ERR("❌ [oa-main] Execution ABORTED due to an error. Successes: %d, Errors: %d", success_count, error_count);
     } else {
         LOG_INFO("✨ [oa-main] ISO build completed. Handing over the area to the decontamination team...");
-        perform_safety_teardown(current_work_dir);
-        LOG_INFO("🏁 [oa-main] Site successfully dismantled. Successes: %d, Errors: 0", success_count);
+        if (perform_safety_teardown(current_work_dir) != 0) {
+            LOG_ERR("❌ [oa-main] Final decontamination failed - %s may still have live mounts.", current_work_dir);
+            error_count++;
+        } else {
+            LOG_INFO("🏁 [oa-main] Site successfully dismantled. Successes: %d, Errors: 0", success_count);
+        }
     }
 
     oa_close_log();
