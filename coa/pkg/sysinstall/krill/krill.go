@@ -574,7 +574,7 @@ func (m *model) selectedZone() string {
 
 // --- VIEW GLOBALE ---
 func (m model) View() string {
-	title := titleStyle.Render(strings.ToUpper(m.appName) + " INSTALLER - PENGUINS-EGGS")
+	title := titleStyle.Render("KRILL TUI SYSTEM INSTALLER")
 
 	var insideBox string
 	switch m.state {

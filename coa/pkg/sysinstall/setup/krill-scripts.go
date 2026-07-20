@@ -91,6 +91,6 @@ func generateChrootRunner(profile *parser.Profile) error {
 
 	sb.WriteString("exit $FAILED\n")
 
-	outPath := filepath.Join(InstallerDRoot, "oa-chroot-runner.sh")
+	outPath := filepath.Join(InstallerDRoot, "krill-chroot-runner.sh")
 	return os.WriteFile(outPath, []byte(sb.String()), 0755)
 }
