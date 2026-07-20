@@ -72,7 +72,7 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
             pacman -Sy --noconfirm manjaro-tools-iso || { echo "[FATAL ERROR] Unable to install manjaro-tools-iso"; exit 1; }
         fi
         cat << 'EOF' > /etc/mkinitcpio.conf
-MODULES=(loop dm-snapshot btrfs sr_mod)
+MODULES=(loop dm-snapshot btrfs sr_mod isofs)
 HOOKS=(base udev microcode modconf kms miso miso_loop_mnt block keyboard keymap consolefont filesystems)
 COMPRESSION="zstd"
 EOF
@@ -89,7 +89,7 @@ EOF
         fi
         
         cat << 'EOF' > /etc/mkinitcpio.conf
-MODULES=(loop dm-snapshot btrfs sr_mod)
+MODULES=(loop dm-snapshot btrfs sr_mod isofs)
 HOOKS=(base udev microcode modconf kms archiso archiso_loop_mnt block filesystems keyboard keymap consolefont)
 COMPRESSION="zstd"
 EOF
