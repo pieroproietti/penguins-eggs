@@ -187,16 +187,16 @@ remaster:
       dest: "/usr/share/applications/install-system.desktop"
       permissions: 493 # 0755 octal
       content: |
-      [Desktop Entry]
-      Type=Application
-      Version=1.0
-      Name=Install System
-      GenericName=Live Installer
-      Comment=Install this system to your hard disk
-      Exec=env SUDO_ASKPASS=/usr/bin/ksshaskpass sudo -A eggs sysinstall calamares
-      Icon=penguins-eggs
-      Terminal=false
-      Categories=System;
+        [Desktop Entry]
+        Type=Application
+        Version=1.0
+        Name=Install System
+        GenericName=Live Installer
+        Comment=Install this system to your hard disk
+        Exec=env SUDO_ASKPASS=/usr/bin/ksshaskpass sudo -A eggs sysinstall calamares
+        Icon=penguins-eggs
+        Terminal=false
+        Categories=System;
 
 # ----------------------------------------------------------------------------
 # 13. TRUST AGENT
