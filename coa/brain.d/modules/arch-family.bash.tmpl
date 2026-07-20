@@ -265,7 +265,7 @@ fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
     echo "-> UEFI installation..."
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck
 
     mkdir -p /boot/efi/EFI/BOOT
     [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI

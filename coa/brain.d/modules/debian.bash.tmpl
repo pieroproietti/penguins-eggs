@@ -51,8 +51,7 @@ update-initramfs -u
 
 {{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
-    # Tolerate NVRAM-only failures so the fallback below still runs.
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
 
     # Removable fallback: firmware (notably some VM/OVMF setups) with no
     # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
