@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <unistd.h>
 #include <sys/mount.h>
 #include "cJSON.h"
 #include "logger.h"
@@ -20,6 +22,32 @@ static const char* get_json_string(cJSON *obj, const char *key, const char *fall
         return item->valuestring;
     }
     return fallback;
+}
+
+// Blocking umount with a short EBUSY retry budget, falling back to lazy
+// MNT_DETACH only if still busy after retrying (a lazy detach can leave
+// the backing store reclaiming after this returns, racing a remaster
+// that immediately reuses the same work_dir).
+static void umount_path(const char *path) {
+    if (umount(path) == 0) return;
+    if (errno != EBUSY) {
+        LOG_WARN("⚠️  [eternit] umount('%s') failed: %s", path, strerror(errno));
+        return;
+    }
+
+    for (int attempt = 0; attempt < 10; attempt++) {
+        usleep(100000); // 100ms
+        if (umount(path) == 0) return;
+        if (errno != EBUSY) {
+            LOG_WARN("⚠️  [eternit] umount('%s') failed: %s", path, strerror(errno));
+            return;
+        }
+    }
+
+    LOG_WARN("⚠️  [eternit] '%s' still busy after retries, forcing lazy detach", path);
+    if (umount2(path, MNT_DETACH) != 0) {
+        LOG_ERR("❌ [eternit] lazy detach of '%s' failed: %s", path, strerror(errno));
+    }
 }
 
 // Main dynamic unmount function
@@ -62,14 +90,16 @@ int run_eternit_umount(cJSON *task) {
 
     LOG_INFO("☣️  [eternit] Environmental decontamination initiated: Found %d mount points in %s", count, work_dir);
     
-    // Surgical dismantling
+    // Surgical dismantling: block until each unmount actually completes,
+    // so the caller can trust work_dir is safe to reuse immediately.
     for (int i = 0; i < count; i++) {
-        // LOG_INFO("   -> Isolating and extracting: %s", mounts[i]);
-        umount2(mounts[i], MNT_DETACH);
+        umount_path(mounts[i]);
         free(mounts[i]);
     }
-    
+
     if (mounts) free(mounts);
+
+    sync();
 
     LOG_INFO("✅ [eternit] Area secured. Decontamination completed for: %s", work_dir);
     return 0;
