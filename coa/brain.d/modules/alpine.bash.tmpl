@@ -42,14 +42,16 @@ cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"
 # 🎯 INSTALLER
 # ==============================================================================
 {{ define "install_distro_initramfs" }}
-KVER=$(ls -1 /lib/modules/ | head -n 1)
+KVER=$(uname -r)
+[ -d "/lib/modules/$KVER" ] || KVER=$(ls -1 /lib/modules/ | head -n 1)
 mkinitfs -o /boot/initramfs-$KVER $KVER
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
-    # Tolerate NVRAM-only failures so the fallback below still runs.
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck || echo "-> WARNING: grub-install failed, trying removable fallback anyway..."
+    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck; then
+        [ -f /boot/efi/EFI/alpine/grubx64.efi ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+    fi
 
     # Removable fallback: firmware (notably some VM/OVMF setups) with no
     # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
