@@ -69,6 +69,20 @@ remaster:
         - '{{ if .RamModeEnabled }}1{{ else }}0{{ end }}'
 
 # ----------------------------------------------------------------------------
+# 5.1 EFI IMAGE FINALIZATION
+# ----------------------------------------------------------------------------
+# UEFI boots BOOTX64.EFI from inside efi.img, so the trampoline grub.cfg
+# must live there too, not just on the ISO9660 tree.
+  - name: "inject-efi-grubcfg"
+    description: "Copy the EFI trampoline grub.cfg into efi.img"
+    module: "shell"
+    params:
+      command: |
+        if [ -f /home/eggs/isodir/EFI/BOOT/efi.img ] && [ -f /home/eggs/isodir/EFI/BOOT/grub.cfg ]; then
+            mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img -o /home/eggs/isodir/EFI/BOOT/grub.cfg ::/EFI/BOOT/grub.cfg
+        fi
+
+# ----------------------------------------------------------------------------
 # 6. USER IDENTITY
 # ----------------------------------------------------------------------------
   - name: "identity"
