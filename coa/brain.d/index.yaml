@@ -14,9 +14,10 @@ distributions:
   
   - id: "arch"
     like: [
-      "cachyos", 
-      "endeavouros", 
-      "garuda"
+      "cachyos",
+      "endeavouros",
+      "garuda",
+      "rebornos"
       ]
     file: "arch-family.bash.tmpl"
 
