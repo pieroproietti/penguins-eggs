@@ -43,3 +43,7 @@ coa/plan_coa_tmp.json
 Thumbs.db
 __pycache__
 py_oa_tools.egg-info
+
+# --- AI assistant local instructions (not for upstream) ---
+CLAUDE.md
+claude.md
