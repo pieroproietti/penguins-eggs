@@ -472,6 +472,18 @@ fi
 KERNEL_FILE=$(basename "$KERNEL_PATH")
 INITRD_FILE=$(basename "$INITRD_PATH")
 
+cp "$KERNEL_PATH" "/boot/efi/$KERNEL_FILE"
+cp "$INITRD_PATH" "/boot/efi/$INITRD_FILE"
+
+UCODE_LINE=""
+if [ -f /boot/amd-ucode.img ]; then
+    cp /boot/amd-ucode.img /boot/efi/
+    UCODE_LINE="    initramfs_path: boot:///amd-ucode.img"
+elif [ -f /boot/intel-ucode.img ]; then
+    cp /boot/intel-ucode.img /boot/efi/
+    UCODE_LINE="    initramfs_path: boot:///intel-ucode.img"
+fi
+
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
 ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
 ROOTFLAGS=""
@@ -482,10 +494,6 @@ fi
 mkdir -p /boot/efi/EFI/BOOT
 cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
 
-# Limine ha bisogno che il kernel sia accessibile, se usiamo /boot/efi come ESP,
-# dovremmo copiare i file lì, oppure assicurarci che la partizione /boot sia letta.
-# Assumiamo che i percorsi boot:// puntino alla partizione corretta, ma per 
-# consistenza e sicurezza con EndeavourOS usiamo i path completi che abbiamo trovato:
 PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
 if [ -z "$PRETTY_NAME" ]; then
     PRETTY_NAME="Arch Linux"
@@ -493,10 +501,14 @@ fi
 
 cat <<EOF > /boot/efi/limine.conf
 timeout: 5
-/$PRETTY_NAME
+
+: $PRETTY_NAME
     protocol: linux
-    kernel_path: boot://${KERNEL_PATH#/boot/}
-    initramfs_path: boot://${INITRD_PATH#/boot/}
+    kernel_path: boot:///$KERNEL_FILE
+${UCODE_LINE}
+    initramfs_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+
+cp /boot/efi/limine.conf /boot/efi/EFI/BOOT/limine.conf
 {{ end }}

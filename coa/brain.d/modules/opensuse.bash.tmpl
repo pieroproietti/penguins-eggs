@@ -183,8 +183,14 @@ if [ -d /sys/firmware/efi ]; then
     mkdir -p /boot/efi/EFI/BOOT
     cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
     
-    KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
-    INITRD_FILE=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
+    KERNEL_PATH=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
+    INITRD_PATH=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
+    KERNEL_FILE=$(basename "$KERNEL_PATH")
+    INITRD_FILE=$(basename "$INITRD_PATH")
+
+    cp "$KERNEL_PATH" "/boot/efi/$KERNEL_FILE" 2>/dev/null || true
+    cp "$INITRD_PATH" "/boot/efi/$INITRD_FILE" 2>/dev/null || true
+
     ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
     ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
     ROOTFLAGS=""
@@ -199,19 +205,24 @@ if [ -d /sys/firmware/efi ]; then
 
     cat <<EOF > /boot/efi/limine.conf
 timeout: 5
-/$PRETTY_NAME
+
+: $PRETTY_NAME
     protocol: linux
-    kernel_path: boot://$KERNEL_FILE
-    initramfs_path: boot://$INITRD_FILE
+    kernel_path: boot:///$KERNEL_FILE
+    initramfs_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+    cp /boot/efi/limine.conf /boot/efi/EFI/BOOT/limine.conf
 else
     # BIOS/Legacy
     TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
     limine bios-install "$TARGET_DISK"
     
-    KERNEL_FILE=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
-    INITRD_FILE=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
+    KERNEL_PATH=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
+    INITRD_PATH=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
+    KERNEL_FILE=$(basename "$KERNEL_PATH")
+    INITRD_FILE=$(basename "$INITRD_PATH")
+
     ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
     ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
     ROOTFLAGS=""
@@ -226,10 +237,11 @@ else
 
     cat <<EOF > /boot/limine.conf
 timeout: 5
-/$PRETTY_NAME
+
+: $PRETTY_NAME
     protocol: linux
-    kernel_path: boot://$KERNEL_FILE
-    initramfs_path: boot://$INITRD_FILE
+    kernel_path: boot:///$KERNEL_FILE
+    initramfs_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 fi
