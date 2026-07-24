@@ -1,4 +1,4 @@
-See AI context: https://penguins-eggs.net/llms.txt ...
+See AI context: https://penguins-eggs.net/llms.txt
 
 ### 🥚 penguins-eggs
 After years of passionate work on the TypeScript **penguins-eggs**, its next evolution is here: the C/Go rewrite now carries the `penguins-eggs` name. The old TypeScript version lives on as [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs-legacy).
