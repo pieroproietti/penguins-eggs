@@ -206,7 +206,7 @@ if [ -d /sys/firmware/efi ]; then
     cat <<EOF > /boot/efi/limine.conf
 timeout: 5
 
-: $PRETTY_NAME
+/: $PRETTY_NAME
     protocol: linux
     kernel_path: boot:///$KERNEL_FILE
     initramfs_path: boot:///$INITRD_FILE
@@ -238,7 +238,7 @@ else
     cat <<EOF > /boot/limine.conf
 timeout: 5
 
-: $PRETTY_NAME
+/: $PRETTY_NAME
     protocol: linux
     kernel_path: boot:///$KERNEL_FILE
     initramfs_path: boot:///$INITRD_FILE

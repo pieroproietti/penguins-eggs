@@ -502,7 +502,7 @@ fi
 cat <<EOF > /boot/efi/limine.conf
 timeout: 5
 
-: $PRETTY_NAME
+/: $PRETTY_NAME
     protocol: linux
     kernel_path: boot:///$KERNEL_FILE
 ${UCODE_LINE}
