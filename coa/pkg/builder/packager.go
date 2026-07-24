@@ -35,6 +35,18 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		cmd = exec.Command("makepkg", "-s", "-f", "--noconfirm")
 		cmd.Dir = stage
 
+		// Derivatives like BigLinux override PKGDEST/PKGEXT in
+		// /etc/makepkg.conf, moving/renaming the built package out from
+		// under the glob below. Force both, mirroring alpine's REPODEST.
+		absStage, err := filepath.Abs(stage)
+		if err != nil {
+			absStage = stage
+		}
+		cmd.Env = append(os.Environ(),
+			fmt.Sprintf("PKGDEST=%s", absStage),
+			"PKGEXT=.pkg.tar.zst",
+		)
+
 	case "debian":
 		pkgFileName = fmt.Sprintf("penguins-eggs_%s-%s_%s.deb", data.BaseVersion, data.Rel, getDebianArch())
 		finalPath := filepath.Join(ctx.ProjRoot, pkgFileName)
