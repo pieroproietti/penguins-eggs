@@ -35,6 +35,11 @@ func packager(ctx sysctx.RuntimeContext, dist string, data RecipeData) {
 		cmd = exec.Command("makepkg", "-s", "-f", "--noconfirm")
 		cmd.Dir = stage
 
+		// Some derivatives (e.g. BigLinux) set a custom PKGDEST in
+		// /etc/makepkg.conf, which silently moves the built package
+		// outside of stage. Force it back so the glob below finds it.
+		cmd.Env = append(os.Environ(), fmt.Sprintf("PKGDEST=%s", stage))
+
 	case "debian":
 		pkgFileName = fmt.Sprintf("penguins-eggs_%s-%s_%s.deb", data.BaseVersion, data.Rel, getDebianArch())
 		finalPath := filepath.Join(ctx.ProjRoot, pkgFileName)
