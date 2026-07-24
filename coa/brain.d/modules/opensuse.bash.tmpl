@@ -209,7 +209,7 @@ timeout: 5
 /: $PRETTY_NAME
     protocol: linux
     kernel_path: boot:///$KERNEL_FILE
-    initramfs_path: boot:///$INITRD_FILE
+    module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
     cp /boot/efi/limine.conf /boot/efi/EFI/BOOT/limine.conf
@@ -241,7 +241,7 @@ timeout: 5
 /: $PRETTY_NAME
     protocol: linux
     kernel_path: boot:///$KERNEL_FILE
-    initramfs_path: boot:///$INITRD_FILE
+    module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 fi

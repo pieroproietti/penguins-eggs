@@ -478,10 +478,10 @@ cp "$INITRD_PATH" "/boot/efi/$INITRD_FILE"
 UCODE_LINE=""
 if [ -f /boot/amd-ucode.img ]; then
     cp /boot/amd-ucode.img /boot/efi/
-    UCODE_LINE="    initramfs_path: boot:///amd-ucode.img"
+    UCODE_LINE="    module_path: boot:///amd-ucode.img"
 elif [ -f /boot/intel-ucode.img ]; then
     cp /boot/intel-ucode.img /boot/efi/
-    UCODE_LINE="    initramfs_path: boot:///intel-ucode.img"
+    UCODE_LINE="    module_path: boot:///intel-ucode.img"
 fi
 
 ROOT_PART=$(grep " / " /etc/fstab | grep -v "^#" | awk '{print $1}')
@@ -506,7 +506,7 @@ timeout: 5
     protocol: linux
     kernel_path: boot:///$KERNEL_FILE
 ${UCODE_LINE}
-    initramfs_path: boot:///$INITRD_FILE
+    module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
 
