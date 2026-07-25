@@ -58,9 +58,9 @@ func runKrillInstaller(oaVersion string, unattended bool, fstype string) {
 }
 
 func init() {
-	krillSubCmd.Flags().BoolVar(&krillUnattended, "unattended", false,
+	sysinstallCmd.PersistentFlags().BoolVar(&krillUnattended, "unattended", false,
 		"non-interactive installation with defaults (WARNING: erases the first disk)")
-	krillSubCmd.Flags().StringVar(&krillFstype, "fstype", "",
+	sysinstallCmd.PersistentFlags().StringVar(&krillFstype, "fstype", "",
 		"filesystem type to use (ext4, btrfs)")
 	sysinstallCmd.AddCommand(krillSubCmd)
 }
