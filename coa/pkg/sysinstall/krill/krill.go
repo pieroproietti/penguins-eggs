@@ -138,6 +138,9 @@ type model struct {
 	locZoneIdx   int
 	locField     int // 0 = region, 1 = zone
 
+	// Confirm
+	confirmChoice int // 0 = No (default), 1 = Yes
+
 	// Install (guidata dagli eventi dell'engine)
 	installMsg  string
 	percent     float64
@@ -316,20 +319,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateDisk(key)
 		case StateUsers:
 			return m.updateUsers(msg)
+		case StateSummary:
+			return m.updateSummary(key)
 		default:
 			switch key {
 			case "enter":
-				switch m.state {
-				case StateSummary:
-					// Senza login o password non si parte:
-					// torniamo alla schermata Users
-					if m.userInputs[fieldLogin].Value() == "" || m.userInputs[fieldUserPass].Value() == "" {
-						m.state = StateUsers
-						return m, m.focusUser(fieldUserPass)
-					}
-					m.state = StateInstall
-					return m, m.startInstall()
-				case StateInstall:
+				if m.state == StateInstall {
 					if m.installDone {
 						if m.installErr == nil && m.restartEnabled && m.restartChecked {
 							return m, runRestart(m.restartCommand)
@@ -504,6 +499,7 @@ func (m model) updateUsers(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "enter":
 		m.state = StateSummary
+		m.confirmChoice = 0
 		return m, nil
 	case "tab", "down":
 		return m, m.focusUser(m.userFocus + 1)
@@ -519,6 +515,30 @@ func (m model) updateUsers(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.userInputs[m.userFocus], cmd = m.userInputs[m.userFocus].Update(msg)
 		return m, cmd
+	}
+	return m, nil
+}
+
+// updateSummary gestisce la navigazione e la conferma finale nella schermata Summary.
+func (m model) updateSummary(key string) (tea.Model, tea.Cmd) {
+	switch key {
+	case "left", "right", "tab", "shift+tab", "up", "down":
+		m.confirmChoice = 1 - m.confirmChoice
+	case "esc":
+		m.state = StateWelcome
+		return m, nil
+	case "enter":
+		if m.confirmChoice == 1 {
+			if m.userInputs[fieldLogin].Value() == "" || m.userInputs[fieldUserPass].Value() == "" {
+				m.state = StateUsers
+				return m, m.focusUser(fieldUserPass)
+			}
+			m.state = StateInstall
+			return m, m.startInstall()
+		}
+		// Se si seleziona NO, torna indietro alla prima fase (Welcome)
+		m.state = StateWelcome
+		return m, nil
 	}
 	return m, nil
 }
@@ -604,7 +624,9 @@ func (m model) View() string {
 	finalView := lipgloss.JoinVertical(lipgloss.Center, title, mainWindow)
 
 	footer := "\nPress Ctrl+C to quit."
-	if m.state != StateInstall {
+	if m.state == StateSummary {
+		footer = "\n←/→ select option | Press 'Enter' to confirm."
+	} else if m.state != StateInstall {
 		footer += " | Press 'Enter' to continue."
 	} else if !m.installDone {
 		footer = "\nInstallation in progress — do not power off."
@@ -777,7 +799,7 @@ func (m model) viewSummary() string {
 
 	login := m.userInputs[fieldLogin].Value()
 	hostname := m.userInputs[fieldHostname].Value()
-	device := m.disks[m.diskIdx].Path
+	device := m.disks[m.diskIdx]
 
 	row1 := fmt.Sprintf("Installing %s", greenText.Render(m.productName))
 	row2 := fmt.Sprintf("User %s pwd %s root pwd %s hostname %s",
@@ -792,10 +814,22 @@ func (m model) viewSummary() string {
 	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(m.swapTypes[m.swapIdx]))
 	row8 := "Network: " + greenText.Render("dhcp")
 
-	eraseWarning := "Erase all data on disk"
-	msgBox := redBgWhiteText.Render("installation device: " + device)
+	warnBox := redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: ALL DATA ON %s (%s) WILL BE PERMANENTLY ERASED! ", device.Path, device.Size))
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, row8, "", eraseWarning, msgBox)
+	noOpt := "  [ No, cancel and go back ]"
+	yesOpt := "  [ YES, erase disk and install ]"
+
+	if m.confirmChoice == 0 {
+		noOpt = cyanText.Render("→ [ No, cancel and go back ]")
+		yesOpt = dimText.Render("  [ YES, erase disk and install ]")
+	} else {
+		noOpt = dimText.Render("  [ No, cancel and go back ]")
+		yesOpt = redBgWhiteText.Render("→ [ YES, erase disk and install ]")
+	}
+
+	optsRow := fmt.Sprintf("%s    %s", noOpt, yesOpt)
+
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, row8, "", warnBox, "", optsRow)
 	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 

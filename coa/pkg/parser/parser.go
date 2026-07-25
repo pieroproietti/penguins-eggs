@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -84,12 +85,18 @@ ramModeEnabled := true
 		}
 	}
 
+	hasCalamares := false
+	if _, err := exec.LookPath("calamares"); err == nil {
+		hasCalamares = true
+	}
+
 	ctx := TemplateContext{
 		Family:         myDistro.FamilyID,
 		DistroID:       myDistro.DistroID,
 		IsGitHubAction: isGitHubAction,
 		RamModeEnabled: ramModeEnabled,
 		LiveUser:       liveUser,
+		HasCalamares:   hasCalamares,
 	}
 
 	tmpl := template.New(filepath.Base(basePath))
