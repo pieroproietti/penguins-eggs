@@ -67,7 +67,7 @@ func configureSDDM(root, user, session string) {
 	sddmShare := filepath.Join(root, "usr/share/sddm")
 	sddmEtc := filepath.Join(root, "etc/sddm.conf.d")
 
-	if _, err := os.Stat(sddmShare); err == nil || os.MkdirAll(sddmEtc, 0755) == nil {
+	if _, err := os.Stat(sddmShare); err == nil {
 		fmt.Println(" -> Configuring SDDM...")
 		os.MkdirAll(sddmEtc, 0755)
 		confPath := filepath.Join(sddmEtc, "autologin.conf")
@@ -85,14 +85,11 @@ func configureLightDM(root, user, session string) {
 	fmt.Println(" -> Configuring LightDM...")
 	pamFile := filepath.Join(root, "etc/pam.d/lightdm-autologin")
 	if data, err := os.ReadFile(pamFile); err == nil {
-		lines := strings.Split(string(data), "\n")
-		var newLines []string
-		for _, line := range lines {
-			if !strings.Contains(line, "pam_succeed_if.so") || !strings.Contains(line, "autologin") {
-				newLines = append(newLines, line)
-			}
+		bypass := "auth\tsufficient\tpam_permit.so"
+		if !strings.Contains(string(data), bypass) {
+			newData := bypass + "\n" + string(data)
+			os.WriteFile(pamFile, []byte(newData), 0644)
 		}
-		os.WriteFile(pamFile, []byte(strings.Join(newLines, "\n")), 0644)
 	}
 
 	confFile := filepath.Join(lightdmDir, "lightdm.conf")
