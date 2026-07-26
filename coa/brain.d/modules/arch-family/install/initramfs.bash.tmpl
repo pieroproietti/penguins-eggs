@@ -1,0 +1,83 @@
+# ==============================================================================
+# 🏹 ARCH FAMILY - INITRAMFS REGENERATION
+# ==============================================================================
+
+# ==============================================================================
+# 🎯 FINAL DISK INSTALLER (Executed in Chroot)
+# ==============================================================================
+{{ define "install_distro_initramfs" }}
+{{ if or (eq .DistroID "garuda") (eq .DistroID "endeavouros") }}
+    echo "-> Regenerating initramfs on Garuda/EndeavourOS via dracut..."
+    
+    KVER_DIR=$(uname -r)
+    if [ ! -d "/lib/modules/$KVER_DIR" ]; then
+        # Fall back if uname -r doesn't match an installed kernel (e.g. an
+        # unrebooted upgrade) - matches whichever kernel is actually present.
+        KVER_DIR=$(ls -1 /lib/modules/ | grep -v "extramodules" | head -n 1)
+    fi
+    if [ -z "$KVER_DIR" ]; then
+        echo "[FATAL ERROR] Unable to determine the kernel in the chroot."
+        exit 1
+    fi
+
+    INITRD_TARGET="/boot/initramfs-$KVER_DIR.img"
+
+    # Clear stale initramfs-*.img so the bootloader steps' unordered
+    # `find | head -n1` can't pick a non-btrfs leftover instead of ours.
+    find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" ! -name "$(basename "$INITRD_TARGET")" -delete
+
+    # -N (no-hostonly) is vital to generate the image correctly from within the chroot
+    # Explicit outfile: Garuda's dracut.conf.d defaults to a BLS path that doesn't exist yet.
+    if ! dracut -N -f --add "btrfs" --kver "$KVER_DIR" "$INITRD_TARGET"; then
+        echo "[FATAL ERROR] dracut failed to generate $INITRD_TARGET"
+        exit 1
+    fi
+    if [ ! -f "$INITRD_TARGET" ]; then
+        echo "[FATAL ERROR] dracut reported success but $INITRD_TARGET is missing"
+        exit 1
+    fi
+
+{{ else }}
+    echo "-> Regenerating mkinitcpio-based initramfs..."
+    # Ensure Limine ESP_PATH is configured before mkinitcpio triggers limine hooks
+    ESP_MOUNT=""
+    if mountpoint -q /boot/efi 2>/dev/null || awk '$2 == "/boot/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+        ESP_MOUNT="/boot/efi"
+    elif mountpoint -q /efi 2>/dev/null || awk '$2 == "/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+        ESP_MOUNT="/efi"
+    elif mountpoint -q /boot 2>/dev/null || awk '$2 == "/boot" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+        ESP_MOUNT="/boot"
+    else
+        ESP_MOUNT="/boot/efi"
+    fi
+    for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine; do
+        if [ -f "$CONF_FILE" ]; then
+            if grep -q "^ESP_PATH=" "$CONF_FILE"; then
+                sed -i "s|^ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+            elif grep -q "^#ESP_PATH=" "$CONF_FILE"; then
+                sed -i "s|^#ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+            else
+                echo "ESP_PATH=\"$ESP_MOUNT\"" >> "$CONF_FILE"
+            fi
+        fi
+    done
+
+    ROOT_PART_INIT=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
+    if [ -n "$ROOT_PART_INIT" ]; then
+        for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine /etc/kernel/cmdline; do
+            if [ -f "$CONF_FILE" ]; then
+                sed -i "s|root=UUID=[^ \"']*|root=$ROOT_PART_INIT|g" "$CONF_FILE"
+                sed -i "s|root=/dev/[^ \"']*|root=$ROOT_PART_INIT|g" "$CONF_FILE"
+            fi
+        done
+    fi
+
+    ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+    if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+        if ! grep -q "^HOOKS=.*btrfs" /etc/mkinitcpio.conf; then
+            sed -i '/^HOOKS=/ s/\bfilesystems\b/btrfs filesystems/' /etc/mkinitcpio.conf
+        fi
+    fi
+    mkinitcpio -P
+{{ end }}
+{{ end }}

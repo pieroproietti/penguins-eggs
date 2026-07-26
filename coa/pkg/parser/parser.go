@@ -3,6 +3,7 @@ package parser
 import (
 	"bytes"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -80,7 +81,16 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	if matchedEntry.Dir != "" {
 		moduleNameLog = matchedEntry.Dir
 		dirPath := filepath.Join(baseDir, "modules", matchedEntry.Dir)
-		tmplFiles, err := filepath.Glob(filepath.Join(dirPath, "*.tmpl"))
+		var tmplFiles []string
+		err := filepath.WalkDir(dirPath, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if !d.IsDir() && strings.HasSuffix(path, ".tmpl") {
+				tmplFiles = append(tmplFiles, path)
+			}
+			return nil
+		})
 		if err != nil || len(tmplFiles) == 0 {
 			return nil, fmt.Errorf("no template files found in module directory %s: %v", dirPath, err)
 		}
