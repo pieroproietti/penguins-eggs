@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -48,33 +49,53 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		return nil, fmt.Errorf("syntax error in index.yaml: %v", err)
 	}
 
-	var moduleFile string
-	for _, entry := range index.Distributions {
+	var matchedEntry *DistroMap
+	for i := range index.Distributions {
+		entry := &index.Distributions[i]
 		if entry.ID == myDistro.DistroID {
-			moduleFile = entry.File
+			matchedEntry = entry
 			break
 		}
 		for _, l := range entry.Like {
 			if l == myDistro.DistroID {
-				moduleFile = entry.File
+				matchedEntry = entry
 				break
 			}
 		}
-		if moduleFile != "" {
+		if matchedEntry != nil {
 			break
 		}
 	}
 
-	if moduleFile == "" {
+	if matchedEntry == nil {
 		return nil, fmt.Errorf("no module found for %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
 	}
 
 	basePath := filepath.Join(baseDir, "base.yaml.tmpl")
-	modulePath := filepath.Join(baseDir, "modules", moduleFile)
 
-	utils.LogNormal("%s[parser]%s Compilazione: base.yaml.tmpl + %s", utils.ColorCyan, utils.ColorReset, moduleFile)
+	var filesToParse []string
+	filesToParse = append(filesToParse, basePath)
 
-ramModeEnabled := true
+	var moduleNameLog string
+	if matchedEntry.Dir != "" {
+		moduleNameLog = matchedEntry.Dir
+		dirPath := filepath.Join(baseDir, "modules", matchedEntry.Dir)
+		tmplFiles, err := filepath.Glob(filepath.Join(dirPath, "*.tmpl"))
+		if err != nil || len(tmplFiles) == 0 {
+			return nil, fmt.Errorf("no template files found in module directory %s: %v", dirPath, err)
+		}
+		sort.Strings(tmplFiles)
+		filesToParse = append(filesToParse, tmplFiles...)
+	} else if matchedEntry.File != "" {
+		moduleNameLog = matchedEntry.File
+		filesToParse = append(filesToParse, filepath.Join(baseDir, "modules", matchedEntry.File))
+	} else {
+		return nil, fmt.Errorf("no module file or directory specified for %s", myDistro.DistroID)
+	}
+
+	utils.LogNormal("%s[parser]%s Compilazione: base.yaml.tmpl + %s", utils.ColorCyan, utils.ColorReset, moduleNameLog)
+
+	ramModeEnabled := true
 	liveUser := "live"
 	if settings, err := LoadCustomSettings(); err == nil && settings != nil {
 		if settings.Remaster.RamMode != nil {
@@ -113,7 +134,7 @@ ramModeEnabled := true
 		},
 	})
 
-	_, err = tmpl.ParseFiles(basePath, modulePath)
+	_, err = tmpl.ParseFiles(filesToParse...)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing templates: %v", err)
 	}

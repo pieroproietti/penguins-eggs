@@ -1,0 +1,69 @@
+# ==============================================================================
+# 🦎 MODULO OPENSUSE SLOWROLL - REMASTER
+# ==============================================================================
+
+# ----------------------------------------------------------------------------
+# DECLARATIVE CONSTANTS 
+# ----------------------------------------------------------------------------
+{{ define "distro_boot_params" }}root=live:LABEL=OA_LIVE rd.live.image rd.shell rd.debug selinux=0 cow_spacesize=2G{{ end }}
+
+# ----------------------------------------------------------------------------
+# 5. INITRAMFS LIVE (Cambia il nome dell'immagine finale)
+# ----------------------------------------------------------------------------
+{{ define "distro_initramfs_cmd" }}
+#!/bin/bash
+set -e
+# opensuse: distro_initramfs_cmd
+echo "Generazione initramfs live (dracut)..."
+# ATTENZIONE: Aggiunti i driver per i controller fisici e virtuali (AHCI, VirtIO, IDE)
+dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay ahci virtio_blk virtio_pci virtio_scsi cdrom ata_piix sd_mod" /boot/oa-initrd.img
+{{ end }}
+
+# ----------------------------------------------------------------------------
+# 6. COPY KERNEL/INITRD
+# ----------------------------------------------------------------------------
+{{ define "distro_copy_kernel_cmd" }}
+#!/bin/bash
+set -e
+# opensuse: distro_copy_kernel_cmd
+
+KERNEL_VERSION=$(uname -r)
+echo "-> Copia Kernel openSUSE ($KERNEL_VERSION)..."
+
+# Usiamo i percorsi assoluti e sicuri, leggendo e scrivendo dove serve davvero
+KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
+INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
+DEST_DIR="/home/eggs/isodir/live"
+
+# Controllo di sicurezza sul KERNEL
+if [ ! -f "$KERNEL_SRC" ] ; then
+    echo "[ERRORE FATALE] Impossibile trovare il kernel in $KERNEL_SRC!"
+    exit 1
+fi
+
+# Controllo di sicurezza sull'INITRD
+if [ ! -f "$INITRD_SRC" ] ; then
+    echo "[ERRORE FATALE] Impossibile trovare l'initrd in $INITRD_SRC! Dracut non lo ha generato."
+    exit 1
+fi
+
+# Creiamo la directory di destinazione (se non esiste) e copiamo
+mkdir -p "$DEST_DIR"
+
+cp "$KERNEL_SRC" "$DEST_DIR/vmlinuz"
+echo "-> Copia oa-initrd.img..."
+cp "$INITRD_SRC" "$DEST_DIR/initrd.img"
+
+echo "-> Copia completata con successo."
+{{ end }}
+
+# ----------------------------------------------------------------------------
+# 8.1 HARDLINK TO isodir/live/filesystem.squashfs in arch, fedora, manjaro
+# ----------------------------------------------------------------------------
+{{ define "distro_hook_squashfs" }}
+#!/bin/bash
+set -e
+# opensuse: distro_hook_squashfs
+mkdir -p /home/eggs/isodir/LiveOS
+ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
+{{ end }}

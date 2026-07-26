@@ -13,7 +13,7 @@ This function is the beating heart of the package. Instead of forcing the user t
 1. **Identity:** uses `distro.NewDistro()` to read `/etc/os-release` and learn who the host is.
 2. **Dev/Prod fallback:** looks for the Brain intelligently — first the local development path (`coa/brain.d`), then the production system path (`/etc/penguins-eggs.d/brain.d`). The tool works both while you write code and once installed on the end user's OS.
 3. **Index parsing:** reads `index.yaml`, decoding it into the `BrainIndex` structure.
-4. **Matching engine:** walks the `Distributions` list (`DistroMap` entries: `id`, `like`, `file`), looking for an exact match on the distro ID or an indirect match through the `like` array (e.g. it understands that a Debian derivative must use the Debian module).
+4. **Matching engine:** walks the `Distributions` list (`DistroMap` entries: `id`, `like`, `dir` or `file`), looking for an exact match on the distro ID or an indirect match through the `like` array (e.g. it understands that a Debian derivative must use the Debian module).
 
 ---
 
@@ -22,7 +22,7 @@ This function is the beating heart of the package. Instead of forcing the user t
 This is where the current architecture departs from the old "one static YAML per distro" model. The Brain is made of **Go `text/template` files**:
 
 * **`base.yaml.tmpl`** — the universal frame: the skeleton of the remaster flight, identical for every distribution.
-* **`modules/<distro>.bash.tmpl`** — the distro-specific module selected through `index.yaml` (`alpine`, `arch`, `manjaro`, `debian`, `fedora`, `opensuse`).
+* **`modules/<distro>/`** (`remaster.bash.tmpl` and `install.bash.tmpl`) — the distro-specific module directory selected through `index.yaml` (`alpine`, `arch-family`, `debian`, `fedora`, `opensuse`).
 
 The parser compiles *base + module* in a single template engine, enriched with two helper functions:
 

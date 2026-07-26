@@ -118,7 +118,8 @@ penguins-eggs (oa edition) detects the host automatically. Currently supported f
 | Manjaro | Manjaro, BigLinux |
 | openSUSE | openSUSE Tumbleweed |
 
-Adding a new distribution requires only a new template module in `brain.d/modules/` — no Go or C changes.
+Adding a new distribution requires only a new template module directory under `brain.d/modules/` — no Go or C changes.
+
 
 ## Where to go next
 
