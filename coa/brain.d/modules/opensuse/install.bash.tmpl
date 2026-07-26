@@ -152,9 +152,32 @@ if [ -d /sys/firmware/efi ]; then
         PRETTY_NAME="openSUSE"
     fi
 
+    SPLASH_IMG=""
+    for candidate in \
+        /usr/share/wallpapers/cachyos-wallpapers/limine-splash.png \
+        /usr/share/wallpapers/cachyos-wallpapers/splash.png \
+        /etc/penguins-eggs.d/brain.d/assets/splash.png \
+        /usr/share/limine/splash.png \
+        /boot/splash.png \
+        /boot/limine-splash.png; do
+        if [ -f "$candidate" ]; then
+            SPLASH_IMG="$candidate"
+            break
+        fi
+    done
+
+    WALLPAPER_CONF=""
+    if [ -n "$SPLASH_IMG" ]; then
+        cp -f "$SPLASH_IMG" /boot/efi/splash.png 2>/dev/null || true
+        cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
+        WALLPAPER_CONF="wallpaper: boot:///splash.png
+wallpaper_style: stretched"
+    fi
+
     if [ ! -f /boot/efi/limine.conf ]; then
     cat <<EOF > /boot/efi/limine.conf
 timeout: 5
+${WALLPAPER_CONF}
 
 /: $PRETTY_NAME
     protocol: linux
@@ -189,9 +212,31 @@ else
         PRETTY_NAME="openSUSE"
     fi
 
+    SPLASH_IMG=""
+    for candidate in \
+        /usr/share/wallpapers/cachyos-wallpapers/limine-splash.png \
+        /usr/share/wallpapers/cachyos-wallpapers/splash.png \
+        /etc/penguins-eggs.d/brain.d/assets/splash.png \
+        /usr/share/limine/splash.png \
+        /boot/splash.png \
+        /boot/limine-splash.png; do
+        if [ -f "$candidate" ]; then
+            SPLASH_IMG="$candidate"
+            break
+        fi
+    done
+
+    WALLPAPER_CONF=""
+    if [ -n "$SPLASH_IMG" ]; then
+        cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
+        WALLPAPER_CONF="wallpaper: boot:///splash.png
+wallpaper_style: stretched"
+    fi
+
     if [ ! -f /boot/limine.conf ]; then
     cat <<EOF > /boot/limine.conf
 timeout: 5
+${WALLPAPER_CONF}
 
 /: $PRETTY_NAME
     protocol: linux
