@@ -1,76 +1,7 @@
 # ==============================================================================
-# 🦎 MODULO OPENSUSE SLOWROLL
+# 🦎 MODULO OPENSUSE SLOWROLL - INSTALL (Principle of Transparency)
 # ==============================================================================
 
-# ----------------------------------------------------------------------------
-# DECLARATIVE COSTANTS 
-# ----------------------------------------------------------------------------
-{{ define "distro_boot_params" }}root=live:LABEL=OA_LIVE rd.live.image rd.shell rd.debug selinux=0 cow_spacesize=2G{{ end }}
-
-# ----------------------------------------------------------------------------
-# 5. INITRAMFS LIVE (Cambia il nome dell'immagine finale)
-# ----------------------------------------------------------------------------
-{{ define "distro_initramfs_cmd" }}
-#!/bin/bash
-set -e
-# opensuse: distro_initramfs_cmd
-echo "Generazione initramfs live (dracut)..."
-# ATTENZIONE: Aggiunti i driver per i controller fisici e virtuali (AHCI, VirtIO, IDE)
-dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay ahci virtio_blk virtio_pci virtio_scsi cdrom ata_piix sd_mod" /boot/oa-initrd.img
-{{ end }}
-
-# ----------------------------------------------------------------------------
-# 6. COPY KERNEL/INITRD
-# ----------------------------------------------------------------------------
-{{ define "distro_copy_kernel_cmd" }}
-#!/bin/bash
-set -e
-# opensuse: distro_copy_kernel_cmd
-
-KERNEL_VERSION=$(uname -r)
-echo "-> Copia Kernel openSUSE ($KERNEL_VERSION)..."
-
-# Usiamo i percorsi assoluti e sicuri, leggendo e scrivendo dove serve davvero
-KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
-INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
-DEST_DIR="/home/eggs/isodir/live"
-
-# Controllo di sicurezza sul KERNEL
-if [ ! -f "$KERNEL_SRC" ] ; then
-    echo "[ERRORE FATALE] Impossibile trovare il kernel in $KERNEL_SRC!"
-    exit 1
-fi
-
-# Controllo di sicurezza sull'INITRD
-if [ ! -f "$INITRD_SRC" ] ; then
-    echo "[ERRORE FATALE] Impossibile trovare l'initrd in $INITRD_SRC! Dracut non lo ha generato."
-    exit 1
-fi
-
-# Creiamo la directory di destinazione (se non esiste) e copiamo
-mkdir -p "$DEST_DIR"
-
-cp "$KERNEL_SRC" "$DEST_DIR/vmlinuz"
-echo "-> Copia oa-initrd.img..."
-cp "$INITRD_SRC" "$DEST_DIR/initrd.img"
-
-echo "-> Copia completata con successo."
-{{ end }}
-
-# ----------------------------------------------------------------------------
-# 8.1 HARDLINK TO isodir/live/filesystem.squashfs in arch, fedora, manjaro
-# ----------------------------------------------------------------------------
-{{ define "distro_hook_squashfs" }}
-#!/bin/bash
-set -e
-# opensuse: distro_hook_squashfs
-mkdir -p /home/eggs/isodir/LiveOS
-ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
-{{ end }}
-
-# ==============================================================================
-# 🎯 INSTALLER
-# ==============================================================================
 {{ define "install_distro_initramfs" }}
 dracut -f --regenerate-all
 {{ end }}
@@ -85,12 +16,22 @@ if [ -f /etc/default/grub ]; then
       if ! grep -q "selinux=0" /etc/default/grub; then
             sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="selinux=0 /g' /etc/default/grub
       fi
+      if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+            sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+      else
+            echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+      fi
 fi
 
-# Rilevamento automatico e dispatch del bootloader
-if command -v limine &> /dev/null; then
+# Rilevamento automatico basato su configurazioni attive (Evidence-Based Detection)
+if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /boot/efi/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
+    echo "-> Evidence found: Limine configuration detected."
     {{ include "install_distro_limine" . }}
+elif [ -f /boot/loader/loader.conf ] || [ -f /boot/efi/loader/loader.conf ]; then
+    echo "-> Evidence found: systemd-boot configuration detected."
+    {{ include "install_distro_systemd_boot" . }}
 else
+    echo "-> Evidence found: GRUB configuration detected."
     {{ include "install_distro_grub" . }}
 fi
 {{ end }}
@@ -108,28 +49,28 @@ if [ "$(findmnt -n -o FSTYPE /)" = "btrfs" ]; then
 fi
 
 if [ -d /sys/firmware/efi ]; then
-      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=opensuse --recheck --force
+      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
       
       # Fallback UEFI Absolute (Garantisce l'avvio anche se la NVRAM fa i capricci)
       mkdir -p /boot/efi/EFI/BOOT
-      if [ -f /boot/efi/EFI/opensuse/shim.efi ]; then
-          cp /boot/efi/EFI/opensuse/shim.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
-          if [ -f /boot/efi/EFI/opensuse/grubx64.efi ]; then
-              cp /boot/efi/EFI/opensuse/grubx64.efi /boot/efi/EFI/BOOT/grubx64.efi
-          elif [ -f /boot/efi/EFI/opensuse/grub.efi ]; then
-              cp /boot/efi/EFI/opensuse/grub.efi /boot/efi/EFI/BOOT/grubx64.efi
+      if [ -f "/boot/efi/EFI/{{ .DistroID }}/shim.efi" ]; then
+          cp "/boot/efi/EFI/{{ .DistroID }}/shim.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+          if [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ]; then
+              cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/grubx64.efi
+          elif [ -f "/boot/efi/EFI/{{ .DistroID }}/grub.efi" ]; then
+              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" /boot/efi/EFI/BOOT/grubx64.efi
           fi
       else
-          if [ -f /boot/efi/EFI/opensuse/grubx64.efi ]; then
-              cp /boot/efi/EFI/opensuse/grubx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
-          elif [ -f /boot/efi/EFI/opensuse/grub.efi ]; then
-              cp /boot/efi/EFI/opensuse/grub.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
+          if [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ]; then
+              cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+          elif [ -f "/boot/efi/EFI/{{ .DistroID }}/grub.efi" ]; then
+              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
           fi
       fi
 
       grub2-mkconfig -o /boot/grub2/grub.cfg
-      mkdir -p /boot/efi/EFI/opensuse
-      grub2-mkconfig -o /boot/efi/EFI/opensuse/grub.cfg
+      mkdir -p "/boot/efi/EFI/{{ .DistroID }}"
+      grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
 else
       TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
       grub2-install --target=i386-pc --recheck "$TARGET_DISK"
@@ -164,27 +105,41 @@ if [ -z "$PRETTY_NAME" ]; then
     PRETTY_NAME="openSUSE"
 fi
 
-cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
+cat <<EOF > /boot/efi/loader/entries/{{ .DistroID }}.conf
 title   $PRETTY_NAME
 linux   /$KERNEL_FILE
 initrd  /$INITRD_FILE
 options root=$ROOT_PART rw $ROOTFLAGS
 EOF
 
+if [ ! -f /boot/efi/loader/loader.conf ]; then
 cat <<EOF > /boot/efi/loader/loader.conf
-default oa-linux.conf
+default {{ .DistroID }}.conf
 timeout 5
 console-mode max
 editor yes
 EOF
+fi
 {{ end }}
 
 {{ define "install_distro_limine" }}
 echo "-> Installazione di Limine bootloader su openSUSE..."
 if [ -d /sys/firmware/efi ]; then
     # UEFI
-    mkdir -p /boot/efi/EFI/BOOT
-    cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
+    mkdir -p /boot/efi/EFI/BOOT /boot/efi/EFI/limine
+    cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/ 2>/dev/null || true
+    cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/limine/ 2>/dev/null || true
+    if command -v efibootmgr &>/dev/null; then
+        ESP_DEV=$(df /boot/efi | awk 'NR==2 {print $1}')
+        if [ -n "$ESP_DEV" ]; then
+            DISK=$(echo "$ESP_DEV" | sed -E 's/p?[0-9]+$//')
+            PARTNUM=$(echo "$ESP_DEV" | grep -o '[0-9]*$')
+            if [ -n "$DISK" ] && [ -n "$PARTNUM" ]; then
+                echo "-> Registering Limine entry in UEFI NVRAM via efibootmgr..."
+                efibootmgr -c -d "$DISK" -p "$PARTNUM" -l '\EFI\limine\BOOTX64.EFI' -L "Limine" -u || true
+            fi
+        fi
+    fi
     
     KERNEL_PATH=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
     INITRD_PATH=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)
@@ -209,8 +164,32 @@ if [ -d /sys/firmware/efi ]; then
         PRETTY_NAME="openSUSE"
     fi
 
+    SPLASH_IMG=""
+    for candidate in \
+        /usr/share/wallpapers/cachyos-wallpapers/limine-splash.png \
+        /usr/share/wallpapers/cachyos-wallpapers/splash.png \
+        /etc/penguins-eggs.d/brain.d/assets/splash.png \
+        /usr/share/limine/splash.png \
+        /boot/splash.png \
+        /boot/limine-splash.png; do
+        if [ -f "$candidate" ]; then
+            SPLASH_IMG="$candidate"
+            break
+        fi
+    done
+
+    WALLPAPER_CONF=""
+    if [ -n "$SPLASH_IMG" ]; then
+        cp -f "$SPLASH_IMG" /boot/efi/splash.png 2>/dev/null || true
+        cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
+        WALLPAPER_CONF="wallpaper: boot:///splash.png
+wallpaper_style: stretched"
+    fi
+
+    if [ ! -f /boot/efi/limine.conf ]; then
     cat <<EOF > /boot/efi/limine.conf
 timeout: 5
+${WALLPAPER_CONF}
 
 /: $PRETTY_NAME
     protocol: linux
@@ -218,6 +197,7 @@ timeout: 5
     module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+    fi
     cp /boot/efi/limine.conf /boot/efi/EFI/BOOT/limine.conf
 else
     # BIOS/Legacy
@@ -244,8 +224,31 @@ else
         PRETTY_NAME="openSUSE"
     fi
 
+    SPLASH_IMG=""
+    for candidate in \
+        /usr/share/wallpapers/cachyos-wallpapers/limine-splash.png \
+        /usr/share/wallpapers/cachyos-wallpapers/splash.png \
+        /etc/penguins-eggs.d/brain.d/assets/splash.png \
+        /usr/share/limine/splash.png \
+        /boot/splash.png \
+        /boot/limine-splash.png; do
+        if [ -f "$candidate" ]; then
+            SPLASH_IMG="$candidate"
+            break
+        fi
+    done
+
+    WALLPAPER_CONF=""
+    if [ -n "$SPLASH_IMG" ]; then
+        cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
+        WALLPAPER_CONF="wallpaper: boot:///splash.png
+wallpaper_style: stretched"
+    fi
+
+    if [ ! -f /boot/limine.conf ]; then
     cat <<EOF > /boot/limine.conf
 timeout: 5
+${WALLPAPER_CONF}
 
 /: $PRETTY_NAME
     protocol: linux
@@ -253,6 +256,6 @@ timeout: 5
     module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+    fi
 fi
 {{ end }}
-

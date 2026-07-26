@@ -1,72 +1,7 @@
 # ==============================================================================
-# 🎩 FEDORA MODULE
+# 🎩 FEDORA MODULE - INSTALL (Principle of Transparency)
 # ==============================================================================
-{{ define "distro_boot_params" }}root=live:LABEL=OA_LIVE rd.live.image rd.shell rd.debug selinux=0 cow_spacesize=2G{{ end }}
 
-# ----------------------------------------------------------------------------
-# 5. LIVE INITRAMFS
-# ----------------------------------------------------------------------------
-{{ define "distro_initramfs_cmd" }}
-#!/bin/bash
-set -e
-# fedora: distro_initramfs_cmd
-echo "Generating live initramfs (dracut)..."
-dracut -f --no-hostonly --add "dmsquash-live livenet" --add-drivers "sr_mod iso9660 squashfs loop overlay" /boot/oa-initrd.img 2>&1 | tail -1
-{{ end }}
-
-# ----------------------------------------------------------------------------
-# 6. COPY KERNEL/INITRD
-# ----------------------------------------------------------------------------
-{{ define "distro_copy_kernel_cmd" }}
-KERNEL_VERSION=$(uname -r)
-echo "-> Copying Fedora Kernel ($KERNEL_VERSION)..."
-
-# Using absolute and safe paths, reading and writing only where strictly needed
-KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
-INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
-DEST_DIR="/home/eggs/isodir/live"
-
-# Safety check on KERNEL
-if [ ! -f "$KERNEL_SRC" ] ; then
-    echo "[FATAL ERROR] Cannot find kernel in $KERNEL_SRC!"
-    exit 1
-fi
-
-# Safety check on INITRD
-if [ ! -f "$INITRD_SRC" ] ; then
-    echo "[FATAL ERROR] Cannot find initrd in $INITRD_SRC! Dracut did not generate it."
-    exit 1
-fi
-
-# Create destination directory (if it doesn't exist) and copy
-mkdir -p "$DEST_DIR"
-
-cp "$KERNEL_SRC" "$DEST_DIR/vmlinuz"
-echo "-> Copying oa-initrd.img..."
-cp "$INITRD_SRC" "$DEST_DIR/initrd.img"
-
-echo "-> Copy successfully completed."
-{{ end }}
-
-# ----------------------------------------------------------------------------
-# 8.1 HARDLINK TO isodir/live/filesystem.squashfs in arch, fedora, manjaro
-# ----------------------------------------------------------------------------
-{{ define "distro_hook_squashfs" }}
-#!/bin/bash
-set -e
-# fedora: distro_hook_squashfs
-mkdir -p /home/eggs/isodir/LiveOS
-timeout=10
-while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
-    sleep 1
-    timeout=$((timeout-1))
-done
-ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
-{{ end }}
-
-# ==============================================================================
-# 🎯 INSTALLER
-# ==============================================================================
 {{ define "install_distro_initramfs" }}
 # 1. Fedora requires a valid machine-id for dracut and systemd-boot
 if [ ! -s /etc/machine-id ]; then
@@ -86,6 +21,12 @@ if ! grep -q "enforcing=0" /etc/default/grub; then
 fi
 # Fast boot: set timeout to 1 second for the relabeling and kamikaze reboots
 sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
+# Ensure dual-boot detection
+if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+    sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+else
+    echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+fi
 # -----------------------------------
 
 # 2. BLS (Boot Loader Specification) Management
@@ -96,7 +37,7 @@ fi
 
 if [ -d /sys/firmware/efi ]; then
       # 3. THE FEDORA TRICK: Recover shimx64.efi hidden under the mount point
-      if [ ! -f /boot/efi/EFI/fedora/shimx64.efi ]; then
+      if [ ! -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
           echo "-> Recovering original Fedora EFI (shim/SecureBoot) files..."
           umount /boot/efi 2>/dev/null
           cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
@@ -108,19 +49,19 @@ if [ -d /sys/firmware/efi ]; then
       fi
 
       # 4. Install GRUB
-      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=fedora --recheck --force
-      mkdir -p /boot/efi/EFI/fedora
+      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
+      mkdir -p "/boot/efi/EFI/{{ .DistroID }}"
       
       # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
-      if [ -f /boot/efi/EFI/fedora/shimx64.efi ]; then
+      if [ -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
           mkdir -p /boot/efi/EFI/BOOT
-          cp /boot/efi/EFI/fedora/shimx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
-          cp /boot/efi/EFI/fedora/grubx64.efi /boot/efi/EFI/BOOT/grubx64.efi
+          cp "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+          cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/grubx64.efi
       fi
 
       # 6. Generate configurations
       grub2-mkconfig -o /boot/grub2/grub.cfg
-      grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+      grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
 else
       # BIOS/Legacy
       TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
@@ -153,8 +94,8 @@ echo "[$(date)] /etc/default/grub updated. Executing grub2-mkconfig..."
 
 # 4. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
 grub2-mkconfig -o /boot/grub2/grub.cfg
-if [ -d /boot/efi/EFI/fedora ]; then
-    grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+if [ -d "/boot/efi/EFI/{{ .DistroID }}" ]; then
+    grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
 fi
 
 echo "[$(date)] GRUB successfully regenerated. Disabling service..."

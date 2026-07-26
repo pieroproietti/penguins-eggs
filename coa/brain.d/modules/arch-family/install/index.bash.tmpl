@@ -1,0 +1,40 @@
+# ==============================================================================
+# 🏹 MASTER-MODULE ARCH FAMILY - INSTALL DISPATCHER
+# Includes: Arch Linux, Manjaro, Garuda, and derivatives (EndeavourOS, etc.)
+# ==============================================================================
+
+# ==============================================================================
+# 🎯 BOOTLOADER DISPATCHER (Principle of Transparency: Evidence-Based Detection)
+# ==============================================================================
+{{ define "install_distro_bootloader" }}
+echo "-> Evidence-based bootloader detection and dispatch..."
+
+if [ -d /sys/firmware/efi ]; then
+    echo "-> UEFI environment detected."
+    # 1. Configs over Binaries
+    if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /boot/efi/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
+        echo "-> Evidence found: Limine configuration detected."
+        {{ include "install_distro_limine" . }}
+    elif [ -f /boot/loader/loader.conf ] || [ -f /boot/efi/loader/loader.conf ]; then
+        echo "-> Evidence found: systemd-boot configuration detected."
+        {{ include "install_distro_systemd_boot" . }}
+    elif [ -f /etc/default/grub ] || [ -f /boot/grub/grub.cfg ]; then
+        echo "-> Evidence found: GRUB configuration detected."
+        {{ include "install_distro_grub" . }}
+    elif command -v bootctl &> /dev/null; then
+        {{ include "install_distro_systemd_boot" . }}
+    elif command -v limine &> /dev/null; then
+        {{ include "install_distro_limine" . }}
+    else
+        {{ include "install_distro_grub" . }}
+    fi
+else
+    echo "-> BIOS/Legacy environment detected."
+    if [ -f /boot/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
+        echo "-> Evidence found: Limine configuration detected."
+        {{ include "install_distro_limine" . }}
+    else
+        {{ include "install_distro_grub" . }}
+    fi
+fi
+{{ end }}

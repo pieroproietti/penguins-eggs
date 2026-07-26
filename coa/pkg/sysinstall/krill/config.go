@@ -183,9 +183,18 @@ func (c *InstallerConfig) SquashfsSource() string {
 	return ""
 }
 
-// DefaultHostname espande il template Calamares (es. "oa-${product}")
-// usando lo shortProductName del branding, ridotto a un nome valido.
+// DefaultHostname legge il valore di /etc/hostname (se presente).
+// Se /etc/hostname non esiste o è vuoto, restituisce "naked" come fallback.
 func (c *InstallerConfig) DefaultHostname() string {
+	if data, err := os.ReadFile("/etc/hostname"); err == nil {
+		lines := strings.Split(string(data), "\n")
+		for _, line := range lines {
+			h := strings.TrimSpace(line)
+			if h != "" && !strings.HasPrefix(h, "#") {
+				return h
+			}
+		}
+	}
 	return "naked"
 }
 

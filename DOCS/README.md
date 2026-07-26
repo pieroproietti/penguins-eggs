@@ -7,6 +7,8 @@
 - [The Navigator: `parser`](./architecture/parser.md) — Detection, YAML template rendering, profile building.
 - [The Engineer: `planner`](./architecture/planner.md) — Plan compilation, exclude list, breakpoints.
 - [The Universal Strategy](./architecture/universal-strategy.md) — The philosophical and technical framework behind multi-distro support.
+- [The Principle of Transparency](./architecture/transparency-principle.md) — Evidence-based detection, DNA preservation, and native tools.
+
 
 ## Design
 - [Philosophy](./design/philosophy.md) — The three-actor model and the evolution from Bash to C+Go.
