@@ -252,7 +252,7 @@ if [ -z "$PRETTY_NAME" ]; then
     PRETTY_NAME="Arch Linux"
 fi
 
-cat <<EOF > /boot/efi/loader/entries/oa-linux.conf
+cat <<EOF > /boot/efi/loader/entries/{{ .DistroID }}.conf
 title   $PRETTY_NAME
 linux   /$KERNEL_FILE
 ${UCODE_LINE}
@@ -262,7 +262,7 @@ EOF
 
 if [ ! -f /boot/efi/loader/loader.conf ]; then
 cat <<EOF > /boot/efi/loader/loader.conf
-default oa-linux.conf
+default {{ .DistroID }}.conf
 timeout 5
 console-mode max
 editor yes

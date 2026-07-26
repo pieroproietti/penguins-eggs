@@ -1,5 +1,5 @@
 # ==============================================================================
-# 🎩 FEDORA MODULE - INSTALL
+# 🎩 FEDORA MODULE - INSTALL (Principle of Transparency)
 # ==============================================================================
 
 {{ define "install_distro_initramfs" }}
@@ -21,6 +21,12 @@ if ! grep -q "enforcing=0" /etc/default/grub; then
 fi
 # Fast boot: set timeout to 1 second for the relabeling and kamikaze reboots
 sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
+# Ensure dual-boot detection
+if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+    sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+else
+    echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+fi
 # -----------------------------------
 
 # 2. BLS (Boot Loader Specification) Management
@@ -31,7 +37,7 @@ fi
 
 if [ -d /sys/firmware/efi ]; then
       # 3. THE FEDORA TRICK: Recover shimx64.efi hidden under the mount point
-      if [ ! -f /boot/efi/EFI/fedora/shimx64.efi ]; then
+      if [ ! -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
           echo "-> Recovering original Fedora EFI (shim/SecureBoot) files..."
           umount /boot/efi 2>/dev/null
           cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
@@ -43,19 +49,19 @@ if [ -d /sys/firmware/efi ]; then
       fi
 
       # 4. Install GRUB
-      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=fedora --recheck --force
-      mkdir -p /boot/efi/EFI/fedora
+      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
+      mkdir -p "/boot/efi/EFI/{{ .DistroID }}"
       
       # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
-      if [ -f /boot/efi/EFI/fedora/shimx64.efi ]; then
+      if [ -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
           mkdir -p /boot/efi/EFI/BOOT
-          cp /boot/efi/EFI/fedora/shimx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
-          cp /boot/efi/EFI/fedora/grubx64.efi /boot/efi/EFI/BOOT/grubx64.efi
+          cp "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+          cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/grubx64.efi
       fi
 
       # 6. Generate configurations
       grub2-mkconfig -o /boot/grub2/grub.cfg
-      grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+      grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
 else
       # BIOS/Legacy
       TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
@@ -88,8 +94,8 @@ echo "[$(date)] /etc/default/grub updated. Executing grub2-mkconfig..."
 
 # 4. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
 grub2-mkconfig -o /boot/grub2/grub.cfg
-if [ -d /boot/efi/EFI/fedora ]; then
-    grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+if [ -d "/boot/efi/EFI/{{ .DistroID }}" ]; then
+    grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
 fi
 
 echo "[$(date)] GRUB successfully regenerated. Disabling service..."

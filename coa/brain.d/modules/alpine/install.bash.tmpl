@@ -16,14 +16,14 @@ mkinitfs -o /boot/initramfs-$KVER $KVER
 
 {{ define "install_distro_bootloader" }}
 if [ -d /sys/firmware/efi ]; then
-    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck; then
-        [ -f /boot/efi/EFI/alpine/grubx64.efi ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
+        [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
     fi
 
     # Removable fallback: firmware (notably some VM/OVMF setups) with no
     # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
     mkdir -p /boot/efi/EFI/BOOT
-    [ -f /boot/efi/EFI/alpine/grubx64.efi ] && cp -f /boot/efi/EFI/alpine/grubx64.efi /boot/efi/EFI/BOOT/BOOTX64.EFI
+    [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
 else
     TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
