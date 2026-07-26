@@ -134,21 +134,12 @@ done
 
 if [ -n "$SPLASH_IMG" ]; then
     echo "-> Installing Limine wallpaper splash from $SPLASH_IMG..."
-    mkdir -p "$ESP_MOUNT/EFI/BOOT" "$ESP_MOUNT/EFI/limine" "$ESP_MOUNT/limine" 2>/dev/null || true
+    mkdir -p "$ESP_MOUNT/EFI/limine" "$ESP_MOUNT/EFI/BOOT" 2>/dev/null || true
     cp -f "$SPLASH_IMG" "$ESP_MOUNT/splash.png" 2>/dev/null || true
-    cp -f "$SPLASH_IMG" "$ESP_MOUNT/limine-splash.png" 2>/dev/null || true
-    cp -f "$SPLASH_IMG" "$ESP_MOUNT/limine/splash.png" 2>/dev/null || true
-    cp -f "$SPLASH_IMG" "$ESP_MOUNT/limine/limine-splash.png" 2>/dev/null || true
-    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/BOOT/splash.png" 2>/dev/null || true
-    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/BOOT/limine-splash.png" 2>/dev/null || true
     cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/limine/splash.png" 2>/dev/null || true
-    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/limine/limine-splash.png" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/BOOT/splash.png" 2>/dev/null || true
     if [ "$ESP_MOUNT" != "/boot" ]; then
-        mkdir -p /boot/limine 2>/dev/null || true
         cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
-        cp -f "$SPLASH_IMG" /boot/limine-splash.png 2>/dev/null || true
-        cp -f "$SPLASH_IMG" /boot/limine/splash.png 2>/dev/null || true
-        cp -f "$SPLASH_IMG" /boot/limine/limine-splash.png 2>/dev/null || true
     fi
 fi
 
