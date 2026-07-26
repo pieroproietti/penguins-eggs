@@ -126,8 +126,20 @@ fi
 echo "-> Installazione di Limine bootloader su openSUSE..."
 if [ -d /sys/firmware/efi ]; then
     # UEFI
-    mkdir -p /boot/efi/EFI/BOOT
-    cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
+    mkdir -p /boot/efi/EFI/BOOT /boot/efi/EFI/limine
+    cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/ 2>/dev/null || true
+    cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/limine/ 2>/dev/null || true
+    if command -v efibootmgr &>/dev/null; then
+        ESP_DEV=$(df /boot/efi | awk 'NR==2 {print $1}')
+        if [ -n "$ESP_DEV" ]; then
+            DISK=$(echo "$ESP_DEV" | sed -E 's/p?[0-9]+$//')
+            PARTNUM=$(echo "$ESP_DEV" | grep -o '[0-9]*$')
+            if [ -n "$DISK" ] && [ -n "$PARTNUM" ]; then
+                echo "-> Registering Limine entry in UEFI NVRAM via efibootmgr..."
+                efibootmgr -c -d "$DISK" -p "$PARTNUM" -l '\EFI\limine\BOOTX64.EFI' -L "Limine" -u || true
+            fi
+        fi
+    fi
     
     KERNEL_PATH=$(ls -1 /boot/vmlinuz-* 2>/dev/null | grep -v rescue | head -n 1)
     INITRD_PATH=$(ls -1 /boot/initramfs-* /boot/initrd-* 2>/dev/null | grep -v rescue | grep -v oa-initrd | head -n 1)

@@ -23,7 +23,7 @@ if ! mountpoint -q "$ESP_MOUNT" 2>/dev/null; then
     mount "$ESP_MOUNT" || true
 fi
 
-# Configure ESP_PATH and target root UUID in Limine configs so native limine-update/limine-mkinitcpio won't fail or use host UUID
+# Configure ESP_PATH, LIMINE_WALLPAPER, and target root UUID in Limine configs
 for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine; do
     if [ -f "$CONF_FILE" ]; then
         echo "-> Setting ESP_PATH=\"$ESP_MOUNT\" in $CONF_FILE..."
@@ -33,6 +33,14 @@ for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine; do
             sed -i "s|^#ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
         else
             echo "ESP_PATH=\"$ESP_MOUNT\"" >> "$CONF_FILE"
+        fi
+
+        if grep -q "^LIMINE_WALLPAPER=" "$CONF_FILE"; then
+            sed -i 's|^LIMINE_WALLPAPER=.*|LIMINE_WALLPAPER="boot:///splash.png"|' "$CONF_FILE"
+        elif grep -q "^#LIMINE_WALLPAPER=" "$CONF_FILE"; then
+            sed -i 's|^#LIMINE_WALLPAPER=.*|LIMINE_WALLPAPER="boot:///splash.png"|' "$CONF_FILE"
+        else
+            echo 'LIMINE_WALLPAPER="boot:///splash.png"' >> "$CONF_FILE"
         fi
     fi
 done
@@ -49,9 +57,21 @@ if [ -n "$ROOT_PART_TARGET" ]; then
 fi
 
 if [ -d /sys/firmware/efi ]; then
-    mkdir -p "$ESP_MOUNT/EFI/BOOT"
+    mkdir -p "$ESP_MOUNT/EFI/BOOT" "$ESP_MOUNT/EFI/limine"
     if [ -f /usr/share/limine/BOOTX64.EFI ]; then
         cp -f /usr/share/limine/BOOTX64.EFI "$ESP_MOUNT/EFI/BOOT/"
+        cp -f /usr/share/limine/BOOTX64.EFI "$ESP_MOUNT/EFI/limine/"
+    fi
+    if command -v efibootmgr &>/dev/null; then
+        ESP_DEV=$(df "$ESP_MOUNT" | awk 'NR==2 {print $1}')
+        if [ -n "$ESP_DEV" ]; then
+            DISK=$(echo "$ESP_DEV" | sed -E 's/p?[0-9]+$//')
+            PARTNUM=$(echo "$ESP_DEV" | grep -o '[0-9]*$')
+            if [ -n "$DISK" ] && [ -n "$PARTNUM" ]; then
+                echo "-> Registering Limine entry in UEFI NVRAM via efibootmgr..."
+                efibootmgr -c -d "$DISK" -p "$PARTNUM" -l '\EFI\limine\BOOTX64.EFI' -L "Limine" -u || true
+            fi
+        fi
     fi
 else
     ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
@@ -114,14 +134,21 @@ done
 
 if [ -n "$SPLASH_IMG" ]; then
     echo "-> Installing Limine wallpaper splash from $SPLASH_IMG..."
+    mkdir -p "$ESP_MOUNT/EFI/BOOT" "$ESP_MOUNT/EFI/limine" "$ESP_MOUNT/limine" 2>/dev/null || true
     cp -f "$SPLASH_IMG" "$ESP_MOUNT/splash.png" 2>/dev/null || true
-    mkdir -p "$ESP_MOUNT/EFI/BOOT" "$ESP_MOUNT/EFI/limine" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/limine-splash.png" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/limine/splash.png" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/limine/limine-splash.png" 2>/dev/null || true
     cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/BOOT/splash.png" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/BOOT/limine-splash.png" 2>/dev/null || true
     cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/limine/splash.png" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/limine/limine-splash.png" 2>/dev/null || true
     if [ "$ESP_MOUNT" != "/boot" ]; then
-        cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
         mkdir -p /boot/limine 2>/dev/null || true
+        cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
+        cp -f "$SPLASH_IMG" /boot/limine-splash.png 2>/dev/null || true
         cp -f "$SPLASH_IMG" /boot/limine/splash.png 2>/dev/null || true
+        cp -f "$SPLASH_IMG" /boot/limine/limine-splash.png 2>/dev/null || true
     fi
 fi
 
@@ -196,11 +223,16 @@ EOF
     done
 fi
 
-# Ensure wallpaper setting is injected at the top of limine.conf if splash image exists and wallpaper key is missing
+# Ensure wallpaper setting is present and updated in limine.conf if splash image exists
 if [ -n "$SPLASH_IMG" ] && [ -f "$LIMINE_CONF" ]; then
-    if ! grep -q "^wallpaper:" "$LIMINE_CONF"; then
-        echo "-> Injecting wallpaper splash setting into $LIMINE_CONF..."
+    echo "-> Configuring wallpaper splash setting in $LIMINE_CONF..."
+    if grep -q "^wallpaper:" "$LIMINE_CONF"; then
+        sed -i 's|^wallpaper:.*|wallpaper: boot:///splash.png|' "$LIMINE_CONF"
+    else
         sed -i '1s/^/wallpaper: boot:\/\/\/splash.png\nwallpaper_style: stretched\n/' "$LIMINE_CONF"
+    fi
+    if ! grep -q "^wallpaper_style:" "$LIMINE_CONF"; then
+        sed -i '/^wallpaper:/a wallpaper_style: stretched' "$LIMINE_CONF"
     fi
 fi
 
