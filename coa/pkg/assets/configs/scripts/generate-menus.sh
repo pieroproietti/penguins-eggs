@@ -17,8 +17,8 @@ fi
 
 echo "Generazione menu GRUB e ISOLINUX in corso..."
 
-MENU_TITLE="penguins-eggs (oa edition)"
-START_LABEL="Start"
+MENU_TITLE="penguins-eggs"
+START_LABEL="Chick of"
 RAM_LABEL="RAM mode"
 if [ -f "/etc/penguins-eggs.d/brain.d/assets/menu-strings.conf" ]; then
     . "/etc/penguins-eggs.d/brain.d/assets/menu-strings.conf"
@@ -104,10 +104,19 @@ EOF
 
 # 2. Generazione ISOLINUX.cfg
 ISOLINUX_HEADER="MENU BACKGROUND splash.png
-MENU TITLE $MENU_TITLE"
+MENU TITLE $MENU_TITLE
+MENU ROW 2
+MENU MARGIN 10
+MENU ROWS 12
+MENU TABMSGROW 27
+MENU AUTOBOOTROW 28
+MENU CMDLINEROW 27
+MENU HELPMSGROW 27"
 
 if [ -f "$ISODIR/isolinux/isolinux.theme.cfg" ]; then
-    ISOLINUX_HEADER="include isolinux.theme.cfg"
+    ISOLINUX_HEADER="MENU BACKGROUND splash.png
+MENU TITLE $MENU_TITLE
+include isolinux.theme.cfg"
 fi
 
 cat <<EOF > "$ISODIR/isolinux/isolinux.cfg"
