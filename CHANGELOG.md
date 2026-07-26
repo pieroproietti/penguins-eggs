@@ -2,6 +2,32 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.7.26 - 2026-07-26
+This release brings major enhancements to the Limine bootloader stack, installer auto-detection and confirmation workflows in `sysinstall`, support for Archcraft derivative environments, hardened `makepkg` packaging, LightDM/SDDM autologin PAM fixes, and safe `liveroot` chroot mounting.
+
+### 🥾 Limine Bootloader & NVRAM Integration
+* **NVRAM & EFI Synchronization**: Added UEFI NVRAM registration via `efibootmgr` for Limine installations and synchronized wallpaper configuration across EFI mount paths.
+* **Menu Hierarchy & Wallpapers**: Preserved hierarchical tree structures in boot menus and improved splash wallpaper configuration injection.
+* **ESP Path & Target Root UUID**: Ensured exact `ESP_PATH` and target partition root UUID injection into Limine configuration files, maintaining consistent `limine.conf` copies across EFI paths.
+* **Bootloader Transparency**: Implemented the Principle of Transparency across bootloader configuration modules.
+
+### 💾 sysinstall & Krill Installer Enhancements
+* **Installer Auto-Detection & Launchers**: Added automatic installer detection, `pkexec` desktop launcher support, and an explicit interactive confirmation summary step before proceeding with Krill installation.
+* **Dynamic EFI Bootloader Labels**: Dynamically resolved host `DistroID` for EFI bootloader registration to prevent hardcoded `oa-live` labels.
+* **Hostname Resolution**: Updated Krill hostname resolution to read default hostname from `/etc/hostname` with fallback to `naked`.
+
+### 🏹 Archcraft Derivative Support & Packaging Hardening
+* **Archcraft Recognition**: Added distro recognition for **Archcraft** under the Arch family definitions (`brain.d/index.yaml`).
+* **Makepkg Output Enforcement**: Explicitly forced `PKGDEST` and `PKGEXT` environment settings during `makepkg` execution to align with Alpine packaging conventions, ensuring packages built on Arch derivatives (such as BigLinux) are correctly located in stage.
+
+### 🔐 Display Manager & PAM Autologin Fixes
+* **LightDM Non-Interactive Autologin**: Prepended a service-scoped `pam_permit.so` rule to `lightdm-autologin` PAM stack to eliminate non-interactive login failures ("conversation failed") without touching live user SSH/PAM defaults.
+* **SDDM Configuration Guard**: Corrected SDDM autologin setup condition to only write SDDM autologin configurations when SDDM is present.
+
+### 🐧 Chroot & Mount Propagation Safeguards
+* **Liveroot Self-Bind**: Enforced a private bind-mount of `liveroot` onto itself before `chroot` execution with `--make-private` propagation. This ensures tools requiring `/` to be a distinct mountpoint (such as `pacman`'s disk space check) succeed while preventing mount propagation leaks during teardown.
+* **Brain Distro Structure**: Split distribution module templates into dedicated `remaster/` and `install/` subdirectories for clearer separation of concerns.
+
 ## Release Notes: penguins-eggs v26.7.24 - 2026-07-24
 This release brings full compatibility and end-to-end remastering support for Arch Linux and its major derivatives (**Arch, EndeavourOS, Garuda Linux and CachyOS**), alongside critical bootloader enhancements for Limine, systemd-boot, and GRUB, installer refinements, and robust initramfs module handling.
 
