@@ -1,5 +1,5 @@
 # ==============================================================================
-# 🦎 MODULO OPENSUSE SLOWROLL - INSTALL
+# 🦎 MODULO OPENSUSE SLOWROLL - INSTALL (Principle of Transparency)
 # ==============================================================================
 
 {{ define "install_distro_initramfs" }}
@@ -16,12 +16,22 @@ if [ -f /etc/default/grub ]; then
       if ! grep -q "selinux=0" /etc/default/grub; then
             sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="selinux=0 /g' /etc/default/grub
       fi
+      if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+            sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+      else
+            echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+      fi
 fi
 
-# Rilevamento automatico e dispatch del bootloader
-if command -v limine &> /dev/null; then
+# Rilevamento automatico basato su configurazioni attive (Evidence-Based Detection)
+if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ]; then
+    echo "-> Evidence found: Limine configuration detected."
     {{ include "install_distro_limine" . }}
+elif [ -f /boot/loader/loader.conf ] || [ -f /boot/efi/loader/loader.conf ]; then
+    echo "-> Evidence found: systemd-boot configuration detected."
+    {{ include "install_distro_systemd_boot" . }}
 else
+    echo "-> Evidence found: GRUB configuration detected."
     {{ include "install_distro_grub" . }}
 fi
 {{ end }}
@@ -102,12 +112,14 @@ initrd  /$INITRD_FILE
 options root=$ROOT_PART rw $ROOTFLAGS
 EOF
 
+if [ ! -f /boot/efi/loader/loader.conf ]; then
 cat <<EOF > /boot/efi/loader/loader.conf
 default oa-linux.conf
 timeout 5
 console-mode max
 editor yes
 EOF
+fi
 {{ end }}
 
 {{ define "install_distro_limine" }}
@@ -140,6 +152,7 @@ if [ -d /sys/firmware/efi ]; then
         PRETTY_NAME="openSUSE"
     fi
 
+    if [ ! -f /boot/efi/limine.conf ]; then
     cat <<EOF > /boot/efi/limine.conf
 timeout: 5
 
@@ -149,6 +162,7 @@ timeout: 5
     module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+    fi
     cp /boot/efi/limine.conf /boot/efi/EFI/BOOT/limine.conf
 else
     # BIOS/Legacy
@@ -175,6 +189,7 @@ else
         PRETTY_NAME="openSUSE"
     fi
 
+    if [ ! -f /boot/limine.conf ]; then
     cat <<EOF > /boot/limine.conf
 timeout: 5
 
@@ -184,5 +199,6 @@ timeout: 5
     module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+    fi
 fi
 {{ end }}

@@ -1,5 +1,5 @@
 # ==============================================================================
-# 🏹 MASTER-MODULE ARCH FAMILY - INSTALL
+# 🏹 MASTER-MODULE ARCH FAMILY - INSTALL (Principle of Transparency)
 # Includes: Arch Linux, Manjaro, Garuda, and derivatives (EndeavourOS, etc.)
 # ==============================================================================
 
@@ -51,34 +51,55 @@
 {{ end }}
 
 # ==============================================================================
-# 🎯 BOOTLOADER DISPATCHER
+# 🎯 BOOTLOADER DISPATCHER (Principle of Transparency: Evidence-Based Detection)
 # ==============================================================================
 {{ define "install_distro_bootloader" }}
-echo "-> Automatic detection and bootloader dispatch..."
+echo "-> Evidence-based bootloader detection and dispatch..."
 
 if [ -d /sys/firmware/efi ]; then
     echo "-> UEFI environment detected."
-    if command -v bootctl &> /dev/null; then
+    # 1. Configs over Binaries
+    if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ]; then
+        echo "-> Evidence found: Limine configuration detected."
+        {{ include "install_distro_limine" . }}
+    elif [ -f /boot/loader/loader.conf ] || [ -f /boot/efi/loader/loader.conf ]; then
+        echo "-> Evidence found: systemd-boot configuration detected."
         {{ include "install_distro_systemd_boot" . }}
-    elif command -v grub-install &> /dev/null; then
+    elif [ -f /etc/default/grub ] || [ -f /boot/grub/grub.cfg ]; then
+        echo "-> Evidence found: GRUB configuration detected."
         {{ include "install_distro_grub" . }}
+    elif command -v bootctl &> /dev/null; then
+        {{ include "install_distro_systemd_boot" . }}
     elif command -v limine &> /dev/null; then
         {{ include "install_distro_limine" . }}
     else
         {{ include "install_distro_grub" . }}
     fi
 else
-    echo "-> BIOS/Legacy environment detected. Forcing GRUB."
-    {{ include "install_distro_grub" . }}
+    echo "-> BIOS/Legacy environment detected."
+    if [ -f /boot/limine.conf ]; then
+        echo "-> Evidence found: Limine configuration detected."
+        {{ include "install_distro_limine" . }}
+    else
+        {{ include "install_distro_grub" . }}
+    fi
 fi
 {{ end }}
 
 {{ define "install_distro_grub" }}
-echo "-> Installing GRUB..."
+echo "-> Installing GRUB (Preserving Original DNA)..."
 
 if ! command -v grub-install &> /dev/null; then
     echo "-> grub package is missing. Installing it on the fly..."
     pacman -Sy --noconfirm grub || { echo "[WARNING] Failed to install grub"; }
+fi
+
+if [ -f /etc/default/grub ]; then
+    if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+        sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    else
+        echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+    fi
 fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
@@ -152,7 +173,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}
 
 {{ define "install_distro_systemd_boot" }}
-echo "-> Installing systemd-boot (bootctl)..."
+echo "-> Installing systemd-boot (Relying on Native Tools: bootctl)..."
 
 if ! grep -q "/boot/efi" /proc/mounts; then
     echo "-> /boot/efi is not mounted, attempting to mount..."
@@ -178,10 +199,6 @@ if [ -z "$KERNEL_PATH" ] || [ ! -f "$KERNEL_PATH" ]; then
     exit 1
 fi
 
-# L'initrd va derivato dal kernel EFFETTIVAMENTE risolto sopra, non da una
-# ricerca indipendente: se uname -r non corrisponde (es. chroot d'installazione
-# con kernel diverso da quello live), le due ricerche potrebbero altrimenti
-# scegliere due kernel diversi (visto su CachyOS con linux-cachyos/-lts).
 case "$KERNEL_PATH" in
     /usr/lib/modules/*/vmlinuz)
         KVER=$(basename "$(dirname "$KERNEL_PATH")")
@@ -243,12 +260,14 @@ initrd  /$INITRD_FILE
 options root=$ROOT_PART rw $ROOTFLAGS
 EOF
 
+if [ ! -f /boot/efi/loader/loader.conf ]; then
 cat <<EOF > /boot/efi/loader/loader.conf
 default oa-linux.conf
 timeout 5
 console-mode max
 editor yes
 EOF
+fi
 {{ end }}
 
 {{ define "install_distro_limine" }}
@@ -345,6 +364,7 @@ if [ -z "$PRETTY_NAME" ]; then
     PRETTY_NAME="Arch Linux"
 fi
 
+if [ ! -f /boot/efi/limine.conf ]; then
 cat <<EOF > /boot/efi/limine.conf
 timeout: 5
 
@@ -355,6 +375,7 @@ ${UCODE_LINE}
     module_path: ${LIMINE_BOOT_PREFIX}$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+fi
 
 cp /boot/efi/limine.conf /boot/efi/EFI/BOOT/limine.conf
 {{ end }}

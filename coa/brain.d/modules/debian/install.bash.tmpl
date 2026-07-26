@@ -1,5 +1,5 @@
 # ==============================================================================
-# 🌀 MODULO DEBIAN / UBUNTU - INSTALL
+# 🌀 MODULO DEBIAN / UBUNTU - INSTALL (Principle of Transparency)
 # ==============================================================================
 
 {{ define "install_distro_initramfs" }}
@@ -8,6 +8,16 @@ update-initramfs -u
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
+echo "-> Preserving original GRUB configuration & setting OS prober..."
+
+if [ -f /etc/default/grub ]; then
+    if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+        sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    else
+        echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+    fi
+fi
+
 if [ -d /sys/firmware/efi ]; then
     if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck; then
         [ -f /boot/efi/EFI/oa-live/grubx64.efi ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
