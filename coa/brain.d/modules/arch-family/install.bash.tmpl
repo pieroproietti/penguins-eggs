@@ -40,6 +40,39 @@
 
 {{ else }}
     echo "-> Regenerating mkinitcpio-based initramfs..."
+    # Ensure Limine ESP_PATH is configured before mkinitcpio triggers limine hooks
+    ESP_MOUNT=""
+    if mountpoint -q /boot/efi 2>/dev/null || awk '$2 == "/boot/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+        ESP_MOUNT="/boot/efi"
+    elif mountpoint -q /efi 2>/dev/null || awk '$2 == "/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+        ESP_MOUNT="/efi"
+    elif mountpoint -q /boot 2>/dev/null || awk '$2 == "/boot" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+        ESP_MOUNT="/boot"
+    else
+        ESP_MOUNT="/boot/efi"
+    fi
+    for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine; do
+        if [ -f "$CONF_FILE" ]; then
+            if grep -q "^ESP_PATH=" "$CONF_FILE"; then
+                sed -i "s|^ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+            elif grep -q "^#ESP_PATH=" "$CONF_FILE"; then
+                sed -i "s|^#ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+            else
+                echo "ESP_PATH=\"$ESP_MOUNT\"" >> "$CONF_FILE"
+            fi
+        fi
+    done
+
+    ROOT_PART_INIT=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
+    if [ -n "$ROOT_PART_INIT" ]; then
+        for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine /etc/kernel/cmdline; do
+            if [ -f "$CONF_FILE" ]; then
+                sed -i "s|root=UUID=[^ \"']*|root=$ROOT_PART_INIT|g" "$CONF_FILE"
+                sed -i "s|root=/dev/[^ \"']*|root=$ROOT_PART_INIT|g" "$CONF_FILE"
+            fi
+        done
+    fi
+
     ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
     if [ "$ROOT_FSTYPE" = "btrfs" ]; then
         if ! grep -q "^HOOKS=.*btrfs" /etc/mkinitcpio.conf; then
@@ -59,7 +92,7 @@ echo "-> Evidence-based bootloader detection and dispatch..."
 if [ -d /sys/firmware/efi ]; then
     echo "-> UEFI environment detected."
     # 1. Configs over Binaries
-    if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ]; then
+    if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /boot/efi/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
         echo "-> Evidence found: Limine configuration detected."
         {{ include "install_distro_limine" . }}
     elif [ -f /boot/loader/loader.conf ] || [ -f /boot/efi/loader/loader.conf ]; then
@@ -77,7 +110,7 @@ if [ -d /sys/firmware/efi ]; then
     fi
 else
     echo "-> BIOS/Legacy environment detected."
-    if [ -f /boot/limine.conf ]; then
+    if [ -f /boot/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
         echo "-> Evidence found: Limine configuration detected."
         {{ include "install_distro_limine" . }}
     else
@@ -173,69 +206,28 @@ grub-mkconfig -o /boot/grub/grub.cfg
 {{ end }}
 
 {{ define "install_distro_systemd_boot" }}
-echo "-> Installing systemd-boot (Relying on Native Tools: bootctl)..."
+echo "-> Installing systemd-boot (bootctl)..."
 
-if ! grep -q "/boot/efi" /proc/mounts; then
-    echo "-> /boot/efi is not mounted, attempting to mount..."
-    mkdir -p /boot/efi
-    mount /boot/efi || true
+ESP_MOUNT=""
+if mountpoint -q /boot/efi 2>/dev/null || awk '$2 == "/boot/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot/efi"
+elif mountpoint -q /efi 2>/dev/null || awk '$2 == "/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/efi"
+elif mountpoint -q /boot 2>/dev/null || awk '$2 == "/boot" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot"
+else
+    ESP_MOUNT="/boot/efi"
 fi
 
-bootctl install --esp-path=/boot/efi
-mkdir -p /boot/efi/loader/entries
-
-# Ricerca intelligente del kernel (supporto per layout classico e systemd-boot),
-# preferendo prima i kernel installati in /boot per garantire corrispondenza con initramfs.
-KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
-if [ -z "$KERNEL_PATH" ] || [ ! -f "$KERNEL_PATH" ]; then
-    KERNEL_PATH="/usr/lib/modules/$(uname -r)/vmlinuz"
-fi
-if [ ! -f "$KERNEL_PATH" ]; then
-    KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
+echo "-> Target ESP mount point: $ESP_MOUNT"
+mkdir -p "$ESP_MOUNT"
+if ! mountpoint -q "$ESP_MOUNT" 2>/dev/null; then
+    echo "-> Mounting $ESP_MOUNT..."
+    mount "$ESP_MOUNT" || true
 fi
 
-if [ -z "$KERNEL_PATH" ] || [ ! -f "$KERNEL_PATH" ]; then
-    echo "[FATAL ERROR] Unable to determine the installed kernel in the chroot."
-    exit 1
-fi
-
-case "$KERNEL_PATH" in
-    /usr/lib/modules/*/vmlinuz)
-        KVER=$(basename "$(dirname "$KERNEL_PATH")")
-        PKGBASE=$(cat "/usr/lib/modules/$KVER/pkgbase" 2>/dev/null || echo "$KVER")
-        KERNEL_FILE="vmlinuz-$PKGBASE"
-        INITRD_PATH="/boot/initramfs-$PKGBASE.img"
-        ;;
-    /boot/vmlinuz-*)
-        KERNEL_FILE=$(basename "$KERNEL_PATH")
-        INITRD_PATH="/boot/initramfs-${KERNEL_PATH#/boot/vmlinuz-}.img"
-        ;;
-    *)
-        KERNEL_FILE=$(basename "$KERNEL_PATH")
-        ;;
-esac
-if [ -z "$INITRD_PATH" ] || [ ! -f "$INITRD_PATH" ]; then
-    INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
-fi
-
-if [ -z "$INITRD_PATH" ]; then
-    echo "[FATAL ERROR] Unable to determine the installed initrd in the chroot."
-    exit 1
-fi
-
-INITRD_FILE=$(basename "$INITRD_PATH")
-
-cp -L "$KERNEL_PATH" "/boot/efi/$KERNEL_FILE"
-cp -L "$INITRD_PATH" "/boot/efi/$INITRD_FILE"
-
-UCODE_LINE=""
-if [ -f /boot/amd-ucode.img ]; then
-    cp -L /boot/amd-ucode.img /boot/efi/
-    UCODE_LINE="initrd  /amd-ucode.img"
-elif [ -f /boot/intel-ucode.img ]; then
-    cp -L /boot/intel-ucode.img /boot/efi/
-    UCODE_LINE="initrd  /intel-ucode.img"
-fi
+bootctl install --esp-path="$ESP_MOUNT"
+mkdir -p "$ESP_MOUNT/loader/entries"
 
 ROOT_PART=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
 if [ -z "$ROOT_PART" ]; then
@@ -252,17 +244,49 @@ if [ -z "$PRETTY_NAME" ]; then
     PRETTY_NAME="Arch Linux"
 fi
 
-cat <<EOF > /boot/efi/loader/entries/{{ .DistroID }}.conf
-title   $PRETTY_NAME
+UCODE_LINE=""
+if [ -f /boot/amd-ucode.img ]; then
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/amd-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="initrd  /amd-ucode.img"
+elif [ -f /boot/intel-ucode.img ]; then
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/intel-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="initrd  /intel-ucode.img"
+fi
+
+DEFAULT_ENTRY=""
+for KERNEL_PATH in $(find /boot -maxdepth 1 -name "vmlinuz-*" -type f); do
+    KERNEL_FILE=$(basename "$KERNEL_PATH")
+    INITRD_FILE="initramfs-${KERNEL_FILE#vmlinuz-}.img"
+    INITRD_PATH="/boot/$INITRD_FILE"
+    if [ ! -f "$INITRD_PATH" ]; then
+        INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+        [ -n "$INITRD_PATH" ] && INITRD_FILE=$(basename "$INITRD_PATH")
+    fi
+
+    if [ "$ESP_MOUNT" != "/boot" ]; then
+        echo "-> Copying kernel ($KERNEL_PATH) to $ESP_MOUNT/$KERNEL_FILE..."
+        cp -L "$KERNEL_PATH" "$ESP_MOUNT/$KERNEL_FILE" || true
+        if [ -f "$INITRD_PATH" ]; then
+            echo "-> Copying initrd ($INITRD_PATH) to $ESP_MOUNT/$INITRD_FILE..."
+            cp -L "$INITRD_PATH" "$ESP_MOUNT/$INITRD_FILE" || true
+        fi
+    fi
+
+    ENTRY_ID="{{ .DistroID }}-${KERNEL_FILE#vmlinuz-}.conf"
+    [ -z "$DEFAULT_ENTRY" ] && DEFAULT_ENTRY="$ENTRY_ID"
+
+cat <<EOF > "$ESP_MOUNT/loader/entries/$ENTRY_ID"
+title   $PRETTY_NAME (${KERNEL_FILE#vmlinuz-})
 linux   /$KERNEL_FILE
 ${UCODE_LINE}
 initrd  /$INITRD_FILE
 options root=$ROOT_PART rw $ROOTFLAGS
 EOF
+done
 
-if [ ! -f /boot/efi/loader/loader.conf ]; then
-cat <<EOF > /boot/efi/loader/loader.conf
-default {{ .DistroID }}.conf
+if [ ! -f "$ESP_MOUNT/loader/loader.conf" ]; then
+cat <<EOF > "$ESP_MOUNT/loader/loader.conf"
+default $DEFAULT_ENTRY
 timeout 5
 console-mode max
 editor yes
@@ -271,79 +295,82 @@ fi
 {{ end }}
 
 {{ define "install_distro_limine" }}
-echo "-> Installing Limine bootloader (UEFI)..."
+echo "-> Installing Limine bootloader..."
 
-if ! grep -q "/boot/efi" /proc/mounts; then
-    echo "-> /boot/efi is not mounted, attempting to mount..."
-    mkdir -p /boot/efi
-    mount /boot/efi || true
-fi
-
-# Ricerca intelligente del kernel, preferendo prima i kernel installati in /boot per garantire corrispondenza con initramfs.
-KERNEL_PATH=$(find /boot -maxdepth 1 -name "vmlinuz-*" -type f | head -n 1)
-if [ -z "$KERNEL_PATH" ] || [ ! -f "$KERNEL_PATH" ]; then
-    KERNEL_PATH="/usr/lib/modules/$(uname -r)/vmlinuz"
-fi
-if [ ! -f "$KERNEL_PATH" ]; then
-    KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
-fi
-
-if [ -z "$KERNEL_PATH" ] || [ ! -f "$KERNEL_PATH" ]; then
-    echo "[FATAL ERROR] Unable to determine the kernel for Limine."
-    exit 1
-fi
-
-case "$KERNEL_PATH" in
-    /usr/lib/modules/*/vmlinuz)
-        KVER=$(basename "$(dirname "$KERNEL_PATH")")
-        PKGBASE=$(cat "/usr/lib/modules/$KVER/pkgbase" 2>/dev/null || echo "$KVER")
-        KERNEL_FILE="vmlinuz-$PKGBASE"
-        INITRD_PATH="/boot/initramfs-$PKGBASE.img"
-        ;;
-    /boot/vmlinuz-*)
-        KERNEL_FILE=$(basename "$KERNEL_PATH")
-        INITRD_PATH="/boot/initramfs-${KERNEL_PATH#/boot/vmlinuz-}.img"
-        ;;
-    *)
-        KERNEL_FILE=$(basename "$KERNEL_PATH")
-        ;;
-esac
-if [ -z "$INITRD_PATH" ] || [ ! -f "$INITRD_PATH" ]; then
-    INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
-fi
-
-if [ -z "$INITRD_PATH" ]; then
-    echo "[FATAL ERROR] Unable to determine the initrd for Limine."
-    exit 1
-fi
-
-INITRD_FILE=$(basename "$INITRD_PATH")
-
-echo "-> Copying kernel ($KERNEL_PATH) to /boot/efi/$KERNEL_FILE..."
-cp -L "$KERNEL_PATH" "/boot/efi/$KERNEL_FILE" || { echo "[FATAL ERROR] Failed to copy kernel to /boot/efi/$KERNEL_FILE"; exit 1; }
-
-echo "-> Copying initrd ($INITRD_PATH) to /boot/efi/$INITRD_FILE..."
-cp -L "$INITRD_PATH" "/boot/efi/$INITRD_FILE" || { echo "[FATAL ERROR] Failed to copy initrd to /boot/efi/$INITRD_FILE"; exit 1; }
-
-if [ ! -s "/boot/efi/$KERNEL_FILE" ]; then
-    echo "[FATAL ERROR] /boot/efi/$KERNEL_FILE is missing or empty after copy!"
-    exit 1
-fi
-
-ESP_UUID=$(blkid -s UUID -o value /boot/efi 2>/dev/null || awk '$2 == "/boot/efi" {print $1}' /etc/fstab | sed 's/UUID=//' | tr -d '"')
-if [ -n "$ESP_UUID" ]; then
-    LIMINE_BOOT_PREFIX="uuid://$ESP_UUID/"
+ESP_MOUNT=""
+if mountpoint -q /boot/efi 2>/dev/null || awk '$2 == "/boot/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot/efi"
+elif mountpoint -q /efi 2>/dev/null || awk '$2 == "/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/efi"
+elif mountpoint -q /boot 2>/dev/null || awk '$2 == "/boot" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot"
 else
-    LIMINE_BOOT_PREFIX="boot:///"
+    ESP_MOUNT="/boot/efi"
+fi
+
+echo "-> Target ESP mount point: $ESP_MOUNT"
+mkdir -p "$ESP_MOUNT"
+if ! mountpoint -q "$ESP_MOUNT" 2>/dev/null; then
+    echo "-> Mounting $ESP_MOUNT..."
+    mount "$ESP_MOUNT" || true
+fi
+
+# Configure ESP_PATH and target root UUID in Limine configs so native limine-update/limine-mkinitcpio won't fail or use host UUID
+for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine; do
+    if [ -f "$CONF_FILE" ]; then
+        echo "-> Setting ESP_PATH=\"$ESP_MOUNT\" in $CONF_FILE..."
+        if grep -q "^ESP_PATH=" "$CONF_FILE"; then
+            sed -i "s|^ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+        elif grep -q "^#ESP_PATH=" "$CONF_FILE"; then
+            sed -i "s|^#ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+        else
+            echo "ESP_PATH=\"$ESP_MOUNT\"" >> "$CONF_FILE"
+        fi
+    fi
+done
+
+ROOT_PART_TARGET=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
+if [ -n "$ROOT_PART_TARGET" ]; then
+    for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine /etc/kernel/cmdline; do
+        if [ -f "$CONF_FILE" ]; then
+            echo "-> Updating root partition in $CONF_FILE to $ROOT_PART_TARGET..."
+            sed -i "s|root=UUID=[^ \"']*|root=$ROOT_PART_TARGET|g" "$CONF_FILE"
+            sed -i "s|root=/dev/[^ \"']*|root=$ROOT_PART_TARGET|g" "$CONF_FILE"
+        fi
+    done
+fi
+
+if [ -d /sys/firmware/efi ]; then
+    mkdir -p "$ESP_MOUNT/EFI/BOOT"
+    if [ -f /usr/share/limine/BOOTX64.EFI ]; then
+        cp -f /usr/share/limine/BOOTX64.EFI "$ESP_MOUNT/EFI/BOOT/"
+    fi
+else
+    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
+    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
+        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB" 2>/dev/null || echo "/dev/sda1")
+    else
+        ROOT_DEV=${ROOT_PART_FSTAB:-"/dev/sda1"}
+    fi
+    
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]] || [[ "$ROOT_DEV" == *loop* ]]; then
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
+    else
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
+    fi
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
+    
+    echo "-> Target disk for Limine BIOS install: $TARGET_DISK"
+    limine bios-install "$TARGET_DISK" || true
 fi
 
 UCODE_LINE=""
 if [ -f /boot/amd-ucode.img ]; then
-    cp -L /boot/amd-ucode.img /boot/efi/
-    UCODE_LINE="    module_path: ${LIMINE_BOOT_PREFIX}amd-ucode.img"
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/amd-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="    module_path: boot:///amd-ucode.img"
 elif [ -f /boot/intel-ucode.img ]; then
-    cp -L /boot/intel-ucode.img /boot/efi/
-    UCODE_LINE="    module_path: ${LIMINE_BOOT_PREFIX}intel-ucode.img"
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/intel-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="    module_path: boot:///intel-ucode.img"
 fi
 
 ROOT_PART=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
@@ -356,26 +383,63 @@ if [ "$ROOT_FSTYPE" = "btrfs" ]; then
     ROOTFLAGS="rootflags=subvol=@"
 fi
 
-mkdir -p /boot/efi/EFI/BOOT
-cp /usr/share/limine/BOOTX64.EFI /boot/efi/EFI/BOOT/
-
 PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
 if [ -z "$PRETTY_NAME" ]; then
     PRETTY_NAME="Arch Linux"
 fi
 
-if [ ! -f /boot/efi/limine.conf ]; then
-cat <<EOF > /boot/efi/limine.conf
+LIMINE_CONF="$ESP_MOUNT/limine.conf"
+cat <<EOF > "$LIMINE_CONF"
 timeout: 5
+EOF
 
-/: $PRETTY_NAME
+# Process all installed kernels found in /boot
+for KERNEL_PATH in $(find /boot -maxdepth 1 -name "vmlinuz-*" -type f); do
+    KERNEL_FILE=$(basename "$KERNEL_PATH")
+    INITRD_FILE="initramfs-${KERNEL_FILE#vmlinuz-}.img"
+    INITRD_PATH="/boot/$INITRD_FILE"
+    if [ ! -f "$INITRD_PATH" ]; then
+        INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+        [ -n "$INITRD_PATH" ] && INITRD_FILE=$(basename "$INITRD_PATH")
+    fi
+
+    if [ "$ESP_MOUNT" != "/boot" ]; then
+        echo "-> Copying kernel ($KERNEL_PATH) to $ESP_MOUNT/$KERNEL_FILE..."
+        cp -L "$KERNEL_PATH" "$ESP_MOUNT/$KERNEL_FILE" || true
+        if [ -f "$INITRD_PATH" ]; then
+            echo "-> Copying initrd ($INITRD_PATH) to $ESP_MOUNT/$INITRD_FILE..."
+            cp -L "$INITRD_PATH" "$ESP_MOUNT/$INITRD_FILE" || true
+        fi
+    fi
+
+    ENTRY_NAME="$PRETTY_NAME (${KERNEL_FILE#vmlinuz-})"
+cat <<EOF >> "$LIMINE_CONF"
+
+/: $ENTRY_NAME
     protocol: linux
-    kernel_path: ${LIMINE_BOOT_PREFIX}$KERNEL_FILE
+    kernel_path: boot:///$KERNEL_FILE
 ${UCODE_LINE}
-    module_path: ${LIMINE_BOOT_PREFIX}$INITRD_FILE
+    module_path: boot:///$INITRD_FILE
     cmdline: root=$ROOT_PART rw $ROOTFLAGS
 EOF
+done
+
+if [ -d "$ESP_MOUNT/EFI/BOOT" ]; then
+    cp -f "$LIMINE_CONF" "$ESP_MOUNT/EFI/BOOT/limine.conf"
+fi
+if [ "$ESP_MOUNT" != "/boot" ]; then
+    mkdir -p /boot/limine 2>/dev/null || true
+    cp -f "$LIMINE_CONF" /boot/limine.conf 2>/dev/null || true
 fi
 
-cp /boot/efi/limine.conf /boot/efi/EFI/BOOT/limine.conf
+if command -v limine-update &> /dev/null; then
+    echo "-> Executing native limine-update..."
+    rm -f "$ESP_MOUNT/EFI/BOOT/limine.conf" "$ESP_MOUNT/EFI/limine/limine.conf" 2>/dev/null || true
+    limine-update || true
+    if [ -f "$ESP_MOUNT/limine.conf" ]; then
+        echo "-> Syncing limine.conf to EFI boot directories..."
+        [ -d "$ESP_MOUNT/EFI/BOOT" ] && cp -f "$ESP_MOUNT/limine.conf" "$ESP_MOUNT/EFI/BOOT/limine.conf"
+        [ -d "$ESP_MOUNT/EFI/limine" ] && cp -f "$ESP_MOUNT/limine.conf" "$ESP_MOUNT/EFI/limine/limine.conf"
+    fi
+fi
 {{ end }}

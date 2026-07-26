@@ -24,7 +24,7 @@ if [ -f /etc/default/grub ]; then
 fi
 
 # Rilevamento automatico basato su configurazioni attive (Evidence-Based Detection)
-if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ]; then
+if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /boot/efi/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
     echo "-> Evidence found: Limine configuration detected."
     {{ include "install_distro_limine" . }}
 elif [ -f /boot/loader/loader.conf ] || [ -f /boot/efi/loader/loader.conf ]; then
