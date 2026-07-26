@@ -1,0 +1,89 @@
+# ==============================================================================
+# 🏹 ARCH FAMILY - GRUB INSTALLATION
+# ==============================================================================
+
+{{ define "install_distro_grub" }}
+echo "-> Installing GRUB (Preserving Original DNA)..."
+
+if ! command -v grub-install &> /dev/null; then
+    echo "-> grub package is missing. Installing it on the fly..."
+    pacman -Sy --noconfirm grub || { echo "[WARNING] Failed to install grub"; }
+fi
+
+if [ -f /etc/default/grub ]; then
+    if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+        sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    else
+        echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+    fi
+fi
+
+if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
+    echo "-> UEFI installation..."
+    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
+        # NVRAM-registration can fail (e.g. OVMF/VM firmware) even though the
+        # EFI binary was written correctly; only abort if it genuinely wasn't.
+        [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+        echo "-> WARNING: grub-install failed (likely NVRAM-only); EFI binary is present, continuing with removable fallback."
+    fi
+
+    mkdir -p /boot/efi/EFI/BOOT
+    [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+else
+    echo "-> BIOS/Legacy installation..."
+    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
+    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
+        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB" 2>/dev/null || echo "/dev/sda1")
+    else
+        ROOT_DEV=${ROOT_PART_FSTAB:-"/dev/sda1"}
+    fi
+    
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]] || [[ "$ROOT_DEV" == *loop* ]]; then
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
+    else
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
+    fi
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
+    
+    echo "-> Target disk: $TARGET_DISK"
+    grub-install --target=i386-pc --recheck "$TARGET_DISK"
+fi
+
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+    echo "-> Btrfs configuration detected. Creating /boot symlink at the root level..."
+    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
+    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
+        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB")
+    else
+        ROOT_DEV=$ROOT_PART_FSTAB
+    fi
+    mkdir -p /tmp/btrfs-raw
+    mount "$ROOT_DEV" /tmp/btrfs-raw
+    ln -sf @/boot /tmp/btrfs-raw/boot
+    umount /tmp/btrfs-raw
+    rmdir /tmp/btrfs-raw
+fi
+
+# =====================================================================
+# FIX PER GRUB SU ENDEAVOUROS / SYSTEMD-BOOT LAYOUT
+# Controlliamo se c'è un kernel in /boot. Se manca, lo peschiamo dai moduli.
+# =====================================================================
+if ! ls /boot/vmlinuz-* 1> /dev/null 2>&1; then
+    echo "-> Nessun kernel trovato in /boot. Cerco nei moduli (layout systemd-boot)..."
+    KERNEL_PATH="/usr/lib/modules/$(uname -r)/vmlinuz"
+    [ -f "$KERNEL_PATH" ] || KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
+
+    if [ -n "$KERNEL_PATH" ]; then
+        # Recupera il nome della versione (es. 6.1.12-arch1-1)
+        KVER=$(basename $(dirname "$KERNEL_PATH"))
+        echo "-> Copio il kernel in /boot/vmlinuz-$KVER per GRUB..."
+        cp "$KERNEL_PATH" "/boot/vmlinuz-$KVER"
+    else
+        echo "[WARNING] Nessun kernel trovato da copiare in /boot per GRUB. La configurazione potrebbe fallire."
+    fi
+fi
+
+# Ora GRUB troverà sicuramente il kernel in /boot!
+grub-mkconfig -o /boot/grub/grub.cfg
+{{ end }}

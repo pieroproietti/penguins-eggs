@@ -1,4 +1,4 @@
-# Mappatura: a quale file .yaml corrisponde ogni ID o ID_LIKE
+# Mappatura: a quale directory o file corrisponde ogni ID o ID_LIKE
 distributions:
   - id: "debian"
     like: [
@@ -10,7 +10,7 @@ distributions:
       "quirinux", 
       "ubuntu", 
       ]
-    file: "debian.bash.tmpl"
+    dir: "debian"
   
   - id: "arch"
     like: [
@@ -20,18 +20,18 @@ distributions:
       "garuda",
       "rebornos"
       ]
-    file: "arch-family.bash.tmpl"
+    dir: "arch-family"
 
   - id: "manjaro"
     like: [
       "bigcommunity", 
       "biglinux",
       ]
-    file: "arch-family.bash.tmpl"
+    dir: "arch-family"
 
   - id: "fedora"
     like: ["nobara"]
-    file: "fedora.bash.tmpl"
+    dir: "fedora"
 
   - id: "opensuse"
     like: [
@@ -39,8 +39,8 @@ distributions:
       "opensuse-tumbleweed", 
       "suse", 
       ]
-    file: "opensuse.bash.tmpl"
+    dir: "opensuse"
 
   - id: "alpine"
     like: []
-    file: "alpine.bash.tmpl"
+    dir: "alpine"

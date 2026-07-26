@@ -69,5 +69,7 @@ type BrainIndex struct {
 type DistroMap struct {
 	ID   string   `yaml:"id"`
 	Like []string `yaml:"like"`
-	File string   `yaml:"file"`
+	File string   `yaml:"file,omitempty"`
+	Dir  string   `yaml:"dir,omitempty"`
 }
+
