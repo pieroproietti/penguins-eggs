@@ -6,7 +6,7 @@
 
 - ✅ Remastering working on all six families: Alpine, Arch, Debian, Fedora, Manjaro, openSUSE (and derivatives).
 - ✅ Graphical installer: Calamares (Alpine included).
-- ✅ TUI installer: Krill, rewritten in Go with Bubbletea — installs for real, verified in VM on both BIOS and UEFI (June 2026). Interactive wizard plus `--unattended` mode for headless installs. See [installer.md](./installer.md) for the implemented architecture.
+- ✅ TUI installer: Krill, rewritten in Go with Bubbletea — supports full installation on both **ext4** and **btrfs** filesystems, verified in VM on both BIOS and UEFI. Features an interactive wizard plus `--unattended` mode for headless installs. See [installer.md](./installer.md) for the implemented architecture.
 - ✅ Clone with user data (`--clone`).
 - ✅ Encrypted clone (`--crypted`).
 
@@ -15,7 +15,6 @@
 ### 1. Krill — remaining refinements
 The rewrite is done (`coa/pkg/sysinstall/krill` + `coa/pkg/sysinstall/krill/engine`); what remains:
 - **Automatic dispatcher**: `eggs sysinstall` without subcommand should detect the environment (display server + calamares binary) and pick the GUI or the TUI by itself, as per the original design.
-- **btrfs subvolumes**: the engine currently mounts btrfs flat; the `@/@home/@cache/@log` layout described in `mount.conf` is not applied yet.
 - **TUI polish**: the static-address fields arrive prefilled and cursor editing can be confusing — add a quick clear (ctrl+u) or select-all-on-focus. The Welcome screen wording "version penguins-eggs vX" is ambiguous (it is the penguins-eggs version, not the OS one).
 - **displaymanager autologin** covers lightdm/sddm/gdm; other DMs are silently skipped.
 
