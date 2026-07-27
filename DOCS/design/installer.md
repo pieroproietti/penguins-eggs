@@ -123,6 +123,7 @@ loader without any hardcoded distro assumption.
 
 | Firmware | Bootloader available | Family | Action |
 |----------|----------------------|--------|--------|
+| UEFI / BIOS | `limine` | any | Install Limine bootloader (`limine bios-install` or UEFI binary); write `limine.conf` |
 | UEFI | `bootctl` (systemd-boot) | Arch, Manjaro | Install systemd-boot; copy kernel + initrd + ucode to EFI partition; write `loader.conf` + entry |
 | UEFI | `grub-install` | any | Install GRUB EFI; run `update-grub` or `grub-mkconfig` |
 | BIOS | `grub-install` | any | Install GRUB i386-pc on target disk |
