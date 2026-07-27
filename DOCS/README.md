@@ -1,4 +1,4 @@
-# penguins-eggs (oa edition) Documentation
+# penguins-eggs Documentation
 
 ## Architecture
 - [Overview](./architecture/overview.md) — How `coa` (Go) orchestrates the remastering pipeline.
@@ -17,11 +17,11 @@
 
 ## User Manual
 - [Quick Start](./manual/quickstart.md) — First ISO in three commands, penguins-eggs compatibility table.
-- [Command Reference](./manual/commands.md) — All `coa` commands, flags and usage.
+- [Command Reference](./manual/commands.md) — All `eggs` commands, flags and usage.
 
 ## Development
 - [Building](./development/building.md) — Requirements and toolchain for native packages.
-- [CI Architecture](./development/ci.md) — Hammers (packaging) and Furnace (remastering) pipelines.
+- [CI Architecture](./development/ci.md) — Hammers (packaging), Furnace (remastering), and Incubator (installation) pipelines.
 - [Proxmox Integration](./development/proxmox.md) — VirtFS, Guest Agent, serial console setup.
 
 

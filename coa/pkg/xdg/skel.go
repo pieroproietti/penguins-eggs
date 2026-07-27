@@ -65,6 +65,10 @@ func HandleSkel(targetUser string) {
 		rsyncIfExist(filepath.Join(userHome, ".config"), "/etc/skel/")
 		rsyncIfExist(filepath.Join(userHome, ".gtkrc-2.0"), "/etc/skel/")
 
+		// FIX per le estensioni GNOME dell'utente
+		utils.ExecQuiet("mkdir -p /etc/skel/.local/share")
+		rsyncIfExist(filepath.Join(userHome, ".local/share/gnome-shell"), "/etc/skel/.local/share/")
+
 	} else if hasExecutable("startplasma-x11") || hasExecutable("startplasma-wayland") {
 		// KDE PLASMA
 		rsyncIfExist(filepath.Join(userHome, ".config"), "/etc/skel/")

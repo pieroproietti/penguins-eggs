@@ -2,7 +2,7 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
-## Release Notes: penguins-eggs v26.7.26 - 2026-07-26
+## Release Notes: penguins-eggs v26.7.26 
 This release brings major enhancements to the Limine bootloader stack, installer auto-detection and confirmation workflows in `sysinstall`, support for Archcraft derivative environments, hardened `makepkg` packaging, LightDM/SDDM autologin PAM fixes, and safe `liveroot` chroot mounting.
 
 ### 🥾 Limine Bootloader & NVRAM Integration
@@ -166,7 +166,7 @@ A manual uninstallation of the old penguins-eggs package is required prior to in
 Alpine live boot is now fully working. A custom **OA-SIDECAR** is injected into the initramfs during remastering: it intercepts Alpine's standard init after `recovery_shell()`, locates the ISO via `findfs LABEL=OA_LIVE`, mounts the squashfs with an overlayFS layer, and performs `switch_root` into the live system. All six supported distributions (Alpine, Arch, Debian, Fedora, Manjaro, openSUSE) are now stable.
 
 ## Release Notes: penguins-eggs v0.9.1 - "Functional parity" 2026-06-20
-penguins-eggs (oa edition) has reached functional parity with penguins-egg (legacy).
+penguins-eggs (C/Go) has reached functional parity with penguins-eggs (legacy).
 
 ### Features
 - **Interactive config command** — `coa config` TUI for compression, iso_prefix, password settings
