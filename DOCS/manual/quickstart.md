@@ -107,7 +107,7 @@ sudo update-grub
 
 ## Supported distributions
 
-penguins-eggs (oa edition) detects the host automatically. Currently supported families:
+penguins-eggs detects the host automatically. Currently supported families:
 
 | Family | Examples |
 |---|---|

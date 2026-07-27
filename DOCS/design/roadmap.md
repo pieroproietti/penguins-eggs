@@ -35,6 +35,6 @@ The `cleanup` step is commented out in the YAML. If the pipeline fails midway, m
 
 ## Visibility / Community
 
-- Problem: the oa edition repo has few stars despite its quality — the legacy penguins-eggs repo still captures all the traffic.
+- Problem: the new C/Go repo has few stars despite its quality — the legacy penguins-eggs repo still captures all the traffic.
 - Plan: wait for Debian/Ubuntu feature parity, then a technical blog post + HackerNews ("I rewrote my remastering tool in C+Go, here's why").
-- The legacy penguins-eggs README already mentions the oa edition as the successor — strengthen that link.
+- The legacy penguins-eggs README already mentions this new C/Go version as the successor — strengthen that link.

@@ -54,7 +54,7 @@ This will compile both binaries:
 ---
 
 ## 📜 Philosophy
-The **penguins-eggs (oa edition)** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
+The **penguins-eggs** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
 
 Documentation can be found on [DOCS](./DOCS/README.md). See also the [Manifestum](./DOCS/manifestum.md) for the founding vision and origins.
 

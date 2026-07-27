@@ -1,4 +1,4 @@
-# penguins-eggs (oa edition) Documentation
+# penguins-eggs Documentation
 
 ## Architecture
 - [Overview](./architecture/overview.md) — How `coa` (Go) orchestrates the remastering pipeline.

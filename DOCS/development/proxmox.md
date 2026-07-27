@@ -1,8 +1,8 @@
-# Interfacing penguins-eggs (oa edition) with Proxmox VE
+# Interfacing penguins-eggs with Proxmox VE
 
 ## Goodbye Vagrant: transitioning to a native, high-performance test environment
 
-This document summarizes the architecture and the configuration steps needed to interface the **penguins-eggs (oa edition)** development and testing system (`oa` / `coa`) directly with a **Proxmox VE (KVM/QEMU)** hypervisor, abandoning Vagrant.
+This document summarizes the architecture and the configuration steps needed to interface the **penguins-eggs** development and testing system (`oa` / `coa`) directly with a **Proxmox VE (KVM/QEMU)** hypervisor, abandoning Vagrant.
 
 ### Why Proxmox, and why the farewell to Vagrant/containers
 
