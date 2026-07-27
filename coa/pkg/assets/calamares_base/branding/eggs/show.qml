@@ -22,6 +22,10 @@ Presentation
     property string shadowColor: "#1a1a1a"     // Ombra scura
     property string textFont: "Helvetica"
     property int textSize: 22
+    property color panelColor: "#000000"       // Vlak achter de tekst
+    property real panelOpacity: 0.45
+    property int panelRadius: 8
+    property int panelMargin: 12
 
     // Sfondo globale per fondere gli eventuali margini con la sidebar
     Rectangle {
@@ -38,9 +42,14 @@ Presentation
             height: Math.min(parent.height, parent.width / (810.0/485.0))
 
             Image { source: "1-reproductive-system.png"; anchors.fill: parent }
+            Rectangle {
+                color: panelColor; opacity: panelOpacity; radius: panelRadius
+                anchors.fill: text1; anchors.margins: -panelMargin
+            }
             Text {
+                id: text1
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter; 
+                anchors.horizontalCenter: parent.horizontalCenter;
                 anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
@@ -57,7 +66,12 @@ Presentation
             height: Math.min(parent.height, parent.width / (810.0/485.0))
 
             Image { source: "2-start-reproduction.png"; anchors.fill: parent }
+            Rectangle {
+                color: panelColor; opacity: panelOpacity; radius: panelRadius
+                anchors.fill: text2; anchors.margins: -panelMargin
+            }
             Text {
+                id: text2
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
@@ -75,7 +89,12 @@ Presentation
             height: Math.min(parent.height, parent.width / (810.0/485.0))
 
             Image { source: "3-its-your-system.png"; anchors.fill: parent }
+            Rectangle {
+                color: panelColor; opacity: panelOpacity; radius: panelRadius
+                anchors.fill: text3; anchors.margins: -panelMargin
+            }
             Text {
+                id: text3
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
@@ -93,7 +112,12 @@ Presentation
             height: Math.min(parent.height, parent.width / (810.0/485.0))
 
             Image { source: "4-eggs-presentation.png"; anchors.fill: parent }
+            Rectangle {
+                color: panelColor; opacity: panelOpacity; radius: panelRadius
+                anchors.fill: text4; anchors.margins: -panelMargin
+            }
             Text {
+                id: text4
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
@@ -111,7 +135,12 @@ Presentation
             height: Math.min(parent.height, parent.width / (810.0/485.0))
 
             Image { source: "5-wait-hatching.png"; anchors.fill: parent }
+            Rectangle {
+                color: panelColor; opacity: panelOpacity; radius: panelRadius
+                anchors.fill: text5; anchors.margins: -panelMargin
+            }
             Text {
+                id: text5
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
@@ -129,7 +158,12 @@ Presentation
             height: Math.min(parent.height, parent.width / (810.0/485.0))
 
             Image { source: "6-follow-penguins.png"; anchors.fill: parent }
+            Rectangle {
+                color: panelColor; opacity: panelOpacity; radius: panelRadius
+                anchors.fill: text6; anchors.margins: -panelMargin
+            }
             Text {
+                id: text6
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
@@ -147,7 +181,12 @@ Presentation
             height: Math.min(parent.height, parent.width / (810.0/485.0))
 
             Image { source: "7-created-by.png"; anchors.fill: parent }
+            Rectangle {
+                color: panelColor; opacity: panelOpacity; radius: panelRadius
+                anchors.fill: text7; anchors.margins: -panelMargin
+            }
             Text {
+                id: text7
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
