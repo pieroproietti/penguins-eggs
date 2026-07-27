@@ -51,8 +51,7 @@ Presentation
             Text {
                 id: text1
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter;
-                anchors.top: parent.top; anchors.topMargin: 20
+                anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
                 text: qsTr("<h1>penguins-eggs</h1><br/><h2>eggs: the reproductive system of penguins!</h2>")
@@ -77,7 +76,7 @@ Presentation
             Text {
                 id: text2
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
+                anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
                 text: qsTr("<h1>penguins-eggs</h1><br/><h2>Reproduce your system: pack everything into an egg. You can do it!</h2>")
@@ -102,7 +101,7 @@ Presentation
             Text {
                 id: text3
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
+                anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
                 text: qsTr("<h1>penguins-eggs</h1><br/><h2>Take it anywhere! Boot your environment live or install it on any hardware</h2>")
@@ -127,7 +126,7 @@ Presentation
             Text {
                 id: text4
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
+                anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
                 text: qsTr("<h1>penguins-eggs</h1><br/><h2>It's a CLI tool, but it's simple and intuitive. Just type eggs to get the command list</h2>")
@@ -152,7 +151,7 @@ Presentation
             Text {
                 id: text5
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
+                anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
                 text: qsTr("<h1>penguins-eggs</h1><br/><h3>Please wait, we're hatching...<br/>Don't interrupt the process,<br/>your new penguin will be ready soon!</h3>")
@@ -177,7 +176,7 @@ Presentation
             Text {
                 id: text6
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
+                anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
                 text: qsTr("<h1>penguins-eggs</h1><h3>Join the penguins-eggs development, it's fun!</h3><h3>Use the tool, enjoy it, and collaborate if you want.</h3><br><h3>That's all, folks!</h3>")
@@ -202,7 +201,7 @@ Presentation
             Text {
                 id: text7
                 font.family: textFont; font.pixelSize: textSize; font.bold: true; color: themeColor; style: Text.Outline; styleColor: shadowColor
-                anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
+                anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
                 text: qsTr("<h1>penguins-eggs</h1><h2>Created by Piero Proietti</h2><h4>Issues: github.com/pieroproietti/penguins-eggs/issues</h4><h4>Email: piero.proietti@gmail.com</h4><h4>Website: penguins-eggs.net</h4>")
