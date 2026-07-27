@@ -19,7 +19,7 @@ Presentation
 
     // --- VARIABILI GLOBALI DEL TEMA ---
     property string themeColor: "#C59B27"      // Oro antico
-    property string titleColor: "#D35400"      // Arancio, come l'highlight della sidebar
+    property string titleColor: "#2E8555"      // Verde, come l'header di penguins-eggs.net
     property string shadowColor: "#1a1a1a"     // Ombra scura
     property string textFont: "Helvetica"
     property int textSize: 22
