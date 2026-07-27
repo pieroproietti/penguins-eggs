@@ -6,9 +6,12 @@ import (
 	"os/exec"
 )
 
-// Exec esegue un comando sh e mostra l'output in tempo reale sul terminale
+// Exec esegue un comando sh e mostra l'output in tempo reale sul terminale.
+// stdin è collegato al terminale corrente in modo che i programmi interattivi
+// (es. debconf con frontend readline) possano leggere l'input dell'utente.
 func Exec(command string) error {
 	cmd := exec.Command("sh", "-c", command)
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
@@ -26,6 +29,5 @@ func ExecCapture(command string) (string, error) {
 	var out bytes.Buffer
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Stdout = &out
-	// Stderr lo ignoriamo o lo mandiamo a null per pulizia
 	return out.String(), cmd.Run()
 }
