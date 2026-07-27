@@ -21,7 +21,7 @@
 
 ## Development
 - [Building](./development/building.md) — Requirements and toolchain for native packages.
-- [CI Architecture](./development/ci.md) — Hammers (packaging) and Furnace (remastering) pipelines.
+- [CI Architecture](./development/ci.md) — Hammers (packaging), Furnace (remastering), and Incubator (installation) pipelines.
 - [Proxmox Integration](./development/proxmox.md) — VirtFS, Guest Agent, serial console setup.
 
 
