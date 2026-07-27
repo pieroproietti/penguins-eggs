@@ -1,5 +1,5 @@
-# 🥚 Philosophy: The Evolutionary Architecture of penguins-eggs (oa edition)
-## This document traces the architectural phylogeny of penguins-eggs (oa edition).
+# 🥚 Philosophy: The Evolutionary Architecture of penguins-eggs
+## This document traces the architectural phylogeny of penguins-eggs.
 
 To understand its architecture, one must understand its genesis. The original penguins-eggs project was born seven or eight years ago from a bold, almost biological intuition: to introduce evolutionism into operating systems.
 By equipping a live system with the ability to reproduce itself (remastering), the software is no longer a static artifact. It is allowed to mutate—acquiring user customizations and new configurations—leaving the ultimate variance and natural selection to the environment. The operating systems that adapt best to user needs survive, get installed, and are replicated further.

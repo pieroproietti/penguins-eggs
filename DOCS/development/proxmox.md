@@ -1,8 +1,8 @@
-# Interfacing penguins-eggs (oa edition) with Proxmox VE
+# Interfacing penguins-eggs with Proxmox VE
 
 ## Goodbye Vagrant: transitioning to a native, high-performance test environment
 
-This document summarizes the architecture and the configuration steps needed to interface the **penguins-eggs (oa edition)** development and testing system (`oa` / `coa`) directly with a **Proxmox VE (KVM/QEMU)** hypervisor, abandoning Vagrant.
+This document summarizes the architecture and the configuration steps needed to interface the **penguins-eggs** development and testing system (`oa` / `coa`) directly with a **Proxmox VE (KVM/QEMU)** hypervisor, abandoning Vagrant.
 
 ### Why Proxmox, and why the farewell to Vagrant/containers
 
@@ -149,3 +149,13 @@ With this architecture in place, development becomes linear and lightning fast:
 2. The host orchestrator launches the deploy script (e.g. `p4push <target>`).
 3. The target VM receives the code instantly through the `/shared` directory mounted via VirtIO.
 4. Inside the VM, the native build environment runs (`dpkg-buildpackage`, `rpmbuild` or `makepkg`), producing the final package free of contamination or virtualization overhead.
+
+---
+
+## 5. Automated ISO QA Testing: `incubator-go`
+
+For automated end-to-end installation testing on Proxmox, the system pairs with **[incubator-go](https://github.com/pieroproietti/incubator)** — a concurrent Go orchestrator tool that uses the QEMU Guest Agent to:
+
+* Boot freshly generated live ISOs on dedicated test VMs (`vmid`: 150, 160, 170).
+* Execute unattended installations via `krill` across `ext4` and `btrfs` filesystems in both BIOS and UEFI modes.
+* Extract post-installation telemetry (`fstab`, `fastfetch` diagnostic logs) directly from target disks.

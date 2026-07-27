@@ -166,7 +166,7 @@ A manual uninstallation of the old penguins-eggs package is required prior to in
 Alpine live boot is now fully working. A custom **OA-SIDECAR** is injected into the initramfs during remastering: it intercepts Alpine's standard init after `recovery_shell()`, locates the ISO via `findfs LABEL=OA_LIVE`, mounts the squashfs with an overlayFS layer, and performs `switch_root` into the live system. All six supported distributions (Alpine, Arch, Debian, Fedora, Manjaro, openSUSE) are now stable.
 
 ## Release Notes: penguins-eggs v0.9.1 - "Functional parity" 2026-06-20
-penguins-eggs (oa edition) has reached functional parity with penguins-egg (legacy).
+penguins-eggs (C/Go) has reached functional parity with penguins-eggs (legacy).
 
 ### Features
 - **Interactive config command** — `coa config` TUI for compression, iso_prefix, password settings

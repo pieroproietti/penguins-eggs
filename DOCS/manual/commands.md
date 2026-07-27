@@ -1,8 +1,8 @@
-# 🛠️ `coa` Command Reference
+# 🛠️ `eggs` Command Reference
 
-`coa` (which means "to hatch") is the universal orchestrator for system remastering and installation. As the command-line interface of the **penguins-eggs (oa edition)** project, it incubates your tasks: it delegates the configuration logic to the *parser*, the plan compilation to the *planner* (both in Go), and the low-level execution to the C native engine *oa* (eggs).
+`eggs` is the primary command-line interface of the **penguins-eggs** project. Powered by the Go orchestrator (`coa`, meaning "to hatch") and the C native engine (`oa`, meaning "eggs"), it incubates your tasks: it delegates configuration logic to the *parser*, plan compilation to the *planner* (both in Go), and low-level execution to the C engine *oa*.
 
-On systems migrating from penguins-eggs, the legacy alias `eggs` works interchangeably with `coa`.
+The binary is installed as `eggs` (with `coa` working interchangeably as an alias).
 
 > Tip: every command supports `--help`. Man pages and shell completions (Bash, Zsh, Fish) are generated at build time.
 
@@ -20,27 +20,27 @@ On systems migrating from penguins-eggs, the legacy alias `eggs` works interchan
 | **`wardrobe`** | 🟡 Mixed | Manages and applies the costumes (desktop configurations). |
 | **`tools`** | 🟡 Mixed | Maintenance utilities: build, clean, grub40, repo, skel. |
 | **`config`** | 🟢 Yes | Interactive TUI for viewing and editing the configuration. |
-| **`version`** | 🔴 No | Prints the coa version. |
+| **`version`** | 🔴 No | Prints the eggs / coa version. |
 
 ---
 
 ## 🚀 Main Commands
 
-### `coa remaster`
+### `eggs remaster`
 The heart of the system. Reads the YAML profile through the parser, generates the JSON plan through the planner and executes the C engine to build the egg (the ISO).
 
-*   **Usage:** `sudo coa remaster [flags]`
+*   **Usage:** `sudo eggs remaster [flags]`
 *   **Flags:**
     *   `--clone`: clone mode — preserves users and `/home` in the ISO.
     *   `--crypted`: LUKS-encrypted mode — produces an encrypted squashfs (Debian family only). Mutually exclusive with `--clone`.
     *   `--path <string>`: working directory. Default: `/home/eggs`.
     *   `--stop-after <step>`: **[debug]** stops execution after a specific step (e.g. `coa-initrd`), leaving the *chroot* mounted for manual inspection.
     *   `--debug`: prints the JSON plan (or the pre-processed YAML) and exits without building anything.
-*   **Alias:** `coa produce` (penguins-eggs compatibility).
+*   **Alias:** `eggs produce` (legacy compatibility).
 
 #### LUKS Encryption (`--crypted`)
 
-When `--crypted` is passed, `coa remaster` activates an interactive TUI wizard that asks for:
+When `--crypted` is passed, `eggs remaster` activates an interactive TUI wizard that asks for:
 
 1. **Passphrase** — use the default (`0`) or enter a custom one. The passphrase is passed to `cryptsetup` via stdin and is never written to disk.
 2. **Crypto configuration** — use the defaults or customize each parameter:
@@ -57,32 +57,32 @@ The planner then modifies the flight plan: the standard `initramfs` and `copy-ke
 
 This feature is currently available for the **Debian family only**.
 
-### `coa sysinstall`
+### `eggs sysinstall`
 The orchestrator for installing the operating system to disk. Acts as a router toward the final installation engines.
 
-*   **Usage:** `sudo coa sysinstall <engine>`
+*   **Usage:** `sudo eggs sysinstall <engine>`
 *   **Engines:**
     *   `calamares`: launches the graphical installer (GUI).
     *   `krill`: launches the text installer (TUI).
         *   `--unattended`: non-interactive install with live-user defaults, password `evolution`, first disk, 10-second abort countdown.
 
-### `coa destroy` (alias: `coa kill`)
+### `eggs destroy` (alias: `eggs kill`)
 The "safe destroyer". Tears down the remastering environment: it uses `MNT_DETACH` (lazy unmount) to free the virtual mount points (`/proc`, `/sys`, `/dev`) without kernel panics or host hangs, then deletes the working directory.
 
-*   **Usage:** `sudo coa destroy`
+*   **Usage:** `sudo eggs destroy`
 
 ---
 
 ## 👔 Wardrobe (costumes)
 
-### `coa wardrobe`
+### `eggs wardrobe`
 Manages the wardrobe: ready-made desktop configurations ("costumes") that can be applied to the system before remastering.
 
 *   **Subcommands:**
-    *   `coa wardrobe get`: downloads or updates the wardrobe.
-    *   `coa wardrobe list`: lists the available costumes.
-    *   `coa wardrobe show <costume>`: shows the details of a costume.
-    *   `coa wardrobe wear <costume>`: wears a costume from the wardrobe.
+    *   `eggs wardrobe get`: downloads or updates the wardrobe.
+    *   `eggs wardrobe list`: lists the available costumes.
+    *   `eggs wardrobe show <costume>`: shows the details of a costume.
+    *   `eggs wardrobe wear <costume>`: wears a costume from the wardrobe.
         *   `--no-acc`: skip accessory installation.
         *   `--no-firm`: skip firmware installation.
 
@@ -90,10 +90,10 @@ Manages the wardrobe: ready-made desktop configurations ("costumes") that can be
 
 ## ⚙️ Configuration
 
-### `coa config`
+### `eggs config`
 Interactive TUI for viewing and editing the penguins-eggs configuration. The settings are stored in `/etc/penguins-eggs.d/custom.yaml` and override the built-in defaults used by the parser during remastering.
 
-*   **Usage:** `sudo coa config`
+*   **Usage:** `sudo eggs config`
 
 The TUI is organized in three tabs (navigate with `Tab` / `Shift+Tab`):
 
@@ -119,32 +119,32 @@ Choose **Save and exit** or **Exit without saving**. On save, the configuration 
 
 ## 🧰 Utilities and Diagnostics
 
-### `coa adapt`
+### `eggs adapt`
 Post-boot utility designed for live environments booted in virtual machines (VirtualBox, QEMU/KVM, VMware). Maps the virtual video outputs and forces a dynamic resize (`xrandr --auto`) to fit the resolution to the hypervisor window.
 
-*   **Usage:** `coa adapt`
+*   **Usage:** `eggs adapt`
 
-### `coa tools`
+### `eggs tools`
 Container for maintenance utilities:
 
-*   `coa tools build`: compiles the binaries and generates the native distribution packages (`.deb`, PKGBUILD, `.rpm`) for the host distribution.
-*   `coa tools clean`: cleans logs, apt/pacman caches and host system leftovers.
-*   `coa tools grub40 [path/to/iso]`: inspects any Linux ISO via `bsdtar`, automatically extracts its kernel path, initrd path and boot parameters, and generates the GRUB loopback configuration block to boot the ISO directly.
+*   `eggs tools build`: compiles the binaries and generates the native distribution packages (`.deb`, PKGBUILD, `.rpm`) for the host distribution.
+*   `eggs tools clean`: cleans logs, apt/pacman caches and host system leftovers.
+*   `eggs tools grub40 [path/to/iso]`: inspects any Linux ISO via `bsdtar`, automatically extracts its kernel path, initrd path and boot parameters, and generates the GRUB loopback configuration block to boot the ISO directly.
     *   `--write`, `-w`: injects the menu entry directly into `/etc/grub.d/40_custom`.
-*   `coa tools repo [add|rm]`: adds or removes the official penguins-eggs package repository.
-*   `coa tools skel`: builds `/etc/skel` from the current user's configuration.
+*   `eggs tools repo [add|rm]`: adds or removes the official penguins-eggs package repository.
+*   `eggs tools skel`: builds `/etc/skel` from the current user's configuration.
 
 ---
 
 ## 📦 Artifact Management (Network)
 
-### `coa export`
+### `eggs export`
 Network orchestrator based on SSH multiplexing for fast, safe transfer of artifacts to a remote storage (e.g. a Proxmox node).
 
 *   **Subcommands:**
-    *   `coa export iso`: finds the latest generated ISO in the nest and transfers it.
-    *   `coa export pkg`: finds the compiled native packages (`.deb`, `.rpm`, `.pkg.tar.zst`) for the distro family and sends them.
-    *   `coa export log`: exports logs and the JSON plan in a single shot.
+    *   `eggs export iso`: finds the latest generated ISO in the nest and transfers it.
+    *   `eggs export pkg`: finds the compiled native packages (`.deb`, `.rpm`, `.pkg.tar.zst`) for the distro family and sends them.
+    *   `eggs export log`: exports logs and the JSON plan in a single shot.
         *   `--user, -u <user>`: destination SSH user.
         *   `--ip, -i <address>`: destination IP address.
         *   `--dir, -d <path>`: destination directory.
@@ -155,13 +155,13 @@ Network orchestrator based on SSH multiplexing for fast, safe transfer of artifa
 
 ## ⚙️ Internal Commands
 
-### `coa ell`
-Executes a task delegated by the C engine. Not meant to be invoked manually.
+### `eggs ell` (or `coa ell`)
+Executes a task delegated by the C engine (`oa`). Not meant to be invoked manually.
 
-### `coa _gen_docs`
+### `eggs _gen_docs`
 Hidden command used by the toolchain (Makefile) at build time. Autogenerates:
 1.  Markdown documentation.
-2.  Man pages (`man 1 coa`).
+2.  Man pages (`man 1 eggs`).
 3.  Native shell completions for Bash, Zsh and Fish.
 
-*   **Usage:** `coa _gen_docs --target <dir>`
+*   **Usage:** `eggs _gen_docs --target <dir>`
