@@ -25,7 +25,7 @@ Presentation
     property color panelColor: "#000000"       // Vlak achter de tekst
     property real panelOpacity: 0.45
     property int panelRadius: 8
-    property int panelMargin: 12
+    property int panelMargin: 6
 
     // Sfondo globale per fondere gli eventuali margini con la sidebar
     Rectangle {
@@ -44,7 +44,9 @@ Presentation
             Image { source: "1-reproductive-system.png"; anchors.fill: parent }
             Rectangle {
                 color: panelColor; opacity: panelOpacity; radius: panelRadius
-                anchors.fill: text1; anchors.margins: -panelMargin
+                width: text1.contentWidth + panelMargin * 2; height: text1.contentHeight + panelMargin * 2
+                anchors.horizontalCenter: text1.horizontalCenter
+                anchors.top: text1.top; anchors.topMargin: -panelMargin
             }
             Text {
                 id: text1
@@ -68,7 +70,9 @@ Presentation
             Image { source: "2-start-reproduction.png"; anchors.fill: parent }
             Rectangle {
                 color: panelColor; opacity: panelOpacity; radius: panelRadius
-                anchors.fill: text2; anchors.margins: -panelMargin
+                width: text2.contentWidth + panelMargin * 2; height: text2.contentHeight + panelMargin * 2
+                anchors.horizontalCenter: text2.horizontalCenter
+                anchors.top: text2.top; anchors.topMargin: -panelMargin
             }
             Text {
                 id: text2
@@ -91,7 +95,9 @@ Presentation
             Image { source: "3-its-your-system.png"; anchors.fill: parent }
             Rectangle {
                 color: panelColor; opacity: panelOpacity; radius: panelRadius
-                anchors.fill: text3; anchors.margins: -panelMargin
+                width: text3.contentWidth + panelMargin * 2; height: text3.contentHeight + panelMargin * 2
+                anchors.horizontalCenter: text3.horizontalCenter
+                anchors.top: text3.top; anchors.topMargin: -panelMargin
             }
             Text {
                 id: text3
@@ -114,7 +120,9 @@ Presentation
             Image { source: "4-eggs-presentation.png"; anchors.fill: parent }
             Rectangle {
                 color: panelColor; opacity: panelOpacity; radius: panelRadius
-                anchors.fill: text4; anchors.margins: -panelMargin
+                width: text4.contentWidth + panelMargin * 2; height: text4.contentHeight + panelMargin * 2
+                anchors.horizontalCenter: text4.horizontalCenter
+                anchors.top: text4.top; anchors.topMargin: -panelMargin
             }
             Text {
                 id: text4
@@ -137,7 +145,9 @@ Presentation
             Image { source: "5-wait-hatching.png"; anchors.fill: parent }
             Rectangle {
                 color: panelColor; opacity: panelOpacity; radius: panelRadius
-                anchors.fill: text5; anchors.margins: -panelMargin
+                width: text5.contentWidth + panelMargin * 2; height: text5.contentHeight + panelMargin * 2
+                anchors.horizontalCenter: text5.horizontalCenter
+                anchors.top: text5.top; anchors.topMargin: -panelMargin
             }
             Text {
                 id: text5
@@ -160,7 +170,9 @@ Presentation
             Image { source: "6-follow-penguins.png"; anchors.fill: parent }
             Rectangle {
                 color: panelColor; opacity: panelOpacity; radius: panelRadius
-                anchors.fill: text6; anchors.margins: -panelMargin
+                width: text6.contentWidth + panelMargin * 2; height: text6.contentHeight + panelMargin * 2
+                anchors.horizontalCenter: text6.horizontalCenter
+                anchors.top: text6.top; anchors.topMargin: -panelMargin
             }
             Text {
                 id: text6
@@ -183,7 +195,9 @@ Presentation
             Image { source: "7-created-by.png"; anchors.fill: parent }
             Rectangle {
                 color: panelColor; opacity: panelOpacity; radius: panelRadius
-                anchors.fill: text7; anchors.margins: -panelMargin
+                width: text7.contentWidth + panelMargin * 2; height: text7.contentHeight + panelMargin * 2
+                anchors.horizontalCenter: text7.horizontalCenter
+                anchors.top: text7.top; anchors.topMargin: -panelMargin
             }
             Text {
                 id: text7
@@ -191,7 +205,7 @@ Presentation
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: 20
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>penguins-eggs</h1><h2>Created by Piero Proietti</h2><h4>Issues: <a href='https://github.com/pieroproietti/penguins-eggs/issues'>github.com/pieroproietti/penguins-eggs/issues</a></h4><h4>Email: <a href='mailto:piero.proietti@gmail.com'>piero.proietti@gmail.com</a></h4><h4>Website: <a href='https://penguins-eggs.net'>penguins-eggs.net</a></h4>")
+                text: qsTr("<h1>penguins-eggs</h1><h2>Created by Piero Proietti</h2><h4>Issues: github.com/pieroproietti/penguins-eggs/issues</h4><h4>Email: piero.proietti@gmail.com</h4><h4>Website: penguins-eggs.net</h4>")
             }
         }
     }
