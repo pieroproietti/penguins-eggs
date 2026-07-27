@@ -5,7 +5,7 @@ The CI of **penguins-eggs (oa edition)** is split into two pipelines with comple
 | Pipeline | Workflow | Where it runs | What it produces |
 | :--- | :--- | :--- | :--- |
 | 🔨 **Hammers** | `hammers.yml` | GitHub-hosted runners (containers) | Native packages (`.deb`, `.apk`, `.pkg.tar.zst`, `.rpm`) |
-| 🏭 **Furnace** | `furnace.yml` | Self-hosted runner + Proxmox VE | Bootable ISO images via `coa remaster` |
+| 🏭 **Furnace** | `furnace.yml` | Self-hosted runner + Proxmox VE | Bootable ISO images via `eggs remaster` |
 
 The split follows a simple observation: **packaging** is user-space work and runs happily inside GitHub's containers, while **remastering** needs a real kernel, real mounts and real root — things a hardened CI container cannot provide. Trying to fake the full remaster flow on GitHub runners only produces "CI theater": artificial bypass logic that adds zero value. The quality of system software is tested on the road, not in a test tube.
 
@@ -55,7 +55,7 @@ The flight plan of each job:
 2. **Rollback & boot:** the VM is rolled back to its `virgin` snapshot and started (`qm rollback` + `qm start` on father). Every run begins from an identical, uncontaminated system.
 3. **Dynamic IP discovery:** the VM's MAC address is read live from `qm config`, then a fast ARP sweep over the local subnet locates the assigned IP — no static leases required.
 4. **Wait for SSH:** the job polls until the guest's SSH daemon answers.
-5. **Install & remaster:** the latest released package for that distro is downloaded from GitHub Releases, installed natively, then `sudo coa remaster` bakes the ISO on a real kernel with real mounts.
+5. **Install & remaster:** the latest released package for that distro is downloaded from GitHub Releases, installed natively, then `sudo eggs remaster` bakes the ISO on a real kernel with real mounts.
 6. **Export:** the resulting ISO is shipped to the Proxmox storage (`export iso --clean`, which also prunes older versions on the server).
 7. **Shutdown:** the VM is powered off (`if: always()`), leaving the hypervisor clean even on failure.
 

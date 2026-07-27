@@ -32,7 +32,7 @@ To generate `.rpm` packages using the Fedora-agnostic logic:
 Since version **0.7.1**, the build process has been simplified and purified:
 
 1.  **Agnostic Detection**: The builder automatically identifies the host distribution using the system's `ID_LIKE` metadata.
-2.  **Dynamic Generation**: `coa tools build` generates a tailored `PKGBUILD`, `spec` file, or `debian/` directory on the fly based on the detected environment.
+2.  **Dynamic Generation**: `eggs tools build` generates a tailored `PKGBUILD`, `spec` file, or `debian/` directory on the fly based on the detected environment.
 3.  **Zero-Footprint**: By removing `derivatives.yaml`, the system no longer requires external mapping files to recognize derivative distributions (like Nobara being recognized as Fedora).
 
 > **Note**: This "Artisan" approach ensures that as long as your system reports a supported lineage in `/etc/os-release`, the builder will know exactly how to "cut the cloth" for your specific distribution.

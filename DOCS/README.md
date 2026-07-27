@@ -17,7 +17,7 @@
 
 ## User Manual
 - [Quick Start](./manual/quickstart.md) — First ISO in three commands, penguins-eggs compatibility table.
-- [Command Reference](./manual/commands.md) — All `coa` commands, flags and usage.
+- [Command Reference](./manual/commands.md) — All `eggs` commands, flags and usage.
 
 ## Development
 - [Building](./development/building.md) — Requirements and toolchain for native packages.

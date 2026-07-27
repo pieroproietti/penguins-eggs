@@ -77,7 +77,7 @@ Everything the engine does is logged, command by command, to
 
 ```
 pkg/cmd/
-├── sysinstall.go            # 'coa sysinstall' (parent command)
+├── sysinstall.go            # 'eggs sysinstall' (parent command)
 ├── sysinstall_calamares.go  # GUI face: calls setup.Run()
 └── sysinstall_krill.go      # TUI face (+ --unattended flag)
 
@@ -140,14 +140,14 @@ install target).
 ## 6. Modes of Use
 
 ```bash
-sudo coa sysinstall calamares           # GUI
-sudo coa sysinstall krill               # TUI wizard
-sudo coa sysinstall krill --unattended  # no questions: live-user defaults,
+sudo eggs sysinstall calamares           # GUI
+sudo eggs sysinstall krill               # TUI wizard
+sudo eggs sysinstall krill --unattended  # no questions: live-user defaults,
                                         # password 'evolution', first disk,
                                         # 10-second abort countdown
 ```
 
-The automatic dispatcher (`coa sysinstall` with no subcommand choosing the
+The automatic dispatcher (`eggs sysinstall` with no subcommand choosing the
 face by detecting X11/Wayland and the calamares binary) is designed but not
 yet implemented — see the [roadmap](./roadmap.md).
 

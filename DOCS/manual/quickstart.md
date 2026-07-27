@@ -8,7 +8,7 @@
 Packages are built automatically for every supported family. Download the latest from [GitHub Releases](https://github.com/pieroproietti/penguins-eggs/releases) or add the official repository:
 
 ```bash
-sudo coa tools repo add
+sudo eggs tools repo add
 ```
 
 ### From source
@@ -26,10 +26,10 @@ Requirements: `gcc`, `make`, `golang` 1.25+, `git`.
 
 ```bash
 # 1. Prepare the system (install squashfs-tools, xorriso, etc.)
-sudo coa tools repo add
+sudo eggs tools repo add
 
 # 2. Remaster the running system into a live ISO
-sudo coa remaster
+sudo eggs remaster
 
 # 3. Find your ISO
 ls /home/eggs/*.iso
@@ -43,27 +43,27 @@ That's it. The ISO is hybrid (BIOS + UEFI) and ready to boot from USB or in a VM
 
 ```bash
 # Apply a preset desktop configuration ("costume")
-coa wardrobe get
-coa wardrobe list
-sudo coa wardrobe wear colibri
+eggs wardrobe get
+eggs wardrobe list
+sudo eggs wardrobe wear colibri
 
 # Build the ISO
-sudo coa remaster
+sudo eggs remaster
 ```
 
 ### Customize compression and ISO naming
 
 ```bash
 # Open the interactive configuration TUI
-sudo coa config
+sudo eggs config
 ```
 
-Change the live user password, the compression algorithm (zstd/xz/lz4/gzip), the compression level, the ISO filename prefix, and edit the custom exclude list — all from a single interface. Settings are saved to `/etc/penguins-eggs.d/custom.yaml` and applied automatically on the next `coa remaster`.
+Change the live user password, the compression algorithm (zstd/xz/lz4/gzip), the compression level, the ISO filename prefix, and edit the custom exclude list — all from a single interface. Settings are saved to `/etc/penguins-eggs.d/custom.yaml` and applied automatically on the next `eggs remaster`.
 
 ### Remaster with LUKS encryption (Debian family)
 
 ```bash
-sudo coa remaster --crypted
+sudo eggs remaster --crypted
 ```
 
 An interactive TUI lets you choose the passphrase and crypto parameters. The resulting ISO boots into a LUKS-encrypted live environment.
@@ -72,36 +72,36 @@ An interactive TUI lets you choose the passphrase and crypto parameters. The res
 
 ```bash
 # GUI (requires Calamares and a display server)
-sudo coa sysinstall calamares
+sudo eggs sysinstall calamares
 
 # TUI (works on console, serial, ssh)
-sudo coa sysinstall krill
+sudo eggs sysinstall krill
 
 # Headless / unattended
-sudo coa sysinstall krill --unattended
+sudo eggs sysinstall krill --unattended
 ```
 
 ### Debug a remaster problem
 
 ```bash
 # Stop after a specific step, leaving the chroot mounted for inspection
-sudo coa remaster --stop-after coa-initrd
+sudo eggs remaster --stop-after coa-initrd
 
 # Print the JSON flight plan without building anything
-sudo coa remaster --debug
+sudo eggs remaster --debug
 
 # Clean up after a failed or interrupted remaster
-sudo coa destroy
+sudo eggs destroy
 ```
 
 ### Boot an ISO from the hard drive (no USB needed)
 
 ```bash
 # Generate a GRUB loopback entry for any Linux ISO
-coa tools grub40 /path/to/my.iso
+eggs tools grub40 /path/to/my.iso
 
 # Write it directly into /etc/grub.d/40_custom
-sudo coa tools grub40 /path/to/my.iso --write
+sudo eggs tools grub40 /path/to/my.iso --write
 sudo update-grub
 ```
 

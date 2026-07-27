@@ -26,7 +26,7 @@ The `cmd` package contains the user interface. Each file maps a command the user
 
 ## 🧬 The "Remaster" Dynamic: Parser, Planner and C
 
-The architectural core is in `remaster.go`. When the user runs `sudo coa remaster`, the Go code triggers a chain reaction:
+The architectural core is in `remaster.go`. When the user runs `sudo eggs remaster`, the Go code triggers a chain reaction:
 
 ### 1. Detection and setup
 First, `coa` uses `distro.NewDistro()` to understand which base it is landing on (Debian, Arch, Fedora, …) and computes the final output path of the egg (the ISO).
