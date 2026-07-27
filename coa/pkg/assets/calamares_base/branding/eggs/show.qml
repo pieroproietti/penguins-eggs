@@ -204,7 +204,7 @@ Presentation
                 anchors.centerIn: parent
                 wrapMode: Text.WordWrap; width: parent.width * 0.95; horizontalAlignment: Text.Center
                 textFormat: Text.RichText
-                text: qsTr("<h1>penguins-eggs</h1><h2>Created by Piero Proietti</h2><h4>Issues: github.com/pieroproietti/penguins-eggs/issues</h4><h4>Email: piero.proietti@gmail.com</h4><h4>Website: penguins-eggs.net</h4>")
+                text: qsTr("<h1>penguins-eggs</h1><h2>Created by Piero Proietti</h2><h4>Issues: <font color='#5DADE2'>github.com/pieroproietti/penguins-eggs/issues</font></h4><h4>Email: <font color='#5DADE2'>piero.proietti@gmail.com</font></h4><h4>Website: <font color='#5DADE2'>penguins-eggs.net</font></h4>")
             }
         }
     }
