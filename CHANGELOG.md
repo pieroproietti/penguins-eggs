@@ -2,7 +2,7 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
-## Release Notes: penguins-eggs v26.7.26 - 2026-07-26
+## Release Notes: penguins-eggs v26.7.26 
 This release brings major enhancements to the Limine bootloader stack, installer auto-detection and confirmation workflows in `sysinstall`, support for Archcraft derivative environments, hardened `makepkg` packaging, LightDM/SDDM autologin PAM fixes, and safe `liveroot` chroot mounting.
 
 ### 🥾 Limine Bootloader & NVRAM Integration
