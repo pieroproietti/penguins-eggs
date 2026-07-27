@@ -26,6 +26,11 @@ type Suit struct {
 
 	// Popolato da normalize() a partire da Sequence.PackagesNoInstallRecommends.
 	PackagesNoRecommends []string `yaml:"-"`
+
+	// Popolato da normalize() a partire da Sequence.PackagesInteractive.
+	// These packages are installed without DEBIAN_FRONTEND=noninteractive
+	// so the user can respond to license prompts and debconf questions.
+	PackagesInteractive []string `yaml:"-"`
 }
 
 // Sequence raccoglie repository, pacchetti e accessori nella forma annidata.
@@ -33,16 +38,17 @@ type Sequence struct {
 	Repositories                *Repositories `yaml:"repositories"`
 	Packages                    []string      `yaml:"packages"`
 	PackagesNoInstallRecommends []string      `yaml:"packages_no_install_recommends"`
+	PackagesInteractive         []string      `yaml:"packages_interactive"`
 	Accessories                 []string      `yaml:"accessories"`
 	Cmds                        []string      `yaml:"cmds"`
 }
 
 // Repositories descrive le modifiche alle sorgenti apt prima dell'installazione.
 type Repositories struct {
-	SourcesList   []string `yaml:"sources_list"`   // componenti da abilitare: main, contrib, non-free...
-	SourcesListD  []string `yaml:"sources_list_d"` // comandi shell letterali (aggiunta repo di terze parti)
-	Update        bool     `yaml:"update"`
-	Upgrade       bool     `yaml:"upgrade"`
+	SourcesList  []string `yaml:"sources_list"`   // componenti da abilitare: main, contrib, non-free...
+	SourcesListD []string `yaml:"sources_list_d"` // comandi shell letterali (aggiunta repo di terze parti)
+	Update       bool     `yaml:"update"`
+	Upgrade      bool     `yaml:"upgrade"`
 }
 
 // Finalize raccoglie i comandi eseguiti a fine costume nella forma annidata.
@@ -60,6 +66,7 @@ func (s *Suit) normalize() {
 		s.Accessories = append(s.Accessories, s.Sequence.Accessories...)
 		s.Cmds = append(s.Cmds, s.Sequence.Cmds...)
 		s.PackagesNoRecommends = append(s.PackagesNoRecommends, s.Sequence.PackagesNoInstallRecommends...)
+		s.PackagesInteractive = append(s.PackagesInteractive, s.Sequence.PackagesInteractive...)
 	}
 	if s.Finalize != nil {
 		s.Cmds = append(s.Cmds, s.Finalize.Cmds...)
