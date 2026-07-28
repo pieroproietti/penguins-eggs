@@ -68,6 +68,19 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		}
 	}
 
+	// Automatic fallback: if the specific DistroID is not explicitly listed in index.yaml,
+	// fall back to the family identified by distro.NewDistro() (e.g., "debian", "arch", "fedora")
+	if matchedEntry == nil {
+		targetFamily := strings.ToLower(myDistro.DistroLike)
+		for i := range index.Distributions {
+			entry := &index.Distributions[i]
+			if strings.EqualFold(entry.ID, targetFamily) || strings.EqualFold(entry.ID, myDistro.FamilyID) {
+				matchedEntry = entry
+				break
+			}
+		}
+	}
+
 	if matchedEntry == nil {
 		return nil, fmt.Errorf("no module found for %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
 	}
