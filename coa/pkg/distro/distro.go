@@ -50,6 +50,9 @@ func NewDistro() *Distro {
 
 	rawID := strings.ToLower(osInfo["ID"])
 	rawLike := strings.ToLower(osInfo["ID_LIKE"])
+	if rawLike == "" {
+		rawLike = strings.ToLower(osInfo["LIKE_ID"])
+	}
 	likes := strings.Fields(rawLike)
 
 	d := &Distro{
