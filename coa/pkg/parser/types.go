@@ -59,6 +59,7 @@ type TemplateContext struct {
 	IsGitHubAction bool
 	RamModeEnabled bool
 	LiveUser       string
+	HasCalamares   bool
 }
 
 type BrainIndex struct {
