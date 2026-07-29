@@ -71,11 +71,7 @@ fi
 # =====================================================================
 if ! ls /boot/vmlinuz-* 1> /dev/null 2>&1; then
     echo "-> Nessun kernel trovato in /boot. Cerco nei moduli (layout systemd-boot)..."
-    # uname -r nel chroot riporta il kernel della live, non quello del target
-    # (stesso fallback di install_distro_initramfs).
-    KVER_GUESS=$(uname -r)
-    [ -d "/usr/lib/modules/$KVER_GUESS" ] || KVER_GUESS=$(ls -1 /usr/lib/modules/ | grep -v "extramodules" | head -n 1)
-    KERNEL_PATH="/usr/lib/modules/$KVER_GUESS/vmlinuz"
+    KERNEL_PATH="/usr/lib/modules/$(uname -r)/vmlinuz"
     [ -f "$KERNEL_PATH" ] || KERNEL_PATH=$(find /usr/lib/modules -name "vmlinuz" -type f | head -n 1)
 
     if [ -n "$KERNEL_PATH" ]; then
