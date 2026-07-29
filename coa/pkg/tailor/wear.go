@@ -140,6 +140,6 @@ func copySkelToUser() {
 	// costume ("Home directory not accessible: Permission denied" en cada
 	// login). --no-o --no-g --chown fija el dueño real de destino
 	// explícitamente en vez de heredarlo de /etc/skel.
-	cmd := fmt.Sprintf("sudo rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
+	cmd := fmt.Sprintf("rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
 	utils.Exec(cmd)
 }
