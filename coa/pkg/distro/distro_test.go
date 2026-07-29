@@ -43,6 +43,30 @@ func TestDistroDetectionCases(t *testing.T) {
 			},
 			wantFamily: "debian",
 		},
+		{
+			name: "ID_LIKE arch fallback",
+			osRelease: map[string]string{
+				"ID":      "artix",
+				"ID_LIKE": "arch",
+			},
+			wantFamily: "archlinux",
+		},
+		{
+			name: "LIKE_ID archlinux fallback",
+			osRelease: map[string]string{
+				"ID":      "customarch",
+				"LIKE_ID": "archlinux",
+			},
+			wantFamily: "archlinux",
+		},
+		{
+			name: "Manjaro base family stays manjaro",
+			osRelease: map[string]string{
+				"ID":      "manjaro",
+				"ID_LIKE": "arch",
+			},
+			wantFamily: "manjaro",
+		},
 	}
 
 	for _, tt := range tests {
@@ -58,9 +82,18 @@ func TestDistroDetectionCases(t *testing.T) {
 			family := "generic"
 			for _, c := range candidates {
 				switch c {
-				case "debian", "ubuntu", "linuxmint", "kali", "pop":
+				case "debian", "ubuntu":
 					family = "debian"
-					break
+				case "alpine":
+					family = "alpine"
+				case "manjaro":
+					family = "manjaro"
+				case "arch", "archlinux":
+					family = "archlinux"
+				case "fedora", "rhel":
+					family = "fedora"
+				case "opensuse", "suse":
+					family = "opensuse"
 				}
 				if family != "generic" {
 					break
