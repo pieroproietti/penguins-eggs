@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -137,18 +136,12 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		}
 	}
 
-	hasCalamares := false
-	if _, err := exec.LookPath("calamares"); err == nil {
-		hasCalamares = true
-	}
-
 	ctx := TemplateContext{
 		Family:         myDistro.FamilyID,
 		DistroID:       myDistro.DistroID,
 		IsGitHubAction: isGitHubAction,
 		RamModeEnabled: ramModeEnabled,
 		LiveUser:       liveUser,
-		HasCalamares:   hasCalamares,
 	}
 
 	tmpl := template.New(filepath.Base(basePath))

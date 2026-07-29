@@ -209,11 +209,7 @@ remaster:
         Comment=Install this system to your hard disk
         Exec=pkexec eggs sysinstall
         Icon=penguins-eggs
-        {{ if .HasCalamares -}}
-        Terminal=false
-        {{ else -}}
         Terminal=true
-        {{ end -}}
         Categories=System;
 
 # ----------------------------------------------------------------------------
