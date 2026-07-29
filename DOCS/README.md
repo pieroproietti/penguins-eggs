@@ -18,6 +18,7 @@
 ## User Manual
 - [Quick Start](./manual/quickstart.md) — First ISO in three commands, penguins-eggs compatibility table.
 - [Command Reference](./manual/commands.md) — All `eggs` commands, flags and usage.
+- [Chromebook Support](./manual/chromebook.md) — Preparing Chromebook hardware (eMMC, ChromeOS EC) via initramfs modules.
 
 ## Development
 - [Building](./development/building.md) — Requirements and toolchain for native packages.

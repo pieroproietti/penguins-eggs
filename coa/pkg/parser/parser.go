@@ -53,12 +53,12 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 	var matchedEntry *DistroMap
 	for i := range index.Distributions {
 		entry := &index.Distributions[i]
-		if entry.ID == myDistro.DistroID {
+		if strings.EqualFold(entry.ID, myDistro.DistroID) {
 			matchedEntry = entry
 			break
 		}
 		for _, l := range entry.Like {
-			if l == myDistro.DistroID {
+			if strings.EqualFold(l, myDistro.DistroID) {
 				matchedEntry = entry
 				break
 			}
@@ -83,6 +83,14 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 
 	if matchedEntry == nil {
 		return nil, fmt.Errorf("no module found for %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
+	}
+
+	if matchedEntry.ID == "manjaro" {
+		myDistro.FamilyID = "manjaro"
+	} else if matchedEntry.ID == "arch" {
+		myDistro.FamilyID = "archlinux"
+	} else if matchedEntry.ID == "debian" {
+		myDistro.FamilyID = "debian"
 	}
 
 	basePath := filepath.Join(baseDir, "base.yaml.tmpl")

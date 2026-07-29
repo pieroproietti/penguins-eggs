@@ -2,6 +2,25 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.7.29 - 2026-07-29
+This release introduces dynamic hostname resolution for Calamares installer modules, automatic distro family fallback for derivatives via `ID_LIKE` / `LIKE_ID`, post-installation desktop launcher cleanup, Calamares slideshow visual refinements, interactive command execution fixes, and Chromebook support documentation.
+
+### 🌐 Calamares Hostname Integration
+* **Dynamic Hostname Default**: Configured `users.conf` module generation (`user-conf.go` and `users.conf.tmpl`) to dynamically pass `${host}` template macro, enabling Calamares to evaluate and pre-fill the live host's name from `/etc/hostname` during user setup.
+
+### 🐧 Distro Family Fallback & Derivative Support
+* **Derivative Auto-Detection**: Enabled automatic distro family fallback in `coa` for derivatives using `ID_LIKE` and added `LIKE_ID` compatibility matching to improve multi-distro remastering resilience.
+
+### 🧹 Post-Installation Cleanup & Desktop Integration
+* **Desktop Launcher Teardown**: Automatically removed live desktop launcher artifacts after installation completes in `sysinstall`.
+
+### 🎨 Calamares Slideshow & UI Refinements
+* **Slideshow Styling**: Centered slideshow text and panels, added translucent background panels behind slide text, and polished typography and hyperlink accents across Calamares installation slides.
+
+### 📚 Documentation & System Hardening
+* **Chromebook Documentation**: Added Chromebook support documentation to the user manual.
+* **Interactive Command Stdin**: Fixed stdin stream handling for interactive execution commands.
+
 ## Release Notes: penguins-eggs v26.7.26 
 This release brings major enhancements to the Limine bootloader stack, installer auto-detection and confirmation workflows in `sysinstall`, support for Archcraft derivative environments, hardened `makepkg` packaging, LightDM/SDDM autologin PAM fixes, and safe `liveroot` chroot mounting.
 

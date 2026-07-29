@@ -16,6 +16,7 @@ type UserConfig struct {
 	Groups             []string
 	AdminGroup         string
 	AllowWeakPasswords bool
+	DefaultHostname    string
 }
 
 func userConf() error {
@@ -81,15 +82,28 @@ func userConf() error {
 		allowWeakPasswords = false
 	}
 
-	// 4. Build the data structure
+	// 4. Read default hostname from /etc/hostname if present, fallback to ${host}
+	defaultHostname := "${host}"
+	if data, err := os.ReadFile("/etc/hostname"); err == nil {
+		for _, line := range strings.Split(string(data), "\n") {
+			h := strings.TrimSpace(line)
+			if h != "" && !strings.HasPrefix(h, "#") && h != "live-system" && h != "localhost" {
+				defaultHostname = h
+				break
+			}
+		}
+	}
+
+	// 5. Build the data structure
 	config := UserConfig{
 		Date:               time.Now().Format("2006-01-02"),
 		Groups:             validGroups,
 		AdminGroup:         adminGroup,
 		AllowWeakPasswords: allowWeakPasswords,
+		DefaultHostname:    defaultHostname,
 	}
 
-	// 5. Write using the template
+	// 6. Write using the template
 	return renderAndSaveEmbedded("users.conf.tmpl", targetPath, config, 0644)
 }
 

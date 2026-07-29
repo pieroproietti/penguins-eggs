@@ -111,13 +111,16 @@ func applySuit(dir string, suit *Suit) error {
 
 func copySkelToUser() {
 	targetUser := os.Getenv("SUDO_USER")
-	userHome := ""
+	var userHome string
 
 	if targetUser != "" {
 		userHome = filepath.Join("/home", targetUser)
 	} else if u := firstHumanUser(); u != nil {
-		// Sin SUDO_USER (p.ej. se entró con 'su' en vez de 'sudo'), no
-		// hay que confiar en $USER: 'su' normalmente lo pisa a "root".
+		// Sin SUDO_USER (p.ej. se entró con 'su' en vez de 'sudo', como es
+		// habitual en distros sin sudo configurado, como Quirinux/Devuan),
+		// no hay que confiar en $USER/os.UserHomeDir(): 'su' normalmente
+		// deja HOME=/root, así que antes se sincronizaba /etc/skel en la
+		// carpeta equivocada.
 		targetUser = u.Username
 		userHome = u.HomeDir
 	}
@@ -130,10 +133,13 @@ func copySkelToUser() {
 	utils.LogNormal("Syncing /etc/skel -> %s", userHome)
 	// IMPORTANTE: 'rsync -a' preserva dueño/grupo del ORIGEN (/etc/skel,
 	// propiedad de root). Sin --chown, cualquier archivo o carpeta que ya
-	// existiera en el home del usuario (incluido el home mismo) quedaba
-	// con su metadata de propietario reescrita a root en cuanto rsync la
-	// tocaba, aunque el contenido no cambiara. --no-o --no-g --chown fija
-	// el dueño real de destino explícitamente en vez de heredarlo.
-	cmd := fmt.Sprintf("rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
+	// existiera en el home del usuario (incluido el propio directorio home)
+	// quedaba con su metadata de propietario reescrita a root en cuanto
+	// rsync la tocaba, aunque el contenido no cambiara. Esto es lo que
+	// deja al usuario sin acceso a su propio $HOME tras aplicar un
+	// costume ("Home directory not accessible: Permission denied" en cada
+	// login). --no-o --no-g --chown fija el dueño real de destino
+	// explícitamente en vez de heredarlo de /etc/skel.
+	cmd := fmt.Sprintf("sudo rsync -a --no-o --no-g --chown=%s:%s /etc/skel/ %s/", targetUser, targetUser, userHome)
 	utils.Exec(cmd)
 }
