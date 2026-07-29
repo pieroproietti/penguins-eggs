@@ -50,6 +50,9 @@ func NewDistro() *Distro {
 
 	rawID := strings.ToLower(osInfo["ID"])
 	rawLike := strings.ToLower(osInfo["ID_LIKE"])
+	if rawLike == "" {
+		rawLike = strings.ToLower(osInfo["LIKE_ID"])
+	}
 	likes := strings.Fields(rawLike)
 
 	d := &Distro{
@@ -62,7 +65,7 @@ func NewDistro() *Distro {
 
 	for _, c := range candidates {
 		switch c {
-		case "debian", "ubuntu", "linuxmint", "kali", "pop":
+		case "debian", "ubuntu":
 			d.FamilyID = "debian"
 			d.DistroLike = "Debian"
 			return d
@@ -72,26 +75,25 @@ func NewDistro() *Distro {
 			d.DistroLike = "Alpine"
 			return d
 
-		case "arch", "endeavouros", "garuda":
-			d.FamilyID = "archlinux"
-			d.DistroLike = "Arch"
-			return d
-
-		case "manjaro", "biglinux", "bigcommunity":
+		case "manjaro":
 			d.FamilyID = "manjaro"
 			d.DistroLike = "Manjaro"
 			return d
 
-		case "fedora", "nobara", "rhel", "centos":
+		case "arch", "archlinux":
+			d.FamilyID = "archlinux"
+			d.DistroLike = "Arch"
+			return d
+
+		case "fedora", "rhel":
 			d.FamilyID = "fedora"
 			d.DistroLike = "Fedora"
 			return d
 
-		case "opensuse":
+		case "opensuse", "suse":
 			d.FamilyID = "opensuse"
 			d.DistroLike = "Opensuse"
 			return d
-
 		}
 	}
 

@@ -1,9 +1,9 @@
 # ==============================================================================
-# ⛰️ MODULO ALPINE LINUX
+# ⛰️ MODULO ALPINE LINUX - REMASTER
 # ==============================================================================
 
 # ----------------------------------------------------------------------------
-# DECLARATIVE COSTANTS 
+# DECLARATIVE CONSTANTS 
 # ----------------------------------------------------------------------------
 {{ define "distro_boot_params" }}modules=loop,squashfs,sd-mod,usb-storage alpinelivelabel=OA_LIVE alpinelivesquashfs=filesystem.squashfs cow_spacesize=2G quiet{{ end }}
 
@@ -37,21 +37,3 @@ cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"
 # alpine: distro_hook_squashfs: no need operations
 "true"
 {{ end -}}
-
-# ==============================================================================
-# 🎯 INSTALLER
-# ==============================================================================
-{{ define "install_distro_initramfs" }}
-KVER=$(ls -1 /lib/modules/ | head -n 1)
-mkinitfs -o /boot/initramfs-$KVER $KVER
-{{ end }}
-
-{{ define "install_distro_bootloader" }}
-if [ -d /sys/firmware/efi ]; then
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=alpine --recheck
-else
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
-    grub-install --target=i386-pc --recheck "$TARGET_DISK"
-fi
-grub-mkconfig -o /boot/grub/grub.cfg
-{{ end }}

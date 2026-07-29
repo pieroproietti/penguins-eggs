@@ -1,6 +1,93 @@
 See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
+
+## Release Notes: penguins-eggs v26.7.26 
+This release brings major enhancements to the Limine bootloader stack, installer auto-detection and confirmation workflows in `sysinstall`, support for Archcraft derivative environments, hardened `makepkg` packaging, LightDM/SDDM autologin PAM fixes, and safe `liveroot` chroot mounting.
+
+### 🥾 Limine Bootloader & NVRAM Integration
+* **NVRAM & EFI Synchronization**: Added UEFI NVRAM registration via `efibootmgr` for Limine installations and synchronized wallpaper configuration across EFI mount paths.
+* **Menu Hierarchy & Wallpapers**: Preserved hierarchical tree structures in boot menus and improved splash wallpaper configuration injection.
+* **ESP Path & Target Root UUID**: Ensured exact `ESP_PATH` and target partition root UUID injection into Limine configuration files, maintaining consistent `limine.conf` copies across EFI paths.
+* **Bootloader Transparency**: Implemented the Principle of Transparency across bootloader configuration modules.
+
+### 💾 sysinstall & Krill Installer Enhancements
+* **Installer Auto-Detection & Launchers**: Added automatic installer detection, `pkexec` desktop launcher support, and an explicit interactive confirmation summary step before proceeding with Krill installation.
+* **Dynamic EFI Bootloader Labels**: Dynamically resolved host `DistroID` for EFI bootloader registration to prevent hardcoded `oa-live` labels.
+* **Hostname Resolution**: Updated Krill hostname resolution to read default hostname from `/etc/hostname` with fallback to `naked`.
+
+### 🏹 Archcraft Derivative Support & Packaging Hardening
+* **Archcraft Recognition**: Added distro recognition for **Archcraft** under the Arch family definitions (`brain.d/index.yaml`).
+* **Makepkg Output Enforcement**: Explicitly forced `PKGDEST` and `PKGEXT` environment settings during `makepkg` execution to align with Alpine packaging conventions, ensuring packages built on Arch derivatives (such as BigLinux) are correctly located in stage.
+
+### 🔐 Display Manager & PAM Autologin Fixes
+* **LightDM Non-Interactive Autologin**: Prepended a service-scoped `pam_permit.so` rule to `lightdm-autologin` PAM stack to eliminate non-interactive login failures ("conversation failed") without touching live user SSH/PAM defaults.
+* **SDDM Configuration Guard**: Corrected SDDM autologin setup condition to only write SDDM autologin configurations when SDDM is present.
+
+### 🐧 Chroot & Mount Propagation Safeguards
+* **Liveroot Self-Bind**: Enforced a private bind-mount of `liveroot` onto itself before `chroot` execution with `--make-private` propagation. This ensures tools requiring `/` to be a distinct mountpoint (such as `pacman`'s disk space check) succeed while preventing mount propagation leaks during teardown.
+* **Brain Distro Structure**: Split distribution module templates into dedicated `remaster/` and `install/` subdirectories for clearer separation of concerns.
+
+## Release Notes: penguins-eggs v26.7.24 - 2026-07-24
+This release brings full compatibility and end-to-end remastering support for Arch Linux and its major derivatives (**Arch, EndeavourOS, Garuda Linux and CachyOS**), alongside critical bootloader enhancements for Limine, systemd-boot, and GRUB, installer refinements, and robust initramfs module handling.
+
+### 🏹 Broad Arch-Family & Derivative Parity (Arch, EndeavourOS, Garuda, CachyOS)
+* **Distro Detection**: Extended distribution identification in [coa/pkg/utils/os.go](file:///home/artisan/forge/penguins-eggs/coa/pkg/utils/os.go) to explicitly recognize **CachyOS** and **RebornOS** as members of the Arch family via both `ID` and `ID_LIKE` parameters.
+* **Dracut Target Support**: Enabled seamless `dracut` initramfs generation for **EndeavourOS** and **Garuda Linux** within [coa/brain.d/modules/arch-family.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/arch-family.bash.tmpl), providing explicit target initramfs output paths during installation.
+* **Live Storage Drivers**: Added `isofs` and `sr_mod` kernel modules into the live `mkinitcpio` configuration for Arch-family hosts, guaranteeing reliable ISO boot from optical and USB live media.
+* **Initramfs Cleanups**: Removed obsolete `fsck` hooks from Arch/Manjaro live `mkinitcpio.conf` templates and ensured kernel version detection uses `uname -r` for accurate initramfs correlation.
+
+### 🥾 Bootloader Engine Refinements (GRUB, Limine & systemd-boot)
+* **Bootloader Selection & Ordering**: Optimized default bootloader prioritization to favor systemd-boot and GRUB, while resolving Limine partition UUID resolution and `fstab` parsing issues.
+* **Limine Syntax & Staging**: Fixed Limine configuration syntax (replacing invalid `initramfs_path` with `module_path`, ensuring leading slashes in entry titles), and corrected ESP kernel/initramfs staging.
+* **EFI Trampoline Fix**: Corrected copying of the EFI trampoline `grub.cfg` directly into `efi.img` for UEFI bootable media.
+* **Symlink Dereferencing**: Ensured `krill` dereferences kernel symlinks (`/boot/vmlinuz-*`) when preparing systemd-boot and Limine boot parameters.
+* **Dynamic Distro Labels**: Configured systemd-boot and Limine boot entries to dynamically fetch and display the host's `PRETTY_NAME` from `/etc/os-release`.
+
+### 🛠️ Krill Installer & Remastering Teardown
+* **Simplified Installer Flow**: Streamlined the `krill` TUI installer sequence by removing the manual network configuration screen and defaulting to automatic DHCP configuration.
+* **Teardown Error Handling**: Enforced complete unmount sequence during `destroy` teardown operations and properly propagated teardown failures to prevent stale mount points.
+* **Alpine Btrfs Hook**: Added `btrfs` initramfs feature generation for Alpine Linux targets running on Btrfs file systems.
+
+## Release Notes: penguins-eggs v26.7.18 - 2026-07-18
+This release transitions the versioning scheme from semantic versioning (`v0.9.x`) to calendar-based versioning (`vYY.M.D`).
+
+### 📅 Versioning Scheme Update
+* **Transition to CalVer**: Switched the package versioning pattern to calendar-based versioning `vYY.M.D` matching the release date (year, month, day).
+* **AUR Compatibility & Versioning**: Adopted this calendar-based format to resolve dependency and update conflicts with the legacy `penguins-eggs` package currently present in the Arch User Repository (AUR). The previous `v0.9.x` versions were treated as older/inferior compared to the old TypeScript-based `penguins-eggs` package versions already in AUR, preventing installation. CalVer solves this upgrade compatibility issue immediately and avoids the need to artificially inflate standard release numbers.
+
+## Release Notes: penguins-eggs v0.9.6 - 2026-07-16
+This release introduces a new **Go-based Incubator CI** for automated ISO testing, alongside critical bootloader installer fixes, user creation safeguards, vendor branding custom steps, and wardrobe permission enhancements.
+
+### 🐣 Go-based Incubator CI
+* **Native Go Testing**: Replaced the legacy 400-line bash script (`ci/incubator.sh`) with a native Go orchestrator (`incubator-go`) installed on Proxmox.
+* **Refined Test Matrix**: Configured automated test runs for `ext4` BIOS, `ext4` UEFI, and `btrfs` UEFI target installs sequentially to prevent server overload.
+* **Integrated GHA Reports**: Automatically fetches Markdown test logs from Proxmox and merges them directly into the GitHub Actions step summary using [.github/workflows/incubator-go.yml](file:///home/artisan/forge/penguins-eggs/.github/workflows/incubator-go.yml).
+
+### 💾 sysinstall & Bootloader Improvements
+* **Resilient UEFI Boot**: Tolerate NVRAM registry failures during `grub-install` on UEFI target environments and always populate the `EFI/BOOT/BOOTX64.EFI` fallback inside [coa/brain.d/modules/arch-family.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/arch-family.bash.tmpl), [coa/brain.d/modules/alpine.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/alpine.bash.tmpl), and [coa/brain.d/modules/debian.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/debian.bash.tmpl).
+* **Arch UEFI Fallback Fix**: Restored vendor directory and NVRAM registrations for Arch Linux targets by running a standard install first, followed by manual fallback file copying (bypassing the limiting `--removable` flag).
+* **systemd-boot Microcode Fix**: Resolved a kernel file corruption issue in systemd-boot configuration templates inside [coa/brain.d/modules/arch-family.bash.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/modules/arch-family.bash.tmpl) where the microcode initrd line was appended to the kernel line without a newline.
+* **Target Network Activation**: Added a dedicated step to enable `NetworkManager` and `systemd-resolved` units inside the chroot in [coa/brain.d/base.yaml.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/base.yaml.tmpl), ensuring DNS and network work out-of-the-box on the installed target.
+* **Mount Bind Fix**: Corrected `extraMounts` options in [coa/pkg/sysinstall/setup/template/mount.conf.tmpl](file:///home/artisan/forge/penguins-eggs/coa/pkg/sysinstall/setup/template/mount.conf.tmpl) back to a YAML list, fixing broken `/dev` and `/run/udev` bind mounts inside Calamares.
+
+### ⚙️ Calamares & User Management
+* **User Creation Collision Fix**: Moved the `removeuser` module right after `unpackfs` in [coa/pkg/assets/calamares_base/settings.conf](file:///home/artisan/forge/penguins-eggs/coa/pkg/assets/calamares_base/settings.conf). This avoids conflicts and failures (exit 9) when creating the new target user with the same username as the live user.
+* **Target Failures Monitoring**: The chroot runner script now returns a non-zero exit code if any execution step fails, ensuring installation failures are visible in logs.
+* **Autologin Recovery**: Enabled `chroot: true` for the `autologin-gui` module in [coa/brain.d/base.yaml.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/base.yaml.tmpl) and updated [RunAutologin()](file:///home/artisan/forge/penguins-eggs/coa/pkg/worker/autologin-gui.go#L12) to dynamically handle the custom live username instead of using a hardcoded placeholder.
+
+### 👔 Wardrobe & tailor Enhancements
+* **su Elevation Support**: Enhanced [getWardrobeRoot()](file:///home/artisan/forge/penguins-eggs/coa/pkg/tailor/get-wardrobe-root.go#L24) to resolve the real user's home directory using kernel audit `logname` and `/etc/passwd` scanning, ensuring wardrobe functions work on distros using `su` instead of `sudo`.
+* **Early Privilege Check**: Force `coa wardrobe wear` to exit immediately if executed without root privileges, removing redundant internal `sudo` command executions.
+* **skel Sync Permissions**: Sincronized `/etc/skel` files using `rsync` with explicit non-root user chown arguments, preventing target home folder assets from being locked by root ownership.
+
+### 🎨 Custom Vendor Branding
+* **Vendor Custom Finish Step**: Support executing a custom vendor `finish.sh` script via [vendorFinishStep()](file:///home/artisan/forge/penguins-eggs/coa/pkg/sysinstall/setup/vendor-finish.go#L25) during the Calamares sequence before the bootloader installation, allowing costumes to customize configuration templates.
+* **Branding Asset Overlays**: Allow wardrobes to supply customized logos, slideshows, and `branding.desc` descriptors under the `/etc/penguins-eggs.d/brain.d/assets/calamares/` path.
+
+### 🛠️ Core Optimizations
+* **Native SHA-512 Hashing**: Replaced external `openssl` shell calls with the native Go `sha512_crypt` library in [hashPassword()](file:///home/artisan/forge/penguins-eggs/coa/pkg/planner/hash-password.go#L10) for hashing password inputs during planning.
+
 ## Release Notes: penguins-eggs v0.9.5 - 2026-07-14
 This release introduces **Universal Btrfs Support** across all distributions, along with bootloader customizations, compression optimizations, installer flexibility, and critical robustness enhancements.
 
@@ -79,7 +166,7 @@ A manual uninstallation of the old penguins-eggs package is required prior to in
 Alpine live boot is now fully working. A custom **OA-SIDECAR** is injected into the initramfs during remastering: it intercepts Alpine's standard init after `recovery_shell()`, locates the ISO via `findfs LABEL=OA_LIVE`, mounts the squashfs with an overlayFS layer, and performs `switch_root` into the live system. All six supported distributions (Alpine, Arch, Debian, Fedora, Manjaro, openSUSE) are now stable.
 
 ## Release Notes: penguins-eggs v0.9.1 - "Functional parity" 2026-06-20
-penguins-eggs (oa edition) has reached functional parity with penguins-egg (legacy).
+penguins-eggs (C/Go) has reached functional parity with penguins-eggs (legacy).
 
 ### Features
 - **Interactive config command** — `coa config` TUI for compression, iso_prefix, password settings

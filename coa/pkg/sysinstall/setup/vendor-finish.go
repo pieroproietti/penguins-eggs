@@ -14,9 +14,9 @@ const vendorFinishAsset = "/etc/penguins-eggs.d/brain.d/assets/calamares/finish.
 
 // vendorFinishStep, si el vendor proveyo un finish.sh, lo instala como un
 // modulo shellprocess mas de Calamares y lo inserta en la sequence de
-// settings.conf justo antes de "shellprocess@oa-chroot-runner": asi corre
+// settings.conf justo antes de "shellprocess@krill-chroot-runner": asi corre
 // dentro del chroot, despues de que "users" ya creo la cuenta real, y
-// antes de que oa-chroot-runner ejecute los pasos genericos de bootloader/
+// antes de que krill-chroot-runner ejecute los pasos genericos de bootloader/
 // initramfs de debian.bash.tmpl -- que son los que de verdad aplican
 // cualquier cambio que finish.sh haya dejado en /etc/default/grub, sin
 // que haga falta invocar update-grub una segunda vez desde el vendor.
@@ -71,7 +71,7 @@ func injectVendorFinishIntoSettings(path string) error {
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
 
-		if !sequenceInserted && trimmed == "- shellprocess@oa-chroot-runner" {
+		if !sequenceInserted && trimmed == "- shellprocess@krill-chroot-runner" {
 			indent := line[:len(line)-len(strings.TrimLeft(line, " "))]
 			out = append(out, indent+"- shellprocess@vendor-finish")
 			sequenceInserted = true

@@ -1,10 +1,9 @@
 # ==============================================================================
-# 🌀 MODULO DEBIAN / UBUNTU
+# 🌀 MODULO DEBIAN / UBUNTU - REMASTER
 # ==============================================================================
-# ----------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
-# DECLARATIVE COSTANTS 
+# DECLARATIVE CONSTANTS 
 # ----------------------------------------------------------------------------
 {{ define "distro_boot_params" }}boot=live components cow_spacesize=2G{{ end }}
 
@@ -38,24 +37,3 @@ cp "/boot/initrd.img-$KERNEL_VERSION" /home/eggs/isodir/live/initrd.img
 # debian: distro_hook_squashfs: no need operations
 "true"
 {{ end -}}
-
-
-
-# ==============================================================================
-# 🎯 INSTALLER
-# ==============================================================================
-{{ define "install_distro_initramfs" }}
-echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
-update-initramfs -u
-{{ end }}
-
-{{ define "install_distro_bootloader" }}
-if [ -d /sys/firmware/efi ]; then
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=oa-live --recheck
-else
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
-    grub-install --target=i386-pc --recheck "$TARGET_DISK"
-fi
-update-grub
-{{ end }}
-

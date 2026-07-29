@@ -1,0 +1,92 @@
+# ==============================================================================
+# 🏹 ARCH FAMILY - SYSTEMD-BOOT INSTALLATION
+# ==============================================================================
+
+{{ define "install_distro_systemd_boot" }}
+echo "-> Installing systemd-boot (bootctl)..."
+
+ESP_MOUNT=""
+if mountpoint -q /boot/efi 2>/dev/null || awk '$2 == "/boot/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot/efi"
+elif mountpoint -q /efi 2>/dev/null || awk '$2 == "/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/efi"
+elif mountpoint -q /boot 2>/dev/null || awk '$2 == "/boot" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot"
+else
+    ESP_MOUNT="/boot/efi"
+fi
+
+echo "-> Target ESP mount point: $ESP_MOUNT"
+mkdir -p "$ESP_MOUNT"
+if ! mountpoint -q "$ESP_MOUNT" 2>/dev/null; then
+    echo "-> Mounting $ESP_MOUNT..."
+    mount "$ESP_MOUNT" || true
+fi
+
+bootctl install --esp-path="$ESP_MOUNT"
+mkdir -p "$ESP_MOUNT/loader/entries"
+
+ROOT_PART=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
+if [ -z "$ROOT_PART" ]; then
+    ROOT_PART=$(df / | awk 'NR==2 {print $1}')
+fi
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+ROOTFLAGS=""
+if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+    ROOTFLAGS="rootflags=subvol=@"
+fi
+
+PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+if [ -z "$PRETTY_NAME" ]; then
+    PRETTY_NAME="Arch Linux"
+fi
+
+UCODE_LINE=""
+if [ -f /boot/amd-ucode.img ]; then
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/amd-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="initrd  /amd-ucode.img"
+elif [ -f /boot/intel-ucode.img ]; then
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/intel-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="initrd  /intel-ucode.img"
+fi
+
+DEFAULT_ENTRY=""
+for KERNEL_PATH in $(find /boot -maxdepth 1 -name "vmlinuz-*" -type f); do
+    KERNEL_FILE=$(basename "$KERNEL_PATH")
+    INITRD_FILE="initramfs-${KERNEL_FILE#vmlinuz-}.img"
+    INITRD_PATH="/boot/$INITRD_FILE"
+    if [ ! -f "$INITRD_PATH" ]; then
+        INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+        [ -n "$INITRD_PATH" ] && INITRD_FILE=$(basename "$INITRD_PATH")
+    fi
+
+    if [ "$ESP_MOUNT" != "/boot" ]; then
+        echo "-> Copying kernel ($KERNEL_PATH) to $ESP_MOUNT/$KERNEL_FILE..."
+        cp -L "$KERNEL_PATH" "$ESP_MOUNT/$KERNEL_FILE" || true
+        if [ -f "$INITRD_PATH" ]; then
+            echo "-> Copying initrd ($INITRD_PATH) to $ESP_MOUNT/$INITRD_FILE..."
+            cp -L "$INITRD_PATH" "$ESP_MOUNT/$INITRD_FILE" || true
+        fi
+    fi
+
+    ENTRY_ID="{{ .DistroID }}-${KERNEL_FILE#vmlinuz-}.conf"
+    [ -z "$DEFAULT_ENTRY" ] && DEFAULT_ENTRY="$ENTRY_ID"
+
+cat <<EOF > "$ESP_MOUNT/loader/entries/$ENTRY_ID"
+title   $PRETTY_NAME (${KERNEL_FILE#vmlinuz-})
+linux   /$KERNEL_FILE
+${UCODE_LINE}
+initrd  /$INITRD_FILE
+options root=$ROOT_PART rw $ROOTFLAGS
+EOF
+done
+
+if [ ! -f "$ESP_MOUNT/loader/loader.conf" ]; then
+cat <<EOF > "$ESP_MOUNT/loader/loader.conf"
+default $DEFAULT_ENTRY
+timeout 5
+console-mode max
+editor yes
+EOF
+fi
+{{ end }}

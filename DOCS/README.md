@@ -1,4 +1,4 @@
-# penguins-eggs (oa edition) Documentation
+# penguins-eggs Documentation
 
 ## Architecture
 - [Overview](./architecture/overview.md) — How `coa` (Go) orchestrates the remastering pipeline.
@@ -7,6 +7,8 @@
 - [The Navigator: `parser`](./architecture/parser.md) — Detection, YAML template rendering, profile building.
 - [The Engineer: `planner`](./architecture/planner.md) — Plan compilation, exclude list, breakpoints.
 - [The Universal Strategy](./architecture/universal-strategy.md) — The philosophical and technical framework behind multi-distro support.
+- [The Principle of Transparency](./architecture/transparency-principle.md) — Evidence-based detection, DNA preservation, and native tools.
+
 
 ## Design
 - [Philosophy](./design/philosophy.md) — The three-actor model and the evolution from Bash to C+Go.
@@ -15,13 +17,14 @@
 
 ## User Manual
 - [Quick Start](./manual/quickstart.md) — First ISO in three commands, penguins-eggs compatibility table.
-- [Command Reference](./manual/commands.md) — All `coa` commands, flags and usage.
+- [Command Reference](./manual/commands.md) — All `eggs` commands, flags and usage.
+- [Chromebook Support](./manual/chromebook.md) — Preparing Chromebook hardware (eMMC, ChromeOS EC) via initramfs modules.
 
 ## Development
 - [Building](./development/building.md) — Requirements and toolchain for native packages.
-- [CI Architecture](./development/ci.md) — Hammers (packaging) and Furnace (remastering) pipelines.
+- [CI Architecture](./development/ci.md) — Hammers (packaging), Furnace (remastering), and Incubator (installation) pipelines.
 - [Proxmox Integration](./development/proxmox.md) — VirtFS, Guest Agent, serial console setup.
-- [Vagrant Lab](./development/vagrant.md) — Local test lab with KVM/libvirt (legacy).
+
 
 ## Other
 - [Manifestum](./manifestum.md) — The founding manifesto: origins, vision and call to action.

@@ -72,4 +72,4 @@ Called by `remaster` before planning, it generates `/tmp/coa/excludes.list` — 
 
 ### 💡 Pro insight
 
-The planner is the last point where *decisions* are made. Downstream of `oa-plan.json` there is only execution: `oa` walks the array and routes each task by `module` — natively in C or to `coa ell`. If something behaves unexpectedly, `coa remaster --debug` shows you the exact contract handed to the engines.
+The planner is the last point where *decisions* are made. Downstream of `oa-plan.json` there is only execution: `oa` walks the array and routes each task by `module` — natively in C or to `coa ell`. If something behaves unexpectedly, `eggs remaster --debug` shows you the exact contract handed to the engines.

@@ -12,6 +12,14 @@ OVERLAY="$BASEPATH/.overlay"
 # 1. SETUP STRUTTURA
 mkdir -p "$LIVEROOT" "$OVERLAY/upperdir" "$OVERLAY/workdir" "$OVERLAY/lowerdir"
 
+# 1.1. SELF-BIND OF LIVEROOT
+# Needed so pacman sees "/" as a mountpoint inside the chroot (otherwise
+# CheckSpace fails outright). make-private stops the bind from propagating
+# onto /home and breaking eternit's umount later. Run outside the guard
+# since it's idempotent and mountpoint alone can't tell shared from private.
+mountpoint -q "$LIVEROOT" || mount --bind "$LIVEROOT" "$LIVEROOT"
+mount --make-private "$LIVEROOT"
+
 # 2. COPIE FISICHE
 cp -a /etc /boot "$LIVEROOT/"
 for link in vmlinuz initrd.img vmlinuz.old initrd.img.old; do

@@ -31,7 +31,6 @@ const (
 	StateWelcome appState = iota
 	StateLocation
 	StateKeyboard
-	StateNetwork
 	StateDisk
 	StateUsers
 	StateSummary
@@ -138,6 +137,9 @@ type model struct {
 	locRegionIdx int
 	locZoneIdx   int
 	locField     int // 0 = region, 1 = zone
+
+	// Confirm
+	confirmChoice int // 0 = No (default), 1 = Yes
 
 	// Install (guidata dagli eventi dell'engine)
 	installMsg  string
@@ -313,26 +315,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateLocation(key)
 		case StateKeyboard:
 			return m.updateKeyboard(key)
-		case StateNetwork:
-			return m.updateNetwork(msg)
 		case StateDisk:
 			return m.updateDisk(key)
 		case StateUsers:
 			return m.updateUsers(msg)
+		case StateSummary:
+			return m.updateSummary(key)
 		default:
 			switch key {
 			case "enter":
-				switch m.state {
-				case StateSummary:
-					// Senza login o password non si parte:
-					// torniamo alla schermata Users
-					if m.userInputs[fieldLogin].Value() == "" || m.userInputs[fieldUserPass].Value() == "" {
-						m.state = StateUsers
-						return m, m.focusUser(fieldUserPass)
-					}
-					m.state = StateInstall
-					return m, m.startInstall()
-				case StateInstall:
+				if m.state == StateInstall {
 					if m.installDone {
 						if m.installErr == nil && m.restartEnabled && m.restartChecked {
 							return m, runRestart(m.restartCommand)
@@ -423,7 +415,7 @@ func (m model) updateKeyboard(key string) (tea.Model, tea.Cmd) {
 	case "right":
 		m.kbdIdx = cycle(m.kbdIdx, 1, len(kbdLayouts))
 	case "enter":
-		m.state = StateNetwork
+		m.state = StateDisk
 	}
 	return m, nil
 }
@@ -507,6 +499,7 @@ func (m model) updateUsers(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "enter":
 		m.state = StateSummary
+		m.confirmChoice = 0
 		return m, nil
 	case "tab", "down":
 		return m, m.focusUser(m.userFocus + 1)
@@ -522,6 +515,30 @@ func (m model) updateUsers(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.userInputs[m.userFocus], cmd = m.userInputs[m.userFocus].Update(msg)
 		return m, cmd
+	}
+	return m, nil
+}
+
+// updateSummary gestisce la navigazione e la conferma finale nella schermata Summary.
+func (m model) updateSummary(key string) (tea.Model, tea.Cmd) {
+	switch key {
+	case "left", "right", "tab", "shift+tab", "up", "down":
+		m.confirmChoice = 1 - m.confirmChoice
+	case "esc":
+		m.state = StateWelcome
+		return m, nil
+	case "enter":
+		if m.confirmChoice == 1 {
+			if m.userInputs[fieldLogin].Value() == "" || m.userInputs[fieldUserPass].Value() == "" {
+				m.state = StateUsers
+				return m, m.focusUser(fieldUserPass)
+			}
+			m.state = StateInstall
+			return m, m.startInstall()
+		}
+		// Se si seleziona NO, torna indietro alla prima fase (Welcome)
+		m.state = StateWelcome
+		return m, nil
 	}
 	return m, nil
 }
@@ -577,7 +594,7 @@ func (m *model) selectedZone() string {
 
 // --- VIEW GLOBALE ---
 func (m model) View() string {
-	title := titleStyle.Render(strings.ToUpper(m.appName) + " INSTALLER - PENGUINS-EGGS")
+	title := titleStyle.Render("KRILL TUI SYSTEM INSTALLER")
 
 	var insideBox string
 	switch m.state {
@@ -587,8 +604,6 @@ func (m model) View() string {
 		insideBox = m.viewLocation()
 	case StateKeyboard:
 		insideBox = m.viewKeyboard()
-	case StateNetwork:
-		insideBox = m.viewNetwork()
 	case StateDisk:
 		insideBox = m.viewDisk()
 	case StateUsers:
@@ -609,7 +624,9 @@ func (m model) View() string {
 	finalView := lipgloss.JoinVertical(lipgloss.Center, title, mainWindow)
 
 	footer := "\nPress Ctrl+C to quit."
-	if m.state != StateInstall {
+	if m.state == StateSummary {
+		footer = "\n←/→ select option | Press 'Enter' to confirm."
+	} else if m.state != StateInstall {
 		footer += " | Press 'Enter' to continue."
 	} else if !m.installDone {
 		footer = "\nInstallation in progress — do not power off."
@@ -626,7 +643,7 @@ func (m model) View() string {
 // Tab orizzontale sopra il contenuto: con un terminale 80x24 una colonna
 // laterale toglie troppo spazio utile, una riga in alto no.
 func renderSteps(currentStep int) string {
-	steps := []string{"Welcome", "Location", "Keyboard", "Network", "Disk", "Users", "Summary", "Install"}
+	steps := []string{"Welcome", "Location", "Keyboard", "Disk", "Users", "Summary", "Install"}
 	var renderedSteps []string
 	for i, step := range steps {
 		if i+1 == currentStep {
@@ -722,7 +739,7 @@ func (m model) viewNetwork() string {
 }
 
 func (m model) viewDisk() string {
-	stepsView := renderSteps(5)
+	stepsView := renderSteps(4)
 
 	device := m.disks[m.diskIdx]
 	row1 := fmt.Sprintf("BIOS: %s | Installation mode: %s", cyanText.Render(m.diskBios), cyanText.Render(m.diskMode))
@@ -750,7 +767,7 @@ func (m model) selectorRow(field int, label, value string) string {
 }
 
 func (m model) viewUsers() string {
-	stepsView := renderSteps(6)
+	stepsView := renderSteps(5)
 
 	labels := []string{"fullname", "login", "user password", "root password", "hostname"}
 	var rows []string
@@ -778,11 +795,11 @@ func (m model) viewUsers() string {
 }
 
 func (m model) viewSummary() string {
-	stepsView := renderSteps(7)
+	stepsView := renderSteps(6)
 
 	login := m.userInputs[fieldLogin].Value()
 	hostname := m.userInputs[fieldHostname].Value()
-	device := m.disks[m.diskIdx].Path
+	device := m.disks[m.diskIdx]
 
 	row1 := fmt.Sprintf("Installing %s", greenText.Render(m.productName))
 	row2 := fmt.Sprintf("User %s pwd %s root pwd %s hostname %s",
@@ -796,17 +813,23 @@ func (m model) viewSummary() string {
 	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(kbdLayouts[m.kbdIdx]))
 	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(m.swapTypes[m.swapIdx]))
 	row8 := "Network: " + greenText.Render("dhcp")
-	if m.netStatic {
-		row8 = fmt.Sprintf("Network: %s on %s gw %s",
-			greenText.Render("static "+m.netInputs[0].Value()),
-			greenText.Render(orDefault(m.network.Iface, "eth0")),
-			greenText.Render(m.netInputs[2].Value()))
+
+	warnBox := redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: ALL DATA ON %s (%s) WILL BE PERMANENTLY ERASED! ", device.Path, device.Size))
+
+	noOpt := "  [ No, cancel and go back ]"
+	yesOpt := "  [ YES, erase disk and install ]"
+
+	if m.confirmChoice == 0 {
+		noOpt = cyanText.Render("→ [ No, cancel and go back ]")
+		yesOpt = dimText.Render("  [ YES, erase disk and install ]")
+	} else {
+		noOpt = dimText.Render("  [ No, cancel and go back ]")
+		yesOpt = redBgWhiteText.Render("→ [ YES, erase disk and install ]")
 	}
 
-	eraseWarning := "Erase all data on disk"
-	msgBox := redBgWhiteText.Render("installation device: " + device)
+	optsRow := fmt.Sprintf("%s    %s", noOpt, yesOpt)
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, row8, "", eraseWarning, msgBox)
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, row8, "", warnBox, "", optsRow)
 	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
@@ -819,7 +842,7 @@ func maskPassword(pass string) string {
 }
 
 func (m model) viewInstall() string {
-	stepsView := renderSteps(8)
+	stepsView := renderSteps(7)
 	header := fmt.Sprintf("Installing: %s\n", cyanText.Render(m.productName))
 
 	spin := m.spinner.View()
@@ -907,14 +930,7 @@ func (m *model) buildPlan() *engine.Plan {
 		instances[inst.Id] = inst.Config
 	}
 
-	// networkcfg è un modulo solo-Krill (Calamares non configura la rete):
-	// lo inseriamo dopo 'users' senza toccare il settings.conf condiviso.
-	exec := insertAfter(cfg.Settings.Exec(), "users", "networkcfg")
-
-	netType := "dhcp"
-	if m.netStatic {
-		netType = "static"
-	}
+	exec := cfg.Settings.Exec()
 
 	return &engine.Plan{
 		ConfigRoot: cfg.Root,
@@ -941,13 +957,12 @@ func (m *model) buildPlan() *engine.Plan {
 		KbdModel:  m.kbdModel,
 		KbdLayout: kbdLayouts[m.kbdIdx],
 
-		NetIface:   orDefault(m.network.Iface, "eth0"),
-		NetType:    netType,
-		NetAddress: m.netInputs[0].Value(),
-		NetNetmask: m.netInputs[1].Value(),
-		NetGateway: m.netInputs[2].Value(),
-		NetDns:     m.netInputs[3].Value(),
-
+		NetIface:     orDefault(m.network.Iface, "eth0"),
+		NetType:      "dhcp",
+		NetAddress:   "",
+		NetNetmask:   "",
+		NetGateway:   "",
+		NetDns:       "",
 		UnpackSource: cfg.SquashfsSource(),
 		RemoveUser:   cfg.Removeuser.Username,
 	}

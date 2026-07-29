@@ -1,0 +1,136 @@
+# ==============================================================================
+# 🎩 FEDORA MODULE - INSTALL (Principle of Transparency)
+# ==============================================================================
+
+{{ define "install_distro_initramfs" }}
+# 1. Fedora requires a valid machine-id for dracut and systemd-boot
+if [ ! -s /etc/machine-id ]; then
+    systemd-machine-id-setup
+fi
+dracut -f --regenerate-all
+{{ end }}
+
+{{ define "install_distro_bootloader" }}
+# 1. SELinux autorelabel (Without this, Fedora dies post-installation)
+echo "-F" > /.autorelabel
+
+# --- KAMIKAZE INJECTION (Phase 1) ---
+# Add enforcing=0 to allow a painless first boot and speed up technical reboots
+if ! grep -q "enforcing=0" /etc/default/grub; then
+    sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="enforcing=0 /' /etc/default/grub
+fi
+# Fast boot: set timeout to 1 second for the relabeling and kamikaze reboots
+sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
+# Ensure dual-boot detection
+if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+    sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+else
+    echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+fi
+# -----------------------------------
+
+# 2. BLS (Boot Loader Specification) Management
+sed -i 's/GRUB_ENABLE_BLSCFG=true/GRUB_ENABLE_BLSCFG=false/g' /etc/default/grub
+if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then
+      echo "GRUB_ENABLE_BLSCFG=false" >> /etc/default/grub
+fi
+
+if [ -d /sys/firmware/efi ]; then
+      # 3. THE FEDORA TRICK: Recover shimx64.efi hidden under the mount point
+      if [ ! -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
+          echo "-> Recovering original Fedora EFI (shim/SecureBoot) files..."
+          umount /boot/efi 2>/dev/null
+          cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
+          mount /boot/efi
+          if [ -d /tmp/efi-backup ]; then
+              mkdir -p /boot/efi/EFI
+              cp -r /tmp/efi-backup/* /boot/efi/EFI/ 2>/dev/null || true
+          fi
+      fi
+
+      # 4. Install GRUB
+      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
+      mkdir -p "/boot/efi/EFI/{{ .DistroID }}"
+      
+      # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
+      if [ -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
+          mkdir -p /boot/efi/EFI/BOOT
+          cp "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+          cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/grubx64.efi
+      fi
+
+      # 6. Generate configurations
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+      grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
+else
+      # BIOS/Legacy
+      TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
+      grub2-install --target=i386-pc --recheck "$TARGET_DISK"
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+fi
+
+
+# --- KAMIKAZE SERVICE (Phase 2: Final Reset Version) ---
+echo "-> Preparing post-installation service for GRUB cleanup..."
+
+# A. Create bash script for text-only cleanup and final reboot
+cat << 'EOF' > /usr/local/bin/krill-selinux-cleanup.sh
+#!/bin/bash
+# 1. Set a safe environment and trace the output to a log
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+exec > /var/log/krill-selinux-cleanup.log 2>&1
+
+echo "[$(date)] Starting SELinux parameter cleanup from GRUB..."
+
+# 2. Remove enforcing=0 from the base configuration file
+sed -i 's/ enforcing=0//g' /etc/default/grub
+sed -i 's/enforcing=0 //g' /etc/default/grub
+sed -i 's/enforcing=0//g' /etc/default/grub
+
+# 3. Restore the normal boot timeout for the final user (5 seconds)
+sed -i 's/^GRUB_TIMEOUT=1/GRUB_TIMEOUT=5/' /etc/default/grub
+
+echo "[$(date)] /etc/default/grub updated. Executing grub2-mkconfig..."
+
+# 4. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
+grub2-mkconfig -o /boot/grub2/grub.cfg
+if [ -d "/boot/efi/EFI/{{ .DistroID }}" ]; then
+    grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
+fi
+
+echo "[$(date)] GRUB successfully regenerated. Disabling service..."
+
+# 5. Surgical self-destruction (Safe)
+systemctl disable krill-selinux-cleanup.service
+
+echo "[$(date)] Kamikaze operation completed. Executing final reboot..."
+
+# 6. The Final Touch: Notify the user and reboot the machine
+wall "Krill: Post-installation and SELinux configuration completed. Final reboot in progress..."
+sleep 2
+systemctl reboot
+EOF
+
+chmod +x /usr/local/bin/krill-selinux-cleanup.sh
+
+# B. Create the systemd service
+cat << 'EOF' > /etc/systemd/system/krill-selinux-cleanup.service
+[Unit]
+Description=Krill SELinux Post-Install Cleanup
+# Triggers only when relabeling has finished its job
+ConditionPathExists=!/.autorelabel
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/krill-selinux-cleanup.sh
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# C. Arm the trigger
+systemctl enable krill-selinux-cleanup.service
+# -------------------------------------------------------
+{{ end }}

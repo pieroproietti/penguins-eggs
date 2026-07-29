@@ -19,11 +19,11 @@ jobs:
       matrix:
           include:
           # ==========================================
-          # 🏔️ ALPINE LINUX (La Vetta di Ghiaccio)
+          # 🏔️ ALPINE LINUX (The Ice Peak)
           # ==========================================
           - distro: alpine
             image: alpine:latest
-            # Ora che il builder in Go sposta il file nella root, il pattern è semplice!
+            # Now that the Go builder moves the file to the root, the pattern is simple!
             pkg_pattern: "*.apk"
             prep_cmd: |
               apk update
@@ -38,14 +38,14 @@ jobs:
                 abuild-keygen -a -i -n
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
-                # make package fa tutto: compila, crea l'APKBUILD, esegue abuild e sposta il file
+                # make package does it all: compiles, creates the APKBUILD, runs abuild and moves the file
                 make package
               "
-            # L'installazione ora pesca direttamente dalla cartella di progetto
+            # The installation now pulls directly from the project folder
             install_cmd: apk add --allow-untrusted ./*.apk
               
           # ==========================================
-          # 🏹 ARCH LINUX (Il Banco di Prova)
+          # 🏹 ARCH LINUX (The Proving Ground)
           # ==========================================
           - distro: arch
             image: archlinux:latest
@@ -85,7 +85,7 @@ jobs:
             install_cmd: pacman -U --noconfirm *.pkg.tar.zst
 
           # ==========================================
-          # 🌀 DEBIAN (Il Vecchio Saggio)
+          # 🌀 DEBIAN (The Old Sage)
           # ==========================================
           - distro: debian
             image: debian:bookworm
@@ -95,11 +95,11 @@ jobs:
               
               apt-get update
               
-              # 2. Pre-configura console-setup e keyboard per evitare il blocco Dialog
+              # 2. Pre-configure console-setup and keyboard to avoid Dialog blocking
               apt-get install -y debconf-utils
               
-              # Usa questo invece di <<<
-              echo "keyboard-configuration keyboard-configuration/layout select IT" | debconf-set-selections
+              # Use this instead of <<<
+              echo "keyboard-configuration keyboard-configuration/layout select US" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
 
@@ -171,11 +171,11 @@ jobs:
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
               
-              # 1. LA MAGIA MULTI-ARCH: Aggiungiamo anche gli aggiornamenti per allineare le versioni!
+              # 1. THE MULTI-ARCH MAGIC: Let's also add updates to align versions!
               dpkg --add-architecture riscv64
               sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
               
-              # Inseriamo il repo base, gli updates e le patch di sicurezza per RISC-V
+              # Insert the base repo, updates, and security patches for RISC-V
               cat <<EOF > /etc/apt/sources.list.d/riscv64.list
               deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
               deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
@@ -184,14 +184,14 @@ jobs:
               
               apt-get update
               apt-get install -y debconf-utils
-              echo "keyboard-configuration keyboard-configuration/layout select IT" | debconf-set-selections
+              echo "keyboard-configuration keyboard-configuration/layout select US" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
               
-              # 2. Toolchain + Emulatore + libcrypt nativa RISC-V (ora le versioni coincideranno!)
+              # 2. Toolchain + Emulator + native RISC-V libcrypt (now the versions will match!)
               apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support libcrypt-dev:riscv64
               
-              # Scarichiamo il Go per x86_64
+              # Download Go for x86_64
               wget -q https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
               ln -s /usr/local/go/bin/go /usr/bin/go
@@ -205,13 +205,13 @@ jobs:
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
                 
-                # 🧹 LA MAGIA DELLA SCOPA
+                # 🧹 THE BROOM MAGIC
                 make clean
                 
-                # LA MAGIA BLINDATA
+                # THE ARMORED MAGIC
                 make package GOOS=linux GOARCH=riscv64 CC=riscv64-linux-gnu-gcc RUNNER=qemu-riscv64-static
               "
-            install_cmd: echo "✅ Pacchetto RISC-V generato. Salto il test di installazione sul runner x86_64."
+            install_cmd: echo "✅ RISC-V package generated. Skipping installation test on x86_64 runner."
 
           # ==========================================
           # 🍓 DEBIAN ARM64 (Raspberry Pi & Oracle Cloud)
@@ -223,11 +223,11 @@ jobs:
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
               
-              # 1. LA MAGIA MULTI-ARCH: Aggiungiamo l'architettura ARM64
+              # 1. THE MULTI-ARCH MAGIC: Add the ARM64 architecture
               dpkg --add-architecture arm64
               sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
               
-              # Inseriamo il repo base, gli updates e le patch di sicurezza per ARM64
+              # Insert the base repo, updates, and security patches for ARM64
               cat <<EOF > /etc/apt/sources.list.d/arm64.list
               deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
               deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
@@ -236,14 +236,14 @@ jobs:
               
               apt-get update
               apt-get install -y debconf-utils
-              echo "keyboard-configuration keyboard-configuration/layout select IT" | debconf-set-selections
+              echo "keyboard-configuration keyboard-configuration/layout select US" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
               
-              # 2. Toolchain + Emulatore + libcrypt nativa ARM64
+              # 2. Toolchain + Emulator + native ARM64 libcrypt
               apt-get install -y wget build-essential git sudo dpkg-dev gcc-aarch64-linux-gnu qemu-user-static binfmt-support libcrypt-dev:arm64
               
-              # Scarichiamo il Go per x86_64
+              # Download Go for x86_64
               wget -q https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
               ln -s /usr/local/go/bin/go /usr/bin/go
@@ -257,13 +257,13 @@ jobs:
                 cd $GITHUB_WORKSPACE
                 git config --global --add safe.directory '*'
                 
-                # 🧹 LA MAGIA DELLA SCOPA
+                # 🧹 THE BROOM MAGIC
                 make clean
                 
-                # LA MAGIA BLINDATA PER ARM64
+                # THE ARMORED MAGIC FOR ARM64
                 make package GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc RUNNER=qemu-aarch64-static
               "
-            install_cmd: echo "✅ Pacchetto ARM64 generato. Salto il test di installazione sul runner x86_64."
+            install_cmd: echo "✅ ARM64 package generated. Skipping installation test on x86_64 runner."
             
     container:
       image: ${{ matrix.image }}
@@ -280,9 +280,9 @@ jobs:
 
       - name: ⚙️ Compile & Stage Sources (oa & coa)
         run: |
-          echo "🔓 Sblocco la repository per root..."
+          echo "🔓 Unlocking the repository for root..."
           git config --global --add safe.directory '*'
-          echo "🔨 Compilo..."
+          echo "🔨 Compiling..."
           make
 
       - name: 📦 Create Native Package (${{ matrix.distro }})
@@ -292,12 +292,12 @@ jobs:
         run: ${{ matrix.install_cmd }}
 
       # --------------------------------------------------------------------
-      # ESTRAZIONE DEL BOTTINO LOCALE (Scaricabili separatamente)
+      # LOCAL LOOT EXTRACTION (Separately downloadable)
       # --------------------------------------------------------------------
       - name: 🗄️ Package Export Preparation
         run: |
           mkdir -p export
-          cp ${{ matrix.pkg_pattern }} export/ || echo "⚠️ Nessun pacchetto trovato per questa esecuzione"
+          cp ${{ matrix.pkg_pattern }} export/ || echo "⚠️ No package found for this run"
 
       - name: 📤 Publish Package as Artifact ${{ matrix.distro }}
         uses: actions/upload-artifact@v4
@@ -305,4 +305,4 @@ jobs:
           name: penguins-eggs-${{ matrix.distro }}
           path: export/
           retention-days: 7
-
+          

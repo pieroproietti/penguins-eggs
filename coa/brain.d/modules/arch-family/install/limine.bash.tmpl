@@ -1,0 +1,239 @@
+# ==============================================================================
+# 🏹 ARCH FAMILY - LIMINE BOOTLOADER INSTALLATION
+# ==============================================================================
+
+{{ define "install_distro_limine" }}
+echo "-> Installing Limine bootloader..."
+
+ESP_MOUNT=""
+if mountpoint -q /boot/efi 2>/dev/null || awk '$2 == "/boot/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot/efi"
+elif mountpoint -q /efi 2>/dev/null || awk '$2 == "/efi" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/efi"
+elif mountpoint -q /boot 2>/dev/null || awk '$2 == "/boot" {exit 0} END {exit 1}' /etc/fstab 2>/dev/null; then
+    ESP_MOUNT="/boot"
+else
+    ESP_MOUNT="/boot/efi"
+fi
+
+echo "-> Target ESP mount point: $ESP_MOUNT"
+mkdir -p "$ESP_MOUNT"
+if ! mountpoint -q "$ESP_MOUNT" 2>/dev/null; then
+    echo "-> Mounting $ESP_MOUNT..."
+    mount "$ESP_MOUNT" || true
+fi
+
+# Configure ESP_PATH, LIMINE_WALLPAPER, and target root UUID in Limine configs
+for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine; do
+    if [ -f "$CONF_FILE" ]; then
+        echo "-> Setting ESP_PATH=\"$ESP_MOUNT\" in $CONF_FILE..."
+        if grep -q "^ESP_PATH=" "$CONF_FILE"; then
+            sed -i "s|^ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+        elif grep -q "^#ESP_PATH=" "$CONF_FILE"; then
+            sed -i "s|^#ESP_PATH=.*|ESP_PATH=\"$ESP_MOUNT\"|" "$CONF_FILE"
+        else
+            echo "ESP_PATH=\"$ESP_MOUNT\"" >> "$CONF_FILE"
+        fi
+
+        if grep -q "^LIMINE_WALLPAPER=" "$CONF_FILE"; then
+            sed -i 's|^LIMINE_WALLPAPER=.*|LIMINE_WALLPAPER="boot:///splash.png"|' "$CONF_FILE"
+        elif grep -q "^#LIMINE_WALLPAPER=" "$CONF_FILE"; then
+            sed -i 's|^#LIMINE_WALLPAPER=.*|LIMINE_WALLPAPER="boot:///splash.png"|' "$CONF_FILE"
+        else
+            echo 'LIMINE_WALLPAPER="boot:///splash.png"' >> "$CONF_FILE"
+        fi
+    fi
+done
+
+ROOT_PART_TARGET=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
+if [ -n "$ROOT_PART_TARGET" ]; then
+    for CONF_FILE in /etc/limine-entry-tool.conf /etc/default/limine /etc/kernel/cmdline; do
+        if [ -f "$CONF_FILE" ]; then
+            echo "-> Updating root partition in $CONF_FILE to $ROOT_PART_TARGET..."
+            sed -i "s|root=UUID=[^ \"']*|root=$ROOT_PART_TARGET|g" "$CONF_FILE"
+            sed -i "s|root=/dev/[^ \"']*|root=$ROOT_PART_TARGET|g" "$CONF_FILE"
+        fi
+    done
+fi
+
+if [ -d /sys/firmware/efi ]; then
+    mkdir -p "$ESP_MOUNT/EFI/BOOT" "$ESP_MOUNT/EFI/limine"
+    if [ -f /usr/share/limine/BOOTX64.EFI ]; then
+        cp -f /usr/share/limine/BOOTX64.EFI "$ESP_MOUNT/EFI/BOOT/"
+        cp -f /usr/share/limine/BOOTX64.EFI "$ESP_MOUNT/EFI/limine/"
+    fi
+    if command -v efibootmgr &>/dev/null; then
+        ESP_DEV=$(df "$ESP_MOUNT" | awk 'NR==2 {print $1}')
+        if [ -n "$ESP_DEV" ]; then
+            DISK=$(echo "$ESP_DEV" | sed -E 's/p?[0-9]+$//')
+            PARTNUM=$(echo "$ESP_DEV" | grep -o '[0-9]*$')
+            if [ -n "$DISK" ] && [ -n "$PARTNUM" ]; then
+                echo "-> Registering Limine entry in UEFI NVRAM via efibootmgr..."
+                efibootmgr -c -d "$DISK" -p "$PARTNUM" -l '\EFI\limine\BOOTX64.EFI' -L "Limine" -u || true
+            fi
+        fi
+    fi
+else
+    ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)
+    if [[ "$ROOT_PART_FSTAB" == UUID=* ]] || [[ "$ROOT_PART_FSTAB" == LABEL=* ]]; then
+        ROOT_DEV=$(findfs "$ROOT_PART_FSTAB" 2>/dev/null || echo "/dev/sda1")
+    else
+        ROOT_DEV=${ROOT_PART_FSTAB:-"/dev/sda1"}
+    fi
+    
+    if [[ "$ROOT_DEV" == *nvme* ]] || [[ "$ROOT_DEV" == *mmcblk* ]] || [[ "$ROOT_DEV" == *loop* ]]; then
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/p[0-9]+$//')
+    else
+        TARGET_DISK=$(echo "$ROOT_DEV" | sed -E 's/[0-9]+$//')
+    fi
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/sda"
+    
+    echo "-> Target disk for Limine BIOS install: $TARGET_DISK"
+    limine bios-install "$TARGET_DISK" || true
+fi
+
+UCODE_LINE=""
+if [ -f /boot/amd-ucode.img ]; then
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/amd-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="    module_path: boot:///amd-ucode.img"
+elif [ -f /boot/intel-ucode.img ]; then
+    [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/intel-ucode.img "$ESP_MOUNT/"
+    UCODE_LINE="    module_path: boot:///intel-ucode.img"
+fi
+
+ROOT_PART=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
+if [ -z "$ROOT_PART" ]; then
+    ROOT_PART=$(df / | awk 'NR==2 {print $1}')
+fi
+ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+ROOTFLAGS=""
+if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+    ROOTFLAGS="rootflags=subvol=@"
+fi
+
+PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+if [ -z "$PRETTY_NAME" ]; then
+    PRETTY_NAME="Arch Linux"
+fi
+
+SPLASH_IMG=""
+for candidate in \
+    /usr/share/wallpapers/cachyos-wallpapers/limine-splash.png \
+    /usr/share/wallpapers/cachyos-wallpapers/splash.png \
+    /etc/penguins-eggs.d/brain.d/assets/splash.png \
+    /usr/share/limine/splash.png \
+    /boot/splash.png \
+    /boot/limine-splash.png \
+    /boot/limine/splash.png \
+    /boot/limine/limine-splash.png; do
+    if [ -f "$candidate" ]; then
+        SPLASH_IMG="$candidate"
+        break
+    fi
+done
+
+if [ -n "$SPLASH_IMG" ]; then
+    echo "-> Installing Limine wallpaper splash from $SPLASH_IMG..."
+    mkdir -p "$ESP_MOUNT/EFI/limine" "$ESP_MOUNT/EFI/BOOT" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/splash.png" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/limine/splash.png" 2>/dev/null || true
+    cp -f "$SPLASH_IMG" "$ESP_MOUNT/EFI/BOOT/splash.png" 2>/dev/null || true
+    if [ "$ESP_MOUNT" != "/boot" ]; then
+        cp -f "$SPLASH_IMG" /boot/splash.png 2>/dev/null || true
+    fi
+fi
+
+LIMINE_CONF="$ESP_MOUNT/limine.conf"
+
+if command -v limine-update &> /dev/null; then
+    echo "-> Executing native limine-update..."
+    rm -f "$ESP_MOUNT/EFI/BOOT/limine.conf" "$ESP_MOUNT/EFI/limine/limine.conf" 2>/dev/null || true
+    limine-update || true
+else
+    echo "-> Generating Limine configuration manually with tree structure..."
+    UCODE_LINE=""
+    if [ -f /boot/amd-ucode.img ]; then
+        [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/amd-ucode.img "$ESP_MOUNT/"
+        UCODE_LINE="    module_path: boot:///amd-ucode.img"
+    elif [ -f /boot/intel-ucode.img ]; then
+        [ "$ESP_MOUNT" != "/boot" ] && cp -L /boot/intel-ucode.img "$ESP_MOUNT/"
+        UCODE_LINE="    module_path: boot:///intel-ucode.img"
+    fi
+
+    ROOT_PART=$(awk '$2 == "/" && $1 !~ /^#/ {print $1}' /etc/fstab)
+    if [ -z "$ROOT_PART" ]; then
+        ROOT_PART=$(df / | awk 'NR==2 {print $1}')
+    fi
+    ROOT_FSTYPE=$(awk '$2 == "/" {print $3}' /etc/fstab)
+    ROOTFLAGS=""
+    if [ "$ROOT_FSTYPE" = "btrfs" ]; then
+        ROOTFLAGS="rootflags=subvol=@"
+    fi
+
+    PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+    if [ -z "$PRETTY_NAME" ]; then
+        PRETTY_NAME="Arch Linux"
+    fi
+
+    cat <<EOF > "$LIMINE_CONF"
+timeout: 5
+EOF
+
+    echo "" >> "$LIMINE_CONF"
+    echo "/$PRETTY_NAME" >> "$LIMINE_CONF"
+
+    # Process all installed kernels found in /boot
+    for KERNEL_PATH in $(find /boot -maxdepth 1 -name "vmlinuz-*" -type f); do
+        KERNEL_FILE=$(basename "$KERNEL_PATH")
+        INITRD_FILE="initramfs-${KERNEL_FILE#vmlinuz-}.img"
+        INITRD_PATH="/boot/$INITRD_FILE"
+        if [ ! -f "$INITRD_PATH" ]; then
+            INITRD_PATH=$(find /boot -maxdepth 1 -name "initramfs-*.img" ! -name "*fallback*" -type f | head -n 1)
+            [ -n "$INITRD_PATH" ] && INITRD_FILE=$(basename "$INITRD_PATH")
+        fi
+
+        if [ "$ESP_MOUNT" != "/boot" ]; then
+            echo "-> Copying kernel ($KERNEL_PATH) to $ESP_MOUNT/$KERNEL_FILE..."
+            cp -L "$KERNEL_PATH" "$ESP_MOUNT/$KERNEL_FILE" || true
+            if [ -f "$INITRD_PATH" ]; then
+                echo "-> Copying initrd ($INITRD_PATH) to $ESP_MOUNT/$INITRD_FILE..."
+                cp -L "$INITRD_PATH" "$ESP_MOUNT/$INITRD_FILE" || true
+            fi
+        fi
+
+        ENTRY_NAME="${KERNEL_FILE#vmlinuz-}"
+cat <<EOF >> "$LIMINE_CONF"
+
+  //$ENTRY_NAME
+      protocol: linux
+      kernel_path: boot:///$KERNEL_FILE
+${UCODE_LINE}
+      module_path: boot:///$INITRD_FILE
+      cmdline: root=$ROOT_PART rw $ROOTFLAGS
+EOF
+    done
+fi
+
+# Ensure wallpaper setting is present and updated in limine.conf if splash image exists
+if [ -n "$SPLASH_IMG" ] && [ -f "$LIMINE_CONF" ]; then
+    echo "-> Configuring wallpaper splash setting in $LIMINE_CONF..."
+    if grep -q "^wallpaper:" "$LIMINE_CONF"; then
+        sed -i 's|^wallpaper:.*|wallpaper: boot:///splash.png|' "$LIMINE_CONF"
+    else
+        sed -i '1s/^/wallpaper: boot:\/\/\/splash.png\nwallpaper_style: stretched\n/' "$LIMINE_CONF"
+    fi
+    if ! grep -q "^wallpaper_style:" "$LIMINE_CONF"; then
+        sed -i '/^wallpaper:/a wallpaper_style: stretched' "$LIMINE_CONF"
+    fi
+fi
+
+if [ -f "$LIMINE_CONF" ]; then
+    echo "-> Syncing limine.conf across EFI and boot directories..."
+    [ -d "$ESP_MOUNT/EFI/BOOT" ] && cp -f "$LIMINE_CONF" "$ESP_MOUNT/EFI/BOOT/limine.conf"
+    [ -d "$ESP_MOUNT/EFI/limine" ] && cp -f "$LIMINE_CONF" "$ESP_MOUNT/EFI/limine/limine.conf"
+    if [ "$ESP_MOUNT" != "/boot" ]; then
+        mkdir -p /boot/limine 2>/dev/null || true
+        cp -f "$LIMINE_CONF" /boot/limine.conf 2>/dev/null || true
+    fi
+fi
+{{ end }}

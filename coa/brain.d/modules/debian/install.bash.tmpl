@@ -1,0 +1,35 @@
+# ==============================================================================
+# 🌀 MODULO DEBIAN / UBUNTU - INSTALL (Principle of Transparency)
+# ==============================================================================
+
+{{ define "install_distro_initramfs" }}
+echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
+update-initramfs -u
+{{ end }}
+
+{{ define "install_distro_bootloader" }}
+echo "-> Preserving original GRUB configuration & setting OS prober..."
+
+if [ -f /etc/default/grub ]; then
+    if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
+        sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    else
+        echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+    fi
+fi
+
+if [ -d /sys/firmware/efi ]; then
+    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
+        [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+    fi
+
+    # Removable fallback: firmware (notably some VM/OVMF setups) with no
+    # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
+    mkdir -p /boot/efi/EFI/BOOT
+    [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+else
+    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    grub-install --target=i386-pc --recheck "$TARGET_DISK"
+fi
+update-grub
+{{ end }}

@@ -6,9 +6,23 @@ import (
 )
 
 func getGitVersion() (string, string) {
-	// 1. Get the nearest tag (baseVer)
-	outTag, _ := exec.Command("git", "describe", "--tags", "--always", "--abbrev=0").Output()
+	// 1. Get the nearest tag (baseVer). No --always here: dpkg and abuild
+	// both reject a version that doesn't start with a digit, and a raw
+	// commit SHA (e.g. "c9461b1b...") fails that check on both.
+	outTag, err := exec.Command("git", "describe", "--tags", "--abbrev=0").Output()
 	baseVer := strings.TrimPrefix(strings.TrimSpace(string(outTag)), "v")
+
+	if err != nil || baseVer == "" {
+		// No tags in the repo: fall back to a digit-leading, monotonically
+		// increasing version instead of the commit SHA.
+		relNum := "1"
+		if outCount, err := exec.Command("git", "rev-list", "--count", "HEAD").Output(); err == nil {
+			if n := strings.TrimSpace(string(outCount)); n != "" {
+				relNum = n
+			}
+		}
+		return "0.0.0", relNum
+	}
 
 	// 2. Count commits since the tag (relNum)
 	// If on the tag, this returns "0". If 29 commits ahead, returns "29"

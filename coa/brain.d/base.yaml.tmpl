@@ -69,6 +69,20 @@ remaster:
         - '{{ if .RamModeEnabled }}1{{ else }}0{{ end }}'
 
 # ----------------------------------------------------------------------------
+# 5.1 EFI IMAGE FINALIZATION
+# ----------------------------------------------------------------------------
+# UEFI boots BOOTX64.EFI from inside efi.img, so the trampoline grub.cfg
+# must live there too, not just on the ISO9660 tree.
+  - name: "inject-efi-grubcfg"
+    description: "Copy the EFI trampoline grub.cfg into efi.img"
+    module: "shell"
+    params:
+      command: |
+        if [ -f /home/eggs/isodir/EFI/BOOT/efi.img ] && [ -f /home/eggs/isodir/EFI/BOOT/grub.cfg ]; then
+            mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img -o /home/eggs/isodir/EFI/BOOT/grub.cfg ::/EFI/BOOT/grub.cfg
+        fi
+
+# ----------------------------------------------------------------------------
 # 6. USER IDENTITY
 # ----------------------------------------------------------------------------
   - name: "identity"
@@ -193,9 +207,13 @@ remaster:
         Name=Install System
         GenericName=Live Installer
         Comment=Install this system to your hard disk
-        Exec=pkexec eggs sysinstall calamares
+        Exec=pkexec eggs sysinstall
         Icon=penguins-eggs
+        {{ if .HasCalamares -}}
         Terminal=false
+        {{ else -}}
+        Terminal=true
+        {{ end -}}
         Categories=System;
 
 # ----------------------------------------------------------------------------
@@ -232,8 +250,9 @@ remaster:
   - name: autologin-gui
     description: "Set up autologin for the live user"
     module: "autologin-gui"
+    chroot: true
     params:
-      user: "live"
+      user: "{{.LiveUser}}"
       is_gui: true
 
 # ----------------------------------------------------------------------------
@@ -312,6 +331,19 @@ install:
       command: |
         if [ -x /usr/bin/ssh-keygen ]; then
             /usr/bin/ssh-keygen -A
+        fi
+
+  - name: "enable-network-services"
+    description: "Ensure NetworkManager and systemd-resolved are enabled on the target"
+    module: "shell"
+    chroot: true
+    params:
+      command: |
+        if [ -f /usr/lib/systemd/system/NetworkManager.service ] || [ -f /etc/systemd/system/NetworkManager.service ]; then
+            systemctl enable NetworkManager.service 2>/dev/null || true
+        fi
+        if [ -f /usr/lib/systemd/system/systemd-resolved.service ]; then
+            systemctl enable systemd-resolved.service 2>/dev/null || true
         fi
 
   - name: "install-initramfs"
