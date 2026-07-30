@@ -104,7 +104,6 @@ pkg/sysinstall/
     ├── bootloader-scripts.go# oa-bootloader.sh + oa-bridge.sh
     ├── shellprocess_bootloader_bridge.go
     ├── branding-desc.go     # branding/eggs/branding.desc
-    ├── displaymanager-conf.go
     ├── mount-conf.go
     ├── partition-conf.go
     ├── removeuser-conf.go
