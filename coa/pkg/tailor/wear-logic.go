@@ -136,9 +136,17 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 
 	// readline: accepts low-priority defaults automatically but shows
 	// critical prompts (e.g. firmware license agreements) to the user.
-	// PAGER=cat prevents firmware license scripts from paginating with
-	// 'more' or 'less', which would block unattended installation.
-	cmd := fmt.Sprintf("PAGER=cat DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' %s %s", flags, pkgString)
+	// Dpkg::Use-Pty=0: apt normally runs dpkg inside its own internal
+	// pseudo-terminal so it can both show the output live and log a copy
+	// to /var/log/apt/term.log. That mirroring has known bugs (Debian
+	// #765687, #860931) where the copy written to term.log succeeds but
+	// the live mirror to the real terminal is silently dropped -- the
+	// user never sees the prompt (or sees it truncated, e.g. "[Más]"
+	// glued to the next shell prompt) even though stdin/stdout are
+	// correctly wired to a real tty. Disabling apt's internal pty makes
+	// dpkg/debconf inherit our own stdio directly instead, which is the
+	// documented workaround for this class of bug.
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 %s %s", flags, pkgString)
 
 	for i := 1; i <= retries; i++ {
 		logToFile(fmt.Sprintf("Installation attempt %d of %d...", i, retries))
@@ -152,7 +160,7 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 		logToFile("⚠️  Bulk install failed. Retrying package by package to isolate failures...")
 		var failed []string
 		for _, pkg := range toInstall {
-			singleCmd := fmt.Sprintf("PAGER=cat DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' %s %s", flags, pkg)
+			singleCmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 %s %s", flags, pkg)
 			if err := utils.Exec(singleCmd); err != nil {
 				logToFile(fmt.Sprintf("⚠️  Could not install: %s", pkg))
 				failed = append(failed, pkg)
@@ -170,7 +178,8 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 
 // installInteractive installs packages without suppressing debconf prompts.
 // Use this for packages that require user interaction (e.g. license acceptance).
-// PAGER=cat is set to avoid firmware license scripts paginating with 'more'/'less'.
+// Dpkg::Use-Pty=0 avoids apt's internal pty-mirroring bug that can drop the
+// live prompt from the real terminal (see the comment in installPackagesImpl).
 func installInteractive(packages []string) {
 	if len(packages) == 0 {
 		return
@@ -201,7 +210,7 @@ func installInteractive(packages []string) {
 	}
 
 	pkgString := strings.Join(toInstall, " ")
-	cmd := fmt.Sprintf("PAGER=cat apt-get install -o Dpkg::Options::='--force-confold' -y %s", pkgString)
+	cmd := fmt.Sprintf("apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
 	logToFile(fmt.Sprintf("Installing interactive packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {
 		logToFile(fmt.Sprintf("⚠️  Some interactive packages could not be installed: %v", err))
@@ -217,13 +226,13 @@ func removePackages(packages []string) {
 	}
 
 	pkgString := strings.Join(packages, " ")
-	cmd := fmt.Sprintf("PAGER=cat DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -y %s", pkgString)
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
 	logToFile(fmt.Sprintf("Removing packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {
 		logToFile(fmt.Sprintf("⚠️  Some packages could not be removed (may not be installed): %v", err))
 	}
 
-	utils.Exec("PAGER=cat DEBIAN_FRONTEND=readline apt-get autoremove -y")
+	utils.Exec("DEBIAN_FRONTEND=readline apt-get autoremove -o Dpkg::Use-Pty=0 -y")
 }
 
 func printAiPrompt(packages []string) {
