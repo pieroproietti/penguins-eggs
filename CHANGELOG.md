@@ -2,6 +2,23 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.7.30 - 2026-07-30
+This release introduces display manager autologin engine enhancements across Krill and live desktop systems (adding MDM, LXDM, SLiM, Greetd, and plasmalogin support), streamlines Calamares display manager module asset management, refactors autologin GUI worker logic, and adds comprehensive unit tests.
+
+### 🔐 Display Manager Autologin Engine (Krill TUI)
+* **Expanded DM Compatibility**: Added autologin configuration support in Krill (`coa/pkg/sysinstall/krill/engine/users.go`) for **MDM** (Mint Display Manager), **LXDM**, **SLiM**, **Greetd**, and **plasmalogin** (used on KDE/SDDM distributions like Soplos OS).
+* **Configuration Safety**: Implemented resilient parsing and configuration injection for `/etc/mdm/mdm.conf`, `/etc/lxdm/lxdm.conf`, `/etc/slim.conf`, and `/etc/greetd/config.toml`.
+* **Unit Testing**: Added dedicated test coverage in `users_test.go` to validate autologin configuration routines across supported display managers.
+
+### ⚙️ Calamares Display Manager Asset Simplification
+* **Static Module Asset**: Replaced runtime dynamic template generation for `displaymanager.conf` with a clean, static asset module in `coa/pkg/assets/calamares_base/modules/displaymanager.conf`.
+* **Setup Orchestration**: Streamlined `coa/pkg/sysinstall/setup/orchestrator.go` by removing obsolete template generation steps.
+
+### 🖥️ Live Desktop & Launcher Refinements
+* **GUI Autologin Worker**: Refactored `autologin-gui` worker logic in `coa/pkg/worker/autologin-gui.go` for cleaner execution.
+* **Desktop Launcher Icons**: Updated `coa/brain.d/base.yaml.tmpl` to handle terminal launcher visibility based on installer framework availability (Calamares vs Krill).
+* **Documentation**: Updated installer design specifications in `DOCS/design/installer.md`.
+
 ## Release Notes: penguins-eggs v26.7.29 - 2026-07-29
 This release introduces dynamic hostname resolution for Calamares installer modules, automatic distro family fallback for derivatives via `ID_LIKE` / `LIKE_ID`, post-installation desktop launcher cleanup, Calamares slideshow visual refinements, interactive command execution fixes, and Chromebook support documentation.
 
