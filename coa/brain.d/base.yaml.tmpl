@@ -153,8 +153,6 @@ remaster:
       permissions: 288 # 0440 octal
       content: |
         live ALL=(ALL) NOPASSWD:ALL
-        liveuser ALL=(ALL) NOPASSWD:ALL
-        linux ALL=(ALL) NOPASSWD:ALL
         %wheel ALL=(ALL) NOPASSWD:ALL
         %sudo ALL=(ALL) NOPASSWD:ALL
 
@@ -207,8 +205,7 @@ remaster:
         Name=Install System
         GenericName=Live Installer
         Comment=Install this system to your hard disk
-        #Exec=pkexec eggs sysinstall
-        Exec=pkexec env QT_STYLE_OVERRIDE=fusion eggs sysinstall
+        Exec=pkexec eggs sysinstall
         Icon=penguins-eggs
         {{ if .HasCalamares -}}
         Terminal=false
