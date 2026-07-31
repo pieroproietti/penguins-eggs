@@ -1,30 +1,37 @@
 # penguins-eggs Documentation
 
-## Architecture
-- [Overview](./architecture/overview.md) — How `coa` (Go) orchestrates the remastering pipeline.
-- [The C Arm: `oa`](./architecture/oa.md) — The low-level engine: plan execution, native modules, dispatcher.
-- [The Go Craftsman: `coa ell`](./architecture/ell.md) — The worker modules delegated by the C engine.
-- [The Navigator: `parser`](./architecture/parser.md) — Detection, YAML template rendering, profile building.
-- [The Engineer: `planner`](./architecture/planner.md) — Plan compilation, exclude list, breakpoints.
-- [The Universal Strategy](./architecture/universal-strategy.md) — The philosophical and technical framework behind multi-distro support.
-- [The Principle of Transparency](./architecture/transparency-principle.md) — Evidence-based detection, DNA preservation, and native tools.
+Benvenuti nella documentazione ufficiale di **penguins-eggs** (C/Go engine).
 
+---
 
-## Design
-- [Philosophy](./design/philosophy.md) — The three-actor model and the evolution from Bash to C+Go.
-- [Installer Architecture](./design/installer.md) — `sysinstall`: one engine, two faces (Calamares GUI + Krill TUI).
-- [Roadmap](./design/roadmap.md) — Current status and open points.
+## 📜 1. Filosofia & Visione (`1-philosophy/`)
+- [Manifestum](./1-philosophy/manifestum.md) — Il manifesto fondativo: origini, visione e chiamata all'azione.
+- [Philosophy](./1-philosophy/philosophy.md) — Il modello a tre attori e l'evoluzione da Bash a C+Go.
+- [The Universal Strategy](./1-philosophy/universal-strategy.md) — Il quadro filosofico e tecnico dietro il supporto multi-distro.
+- [The Principle of Transparency](./1-philosophy/transparency-principle.md) — Rilevamento basato sulle evidenze, preservazione del DNA di sistema e strumenti nativi.
+- [Roadmap](./1-philosophy/roadmap.md) — Stato attuale dello sviluppo e punti aperti.
 
-## User Manual
-- [Quick Start](./manual/quickstart.md) — First ISO in three commands, penguins-eggs compatibility table.
-- [Command Reference](./manual/commands.md) — All `eggs` commands, flags and usage.
-- [Chromebook Support](./manual/chromebook.md) — Preparing Chromebook hardware (eMMC, ChromeOS EC) via initramfs modules.
+---
 
-## Development
-- [Building](./development/building.md) — Requirements and toolchain for native packages.
-- [CI Architecture](./development/ci.md) — Hammers (packaging), Furnace (remastering), and Incubator (installation) pipelines.
-- [Proxmox Integration](./development/proxmox.md) — VirtFS, Guest Agent, serial console setup.
+## 📘 2. Manuale Utente (`2-user-manual/`)
+- [Quick Start](./2-user-manual/quickstart.md) — Guida rapida: genera la prima ISO live in tre comandi e tabella di compatibilità.
+- [Command Reference](./2-user-manual/commands.md) — Referenza completa di tutti i comandi `eggs`, flag ed esempi d'uso.
+- [Chromebook Support](./2-user-manual/chromebook.md) — Preparazione hardware Chromebook (eMMC, ChromeOS EC) tramite moduli initramfs.
+- [Proxmox VE on Phone](./2-user-manual/proxmox-ve-on-phone.md) — Guida all'installazione ed esecuzione di Proxmox VE su smartphone / hardware ARM.
 
+---
 
-## Other
-- [Manifestum](./manifestum.md) — The founding manifesto: origins, vision and call to action.
+## 🛠 3. Manuale di Sviluppo & Architettura (`3-developer-manual/`)
+
+### 🧠 Architettura del Sistema (`3-developer-manual/architecture/`)
+- [Overview](./3-developer-manual/architecture/overview.md) — Come `coa` (Go) e `oa` (C) orchestravano la pipeline di remastering ("The Mind & The Muscle").
+- [The C Arm: `oa`](./3-developer-manual/architecture/oa.md) — Il motore di basso livello: esecuzione del piano, moduli nativi, dispatcher.
+- [The Go Craftsman: `coa ell`](./3-developer-manual/architecture/ell.md) — I moduli worker delegati dal motore C.
+- [The Navigator: `parser`](./3-developer-manual/architecture/parser.md) — Rilevamento, rendering dei template YAML, creazione dei profili.
+- [The Engineer: `planner`](./3-developer-manual/architecture/planner.md) — Compilazione del piano di esecuzione, exclude list, breakpoints.
+- [Installer Architecture](./3-developer-manual/architecture/installer.md) — `sysinstall`: un solo motore, due interfacce (Calamares GUI + Krill TUI).
+
+### ⚙️ Workflow di Sviluppo & CI (`3-developer-manual/workflow/`)
+- [Building](./3-developer-manual/workflow/building.md) — Requisiti e toolchain di compilazione dei pacchetti nativi.
+- [CI Architecture](./3-developer-manual/workflow/ci.md) — Le tre fasi della CI: Hammers (packaging), Furnace (remastering) e Incubator (installazione).
+- [Proxmox Integration](./3-developer-manual/workflow/proxmox.md) — Configurazione VirtFS, Guest Agent, console seriale ed export.

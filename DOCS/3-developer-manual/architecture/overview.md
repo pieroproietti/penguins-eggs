@@ -8,7 +8,7 @@ The whole command-line interface is built on the **Cobra** framework. This appro
 
 ## 🎛️ The Command Deck (the `cmd` package)
 
-The `cmd` package contains the user interface. Each file maps a command the user can invoke. See the [Command Reference](../manual/commands.md) for the complete, user-facing documentation; the highlights:
+The `cmd` package contains the user interface. Each file maps a command the user can invoke. See the [Command Reference](../../2-user-manual/commands.md) for the complete, user-facing documentation; the highlights:
 
 | Command | Sudo | Role |
 | :--- | :--- | :--- |
@@ -58,8 +58,8 @@ This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution
 | `planner` | Compiles the validated profile into the JSON plan for `oa`. → [planner.md](./planner.md) |
 | `distro` | Detects the host distribution from `/etc/os-release` (ID + ID_LIKE matching). |
 | `dispatcher` | Routes `coa ell` tasks to the matching worker module. |
-| `sysinstall/setup` | Generates the unified installer configuration (Calamares + Krill). → [installer.md](../design/installer.md) |
-| `sysinstall/krill` | The native TUI installer (Bubbletea) and its engine. → [installer.md](../design/installer.md) |
+| `sysinstall/setup` | Generates the unified installer configuration (Calamares + Krill). → [installer.md](./installer.md) |
+| `sysinstall/krill` | The native TUI installer (Bubbletea) and its engine. → [installer.md](./installer.md) |
 | `builder` | Generates the native coa/oa packages (.deb, PKGBUILD, .rpm) for each distribution. |
 | `bleach` | Cleanup routines for the various distributions. |
 | `tailor` | The tailor managing the wardrobe (costumes). |
