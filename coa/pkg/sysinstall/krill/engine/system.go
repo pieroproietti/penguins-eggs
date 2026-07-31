@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"coa/pkg/utils"
 )
 
 func runUnpackfs(c *ctx) error {
@@ -131,7 +133,8 @@ func (c *ctx) makeSwapfile(path string) error {
 
 func runLocale(c *ctx) error {
 	lang := c.plan.Language
-	if lang == "" {
+	if lang == "" || (!utils.HasNetworkConnectivity() && lang != "en_US.UTF-8") {
+		c.logf("network connectivity unavailable or unspecified language, defaulting to neutral fallback en_US.UTF-8")
 		lang = "en_US.UTF-8"
 	}
 
@@ -152,7 +155,12 @@ func runLocale(c *ctx) error {
 		}
 		if exists(c.tpath("usr", "sbin", "locale-gen")) || exists(c.tpath("usr", "bin", "locale-gen")) {
 			if err := c.chroot("locale-gen"); err != nil {
-				c.logf("locale-gen failed (non-fatal): %v", err)
+				c.logf("locale-gen failed for %s: %v, falling back to en_US.UTF-8", lang, err)
+				lang = "en_US.UTF-8"
+				if exists(c.tpath("etc", "default")) {
+					os.WriteFile(c.tpath("etc", "default", "locale"), []byte("LANG="+lang+"\n"), 0644)
+				}
+				os.WriteFile(c.tpath("etc", "locale.conf"), []byte("LANG="+lang+"\n"), 0644)
 			}
 		}
 	}

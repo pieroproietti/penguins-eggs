@@ -143,3 +143,10 @@ func TestLoadInstallerConfigTolleranteSuiModuli(t *testing.T) {
 		t.Errorf("FirmwareLabel senza partition.conf = %q, atteso fallback BIOS", got)
 	}
 }
+
+func TestDetectLanguage(t *testing.T) {
+	lang := DetectLanguage()
+	if lang == "" {
+		t.Error("DetectLanguage non dovrebbe mai restituire una stringa vuota")
+	}
+}

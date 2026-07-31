@@ -2,6 +2,19 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.7.31 - 2026-07-31
+This release introduces offline locale detection and neutral `en_US.UTF-8` fallback handling in Krill, system-wide NetworkManager connection teardown during target installation, and XDG `/etc/skel` user profile credential sanitization.
+
+### 🌐 Krill Offline Locale & Neutral Fallback
+* **Network Connectivity Rationale**: Added `utils.HasNetworkConnectivity()` in `coa/pkg/utils/network.go` to probe TCP connectivity against public DNS endpoints (`8.8.8.8`, `1.1.1.1`, `9.9.9.9`).
+* **Neutral Default Selection**: Updated `DetectLanguage()` in `coa/pkg/sysinstall/krill/config.go` to default to `en_US.UTF-8` when offline, avoiding host build locale defaults (e.g. `it_IT.UTF-8`) on offline live environments.
+* **Resilient Locale Engine**: Enhanced `runLocale()` in `coa/pkg/sysinstall/krill/engine/system.go` to fall back to `en_US.UTF-8` in `/etc/default/locale` and `/etc/locale.conf` if network is inactive or if `locale-gen` fails.
+
+### 🧹 NetworkManager & /etc/skel Credential Sanitization
+* **System Connections Teardown**: Automatically purges stale live session connection keyfiles in `/etc/NetworkManager/system-connections/` during Krill's `runNetworkcfg` phase to prevent credential leaks and static IP conflicts.
+* **XDG Skel Sanitization**: Updated `HandleSkel()` in `coa/pkg/xdg/skel.go` to remove NetworkManager configurations, KDE network management state, and GNOME Keyring artifacts (`.config/NetworkManager`, `.local/share/networkmanagement`, `.local/share/keyrings`) from `/etc/skel`.
+* **Unit Test Coverage**: Added tests in `network_test.go` and `config_test.go` to validate network detection and connection cleanup routines.
+
 ## Release Notes: penguins-eggs v26.7.30 - 2026-07-30
 This release introduces display manager autologin engine enhancements across Krill and live desktop systems (adding MDM, LXDM, SLiM, Greetd, and plasmalogin support), streamlines Calamares display manager module asset management, refactors autologin GUI worker logic, and adds comprehensive unit tests.
 
