@@ -39,7 +39,7 @@ The rendered output is finally decoded with `yaml.Unmarshal` into the `Profile` 
 
 * **`Profile`**: the root — two arrays of steps (`Remaster` and `Install`) plus the `Settings`.
 * **`Step`**: the fundamental unit of work. The modern standard is three fields:
-  * `Module`: which executor handles the step (`shell`, `template`, `users`, `mksquashfs`, `xorriso`, …) — see [oa.md](./oa.md) and [ell.md](./ell.md) for the routing;
+  * `Module`: which executor handles the step (`shell`, `template`, `users`, `mksquashfs`, `xorriso`, …) — see [oa.md](./3-oa.md) and [ell.md](./2-ell.md) for the routing;
   * `Chroot`: whether the step runs against the live root instead of the host;
   * `Params`: a free-form map — each worker validates the exact parameters it needs.
 

@@ -149,7 +149,7 @@ sudo eggs sysinstall krill --unattended  # no questions: live-user defaults,
 
 The automatic dispatcher (`eggs sysinstall` with no subcommand choosing the
 face by detecting X11/Wayland and the calamares binary) is designed but not
-yet implemented — see the [roadmap](../../1-philosophy/roadmap.md).
+yet implemented — see the [roadmap](../../1-philosophy/5-roadmap.md).
 
 ## 7. History
 

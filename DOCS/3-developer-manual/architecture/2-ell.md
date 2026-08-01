@@ -1,12 +1,12 @@
 # 🛠️ The Go Craftsman: `coa ell`
 
-`ell` is the third actor of the [philosophy](../../1-philosophy/philosophy.md): the specialized technician that replaced Bash scripting for all high-level operations. It is not a separate binary — it is a subcommand of `coa` (*multi-call binary* pattern, like Git or Docker), so the end user keeps downloading just two executables while `oa` (C) gains a full Go toolbox at its service.
+`ell` is the third actor of the [philosophy](../../1-philosophy/1-philosophy.md): the specialized technician that replaced Bash scripting for all high-level operations. It is not a separate binary — it is a subcommand of `coa` (*multi-call binary* pattern, like Git or Docker), so the end user keeps downloading just two executables while `oa` (C) gains a full Go toolbox at its service.
 
 ---
 
 ## 📬 The Envelope Protocol (`cmd/ell.go` + `dispatcher`)
 
-When the C foreman meets a task whose `module` is not native (see [oa.md](./oa.md)), it forks and pipes the *single task* as raw JSON into the STDIN of `coa ell`. On the Go side the flow is minimal:
+When the C foreman meets a task whose `module` is not native (see [oa.md](./3-oa.md)), it forks and pipes the *single task* as raw JSON into the STDIN of `coa ell`. On the Go side the flow is minimal:
 
 1. **`ell`** reads the whole payload from STDIN and hands it, untouched, to the dispatcher.
 2. **`dispatcher.RouteTask()`** performs a *partial* unmarshal — it peeks only at the `module` (and `chroot`, for logging) field, ignoring everything else.
