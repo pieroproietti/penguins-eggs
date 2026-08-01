@@ -96,4 +96,4 @@ This is the same routine behind `coa destroy` and the `oa cleanup` emergency han
 | `src/logger.c` | Minimal file logger (`/var/log/penguins-eggs.log`). |
 | `src/cJSON.c` | Vendored JSON parser — the only third-party code. |
 
-The philosophy is the one described in [philosophy.md](../../1-philosophy/1-philosophy.md): `oa` is the site foreman — blind to the overall plan, infallible at its specific task. Everything high-level (SquashFS, ISO generation, bootloaders) belongs to the Go modules executed through `coa ell` — see [ell.md](./2-ell.md).
+The philosophy is the one described in [philosophy.md](../../1-philosophy/1-philosophy.md): `oa` is the site foreman — blind to the overall plan, infallible at its specific task. Everything high-level (SquashFS, ISO generation, bootloaders) belongs to the Go modules executed through `coa ell` — see [ell.md](./4-ell.md).

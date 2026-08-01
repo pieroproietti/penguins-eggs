@@ -32,10 +32,10 @@ The architectural core is in `remaster.go`. When the user runs `sudo eggs remast
 First, `coa` uses `distro.NewDistro()` to understand which base it is landing on (Debian, Arch, Fedora, …) and computes the final output path of the egg (the ISO).
 
 ### 2. The Parser steps in (`parser.DetectAndLoad()`)
-The **parser** loads the "score" from the Brain. It analyzes the YAML profile matching the detected distribution and validates the sequence of tasks (such as `coa-initrd`, `coa-bootloaders`, …). See [parser.md](./4-parser.md).
+The **parser** loads the "score" from the Brain. It analyzes the YAML profile matching the detected distribution and validates the sequence of tasks (such as `coa-initrd`, `coa-bootloaders`, …). See [parser.md](./5-parser.md).
 
 ### 3. The JSON translator: the Planner (`planner.GeneratePlan()`)
-Here the logical handover happens. The Go **planner** takes the YAML tree validated by the parser and compiles it into a *JSON flight plan*. See [planner.md](./5-planner.md).
+Here the logical handover happens. The Go **planner** takes the YAML tree validated by the parser and compiles it into a *JSON flight plan*. See [planner.md](./7-planner.md).
 
 *   **The breakpoint trick:** if the user passed `--stop-after` (e.g. `--stop-after coa-initrd`), the planner literally cuts the JSON plan at that step. The system stops mid-flight, leaving the *chroot* environment mounted and ready for manual inspection and debugging.
 *   **Asset preparation:** in the same phase, Go ensures the bootloader binaries are present (`utils.EnsureBootloaders`) and generates the dynamic exclusion list (`planner.GenerateExcludeList`) according to the selected mode (`--clone` or `--crypted`).
@@ -54,8 +54,8 @@ This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution
 | Package | Role |
 | :--- | :--- |
 | `cmd` | All the Cobra commands (the CLI surface). |
-| `parser` | Loads and validates the YAML profile from the Brain. → [parser.md](./4-parser.md) |
-| `planner` | Compiles the validated profile into the JSON plan for `oa`. → [planner.md](./5-planner.md) |
+| `parser` | Loads and validates the YAML profile from the Brain. → [parser.md](./5-parser.md) |
+| `planner` | Compiles the validated profile into the JSON plan for `oa`. → [planner.md](./7-planner.md) |
 | `distro` | Detects the host distribution from `/etc/os-release` (ID + ID_LIKE matching). |
 | `dispatcher` | Routes `coa ell` tasks to the matching worker module. |
 | `sysinstall/setup` | Generates the unified installer configuration (Calamares + Krill). → [installer.md](./6-installer.md) |
@@ -63,7 +63,7 @@ This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution
 | `builder` | Generates the native coa/oa packages (.deb, PKGBUILD, .rpm) for each distribution. |
 | `bleach` | Cleanup routines for the various distributions. |
 | `tailor` | The tailor managing the wardrobe (costumes). |
-| `worker` | The Go modules executed on behalf of the C engine (`coa ell`). → [ell.md](./2-ell.md) |
+| `worker` | The Go modules executed on behalf of the C engine (`coa ell`). → [ell.md](./4-ell.md) |
 | `context` | The structured `RuntimeContext` passed across packages. |
 | `pathDefaults` | Centralized default paths (`/home/eggs`, `/tmp/coa`, log file). |
 | `tui` | Reusable Bubbletea TUI components (confirm, password, select). |

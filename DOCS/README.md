@@ -25,13 +25,13 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 
 ### 🧠 System Architecture (`3-developer-manual/architecture/`)
 - [Overview](./3-developer-manual/architecture/1-overview.md) — How `coa` (Go) and `oa` (C) orchestrate the remastering pipeline ("The Mind & The Muscle").
-- [The Go Craftsman: `coa ell`](./3-developer-manual/architecture/2-ell.md) — Worker modules delegated by the C engine.
+- [Building](./3-developer-manual/architecture/2-building.md) — Requirements and build toolchain for native packages.
 - [The C Arm: `oa`](./3-developer-manual/architecture/3-oa.md) — The low-level engine: plan execution, native modules, dispatcher.
-- [The Navigator: `parser`](./3-developer-manual/architecture/4-parser.md) — Detection, YAML template rendering, profile creation.
-- [The Engineer: `planner`](./3-developer-manual/architecture/5-planner.md) — Execution plan compilation, exclude lists, breakpoints.
+- [The Go Craftsman: `coa ell`](./3-developer-manual/architecture/4-ell.md) — Worker modules delegated by the C engine.
+- [The Navigator: `parser`](./3-developer-manual/architecture/5-parser.md) — Detection, YAML template rendering, profile creation.
 - [Installer Architecture](./3-developer-manual/architecture/6-installer.md) — `sysinstall`: one engine, two interfaces (Calamares GUI + Krill TUI).
+- [The Engineer: `planner`](./3-developer-manual/architecture/7-planner.md) — Execution plan compilation, exclude lists, breakpoints.
 
 ### ⚙️ Development Workflow & CI (`3-developer-manual/workflow/`)
-- [Building](./3-developer-manual/workflow/building.md) — Requirements and build toolchain for native packages.
 - [CI Architecture](./3-developer-manual/workflow/ci.md) — The three CI phases: Hammers (packaging), Furnace (remastering), and Incubator (installation).
 - [Proxmox Integration](./3-developer-manual/workflow/proxmox.md) — VirtFS configuration, Guest Agent, serial console, and export.
