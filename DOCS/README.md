@@ -5,8 +5,8 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 ---
 
 ## 📜 1. Philosophy & Vision (`1-philosophy/`)
-- [Philosophy](./1-philosophy/1-philosophy.md) — The three-actor model and the evolution from Bash to C+Go.
-- [Manifestum](./1-philosophy/2-manifestum.md) — The founding manifesto: origins, vision, and call to action.
+- [Manifestum](./1-philosophy/1-manifestum.md) — The founding manifesto: origins, vision, and call to action.
+- [Philosophy](./1-philosophy/2-philosophy.md) — The three-actor model and the evolution from Bash to C+Go.
 - [The Principle of Transparency](./1-philosophy/3-transparency-principle.md) — Evidence-based detection, system DNA preservation, and native tooling.
 - [The Universal Strategy](./1-philosophy/4-universal-strategy.md) — The philosophical and technical framework behind multi-distro support.
 - [Roadmap](./1-philosophy/5-roadmap.md) — Current state of development and open tasks.

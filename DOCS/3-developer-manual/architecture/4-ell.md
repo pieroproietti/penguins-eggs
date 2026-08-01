@@ -1,6 +1,6 @@
 # 🛠️ The Go Craftsman: `coa ell`
 
-`ell` is the third actor of the [philosophy](../../1-philosophy/1-philosophy.md): the specialized technician that replaced Bash scripting for all high-level operations. It is not a separate binary — it is a subcommand of `coa` (*multi-call binary* pattern, like Git or Docker), so the end user keeps downloading just two executables while `oa` (C) gains a full Go toolbox at its service.
+`ell` is the third actor of the [philosophy](../../1-philosophy/2-philosophy.md): the specialized technician that replaced Bash scripting for all high-level operations. It is not a separate binary — it is a subcommand of `coa` (*multi-call binary* pattern, like Git or Docker), so the end user keeps downloading just two executables while `oa` (C) gains a full Go toolbox at its service.
 
 ---
 
