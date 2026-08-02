@@ -65,6 +65,19 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 func applySuit(dir string, suit *Suit) error {
 	if suit.Sequence != nil && suit.Sequence.Repositories != nil {
 		setupRepositories(suit.Sequence.Repositories, suit.Name)
+
+		// A repository that was just added is invisible to apt until the
+		// package index is refreshed. Without this, every package that
+		// only exists in a repo added above silently fails to be found
+		// by getAvailablePackages() in wear-logic.go and gets skipped
+		// rather than installed -- with no build-time error, only a
+		// line in /var/log/coa-tailor.log. This is what left every
+		// quirinux-* package uninstalled even though the repo's own
+		// .deb installed correctly.
+		utils.LogNormal("[%s] Refreshing package index after repository changes...", suit.Name)
+		if err := utils.Exec("apt-get update"); err != nil {
+			utils.LogNormal("[%s] WARNING: apt-get update failed, newly added repositories may be unusable: %v", suit.Name, err)
+		}
 	}
 
 	if len(suit.Packages) > 0 {
