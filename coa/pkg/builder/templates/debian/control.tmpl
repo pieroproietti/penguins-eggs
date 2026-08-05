@@ -4,7 +4,7 @@ Section: admin
 Priority: optional
 Architecture: {{.Arch}}
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Depends: btrfs-progs, curl, dosfstools, genimage, git, gpg, grub-efi-amd64-bin [amd64], grub-pc-bin [amd64], grub-efi-arm64-bin [arm64], libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent
+Depends: {{.Depends}}
 Suggest: cryptsetup-initramfs, calamares, pkexec
 Conflicts: oa-tools
 Replaces: oa-tools

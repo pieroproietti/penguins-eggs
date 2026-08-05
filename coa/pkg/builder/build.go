@@ -20,6 +20,18 @@ func LogError(format string, a ...interface{}) {
 	utils.LogNormal("%s", msg)
 }
 
+func getDebianDepends(arch string) string {
+	base := "btrfs-progs, curl, dosfstools, genimage, git, gpg, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent"
+	switch arch {
+	case "amd64", "i386":
+		return base + ", grub-efi-amd64-bin, grub-pc-bin"
+	case "arm64":
+		return base + ", grub-efi-arm64-bin"
+	default:
+		return base
+	}
+}
+
 func HandleBuild(d *distro.Distro) {
 
 	// 1. Data preparation
@@ -27,12 +39,14 @@ func HandleBuild(d *distro.Distro) {
 	baseVer, relNum := getGitVersion()
 	dist := strings.ToLower(d.DistroLike)
 	now := time.Now()
+	arch := getDebianArch()
 	data := RecipeData{
 		BaseVersion: baseVer,
 		Rel:         relNum,
 		Date:        now.Format(time.RFC1123Z),
 		RpmDate:     now.Format("Mon Jan 02 2006"),
-		Arch:        getDebianArch(),
+		Arch:        arch,
+		Depends:     getDebianDepends(arch),
 	}
 
 	// 2. staging

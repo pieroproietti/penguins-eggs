@@ -6,5 +6,6 @@ type RecipeData struct {
 	Date        string
 	RpmDate     string
 	Arch        string
+	Depends     string
 }
 
