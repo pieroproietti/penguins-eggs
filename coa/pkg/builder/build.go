@@ -21,14 +21,16 @@ func LogError(format string, a ...interface{}) {
 }
 
 func getDebianDepends(arch string) string {
-	base := "btrfs-progs, curl, dosfstools, genimage, git, gpg, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent"
+	base := "btrfs-progs, curl, dosfstools, git, gpg, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent"
 	switch arch {
 	case "amd64", "i386":
 		return base + ", grub-efi-amd64-bin, grub-pc-bin"
-	case "arm64":
-		return base + ", grub-efi-arm64-bin"
+	case "arm64", "armhf", "armel":
+		return base + ", genimage, grub-efi-arm64-bin"
+	case "riscv64":
+		return base + ", genimage"
 	default:
-		return base
+		return base + ", genimage"
 	}
 }
 
