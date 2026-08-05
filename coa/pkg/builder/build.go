@@ -32,6 +32,7 @@ func HandleBuild(d *distro.Distro) {
 		Rel:         relNum,
 		Date:        now.Format(time.RFC1123Z),
 		RpmDate:     now.Format("Mon Jan 02 2006"),
+		Arch:        getDebianArch(),
 	}
 
 	// 2. staging

@@ -5,4 +5,6 @@ type RecipeData struct {
 	Rel         string
 	Date        string
 	RpmDate     string
+	Arch        string
 }
+

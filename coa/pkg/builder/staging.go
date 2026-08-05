@@ -84,5 +84,11 @@ func staging(ctx sysctx.RuntimeContext) string {
 	dest = filepath.Join(stageDir, "usr/share/zsh/vendor-completions/_eggs")
 	copyFile(src, dest)
 
+	// 6. SpacemiT assets
+	spacemitSrc := filepath.Join(projRoot, "spacemit")
+	if _, err := os.Stat(spacemitSrc); err == nil {
+		copyDir(spacemitSrc, filepath.Join(stageDir, "usr/share/penguins-eggs/spacemit"))
+	}
+
 	return stageDir
 }

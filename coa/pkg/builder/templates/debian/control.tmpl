@@ -2,9 +2,9 @@ Package: penguins-eggs
 Version: {{.BaseVersion}}-{{.Rel}}
 Section: admin
 Priority: optional
-Architecture: amd64
+Architecture: {{.Arch}}
 Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Depends: btrfs-progs, curl, dosfstools, git, gpg, grub-efi-amd64-bin, grub-pc-bin, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent
+Depends: btrfs-progs, curl, dosfstools, genimage, git, gpg, grub-efi-amd64-bin [amd64], grub-pc-bin [amd64], grub-efi-arm64-bin [arm64], libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent
 Suggest: cryptsetup-initramfs, calamares, pkexec
 Conflicts: oa-tools
 Replaces: oa-tools
