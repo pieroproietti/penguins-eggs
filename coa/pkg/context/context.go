@@ -35,10 +35,12 @@ func Detect() RuntimeContext {
 
 	// 1. Radice Progetto (più compatta)
 	if ctx.ProjRoot = os.Getenv("GITHUB_WORKSPACE"); ctx.ProjRoot == "" {
-		cwd, _ := os.Getwd()
-		ctx.ProjRoot, _ = filepath.Abs(cwd)
-		if filepath.Base(ctx.ProjRoot) == "coa" {
-			ctx.ProjRoot = filepath.Dir(ctx.ProjRoot)
+		if ctx.ProjRoot = os.Getenv("OA_PROJ_ROOT"); ctx.ProjRoot == "" {
+			cwd, _ := os.Getwd()
+			ctx.ProjRoot, _ = filepath.Abs(cwd)
+			if filepath.Base(ctx.ProjRoot) == "coa" {
+				ctx.ProjRoot = filepath.Dir(ctx.ProjRoot)
+			}
 		}
 	}
 	ctx.OaDir, ctx.CoaDir = filepath.Join(ctx.ProjRoot, "oa"), filepath.Join(ctx.ProjRoot, "coa")

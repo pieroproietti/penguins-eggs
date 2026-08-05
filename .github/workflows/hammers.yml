@@ -36,7 +36,7 @@ jobs:
               su - artisan -c "
                 set -e
                 abuild-keygen -a -i -n
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 # make package does it all: compiles, creates the APKBUILD, runs abuild and moves the file
                 make package
@@ -58,7 +58,7 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 make package
               "
@@ -78,7 +78,7 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 make package
               "
@@ -113,11 +113,11 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 make package
               "
-            install_cmd: apt-get install -y ./*.deb
+            install_cmd: ls -la ./*.deb && apt-get install -y ./*.deb
 
           # ==========================================
           # 🎩 FEDORA
@@ -134,7 +134,7 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 make package
               "
@@ -155,7 +155,7 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 make package
               "
@@ -202,7 +202,7 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 
                 # 🧹 THE BROOM MAGIC
@@ -254,7 +254,7 @@ jobs:
               chown -R artisan:artisan .
               su - artisan -c "
                 set -e
-                cd $GITHUB_WORKSPACE
+                cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
                 
                 # 🧹 THE BROOM MAGIC
