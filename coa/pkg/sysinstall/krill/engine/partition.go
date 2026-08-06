@@ -156,28 +156,58 @@ func runSpacemitPartition(c *ctx, plan *Plan) error {
 	}
 	factoryDir := filepath.Join(spacemitDir, "factory")
 
-	_ = c.run("sgdisk", "-Z", plan.Device)
-	_ = c.run("sgdisk", "-o", plan.Device)
+	if _, err := exec.LookPath("sgdisk"); err == nil {
+		_ = c.run("sgdisk", "-Z", plan.Device)
+		_ = c.run("sgdisk", "-o", plan.Device)
 
-	bootinfoPath := filepath.Join(factoryDir, "bootinfo_emmc.bin")
-	if exists(bootinfoPath) {
-		_ = c.run("dd", "if="+bootinfoPath, "of="+plan.Device, "bs=512", "count=1", "conv=notrunc")
-	}
+		bootinfoPath := filepath.Join(factoryDir, "bootinfo_emmc.bin")
+		if exists(bootinfoPath) {
+			_ = c.run("dd", "if="+bootinfoPath, "of="+plan.Device, "bs=512", "count=1", "conv=notrunc")
+		}
 
-	parts := []string{
-		"1:256:767",
-		"2:768:895",
-		"3:2048:4095",
-		"4:4096:8191",
-		"5:8192:532479",
-		"6:532480:0",
-	}
-	names := []string{"fsbl", "env", "opensbi", "uboot", "bootfs", "rootfs"}
+		parts := []string{
+			"1:256:767",
+			"2:768:895",
+			"3:2048:4095",
+			"4:4096:8191",
+			"5:8192:532479",
+			"6:532480:0",
+		}
+		names := []string{"fsbl", "env", "opensbi", "uboot", "bootfs", "rootfs"}
 
-	for i, p := range parts {
-		num := fmt.Sprintf("%d", i+1)
-		if err := c.run("sgdisk", "-a", "1", "-n", p, "-c", num+":"+names[i], "-t", num+":0700", plan.Device); err != nil {
-			c.logf("sgdisk partition %d failed: %v", i+1, err)
+		for i, p := range parts {
+			num := fmt.Sprintf("%d", i+1)
+			if err := c.run("sgdisk", "-a", "1", "-n", p, "-c", num+":"+names[i], "-t", num+":0700", plan.Device); err != nil {
+				return fmt.Errorf("sgdisk partition %d failed: %w", i+1, err)
+			}
+		}
+	} else {
+		c.logf("sgdisk non trovato, uso sfdisk di fallback per il partizionamento Spacemit")
+		pPrefix := plan.Device
+		lastRune := rune(plan.Device[len(plan.Device)-1])
+		if unicode.IsDigit(lastRune) {
+			pPrefix += "p"
+		}
+
+		sfdiskScript := fmt.Sprintf(`label: gpt
+unit: sectors
+
+%s1 : start=256, size=512, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="fsbl"
+%s2 : start=768, size=128, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="env"
+%s3 : start=2048, size=2048, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="opensbi"
+%s4 : start=4096, size=4096, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="uboot"
+%s5 : start=8192, size=524288, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="bootfs"
+%s6 : start=532480, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="rootfs"
+`, pPrefix, pPrefix, pPrefix, pPrefix, pPrefix, pPrefix)
+
+		c.logf("schema sfdisk Spacemit:\n%s", sfdiskScript)
+		if err := c.runInput(sfdiskScript, "sfdisk", "--wipe", "always", plan.Device); err != nil {
+			return fmt.Errorf("sfdisk partition failed: %w", err)
+		}
+
+		bootinfoPath := filepath.Join(factoryDir, "bootinfo_emmc.bin")
+		if exists(bootinfoPath) {
+			_ = c.run("dd", "if="+bootinfoPath, "of="+plan.Device, "bs=512", "count=1", "conv=notrunc")
 		}
 	}
 
@@ -204,10 +234,13 @@ func runSpacemitPartition(c *ctx, plan *Plan) error {
 
 	_ = c.run("wipefs", "-a", l.Boot)
 	if err := c.run("mkfs.ext4", "-F", "-L", "bootfs", l.Boot); err != nil {
-		return err
+		return fmt.Errorf("mkfs.ext4 bootfs (%s) failed: %w", l.Boot, err)
 	}
 	_ = c.run("wipefs", "-a", l.Root)
-	return c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), "-L", "rootfs", l.Root)...)
+	if err := c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), "-L", "rootfs", l.Root)...); err != nil {
+		return fmt.Errorf("mkfs rootfs (%s) failed: %w", l.Root, err)
+	}
+	return nil
 }
 
 // deviceInUse verifica se il device ha partizioni con mount point attivi.
