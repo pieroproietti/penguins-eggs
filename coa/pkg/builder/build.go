@@ -28,7 +28,7 @@ func getDebianDepends(arch string) string {
 	case "arm64", "armhf", "armel":
 		return base + ", genimage, grub-efi-arm64-bin"
 	case "riscv64":
-		return base + ", genimage"
+		return base + ", gdisk, genimage"
 	default:
 		return base + ", genimage"
 	}
