@@ -18,7 +18,19 @@ if [ -f /etc/default/grub ]; then
     fi
 fi
 
-if [ -d /sys/firmware/efi ]; then
+if [ "$(uname -m)" = "riscv64" ]; then
+    echo "-> RISC-V platform detected: writing Spacemit K1 U-Boot bootloader..."
+    SPACEMIT_ASSETS="/usr/share/penguins-eggs/spacemit"
+    [ -d "$SPACEMIT_ASSETS" ] || SPACEMIT_ASSETS="/etc/penguins-eggs.d/spacemit"
+    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || mount | grep " / " | awk '{print $1}' | sed 's/p[0-9]*$//')
+    [ -z "$TARGET_DISK" ] && TARGET_DISK="/dev/nvme0n1"
+    if [ -b "$TARGET_DISK" ]; then
+        echo "Writing Spacemit K1 bootloader binaries to $TARGET_DISK..."
+        [ -f "$SPACEMIT_ASSETS/factory/FSBL.bin" ] && dd if="$SPACEMIT_ASSETS/factory/FSBL.bin" of="${TARGET_DISK}p1" conv=fsync status=none 2>/dev/null || true
+        [ -f "$SPACEMIT_ASSETS/fw_dynamic.itb" ] && dd if="$SPACEMIT_ASSETS/fw_dynamic.itb" of="${TARGET_DISK}p3" conv=fsync status=none 2>/dev/null || true
+        [ -f "$SPACEMIT_ASSETS/u-boot.itb" ] && dd if="$SPACEMIT_ASSETS/u-boot.itb" of="${TARGET_DISK}p4" conv=fsync status=none 2>/dev/null || true
+    fi
+elif [ -d /sys/firmware/efi ]; then
     if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
         [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
     fi
@@ -30,6 +42,6 @@ if [ -d /sys/firmware/efi ]; then
 else
     TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
+    update-grub
 fi
-update-grub
 {{ end }}
