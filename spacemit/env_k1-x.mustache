@@ -17,6 +17,9 @@ bootcmd= \
     if load usb 0:5 ${kernel_addr_r} {{{kernel_name}}}; then \
         setenv devtype usb; setenv devnum 0; setenv bootpart 5; \
         setenv boot_type "boot=live components"; \
+    elif load nvme 0:5 ${kernel_addr_r} vmlinuz-6.6.63; then \
+        setenv devtype nvme; setenv devnum 0; setenv bootpart 5; \
+        setenv boot_type "root=/dev/nvme0n1p6 rootwait rw"; \
     elif load nvme 0:5 ${kernel_addr_r} {{{kernel_name}}}; then \
         setenv devtype nvme; setenv devnum 0; setenv bootpart 5; \
         setenv boot_type "root=/dev/nvme0n1p6 rootwait rw"; \
@@ -29,6 +32,7 @@ bootcmd= \
     fi; \
     echo "--- Booting MuseBook from ${devtype} ${devnum}:${bootpart} ---"; \
     load ${devtype} ${devnum}:${bootpart} ${fdt_addr_r} {{{fdt_dir}}}/${fdtfile}; \
-    load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} {{{initrd_name}}}; \
+    if load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} initrd.img-6.6.63; then true; else load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} {{{initrd_name}}}; fi; \
+    if load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} vmlinuz-6.6.63; then true; else load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} {{{kernel_name}}}; fi; \
     setenv bootargs "earlycon=sbi console=tty0 console=ttyS0,115200 quiet splash ${boot_type} locales=en_US.UTF-8 clk_ignore_unused swiotlb=65536"; \
     booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}

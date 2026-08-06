@@ -83,6 +83,7 @@ func runFstab(c *ctx) error {
 
 	if l.Boot != "" {
 		lines = append(lines, fmt.Sprintf("UUID=%s /boot ext4 defaults 0 2", c.uuidOf(l.Boot)))
+		fixBootSymlinks(c.tpath("boot"))
 	}
 	if l.Esp != "" {
 		lines = append(lines, fmt.Sprintf("UUID=%s /boot/efi vfat defaults,umask=0077 0 2", c.uuidOf(l.Esp)))
@@ -92,6 +93,41 @@ func runFstab(c *ctx) error {
 	}
 
 	return os.WriteFile(c.tpath("etc", "fstab"), []byte(strings.Join(lines, "\n")+"\n"), 0644)
+}
+
+func fixBootSymlinks(bootDir string) {
+	entries, err := os.ReadDir(bootDir)
+	if err != nil {
+		return
+	}
+	for _, entry := range entries {
+		path := filepath.Join(bootDir, entry.Name())
+		fi, err := os.Lstat(path)
+		if err != nil {
+			continue
+		}
+		if fi.Mode()&os.ModeSymlink != 0 {
+			target, err := os.Readlink(path)
+			if err == nil {
+				targetPath := target
+				if !filepath.IsAbs(target) {
+					targetPath = filepath.Join(bootDir, target)
+				}
+				if exists(targetPath) {
+					os.Remove(path)
+					_ = copyFile(targetPath, path)
+				}
+			}
+		}
+	}
+}
+
+func copyFile(src, dst string) error {
+	in, err := os.ReadFile(src)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(dst, in, 0644)
 }
 
 func (c *ctx) uuidOf(device string) string {
