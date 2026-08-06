@@ -210,20 +210,53 @@ type DiskInfo struct {
 	Size string
 }
 
-// DetectDisks restituisce i dischi fisici disponibili (esclusi loop e zram).
+// DetectDisks restituisce i dischi fisici disponibili (esclusi mtdblock, loop, zram).
 func DetectDisks() []DiskInfo {
-	out, err := exec.Command("lsblk", "-dno", "NAME,SIZE,TYPE").Output()
+	out, err := exec.Command("lsblk", "-bno", "NAME,SIZE,TYPE").Output()
 	if err != nil {
 		return nil
 	}
-	var disks []DiskInfo
-	for _, line := range strings.Split(string(out), "\n") {
-		fields := strings.Fields(line)
-		if len(fields) == 3 && fields[2] == "disk" && !strings.HasPrefix(fields[0], "zram") {
-			disks = append(disks, DiskInfo{Path: "/dev/" + fields[0], Size: fields[1]})
+
+	liveDisk := ""
+	if mOut, mErr := exec.Command("sh", "-c", "mount | grep /run/live/medium | awk '{print $1}'").Output(); mErr == nil {
+		mDev := strings.TrimSpace(string(mOut))
+		if mDev != "" {
+			if pk, pkErr := exec.Command("lsblk", "-dno", "PKNAME", mDev).Output(); pkErr == nil && len(pk) > 0 {
+				pkName := strings.TrimSpace(string(pk))
+				if pkName != "" {
+					liveDisk = "/dev/" + pkName
+				}
+			}
 		}
 	}
-	return disks
+
+	var targetDisks []DiskInfo
+	var fallbackDisks []DiskInfo
+
+	for _, line := range strings.Split(string(out), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) >= 3 && fields[2] == "disk" {
+			name := fields[0]
+			if strings.HasPrefix(name, "zram") || strings.HasPrefix(name, "loop") || strings.HasPrefix(name, "mtdblock") || strings.HasPrefix(name, "ram") {
+				continue
+			}
+			var sizeBytes int64
+			fmt.Sscanf(fields[1], "%d", &sizeBytes)
+			// Salta dischi piccolissimi (sotto 1GB)
+			if sizeBytes < 1000000000 {
+				continue
+			}
+			humanSize := fmt.Sprintf("%.1fG", float64(sizeBytes)/(1024*1024*1024))
+			diskPath := "/dev/" + name
+
+			if liveDisk != "" && diskPath == liveDisk {
+				fallbackDisks = append(fallbackDisks, DiskInfo{Path: diskPath, Size: humanSize})
+			} else {
+				targetDisks = append(targetDisks, DiskInfo{Path: diskPath, Size: humanSize})
+			}
+		}
+	}
+	return append(targetDisks, fallbackDisks...)
 }
 
 // NetworkInfo descrive la rete corrente del sistema live. La TUI la mostra
