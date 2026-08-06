@@ -189,16 +189,17 @@ func runSpacemitPartition(c *ctx, plan *Plan) error {
 			pPrefix += "p"
 		}
 
-		sfdiskScript := fmt.Sprintf(`label: gpt
+		sfdiskScript := `label: gpt
 unit: sectors
+first-lba: 256
 
-%s1 : start=256, size=512, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="fsbl"
-%s2 : start=768, size=128, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="env"
-%s3 : start=2048, size=2048, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="opensbi"
-%s4 : start=4096, size=4096, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="uboot"
-%s5 : start=8192, size=524288, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="bootfs"
-%s6 : start=532480, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, name="rootfs"
-`, pPrefix, pPrefix, pPrefix, pPrefix, pPrefix, pPrefix)
+start=256, size=512, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="fsbl"
+start=768, size=128, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="env"
+start=2048, size=2048, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="opensbi"
+start=4096, size=4096, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="uboot"
+start=8192, size=524288, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="bootfs"
+start=532480, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="rootfs"
+`
 
 		c.logf("schema sfdisk Spacemit:\n%s", sfdiskScript)
 		if err := c.runInput(sfdiskScript, "sfdisk", "--wipe", "always", plan.Device); err != nil {
