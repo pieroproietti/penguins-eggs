@@ -9,12 +9,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"unicode"
 )
 
 // layout descrive le partizioni calcolate per il piano.
 type layout struct {
+	Boot string // p5 per Spacemit RISC-V
 	Esp  string // vuota su msdos
 	Swap string // vuota se la swap non è una partizione
 	Root string
@@ -23,6 +26,12 @@ type layout struct {
 // partsFor calcola i nomi delle partizioni in modo deterministico,
 // così ogni modulo (partition, mount, fstab) vede lo stesso layout.
 func partsFor(plan *Plan) layout {
+	if runtime.GOARCH == "riscv64" {
+		return layout{
+			Boot: devPart(plan.Device, 5),
+			Root: devPart(plan.Device, 6),
+		}
+	}
 	n := 1
 	var l layout
 	if plan.TableType == "gpt" {
@@ -88,6 +97,10 @@ func runPartition(c *ctx) error {
 		return fmt.Errorf("il device %s ha partizioni montate: scegliere un altro disco", plan.Device)
 	}
 
+	if runtime.GOARCH == "riscv64" {
+		return runSpacemitPartition(c, plan)
+	}
+
 	if err := c.run("wipefs", "-a", plan.Device); err != nil {
 		return err
 	}
@@ -132,6 +145,69 @@ func runPartition(c *ctx) error {
 	}
 	_ = c.run("wipefs", "-a", l.Root)
 	return c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), l.Root)...)
+}
+
+func runSpacemitPartition(c *ctx, plan *Plan) error {
+	_ = c.run("wipefs", "-a", plan.Device)
+
+	spacemitDir := "/usr/share/penguins-eggs/spacemit"
+	if !exists(spacemitDir) {
+		spacemitDir = "/etc/penguins-eggs.d/spacemit"
+	}
+	factoryDir := filepath.Join(spacemitDir, "factory")
+
+	_ = c.run("sgdisk", "-Z", plan.Device)
+	_ = c.run("sgdisk", "-o", plan.Device)
+
+	bootinfoPath := filepath.Join(factoryDir, "bootinfo_emmc.bin")
+	if exists(bootinfoPath) {
+		_ = c.run("dd", "if="+bootinfoPath, "of="+plan.Device, "bs=512", "count=1", "conv=notrunc")
+	}
+
+	parts := []string{
+		"1:256:767",
+		"2:768:895",
+		"3:2048:4095",
+		"4:4096:8191",
+		"5:8192:532479",
+		"6:532480:0",
+	}
+	names := []string{"fsbl", "env", "opensbi", "uboot", "bootfs", "rootfs"}
+
+	for i, p := range parts {
+		num := fmt.Sprintf("%d", i+1)
+		if err := c.run("sgdisk", "-a", "1", "-n", p, "-c", num+":"+names[i], "-t", num+":0700", plan.Device); err != nil {
+			c.logf("sgdisk partition %d failed: %v", i+1, err)
+		}
+	}
+
+	c.run("udevadm", "settle")
+
+	l := partsFor(plan)
+
+	fsblPath := filepath.Join(factoryDir, "FSBL.bin")
+	if exists(fsblPath) {
+		_ = c.run("dd", "if="+fsblPath, "of="+devPart(plan.Device, 1), "conv=fsync")
+	}
+	envBinPath := filepath.Join(spacemitDir, "env.bin")
+	if exists(envBinPath) {
+		_ = c.run("dd", "if="+envBinPath, "of="+devPart(plan.Device, 2), "conv=fsync")
+	}
+	fwPath := filepath.Join(spacemitDir, "fw_dynamic.itb")
+	if exists(fwPath) {
+		_ = c.run("dd", "if="+fwPath, "of="+devPart(plan.Device, 3), "conv=fsync")
+	}
+	ubootPath := filepath.Join(spacemitDir, "u-boot.itb")
+	if exists(ubootPath) {
+		_ = c.run("dd", "if="+ubootPath, "of="+devPart(plan.Device, 4), "conv=fsync")
+	}
+
+	_ = c.run("wipefs", "-a", l.Boot)
+	if err := c.run("mkfs.ext4", "-F", "-L", "bootfs", l.Boot); err != nil {
+		return err
+	}
+	_ = c.run("wipefs", "-a", l.Root)
+	return c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), "-L", "rootfs", l.Root)...)
 }
 
 // deviceInUse verifica se il device ha partizioni con mount point attivi.

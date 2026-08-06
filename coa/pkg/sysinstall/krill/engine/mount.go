@@ -86,6 +86,16 @@ func runMount(c *ctx) error {
 		}
 	}
 
+	if l.Boot != "" {
+		bootDir := c.tpath("boot")
+		if err := os.MkdirAll(bootDir, 0755); err != nil {
+			return err
+		}
+		if err := c.mount("-t", "ext4", l.Boot, bootDir); err != nil {
+			return err
+		}
+	}
+
 	if l.Esp != "" {
 		espDir := c.tpath("boot", "efi")
 		if err := os.MkdirAll(espDir, 0755); err != nil {

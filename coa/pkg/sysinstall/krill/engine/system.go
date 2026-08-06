@@ -81,6 +81,9 @@ func runFstab(c *ctx) error {
 		}
 	}
 
+	if l.Boot != "" {
+		lines = append(lines, fmt.Sprintf("UUID=%s /boot ext4 defaults 0 2", c.uuidOf(l.Boot)))
+	}
 	if l.Esp != "" {
 		lines = append(lines, fmt.Sprintf("UUID=%s /boot/efi vfat defaults,umask=0077 0 2", c.uuidOf(l.Esp)))
 	}
