@@ -1,0 +1,11 @@
+[Unit]
+Description=Auto Connect Wi-Fi proietti-armaccancce
+After=multi-user.target spacemit-modules-usrload.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/connect-wifi proietti-armaccancce latus4ever
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
