@@ -32,9 +32,12 @@ remaster:
         mkfs.vfat /home/eggs/isodir/EFI/BOOT/efi.img
         mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI
         mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI/BOOT
-        if [ -f /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ]; then
-            mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img /home/eggs/isodir/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
-        fi
+        for f in /home/eggs/isodir/EFI/BOOT/*.EFI /home/eggs/isodir/EFI/BOOT/*.efi; do
+            if [ -f "$f" ]; then
+                fname=$(basename "$f")
+                mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img "$f" "::/EFI/BOOT/$fname"
+            fi
+        done
 
 # ----------------------------------------------------------------------------
 # 4. BOOT ASSETS (SPLASH AND FONTS)

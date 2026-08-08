@@ -2,12 +2,18 @@ package worker
 
 import (
 	"coa/pkg/pathDefaults"
+	"coa/pkg/utils"
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
+	"strings"
 )
+
+func fileExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
+}
 
 func RunXorriso(payload []byte) error {
 	var cfg struct {
@@ -32,7 +38,7 @@ func RunXorriso(payload []byte) error {
 
 	if actualOutput == "" || actualOutput == "${ISO_OUTPUT}" {
 		actualOutput = filepath.Join(pathDefaults.DefaultWorkPath, "oa-live.iso")
-		fmt.Printf("⚠️  [worker] Warning: ISO_OUTPUT not resolved, using fallback: %s\n", actualOutput)
+		utils.LogWarning("[worker] Warning: ISO_OUTPUT not resolved, using fallback: %s", actualOutput)
 	}
 
 	actualSource := os.ExpandEnv(p.SourceDir)
@@ -52,8 +58,20 @@ func RunXorriso(payload []byte) error {
 		p.Volid = "OA_LIVE"
 	}
 
-	if p.IsolinuxBin == "" || p.EfiImg == "" {
-		fmt.Println("⚠️  [worker] Warning: boot parameters (isolinux_bin or efi_img) missing. The ISO may not boot.")
+	isolinuxPath := ""
+	if p.IsolinuxBin != "" {
+		isolinuxPath = filepath.Join(actualSource, p.IsolinuxBin)
+	}
+	hasIsolinux := isolinuxPath != "" && p.Isohdpfx != "" && fileExists(isolinuxPath) && fileExists(p.Isohdpfx)
+
+	efiImgPath := ""
+	if p.EfiImg != "" {
+		efiImgPath = filepath.Join(actualSource, p.EfiImg)
+	}
+	hasEfi := efiImgPath != "" && fileExists(efiImgPath)
+
+	if !hasIsolinux && !hasEfi {
+		utils.LogWarning("[worker] Warning: neither ISOLINUX nor EFI boot loader was found. The ISO may not boot.")
 	}
 
 	args := []string{
@@ -61,37 +79,58 @@ func RunXorriso(payload []byte) error {
 		"-iso-level", "3",
 		"-full-iso9660-filenames",
 		"-volid", p.Volid,
-
-		// Legacy boot (ISOLINUX)
-		"-eltorito-boot", p.IsolinuxBin,
-		"-eltorito-catalog", p.IsolinuxCat,
-		"-no-emul-boot",
-		"-boot-load-size", "4",
-		"-boot-info-table",
-		"-isohybrid-mbr", p.Isohdpfx,
-
-		// UEFI boot
-		"-eltorito-alt-boot",
-		"-e", p.EfiImg,
-		"-no-emul-boot",
-		"-isohybrid-gpt-basdat",
-
-		"-o", actualOutput,
-		actualSource,
 	}
 
-	fmt.Printf("\n💿 [worker] Generating hybrid ISO: %s\n", actualOutput)
-	fmt.Printf("📁 [worker] Source: %s\n", actualSource)
-	fmt.Println("⏳ [worker] Starting xorriso compression (this may take a few minutes)...")
+	if hasIsolinux {
+		// Legacy BIOS boot (ISOLINUX)
+		args = append(args,
+			"-eltorito-boot", p.IsolinuxBin,
+			"-eltorito-catalog", p.IsolinuxCat,
+			"-no-emul-boot",
+			"-boot-load-size", "4",
+			"-boot-info-table",
+			"-isohybrid-mbr", p.Isohdpfx,
+		)
+		if hasEfi {
+			// UEFI boot as alt-boot
+			args = append(args,
+				"-eltorito-alt-boot",
+				"-e", p.EfiImg,
+				"-no-emul-boot",
+				"-isohybrid-gpt-basdat",
+			)
+		}
+	} else if hasEfi {
+		// Pure UEFI boot (arm64, riscv64, or UEFI-only x86)
+		args = append(args,
+			"-e", p.EfiImg,
+			"-no-emul-boot",
+			"-isohybrid-gpt-basdat",
+		)
+	}
 
-	cmd := exec.Command("xorriso", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	args = append(args,
+		"-o", actualOutput,
+		actualSource,
+	)
 
-	if err := cmd.Run(); err != nil {
+	bootModeStr := "ISO9660"
+	if hasIsolinux && hasEfi {
+		bootModeStr = "Hybrid BIOS/UEFI"
+	} else if hasEfi {
+		bootModeStr = "UEFI-only"
+	}
+
+	utils.LogNormal("\n[worker] Generating ISO (%s): %s", bootModeStr, actualOutput)
+	utils.LogNormal("[worker] Source: %s", actualSource)
+	utils.LogNormal("Starting xorriso (this may take a few minutes)...")
+
+	xorrisoCmd := "xorriso " + strings.Join(args, " ")
+	if err := utils.Exec(xorrisoCmd); err != nil {
 		return fmt.Errorf("xorriso process failed: %w", err)
 	}
 
-	fmt.Printf("✅ [worker] ISO image created successfully at: %s\n", actualOutput)
+	utils.LogSuccess("[worker] ISO image created successfully at: %s", actualOutput)
 	return nil
 }
+

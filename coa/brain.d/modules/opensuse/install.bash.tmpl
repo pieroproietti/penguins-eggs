@@ -49,22 +49,51 @@ if [ "$(findmnt -n -o FSTYPE /)" = "btrfs" ]; then
 fi
 
 if [ -d /sys/firmware/efi ]; then
-      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
+      ARCH=$(uname -m)
+      case "$ARCH" in
+          x86_64)
+              GRUB_TARGET="x86_64-efi"
+              GRUB_BIN="grubx64.efi"
+              BOOT_BIN="BOOTX64.EFI"
+              ;;
+          aarch64|arm64)
+              GRUB_TARGET="arm64-efi"
+              GRUB_BIN="grubaa64.efi"
+              BOOT_BIN="BOOTAA64.EFI"
+              ;;
+          riscv64)
+              GRUB_TARGET="riscv64-efi"
+              GRUB_BIN="grubriscv64.efi"
+              BOOT_BIN="BOOTRISCV64.EFI"
+              ;;
+          i386|i686)
+              GRUB_TARGET="i386-efi"
+              GRUB_BIN="grubia32.efi"
+              BOOT_BIN="BOOTIA32.EFI"
+              ;;
+          *)
+              GRUB_TARGET="x86_64-efi"
+              GRUB_BIN="grubx64.efi"
+              BOOT_BIN="BOOTX64.EFI"
+              ;;
+      esac
+
+      grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
       
       # Fallback UEFI Absolute (Garantisce l'avvio anche se la NVRAM fa i capricci)
       mkdir -p /boot/efi/EFI/BOOT
       if [ -f "/boot/efi/EFI/{{ .DistroID }}/shim.efi" ]; then
-          cp "/boot/efi/EFI/{{ .DistroID }}/shim.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
-          if [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/grubx64.efi
+          cp "/boot/efi/EFI/{{ .DistroID }}/shim.efi" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+          if [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
+              cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$GRUB_BIN"
           elif [ -f "/boot/efi/EFI/{{ .DistroID }}/grub.efi" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" /boot/efi/EFI/BOOT/grubx64.efi
+              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" "/boot/efi/EFI/BOOT/$GRUB_BIN"
           fi
       else
-          if [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+          if [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
+              cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
           elif [ -f "/boot/efi/EFI/{{ .DistroID }}/grub.efi" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" "/boot/efi/EFI/BOOT/$BOOT_BIN"
           fi
       fi
 
