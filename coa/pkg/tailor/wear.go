@@ -53,10 +53,35 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 		}
 	}
 
+	var purgedPackages []string
+	var failedPurges []string
+	if manifestPath := findManifestPath(costumeDir, suit.PackagesManifest); manifestPath != "" {
+		utils.LogNormal("--- Reconciling installed packages against manifest: %s ---", manifestPath)
+		target, err := loadPackageManifest(manifestPath)
+		if err != nil {
+			utils.LogNormal(utils.ColorYellow+"WARNING: could not read packages_manifest %s: %v"+utils.ColorReset, manifestPath, err)
+		} else {
+			var reconcileFailed []string
+			_, purgedPackages, reconcileFailed, failedPurges = reconcilePackages(target)
+			failedPackages = append(failedPackages, reconcileFailed...)
+		}
+	}
+
 	utils.LogNormal("--- Finalizing ---")
 	copySkelToUser()
 
 	utils.LogNormal("✅ Costume applied successfully!")
+
+	if len(purgedPackages) > 0 {
+		utils.LogNormal("🧹 %d package(s) removed for not being in the manifest.", len(purgedPackages))
+	}
+
+	if len(failedPurges) > 0 {
+		msg := fmt.Sprintf("⚠️  %d package(s) could not be removed even though they are not in the manifest:\n  - %s",
+			len(failedPurges), strings.Join(failedPurges, "\n  - "))
+		utils.LogNormal(utils.ColorYellow + msg + utils.ColorReset)
+		logToFile(msg)
+	}
 
 	if len(failedPackages) > 0 {
 		msg := fmt.Sprintf("⚠️  %d package(s) could not be installed:\n  - %s",

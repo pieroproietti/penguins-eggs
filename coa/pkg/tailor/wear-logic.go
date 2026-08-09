@@ -84,15 +84,6 @@ func getAvailablePackages() map[string]struct{} {
 	return available
 }
 
-<<<<<<< HEAD
-// installWithRetries installs packages, falling back to one-by-one
-// installation on bulk failure so a single broken package does not
-// prevent the rest from being installed. Returns the packages that
-// could not be installed (including any not found in apt's cache),
-// so the caller can report them to the user.
-func installWithRetries(packages []string, retries int) []string {
-	return installPackagesImpl(packages, retries, false)
-=======
 // batchSize caps how many packages go into a single apt-get invocation.
 // A single apt-get install with hundreds of packages runs dpkg's trigger
 // processing (initramfs regeneration, DKMS module builds, icon/mime
@@ -109,9 +100,13 @@ func installWithRetries(packages []string, retries int) []string {
 // a fast no-op) and continue from where it died.
 const batchSize = 20
 
-func installWithRetries(packages []string, retries int) {
-	installPackagesImpl(packages, retries, false)
->>>>>>> fix/wardrobe-chunk-package-installs
+// installWithRetries installs packages, falling back to one-by-one
+// installation on bulk failure so a single broken package does not
+// prevent the rest from being installed. Returns the packages that
+// could not be installed (including any not found in apt's cache),
+// so the caller can report them to the user.
+func installWithRetries(packages []string, retries int) []string {
+	return installPackagesImpl(packages, retries, false)
 }
 
 // installNoRecommends installs packages with --no-install-recommends.
@@ -165,6 +160,7 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 		logToFile(fmt.Sprintf("Installing %d packages in %d batches of up to %d, so a crash mid-install only loses the current batch...", len(toInstall), totalBatches, batchSize))
 	}
 
+	var failed []string
 	for start := 0; start < len(toInstall); start += batchSize {
 		end := start + batchSize
 		if end > len(toInstall) {
@@ -177,53 +173,48 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 			logToFile(fmt.Sprintf("Batch %d/%d (packages %d-%d of %d): %v", batchNum, totalBatches, start+1, end, len(toInstall), batch))
 		}
 
-		installBatchWithFallback(batch, retries, flags)
+		failed = append(failed, installBatchWithFallback(batch, retries, flags)...)
 	}
+
+	return append(missing, failed...)
 }
 
 // installBatchWithFallback installs a single batch in bulk, falling back
 // to one-by-one installation within the batch if the bulk call fails, so
 // that one broken package in a batch doesn't take the rest of that batch
-// down with it.
-func installBatchWithFallback(batch []string, retries int, flags string) {
+// down with it. Packages that still fail after `retries` individual
+// attempts are given up on and returned to the caller.
+func installBatchWithFallback(batch []string, retries int, flags string) []string {
 	// readline: accepts low-priority defaults automatically but shows
 	// critical prompts (e.g. firmware license agreements) to the user.
-	// PAGER=cat prevents firmware license scripts from paginating with
-	// 'more' or 'less', which would block unattended installation.
+	// Dpkg::Use-Pty=0: apt normally runs dpkg inside its own internal
+	// pseudo-terminal so it can both show the output live and log a copy
+	// to /var/log/apt/term.log. That mirroring has known bugs (Debian
+	// #765687, #860931) where the copy written to term.log succeeds but
+	// the live mirror to the real terminal is silently dropped -- the
+	// user never sees the prompt (or sees it truncated, e.g. "[Más]"
+	// glued to the next shell prompt) even though stdin/stdout are
+	// correctly wired to a real tty. Disabling apt's internal pty makes
+	// dpkg/debconf inherit our own stdio directly instead, which is the
+	// documented workaround for this class of bug.
 	pkgString := strings.Join(batch, " ")
-	cmd := fmt.Sprintf("PAGER=cat DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' %s %s", flags, pkgString)
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 %s %s", flags, pkgString)
 
-<<<<<<< HEAD
-	logToFile(fmt.Sprintf("Installing %d packages in bulk...", len(toInstall)))
+	logToFile(fmt.Sprintf("Installing batch of %d packages...", len(batch)))
 	if err := utils.Exec(cmd); err == nil {
-		logToFile("✅ Package installation completed.")
-		return missing
+		logToFile("✅ Batch installed.")
+		return nil
 	}
 
 	// Fallback: install one by one so a single broken package does not
-	// prevent the rest from being installed. Packages that still fail
-	// after `retries` individual attempts are given up on and reported.
-	logToFile("⚠️  Bulk install failed. Retrying package by package to isolate failures...")
-	pending := toInstall
+	// prevent the rest of the batch from being installed. Packages that
+	// still fail after `retries` individual attempts are given up on.
+	logToFile("⚠️  Batch install failed. Retrying package by package to isolate failures...")
+	pending := batch
 	for attempt := 1; attempt <= retries && len(pending) > 0; attempt++ {
 		var stillFailing []string
 		for _, pkg := range pending {
 			singleCmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 %s %s", flags, pkg)
-=======
-	for i := 1; i <= retries; i++ {
-		logToFile(fmt.Sprintf("Installation attempt %d of %d...", i, retries))
-		if err := utils.Exec(cmd); err == nil {
-			logToFile("✅ Batch installed.")
-			return
-		}
-
-		// Fallback: install one by one so a single broken package
-		// does not prevent the rest of the batch from being installed.
-		logToFile("⚠️  Batch install failed. Retrying package by package to isolate failures...")
-		var failed []string
-		for _, pkg := range batch {
-			singleCmd := fmt.Sprintf("PAGER=cat DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' %s %s", flags, pkg)
->>>>>>> fix/wardrobe-chunk-package-installs
 			if err := utils.Exec(singleCmd); err != nil {
 				// apt-get's exit code alone is not reliable evidence that
 				// THIS package failed: dpkg processes deferred triggers
@@ -239,27 +230,19 @@ func installBatchWithFallback(batch []string, retries int, flags string) {
 				}
 			}
 		}
-<<<<<<< HEAD
 		pending = stillFailing
 		if len(pending) > 0 && attempt < retries {
 			logToFile(fmt.Sprintf("⚠️  %d packages still failing after attempt %d/%d, retrying: %v", len(pending), attempt, retries, pending))
-=======
-
-		if len(failed) > 0 {
-			logToFile(fmt.Sprintf("⚠️  %d packages could not be installed: %v", len(failed), failed))
-		} else {
-			logToFile("✅ All packages in batch installed successfully (one by one).")
->>>>>>> fix/wardrobe-chunk-package-installs
 		}
 	}
 
 	if len(pending) > 0 {
 		logToFile(fmt.Sprintf("⚠️  %d packages could not be installed: %v", len(pending), pending))
 	} else {
-		logToFile("✅ All packages installed successfully (one by one).")
+		logToFile("✅ All packages in batch installed successfully (one by one).")
 	}
 
-	return append(missing, pending...)
+	return pending
 }
 
 // isPackageInstalled reports whether dpkg considers pkg to be correctly
@@ -277,7 +260,6 @@ func isPackageInstalled(pkg string) bool {
 
 // installInteractive installs packages without suppressing debconf prompts.
 // Use this for packages that require user interaction (e.g. license acceptance).
-<<<<<<< HEAD
 // Dpkg::Use-Pty=0 avoids apt's internal pty-mirroring bug that can drop the
 // live prompt from the real terminal (see the comment in installPackagesImpl).
 // Returns the packages that could not be installed (missing from apt's
@@ -285,10 +267,6 @@ func isPackageInstalled(pkg string) bool {
 // packages are typically few and license-related, so we don't attempt the
 // one-by-one isolation used for regular packages).
 func installInteractive(packages []string) []string {
-=======
-// PAGER=cat is set to avoid firmware license scripts paginating with 'more'/'less'.
-func installInteractive(packages []string) {
->>>>>>> fix/wardrobe-chunk-package-installs
 	if len(packages) == 0 {
 		return nil
 	}
@@ -318,7 +296,7 @@ func installInteractive(packages []string) {
 	}
 
 	pkgString := strings.Join(toInstall, " ")
-	cmd := fmt.Sprintf("PAGER=cat apt-get install -o Dpkg::Options::='--force-confold' -y %s", pkgString)
+	cmd := fmt.Sprintf("apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
 	logToFile(fmt.Sprintf("Installing interactive packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {
 		// Don't trust apt-get's exit code blindly: check each package
@@ -347,13 +325,13 @@ func removePackages(packages []string) {
 	}
 
 	pkgString := strings.Join(packages, " ")
-	cmd := fmt.Sprintf("PAGER=cat DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -y %s", pkgString)
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
 	logToFile(fmt.Sprintf("Removing packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {
 		logToFile(fmt.Sprintf("⚠️  Some packages could not be removed (may not be installed): %v", err))
 	}
 
-	utils.Exec("PAGER=cat DEBIAN_FRONTEND=readline apt-get autoremove -y")
+	utils.Exec("DEBIAN_FRONTEND=readline apt-get autoremove -o Dpkg::Use-Pty=0 -y")
 }
 
 func printAiPrompt(packages []string) {
