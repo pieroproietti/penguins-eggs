@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func Wear(costumeName string, noAcc bool, noFirm bool) error {
@@ -33,7 +34,8 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	}
 
 	utils.LogNormal("--- Applying Costume: %s ---", suit.Name)
-	if err := applySuit(costumeDir, suit); err != nil {
+	failedPackages, err := applySuit(costumeDir, suit)
+	if err != nil {
 		return err
 	}
 
@@ -44,7 +46,8 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 			if accYaml := findYaml(accDir); accYaml != "" {
 				if accSuit, err := loadSuit(accYaml); err == nil {
 					utils.LogNormal("Accessory: %s", accName)
-					applySuit(accDir, accSuit)
+					accFailed, _ := applySuit(accDir, accSuit)
+					failedPackages = append(failedPackages, accFailed...)
 				}
 			}
 		}
@@ -55,6 +58,13 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 
 	utils.LogNormal("✅ Costume applied successfully!")
 
+	if len(failedPackages) > 0 {
+		msg := fmt.Sprintf("⚠️  %d package(s) could not be installed:\n  - %s",
+			len(failedPackages), strings.Join(failedPackages, "\n  - "))
+		utils.LogNormal(utils.ColorYellow + msg + utils.ColorReset)
+		logToFile(msg)
+	}
+
 	if suit.Reboot {
 		utils.LogNormal(utils.ColorYellow + "This costume recommends a reboot to finish applying all changes." + utils.ColorReset)
 	}
@@ -62,7 +72,12 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	return nil
 }
 
-func applySuit(dir string, suit *Suit) error {
+// applySuit applies a costume/accessory and returns the list of packages
+// that could not be installed (across packages, packages_no_install_recommends
+// and packages_interactive), so the caller can report them to the user.
+func applySuit(dir string, suit *Suit) ([]string, error) {
+	var failedPackages []string
+
 	if suit.Sequence != nil && suit.Sequence.Repositories != nil {
 		setupRepositories(suit.Sequence.Repositories, suit.Name)
 
@@ -82,19 +97,19 @@ func applySuit(dir string, suit *Suit) error {
 
 	if len(suit.Packages) > 0 {
 		utils.LogNormal("[%s] Attempting package installation: %v", suit.Name, suit.Packages)
-		installWithRetries(suit.Packages, 3)
+		failedPackages = append(failedPackages, installWithRetries(suit.Packages, 3)...)
 	} else {
 		utils.LogNormal("[%s] No packages to install.", suit.Name)
 	}
 
 	if len(suit.PackagesNoRecommends) > 0 {
 		utils.LogNormal("[%s] Installing packages without recommends: %v", suit.Name, suit.PackagesNoRecommends)
-		installNoRecommends(suit.PackagesNoRecommends)
+		failedPackages = append(failedPackages, installNoRecommends(suit.PackagesNoRecommends)...)
 	}
 
 	if len(suit.PackagesInteractive) > 0 {
 		utils.LogNormal("[%s] Installing interactive packages (license prompts may appear): %v", suit.Name, suit.PackagesInteractive)
-		installInteractive(suit.PackagesInteractive)
+		failedPackages = append(failedPackages, installInteractive(suit.PackagesInteractive)...)
 	}
 
 	if len(suit.PackagesRemove) > 0 {
@@ -129,7 +144,7 @@ func applySuit(dir string, suit *Suit) error {
 		}
 	}
 
-	return nil
+	return failedPackages, nil
 }
 
 func copySkelToUser() {

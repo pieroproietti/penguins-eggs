@@ -84,23 +84,29 @@ func getAvailablePackages() map[string]struct{} {
 	return available
 }
 
-func installWithRetries(packages []string, retries int) {
-	installPackagesImpl(packages, retries, false)
+// installWithRetries installs packages, falling back to one-by-one
+// installation on bulk failure so a single broken package does not
+// prevent the rest from being installed. Returns the packages that
+// could not be installed (including any not found in apt's cache),
+// so the caller can report them to the user.
+func installWithRetries(packages []string, retries int) []string {
+	return installPackagesImpl(packages, retries, false)
 }
 
 // installNoRecommends installs packages with --no-install-recommends.
-func installNoRecommends(packages []string) {
-	installPackagesImpl(packages, 3, true)
+// Returns the packages that could not be installed.
+func installNoRecommends(packages []string) []string {
+	return installPackagesImpl(packages, 3, true)
 }
 
-func installPackagesImpl(packages []string, retries int, noRecommends bool) {
+func installPackagesImpl(packages []string, retries int, noRecommends bool) []string {
 	if len(packages) == 0 {
-		return
+		return nil
 	}
 
 	if _, err := exec.LookPath("apt-get"); err != nil {
 		printAiPrompt(packages)
-		return
+		return nil
 	}
 
 	available := getAvailablePackages()
@@ -125,7 +131,7 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 
 	if len(toInstall) == 0 {
 		logToFile("No valid packages to install.")
-		return
+		return missing
 	}
 
 	pkgString := strings.Join(toInstall, " ")
@@ -148,41 +154,51 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) {
 	// documented workaround for this class of bug.
 	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 %s %s", flags, pkgString)
 
-	for i := 1; i <= retries; i++ {
-		logToFile(fmt.Sprintf("Installation attempt %d of %d...", i, retries))
-		if err := utils.Exec(cmd); err == nil {
-			logToFile("✅ Package installation completed.")
-			return
-		}
+	logToFile(fmt.Sprintf("Installing %d packages in bulk...", len(toInstall)))
+	if err := utils.Exec(cmd); err == nil {
+		logToFile("✅ Package installation completed.")
+		return missing
+	}
 
-		// Fallback: install one by one so a single broken package
-		// does not prevent the rest from being installed.
-		logToFile("⚠️  Bulk install failed. Retrying package by package to isolate failures...")
-		var failed []string
-		for _, pkg := range toInstall {
+	// Fallback: install one by one so a single broken package does not
+	// prevent the rest from being installed. Packages that still fail
+	// after `retries` individual attempts are given up on and reported.
+	logToFile("⚠️  Bulk install failed. Retrying package by package to isolate failures...")
+	pending := toInstall
+	for attempt := 1; attempt <= retries && len(pending) > 0; attempt++ {
+		var stillFailing []string
+		for _, pkg := range pending {
 			singleCmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 %s %s", flags, pkg)
 			if err := utils.Exec(singleCmd); err != nil {
-				logToFile(fmt.Sprintf("⚠️  Could not install: %s", pkg))
-				failed = append(failed, pkg)
+				stillFailing = append(stillFailing, pkg)
 			}
 		}
-
-		if len(failed) > 0 {
-			logToFile(fmt.Sprintf("⚠️  %d packages could not be installed: %v", len(failed), failed))
-		} else {
-			logToFile("✅ All packages installed successfully (one by one).")
+		pending = stillFailing
+		if len(pending) > 0 && attempt < retries {
+			logToFile(fmt.Sprintf("⚠️  %d packages still failing after attempt %d/%d, retrying: %v", len(pending), attempt, retries, pending))
 		}
-		return
 	}
+
+	if len(pending) > 0 {
+		logToFile(fmt.Sprintf("⚠️  %d packages could not be installed: %v", len(pending), pending))
+	} else {
+		logToFile("✅ All packages installed successfully (one by one).")
+	}
+
+	return append(missing, pending...)
 }
 
 // installInteractive installs packages without suppressing debconf prompts.
 // Use this for packages that require user interaction (e.g. license acceptance).
 // Dpkg::Use-Pty=0 avoids apt's internal pty-mirroring bug that can drop the
 // live prompt from the real terminal (see the comment in installPackagesImpl).
-func installInteractive(packages []string) {
+// Returns the packages that could not be installed (missing from apt's
+// cache, or the whole batch if the bulk apt-get call failed -- interactive
+// packages are typically few and license-related, so we don't attempt the
+// one-by-one isolation used for regular packages).
+func installInteractive(packages []string) []string {
 	if len(packages) == 0 {
-		return
+		return nil
 	}
 
 	available := getAvailablePackages()
@@ -206,7 +222,7 @@ func installInteractive(packages []string) {
 	}
 
 	if len(toInstall) == 0 {
-		return
+		return missing
 	}
 
 	pkgString := strings.Join(toInstall, " ")
@@ -214,7 +230,9 @@ func installInteractive(packages []string) {
 	logToFile(fmt.Sprintf("Installing interactive packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {
 		logToFile(fmt.Sprintf("⚠️  Some interactive packages could not be installed: %v", err))
+		return append(missing, toInstall...)
 	}
+	return missing
 }
 
 // removePackages removes packages that the vendor does not want on the system.
