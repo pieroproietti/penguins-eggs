@@ -9,13 +9,31 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 func runNetworkcfg(c *ctx) error {
 	p := c.plan
+
+	// Pulizia delle vecchie connessioni residue in NetworkManager per evitare conflitti o leak di credenziali live
+	nmDir := c.tpath("etc", "NetworkManager", "system-connections")
+	if exists(nmDir) {
+		entries, err := os.ReadDir(nmDir)
+		if err == nil {
+			for _, entry := range entries {
+				fileToRemove := filepath.Join(nmDir, entry.Name())
+				if err := os.RemoveAll(fileToRemove); err != nil {
+					c.logf("warning: unable to remove old NetworkManager connection %s: %v", entry.Name(), err)
+				} else {
+					c.logf("removed old NetworkManager connection: %s", entry.Name())
+				}
+			}
+		}
+	}
+
 	if p.NetType != "static" || p.NetAddress == "" {
-		c.logf("rete: dhcp, nessuna configurazione da scrivere")
+		c.logf("rete: dhcp, nessuna configurazione statica da scrivere")
 		return nil
 	}
 

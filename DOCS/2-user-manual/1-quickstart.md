@@ -123,7 +123,7 @@ Adding a new distribution requires only a new template module directory under `b
 
 ## Where to go next
 
-- [Command Reference](./commands.md) — all commands, flags and options
-- [Architecture Overview](../architecture/overview.md) — how the Mind (Go) and the Workhorse (C) work together
-- [Installer Architecture](../design/installer.md) — Calamares and Krill: one engine, two faces
-- [Roadmap](../design/roadmap.md) — what's done and what's next
+- [Command Reference](./2-commands.md) — all commands, flags and options
+- [Architecture Overview](../3-developer-manual/architecture/1-overview.md) — how the Mind (Go) and the Workhorse (C) work together
+- [Installer Architecture](../3-developer-manual/architecture/6-installer.md) — Calamares and Krill: one engine, two faces
+- [Roadmap](../1-philosophy/5-roadmap.md) — what's done and what's next

@@ -108,12 +108,15 @@ func HandleSkel(targetUser string) {
 		}
 	}
 
-	utils.LogNormal("Sanitizing user files (bookmarks, history, dirs)...")
+	utils.LogNormal("Sanitizing user files (bookmarks, history, dirs, network credentials)...")
 	rmIfExist("/etc/skel/.config/user-dirs.dirs", false)
 	rmIfExist("/etc/skel/.config/user-dirs.locale", false)
 	rmIfExist("/etc/skel/.config/gtk-3.0/bookmarks", true)
 	rmIfExist("/etc/skel/.local/share/recently-used.xbel", false)
 	rmIfExist("/etc/skel/.config/xfce4/desktop", true)
+	rmIfExist("/etc/skel/.config/NetworkManager", true)
+	rmIfExist("/etc/skel/.local/share/networkmanagement", true)
+	rmIfExist("/etc/skel/.local/share/keyrings", true)
 
 	utils.LogSuccess("XDG configuration in /etc/skel completed successfully!")
 }

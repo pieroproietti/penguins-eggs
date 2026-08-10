@@ -4,6 +4,28 @@ Chromebooks represent a unique use case in the Linux live environment ecosystem.
 
 This guide explains the design philosophy behind `penguins-eggs` regarding special hardware, and provides a step-by-step workflow for preparing source Chromebook systems (such as the BARLA Chromebook platform) before generating a live ISO.
 
+### Chromebook Upcycling Process Overview
+
+Upcycling EOL/AUE (Automatic Update Expiry) Chromebooks into fully functional general-purpose Linux laptops typically follows three core steps:
+
+1. **Disable Hardware Write-Protect (WP)**
+   Chromebooks ship with a hardware protection mechanism that prevents overwriting Google's stock firmware.
+   * To flash a custom UEFI BIOS, you must first disable Write-Protect (WP).
+   * On older models, this simply requires opening the chassis and removing a dedicated **WP screw** or temporarily disconnecting the main battery.
+   * On newer devices, disabling WP may require specific terminal commands or a SuzyQable (USB-C debug cable).
+   * Refer to the official [MrChromebox Documentation](https://docs.mrchromebox.tech/) for device-specific WP removal instructions and firmware updates.
+
+2. **Replace Stock Firmware (Coreboot / TianoCore)**
+   Once hardware protection is disabled, boot the Chromebook into Developer Mode and execute the firmware update script (typically the MrChromebox Utility Script).
+   * The script replaces Google's proprietary firmware with an open-source alternative: **Coreboot** coupled with a **TianoCore** payload (providing a standard UEFI interface).
+   * After flashing, the device ceases to be a locked Chromebook and functions as a standard x86 PC (like any traditional laptop from Dell, Lenovo, or HP), capable of booting from a standard USB drive.
+
+3. **Install Linux using penguins-eggs & Krill**
+   With TianoCore UEFI active:
+   * Insert a USB flash drive containing a Live ISO generated with `penguins-eggs`.
+   * Boot the system and format the internal drive, completely replacing ChromeOS.
+   * **penguins-eggs** and **Krill** streamline this phase: the custom Live ISO allows volunteers, educators, and students to instantly verify hardware compatibility (Wi-Fi, audio, keyboard, touchpad) and run a fast, reliable installation to deploy a clean, ready-to-use Linux laptop.
+
 ---
 
 ## Architectural Philosophy: Hardware-Agnostic Design
@@ -98,3 +120,14 @@ sudo update-initramfs -u
 
 echo "System ready for eggs remastering."
 ```
+
+---
+
+## References & Community Resources
+
+- **Firmware & Coreboot Tooling**: [MrChromebox Official Documentation](https://docs.mrchromebox.tech/) – Essential guides for hardware WP removal, Coreboot installation, and UEFI scripts.
+- **Community Upcycling & Rescue Initiatives**:
+  - [Fixit Clinic Chromebook Rescue at SudoRoom](https://sudoroom.org/chromebook-rescue-at-sudoroom/) – Overview of the community-led effort to rescue AUE Chromebooks and convert them into general-purpose laptops.
+  - [Fixit Clinic Official Blog](https://fixitclinic.blogspot.com/) – News and documentation on repairability events, hardware upcycling, and community repair clinics.
+  - [iFixit](https://www.ifixit.com/) – Open repair guides, teardowns, and hardware disassembly manuals.
+  

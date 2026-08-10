@@ -89,13 +89,18 @@ func runDisplaymanager(c *ctx) error {
 		c.logf("autologin lightdm configured for %s", login)
 	}
 
-	// sddm
-	if exists(c.tpath("usr", "bin", "sddm")) || exists(c.tpath("etc", "sddm.conf.d")) {
+	// sddm / plasmalogin (Soplos OS)
+	if exists(c.tpath("usr", "bin", "plasmalogin")) || exists(c.tpath("usr", "bin", "sddm")) || exists(c.tpath("etc", "sddm.conf.d")) {
 		dir := c.tpath("etc", "sddm.conf.d")
 		os.MkdirAll(dir, 0755)
 		conf := fmt.Sprintf("[Autologin]\nUser=%s\nRelogin=false\n", login)
 		os.WriteFile(dir+"/autologin.conf", []byte(conf), 0644)
-		c.logf("autologin sddm configured for %s", login)
+
+		if exists(c.tpath("usr", "bin", "plasmalogin")) {
+			c.logf("autologin plasmalogin configured for %s", login)
+		} else {
+			c.logf("autologin sddm configured for %s", login)
+		}
 	}
 
 	// gdm3 / gdm
@@ -114,6 +119,43 @@ func runDisplaymanager(c *ctx) error {
 			c.logf("autologin %s configured for %s", gdm, login)
 		}
 	}
+
+	// mdm (Mint Display Manager)
+	mdmConf := c.tpath("etc", "mdm", "mdm.conf")
+	if exists(mdmConf) {
+		data, _ := os.ReadFile(mdmConf)
+		content := string(data)
+		autologin := fmt.Sprintf("AutomaticLoginEnable=true\nAutomaticLogin=%s", login)
+		if strings.Contains(content, "[daemon]") {
+			content = strings.Replace(content, "[daemon]", "[daemon]\n"+autologin, 1)
+		} else {
+			content = "[daemon]\n" + autologin + "\n" + content
+		}
+		os.WriteFile(mdmConf, []byte(content), 0644)
+		c.logf("autologin mdm configured for %s", login)
+	}
+
+	// lxdm
+	lxdmConf := c.tpath("etc", "lxdm", "lxdm.conf")
+	if exists(lxdmConf) {
+		configureLxdmFile(lxdmConf, login)
+		c.logf("autologin lxdm configured for %s", login)
+	}
+
+	// slim
+	slimConf := c.tpath("etc", "slim.conf")
+	if exists(slimConf) {
+		configureSlimFile(slimConf, login)
+		c.logf("autologin slim configured for %s", login)
+	}
+
+	// greetd
+	greetdConf := c.tpath("etc", "greetd", "config.toml")
+	if exists(greetdConf) {
+		configureGreetdFile(greetdConf, login)
+		c.logf("autologin greetd configured for %s", login)
+	}
+
 	return nil
 }
 
@@ -155,3 +197,98 @@ func runRemoveuser(c *ctx) error {
 	}
 	return nil
 }
+
+func configureLxdmFile(path, login string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return
+	}
+	lines := strings.Split(string(data), "\n")
+	found := false
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "autologin=") || strings.HasPrefix(trimmed, "# autologin=") || strings.HasPrefix(trimmed, "#autologin=") {
+			lines[i] = "autologin=" + login
+			found = true
+			break
+		}
+	}
+	if !found {
+		var newLines []string
+		inserted := false
+		for _, line := range lines {
+			newLines = append(newLines, line)
+			if strings.TrimSpace(line) == "[base]" {
+				newLines = append(newLines, "autologin="+login)
+				inserted = true
+			}
+		}
+		if !inserted {
+			newLines = append([]string{"[base]", "autologin=" + login}, newLines...)
+		}
+		lines = newLines
+	}
+	os.WriteFile(path, []byte(strings.Join(lines, "\n")), 0644)
+}
+
+func configureSlimFile(path, login string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return
+	}
+	lines := strings.Split(string(data), "\n")
+	userFound, autoFound := false, false
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "default_user") || strings.HasPrefix(trimmed, "#default_user") || strings.HasPrefix(trimmed, "# default_user") {
+			lines[i] = "default_user " + login
+			userFound = true
+		} else if strings.HasPrefix(trimmed, "auto_login") || strings.HasPrefix(trimmed, "#auto_login") || strings.HasPrefix(trimmed, "# auto_login") {
+			lines[i] = "auto_login yes"
+			autoFound = true
+		}
+	}
+	if !userFound {
+		lines = append(lines, "default_user "+login)
+	}
+	if !autoFound {
+		lines = append(lines, "auto_login yes")
+	}
+	os.WriteFile(path, []byte(strings.Join(lines, "\n")), 0644)
+}
+
+func configureGreetdFile(path, login string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return
+	}
+	lines := strings.Split(string(data), "\n")
+	var newLines []string
+	inInitial := false
+	userSet := false
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "[") && strings.HasSuffix(trimmed, "]") {
+			if inInitial && !userSet {
+				newLines = append(newLines, fmt.Sprintf("user = \"%s\"", login))
+				userSet = true
+			}
+			inInitial = (trimmed == "[initial_session]")
+		} else if inInitial && strings.HasPrefix(trimmed, "user") {
+			newLines = append(newLines, fmt.Sprintf("user = \"%s\"", login))
+			userSet = true
+			continue
+		}
+		newLines = append(newLines, line)
+	}
+	if inInitial && !userSet {
+		newLines = append(newLines, fmt.Sprintf("user = \"%s\"", login))
+		userSet = true
+	}
+	if !userSet {
+		newLines = append(newLines, "\n[initial_session]", fmt.Sprintf("user = \"%s\"", login))
+	}
+	os.WriteFile(path, []byte(strings.Join(newLines, "\n")), 0644)
+}
+

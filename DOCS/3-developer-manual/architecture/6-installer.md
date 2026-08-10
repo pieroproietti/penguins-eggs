@@ -104,7 +104,6 @@ pkg/sysinstall/
     ├── bootloader-scripts.go# oa-bootloader.sh + oa-bridge.sh
     ├── shellprocess_bootloader_bridge.go
     ├── branding-desc.go     # branding/eggs/branding.desc
-    ├── displaymanager-conf.go
     ├── mount-conf.go
     ├── partition-conf.go
     ├── removeuser-conf.go
@@ -150,7 +149,7 @@ sudo eggs sysinstall krill --unattended  # no questions: live-user defaults,
 
 The automatic dispatcher (`eggs sysinstall` with no subcommand choosing the
 face by detecting X11/Wayland and the calamares binary) is designed but not
-yet implemented — see the [roadmap](./roadmap.md).
+yet implemented — see the [roadmap](../../1-philosophy/5-roadmap.md).
 
 ## 7. History
 

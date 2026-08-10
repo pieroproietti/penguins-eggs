@@ -48,7 +48,6 @@ func BuildInstaller(oaVersion string) error {
 		partitionConf,
 		mountConf,
 		userConf,
-		displaymanagerConf,
 		removeuserConf,
 		unpackfsConf,
 		shellprocessOaChrootRunner,

@@ -12,16 +12,16 @@ The goal is ambitious: a truly universal approach to Linux remastering. Every di
 
 We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
-### 🧠 [coa](./DOCS/architecture/overview.md) (**brooding in my dialect**) - The Mind
+### 🧠 [coa](./DOCS/3-developer-manual/architecture/1-overview.md) (**brooding in my dialect**) - The Mind
 It manages the full lifecycle: from laying the ISO to the final installation. It powers the primary **`eggs`** CLI command.
 
 The name derives from the dialect word coa, referring to the act of brooding or incubating eggs until they are ready to hatch. During early development, the repo was named `oa-tools` with binaries `coa` and `oa`, but `eggs` is the primary CLI executable used by developers and users.
 
 **Language: Go**
 
-For `eggs` commands, see [eggs Command Reference](./DOCS/manual/commands.md).
+For `eggs` commands, see [eggs Command Reference](./DOCS/2-user-manual/2-commands.md).
 
-### 🦾 [oa](./DOCS/architecture/oa.md) (**eggs in my dialect**) - The Workhorse
+### 🦾 [oa](./DOCS/3-developer-manual/architecture/3-oa.md) (**eggs in my dialect**) - The Workhorse
 **Language: C**
 `oa` is the low-level engine. It handles the "heavy lifting" of the system:
 - Managing OverlayFS and mount points.
@@ -32,7 +32,7 @@ For `eggs` commands, see [eggs Command Reference](./DOCS/manual/commands.md).
 
 ## 🚀 Getting Started
 
-> The primary CLI command is **`eggs`** (e.g. `eggs remaster`, `eggs produce`, `eggs sysinstall`, `eggs destroy`). The binary is available as both `eggs` and `coa`. See the [Quick Start](./DOCS/manual/quickstart.md) for the full command usage.
+> The primary CLI command is **`eggs`** (e.g. `eggs remaster`, `eggs produce`, `eggs sysinstall`, `eggs destroy`). The binary is available as both `eggs` and `coa`. See the [Quick Start](./DOCS/2-user-manual/1-quickstart.md) for the full command usage.
 
 ### Prerequisites
 - A Linux system (Debian-based, Arch-based, Fedora-based or Manjaro-based).
@@ -56,7 +56,7 @@ This will compile both binaries:
 ## 📜 Philosophy
 The **penguins-eggs** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
 
-Documentation can be found on [DOCS](./DOCS/README.md). See also the [Manifestum](./DOCS/manifestum.md) for the founding vision and origins.
+Documentation can be found on [DOCS](./DOCS/README.md). See also the [Manifestum](./DOCS/1-philosophy/1-manifestum.md) for the founding vision and origins.
 
 The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosophy can be read on my blog.
 
