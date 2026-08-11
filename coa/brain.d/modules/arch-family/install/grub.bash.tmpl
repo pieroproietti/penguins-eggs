@@ -20,15 +20,44 @@ fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
     echo "-> UEFI installation..."
-    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
+    ARCH=$(uname -m)
+    case "$ARCH" in
+        x86_64)
+            GRUB_TARGET="x86_64-efi"
+            GRUB_BIN="grubx64.efi"
+            BOOT_BIN="BOOTX64.EFI"
+            ;;
+        aarch64|arm64)
+            GRUB_TARGET="arm64-efi"
+            GRUB_BIN="grubaa64.efi"
+            BOOT_BIN="BOOTAA64.EFI"
+            ;;
+        riscv64)
+            GRUB_TARGET="riscv64-efi"
+            GRUB_BIN="grubriscv64.efi"
+            BOOT_BIN="BOOTRISCV64.EFI"
+            ;;
+        i386|i686)
+            GRUB_TARGET="i386-efi"
+            GRUB_BIN="grubia32.efi"
+            BOOT_BIN="BOOTIA32.EFI"
+            ;;
+        *)
+            GRUB_TARGET="x86_64-efi"
+            GRUB_BIN="grubx64.efi"
+            BOOT_BIN="BOOTX64.EFI"
+            ;;
+    esac
+
+    if ! grub-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
         # NVRAM-registration can fail (e.g. OVMF/VM firmware) even though the
         # EFI binary was written correctly; only abort if it genuinely wasn't.
-        [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+        [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
         echo "-> WARNING: grub-install failed (likely NVRAM-only); EFI binary is present, continuing with removable fallback."
     fi
 
     mkdir -p /boot/efi/EFI/BOOT
-    [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
+    [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
 else
     echo "-> BIOS/Legacy installation..."
     ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)

@@ -113,30 +113,6 @@ and generate a precise execution plan for the OA planner.`,
 		}
 
 		var fdtDir, fdtFile string
-		if fdtFlag == "" && runtime.GOARCH == "riscv64" {
-			// Try auto-detection (prioritizing MUSE-Book dtb)
-			var candidates []string
-			filepath.Walk("/boot", func(path string, info os.FileInfo, err error) error {
-				if err == nil && !info.IsDir() && strings.HasSuffix(info.Name(), ".dtb") {
-					candidates = append(candidates, path)
-				}
-				return nil
-			})
-			for _, c := range candidates {
-				if strings.Contains(strings.ToLower(c), "muse-book") {
-					fdtFlag = c
-					break
-				}
-			}
-			if fdtFlag == "" && len(candidates) > 0 {
-				fdtFlag = candidates[0]
-			}
-			if fdtFlag != "" {
-				utils.LogWarning("Auto-detected FDT/DTB path on riscv64: %s", fdtFlag)
-			} else {
-				utils.LogWarning("No FDT/DTB file auto-detected in /boot. Image creation might fail if not specified via --fdt.")
-			}
-		}
 
 		if fdtFlag != "" && fdtFlag != "none" {
 			fi, err := os.Stat(fdtFlag)

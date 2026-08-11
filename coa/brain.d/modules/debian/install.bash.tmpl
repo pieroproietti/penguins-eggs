@@ -18,7 +18,45 @@ if [ -f /etc/default/grub ]; then
     fi
 fi
 
-if [ "$(uname -m)" = "riscv64" ]; then
+if [ -d /sys/firmware/efi ]; then
+    ARCH=$(uname -m)
+    case "$ARCH" in
+        x86_64)
+            GRUB_TARGET="x86_64-efi"
+            GRUB_BIN="grubx64.efi"
+            BOOT_BIN="BOOTX64.EFI"
+            ;;
+        aarch64|arm64)
+            GRUB_TARGET="arm64-efi"
+            GRUB_BIN="grubaa64.efi"
+            BOOT_BIN="BOOTAA64.EFI"
+            ;;
+        riscv64)
+            GRUB_TARGET="riscv64-efi"
+            GRUB_BIN="grubriscv64.efi"
+            BOOT_BIN="BOOTRISCV64.EFI"
+            ;;
+        i386|i686)
+            GRUB_TARGET="i386-efi"
+            GRUB_BIN="grubia32.efi"
+            BOOT_BIN="BOOTIA32.EFI"
+            ;;
+        *)
+            GRUB_TARGET="x86_64-efi"
+            GRUB_BIN="grubx64.efi"
+            BOOT_BIN="BOOTX64.EFI"
+            ;;
+    esac
+
+    if ! grub-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
+        [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+    fi
+
+    # Removable fallback
+    mkdir -p /boot/efi/EFI/BOOT
+    [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+    update-grub
+elif [ "$(uname -m)" = "riscv64" ]; then
     echo "-> RISC-V platform detected: writing Spacemit K1 U-Boot bootloader..."
     SPACEMIT_ASSETS="/usr/share/penguins-eggs/spacemit"
     [ -d "$SPACEMIT_ASSETS" ] || SPACEMIT_ASSETS="/etc/penguins-eggs.d/spacemit"
@@ -30,15 +68,6 @@ if [ "$(uname -m)" = "riscv64" ]; then
         [ -f "$SPACEMIT_ASSETS/fw_dynamic.itb" ] && dd if="$SPACEMIT_ASSETS/fw_dynamic.itb" of="${TARGET_DISK}p3" conv=fsync status=none 2>/dev/null || true
         [ -f "$SPACEMIT_ASSETS/u-boot.itb" ] && dd if="$SPACEMIT_ASSETS/u-boot.itb" of="${TARGET_DISK}p4" conv=fsync status=none 2>/dev/null || true
     fi
-elif [ -d /sys/firmware/efi ]; then
-    if ! grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
-        [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
-    fi
-
-    # Removable fallback: firmware (notably some VM/OVMF setups) with no
-    # NVRAM entry falls back to EFI/BOOT/BOOTX64.EFI.
-    mkdir -p /boot/efi/EFI/BOOT
-    [ -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
 else
     TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
     grub-install --target=i386-pc --recheck "$TARGET_DISK"

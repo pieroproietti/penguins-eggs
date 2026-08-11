@@ -36,9 +36,43 @@ if ! grep -q "GRUB_ENABLE_BLSCFG=false" /etc/default/grub; then
 fi
 
 if [ -d /sys/firmware/efi ]; then
-      # 3. THE FEDORA TRICK: Recover shimx64.efi hidden under the mount point
-      if [ ! -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
-          echo "-> Recovering original Fedora EFI (shim/SecureBoot) files..."
+      ARCH=$(uname -m)
+      case "$ARCH" in
+          x86_64)
+              GRUB_TARGET="x86_64-efi"
+              GRUB_BIN="grubx64.efi"
+              BOOT_BIN="BOOTX64.EFI"
+              SHIM_BIN="shimx64.efi"
+              ;;
+          aarch64|arm64)
+              GRUB_TARGET="arm64-efi"
+              GRUB_BIN="grubaa64.efi"
+              BOOT_BIN="BOOTAA64.EFI"
+              SHIM_BIN="shimaa64.efi"
+              ;;
+          riscv64)
+              GRUB_TARGET="riscv64-efi"
+              GRUB_BIN="grubriscv64.efi"
+              BOOT_BIN="BOOTRISCV64.EFI"
+              SHIM_BIN="shimriscv64.efi"
+              ;;
+          i386|i686)
+              GRUB_TARGET="i386-efi"
+              GRUB_BIN="grubia32.efi"
+              BOOT_BIN="BOOTIA32.EFI"
+              SHIM_BIN="shimia32.efi"
+              ;;
+          *)
+              GRUB_TARGET="x86_64-efi"
+              GRUB_BIN="grubx64.efi"
+              BOOT_BIN="BOOTX64.EFI"
+              SHIM_BIN="shimx64.efi"
+              ;;
+      esac
+
+      # 3. THE FEDORA TRICK: Recover shim hidden under the mount point
+      if [ ! -f "/boot/efi/EFI/{{ .DistroID }}/$SHIM_BIN" ] && [ ! -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
+          echo "-> Recovering original Fedora EFI files..."
           umount /boot/efi 2>/dev/null
           cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
           mount /boot/efi
@@ -49,14 +83,16 @@ if [ -d /sys/firmware/efi ]; then
       fi
 
       # 4. Install GRUB
-      grub2-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
+      grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
       mkdir -p "/boot/efi/EFI/{{ .DistroID }}"
       
       # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
-      if [ -f "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" ]; then
-          mkdir -p /boot/efi/EFI/BOOT
-          cp "/boot/efi/EFI/{{ .DistroID }}/shimx64.efi" /boot/efi/EFI/BOOT/BOOTX64.EFI
-          cp "/boot/efi/EFI/{{ .DistroID }}/grubx64.efi" /boot/efi/EFI/BOOT/grubx64.efi
+      mkdir -p /boot/efi/EFI/BOOT
+      if [ -f "/boot/efi/EFI/{{ .DistroID }}/$SHIM_BIN" ]; then
+          cp "/boot/efi/EFI/{{ .DistroID }}/$SHIM_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+          [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] && cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$GRUB_BIN"
+      elif [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
+          cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
       fi
 
       # 6. Generate configurations
