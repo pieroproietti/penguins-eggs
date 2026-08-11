@@ -49,3 +49,16 @@ func ExecCapture(command string) (string, error) {
 	cmd.Stdout = &out
 	return out.String(), cmd.Run()
 }
+
+// ExecCaptureCombined esegue un comando e restituisce sia stdout che stderr integrati come stringa
+func ExecCaptureCombined(command string) (string, error) {
+	ensureRootPath()
+
+	var out bytes.Buffer
+	cmd := exec.Command("sh", "-c", command)
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err := cmd.Run()
+	return out.String(), err
+}
+
