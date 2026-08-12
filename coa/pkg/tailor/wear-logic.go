@@ -316,22 +316,46 @@ func installInteractive(packages []string) []string {
 	return missing
 }
 
-// removePackages removes packages that the vendor does not want on the system.
-// Errors are logged but do not abort the process -- a package may simply
-// not be installed on this particular machine.
+// removePackages removes packages that the vendor does not want on the
+// system. Delegates to purgeBatched (same batching + dpkg-verification
+// as manifest reconciliation) and, critically, filters out the
+// currently-running kernel package before ever touching apt: a single
+// giant unbatched `apt-get remove` that includes the running kernel can
+// leave dpkg's trigger queue (initramfs regeneration, module rebuilds,
+// etc.) stuck in a broken state that then poisons every subsequent
+// apt-get call for the rest of the run, even completely unrelated ones
+// -- this happened for real: a run's packages_remove list included the
+// running kernel, and every apt-get invocation failed for the next 5
+// hours until a later batch happened to reinstall the new kernel and
+// apt itself, which flushed the stuck triggers and let everything
+// recover on its own.
 func removePackages(packages []string) {
 	if len(packages) == 0 {
 		return
 	}
 
-	pkgString := strings.Join(packages, " ")
-	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
-	logToFile(fmt.Sprintf("Removing packages: %s", pkgString))
-	if err := utils.Exec(cmd); err != nil {
-		logToFile(fmt.Sprintf("WARNING: Some packages could not be removed (may not be installed): %v", err))
+	var safe []string
+	kernel := currentKernelPackage()
+	for _, pkg := range packages {
+		if kernel != "" && normalizePkgName(pkg) == kernel {
+			logToFile(fmt.Sprintf("WARNING: refusing to remove %s: it is the currently running kernel.", pkg))
+			continue
+		}
+		safe = append(safe, pkg)
 	}
 
-	utils.Exec("DEBIAN_FRONTEND=readline apt-get autoremove -o Dpkg::Use-Pty=0 -y")
+	if len(safe) == 0 {
+		return
+	}
+
+	logToFile(fmt.Sprintf("Removing packages not needed by this vendor: %v", safe))
+	purged, failed := purgeBatched(safe)
+	if len(failed) > 0 {
+		logToFile(fmt.Sprintf("WARNING: %d package(s) could not be removed (may not be installed): %v", len(failed), failed))
+	}
+	if len(purged) > 0 {
+		logToFile(fmt.Sprintf("OK: %d package(s) removed.", len(purged)))
+	}
 }
 
 func printAiPrompt(packages []string) {
