@@ -126,9 +126,15 @@ func isDpkgStatusCode(s string) bool {
 }
 
 // currentlyInstalledPackages returns the set of packages dpkg currently
-// considers fully installed on the system.
+// considers fully installed on the system. Uses `dpkg -l` (the same
+// stable, column-based format the packages_manifest file itself uses,
+// via loadPackageManifest) rather than a custom dpkg-query -f format
+// string, since the latter turned out to have portability quirks that
+// made it silently return an almost-empty set on at least one real
+// system, causing reconciliation to think nearly everything was missing
+// and purge nothing.
 func currentlyInstalledPackages() (map[string]struct{}, error) {
-	out, err := utils.ExecCapture("dpkg-query -W -f='${Package} ${Status}\\n'")
+	out, err := utils.ExecCapture("dpkg -l")
 	if err != nil {
 		return nil, err
 	}
@@ -139,14 +145,14 @@ func currentlyInstalledPackages() (map[string]struct{}, error) {
 		if line == "" {
 			continue
 		}
-		if !strings.Contains(line, "install ok installed") {
-			continue
-		}
 		fields := strings.Fields(line)
-		if len(fields) == 0 {
+		if len(fields) < 2 {
 			continue
 		}
-		installed[normalizePkgName(fields[0])] = struct{}{}
+		if fields[0] != "ii" {
+			continue
+		}
+		installed[normalizePkgName(fields[1])] = struct{}{}
 	}
 	return installed, nil
 }
@@ -159,7 +165,7 @@ func currentlyInstalledPackages() (map[string]struct{}, error) {
 func reconcilePackages(target []string) (installedNow []string, purgedNow []string, failedInstall []string, failedPurge []string) {
 	installedSet, err := currentlyInstalledPackages()
 	if err != nil {
-		logToFile(fmt.Sprintf("⚠️  Could not reconcile packages against manifest: failed to query dpkg: %v", err))
+		logToFile(fmt.Sprintf("WARNING: Could not reconcile packages against manifest: failed to query dpkg: %v", err))
 		return nil, nil, nil, nil
 	}
 
@@ -174,6 +180,24 @@ func reconcilePackages(target []string) (installedNow []string, purgedNow []stri
 	}
 	if kernel := currentKernelPackage(); kernel != "" {
 		protect[kernel] = struct{}{}
+	}
+
+	logToFile(fmt.Sprintf("Manifest reconciliation: dpkg reports %d currently-installed package(s); manifest targets %d package(s).", len(installedSet), len(targetSet)))
+	if len(installedSet) < len(targetSet)/2 {
+		// Sanity check: if dpkg reports far fewer installed packages than
+		// the manifest targets, something is almost certainly wrong with
+		// how we're reading dpkg's state (rather than the machine
+		// genuinely having barely anything installed) -- log a sample so
+		// it's visible in the report/log instead of silently proceeding
+		// to (wrongly) try installing almost everything.
+		var sample []string
+		for p := range installedSet {
+			sample = append(sample, p)
+			if len(sample) >= 10 {
+				break
+			}
+		}
+		logToFile(fmt.Sprintf("WARNING: Suspiciously few installed packages detected -- sample of what dpkg reported: %v", sample))
 	}
 
 	var toInstall []string
@@ -243,14 +267,14 @@ func purgeBatched(packages []string) (purged []string, failed []string) {
 			continue
 		}
 
-		logToFile("⚠️  Batch purge failed. Retrying package by package to isolate failures...")
+		logToFile("WARNING: Batch purge failed. Retrying package by package to isolate failures...")
 		for _, pkg := range batch {
 			singleCmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get purge -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkg)
 			err := utils.Exec(singleCmd)
 			if err == nil || !isPackageInstalled(pkg) {
 				purged = append(purged, pkg)
 			} else {
-				logToFile(fmt.Sprintf("⚠️  Could not purge: %s", pkg))
+				logToFile(fmt.Sprintf("WARNING: Could not purge: %s", pkg))
 				failed = append(failed, pkg)
 			}
 		}

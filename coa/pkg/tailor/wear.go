@@ -80,13 +80,13 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 
 	clearScreen()
 
-	utils.LogNormal("✅ Costume '%s' applied. Installed: %d | Removed: %d | Could not be installed: %d | Could not be removed: %d",
+	utils.LogNormal("OK: Costume '%s' applied. Installed: %d | Removed: %d | Could not be installed: %d | Could not be removed: %d",
 		suit.Name, len(installedPackages), len(purgedPackages), len(failedPackages), len(failedPurges))
 
 	if reportErr != nil {
 		utils.LogNormal(utils.ColorYellow+"WARNING: could not write detailed report: %v"+utils.ColorReset, reportErr)
 	} else {
-		utils.LogNormal("📄 Detailed report: %s", reportPath)
+		utils.LogNormal("Report: %s", reportPath)
 	}
 
 	if suit.Reboot {

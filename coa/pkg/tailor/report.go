@@ -95,55 +95,46 @@ var kernelCleanupMessages = map[string]string{
 	"pt": "Depois de reiniciar, é recomendável remover as versões antigas do kernel e dos headers antes de criar o remaster com o coa.",
 }
 
-// kernelCleanupOrder is a fixed display order for the specifically
-// translated languages, so the message doesn't print in a different,
-// confusing order on every run (map iteration order isn't stable).
-var kernelCleanupOrder = []string{"es", "gl", "it", "fr", "de", "ru", "hu", "pt"}
-
-// detectActiveLanguages returns the set of ISO 639-1 language codes
-// currently generated/available on the system (via `locale -a`), so the
-// final reminder can be shown in every language actually in use on this
-// machine, not just whatever LANG the current shell happens to have.
-func detectActiveLanguages() map[string]bool {
-	langs := make(map[string]bool)
-	out, err := exec.Command("locale", "-a").Output()
-	if err != nil {
-		return langs
-	}
-	scanner := bufio.NewScanner(strings.NewReader(string(out)))
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		lower := strings.ToLower(line)
-		if lower == "" || lower == "c" || lower == "c.utf-8" || lower == "posix" {
+// detectSystemLanguage returns the ISO 639-1 language code of the
+// system's configured locale (LC_ALL, then LANG -- the standard glibc
+// precedence order), or "" if neither is set / recognizable. Since coa
+// runs as root, this reflects root's environment; if wear was invoked
+// via `sudo`, that's normally inherited from the invoking user's shell.
+func detectSystemLanguage() string {
+	for _, envVar := range []string{"LC_ALL", "LANG"} {
+		val := os.Getenv(envVar)
+		val = strings.TrimSpace(val)
+		if val == "" {
 			continue
 		}
-		code := line
+		lower := strings.ToLower(val)
+		if lower == "c" || lower == "c.utf-8" || lower == "posix" {
+			continue
+		}
+		code := val
 		if i := strings.IndexAny(code, "_."); i != -1 {
 			code = code[:i]
 		}
 		code = strings.ToLower(code)
 		if code != "" {
-			langs[code] = true
+			return code
 		}
 	}
-	return langs
+	return ""
 }
 
 // printKernelCleanupReminder shows the post-reboot kernel/header cleanup
-// reminder in every specifically-translated language actually in use on
-// this system (es/gl/it/fr/de/ru/hu/pt), plus English -- English is
-// always shown, both as the message's base language and as the
-// catch-all for every other locale in use that isn't one of the eight
-// above.
+// reminder in the system's configured language if it's one of the eight
+// specifically translated ones, or in English otherwise -- exactly one
+// language, matching how the machine is actually configured, not every
+// language that merely happens to be generated on it.
 func printKernelCleanupReminder() {
-	active := detectActiveLanguages()
-
-	utils.LogNormal("%s", kernelCleanupMessages["en"])
-	for _, code := range kernelCleanupOrder {
-		if active[code] {
-			utils.LogNormal("%s", kernelCleanupMessages[code])
-		}
+	lang := detectSystemLanguage()
+	if msg, ok := kernelCleanupMessages[lang]; ok {
+		utils.LogNormal("%s", msg)
+		return
 	}
+	utils.LogNormal("%s", kernelCleanupMessages["en"])
 }
 
 // clearScreen wipes the terminal so the brief final summary isn't lost

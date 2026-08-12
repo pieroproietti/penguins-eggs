@@ -202,14 +202,14 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 
 	logToFile(fmt.Sprintf("Installing batch of %d packages...", len(batch)))
 	if err := utils.Exec(cmd); err == nil {
-		logToFile("✅ Batch installed.")
+		logToFile("OK: Batch installed.")
 		return nil
 	}
 
 	// Fallback: install one by one so a single broken package does not
 	// prevent the rest of the batch from being installed. Packages that
 	// still fail after `retries` individual attempts are given up on.
-	logToFile("⚠️  Batch install failed. Retrying package by package to isolate failures...")
+	logToFile("WARNING: Batch install failed. Retrying package by package to isolate failures...")
 	pending := batch
 	for attempt := 1; attempt <= retries && len(pending) > 0; attempt++ {
 		var stillFailing []string
@@ -224,7 +224,7 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 				// package we actually asked for installed correctly.
 				// Double-check with dpkg before believing the failure.
 				if isPackageInstalled(pkg) {
-					logToFile(fmt.Sprintf("ℹ️  apt-get reported an error installing %s, but dpkg confirms it is installed correctly (likely an unrelated deferred trigger) -- not counting as failed.", pkg))
+					logToFile(fmt.Sprintf("ℹ  apt-get reported an error installing %s, but dpkg confirms it is installed correctly (likely an unrelated deferred trigger) -- not counting as failed.", pkg))
 				} else {
 					stillFailing = append(stillFailing, pkg)
 				}
@@ -232,14 +232,14 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 		}
 		pending = stillFailing
 		if len(pending) > 0 && attempt < retries {
-			logToFile(fmt.Sprintf("⚠️  %d packages still failing after attempt %d/%d, retrying: %v", len(pending), attempt, retries, pending))
+			logToFile(fmt.Sprintf("WARNING: %d packages still failing after attempt %d/%d, retrying: %v", len(pending), attempt, retries, pending))
 		}
 	}
 
 	if len(pending) > 0 {
-		logToFile(fmt.Sprintf("⚠️  %d packages could not be installed: %v", len(pending), pending))
+		logToFile(fmt.Sprintf("WARNING: %d packages could not be installed: %v", len(pending), pending))
 	} else {
-		logToFile("✅ All packages in batch installed successfully (one by one).")
+		logToFile("OK: All packages in batch installed successfully (one by one).")
 	}
 
 	return pending
@@ -309,7 +309,7 @@ func installInteractive(packages []string) []string {
 			}
 		}
 		if len(stillFailing) > 0 {
-			logToFile(fmt.Sprintf("⚠️  Some interactive packages could not be installed: %v", stillFailing))
+			logToFile(fmt.Sprintf("WARNING: Some interactive packages could not be installed: %v", stillFailing))
 		}
 		return append(missing, stillFailing...)
 	}
@@ -328,7 +328,7 @@ func removePackages(packages []string) {
 	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
 	logToFile(fmt.Sprintf("Removing packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {
-		logToFile(fmt.Sprintf("⚠️  Some packages could not be removed (may not be installed): %v", err))
+		logToFile(fmt.Sprintf("WARNING: Some packages could not be removed (may not be installed): %v", err))
 	}
 
 	utils.Exec("DEBIAN_FRONTEND=readline apt-get autoremove -o Dpkg::Use-Pty=0 -y")
@@ -384,7 +384,7 @@ func printAiPrompt(packages []string) {
 		if sudoUser != "" {
 			utils.Exec(fmt.Sprintf("chown %s:%s %s", sudoUser, sudoUser, promptFile))
 		}
-		logToFile(fmt.Sprintf("✅ AIPrompt.txt file generated at: %s", promptFile))
+		logToFile(fmt.Sprintf("OK: AIPrompt.txt file generated at: %s", promptFile))
 		utils.LogNormal("Prompt file generated in Home: %s%s%s\n", utils.ColorYellow, promptFile, utils.ColorReset)
 	}
 }
