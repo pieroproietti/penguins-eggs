@@ -16,14 +16,12 @@ import (
 
 func logToFile(message string) {
 	utils.LogNormal("%s", message)
-
 	logPath := "/var/log/coa-tailor.log"
 	f, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return
 	}
 	defer f.Close()
-
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 	f.WriteString(fmt.Sprintf("[%s] %s\n", timestamp, message))
 }
@@ -40,39 +38,32 @@ func loadSuit(yamlFile string) (*Suit, error) {
 	if yamlFile == "" {
 		return nil, fmt.Errorf("file 'index.yaml' not found")
 	}
-
 	data, err := os.ReadFile(yamlFile)
 	if err != nil {
 		return nil, err
 	}
-
 	var suit Suit
 	if err := yaml.Unmarshal(data, &suit); err != nil {
 		return nil, err
 	}
 	suit.normalize()
-
 	return &suit, nil
 }
 
 func getAvailablePackages() map[string]struct{} {
 	available := make(map[string]struct{})
-
 	if _, err := exec.LookPath("apt-cache"); err != nil {
 		return nil
 	}
-
 	logToFile("Updating available packages database...")
 	cmd := exec.Command("/usr/bin/apt-cache", "pkgnames")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return available
 	}
-
 	if err := cmd.Start(); err != nil {
 		return available
 	}
-
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -82,6 +73,17 @@ func getAvailablePackages() map[string]struct{} {
 	}
 	cmd.Wait()
 	return available
+}
+
+// normalizePkgName strips the ":arch" multi-arch qualifier some package
+// listings include (e.g. "zlib1g:amd64" -> "zlib1g"), so comparisons
+// against apt-cache pkgnames output line up correctly.
+func normalizePkgName(name string) string {
+	name = strings.TrimSpace(name)
+	if i := strings.Index(name, ":"); i != -1 {
+		name = name[:i]
+	}
+	return name
 }
 
 // batchSize caps how many packages go into a single apt-get invocation.
@@ -119,7 +121,6 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 	if len(packages) == 0 {
 		return nil
 	}
-
 	if _, err := exec.LookPath("apt-get"); err != nil {
 		printAiPrompt(packages)
 		return nil
@@ -128,10 +129,15 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 	available := getAvailablePackages()
 	var toInstall []string
 	var missing []string
-
 	if available != nil {
 		for _, pkg := range packages {
-			if _, ok := available[pkg]; ok {
+			// FIX: strip ":amd64" from package name so apt-cache pkgnames
+			// (which outputs bare names) matches correctly. Manifests
+			// exported from `dpkg -l` include arch qualifiers; without this
+			// normalization every such package was silently skipped as
+			// "not found in repository".
+			cleanPkg := normalizePkgName(pkg)
+			if _, ok := available[cleanPkg]; ok {
 				toInstall = append(toInstall, pkg)
 			} else {
 				missing = append(missing, pkg)
@@ -144,7 +150,6 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 	if len(missing) > 0 {
 		logToFile(fmt.Sprintf("WARNING: %d packages skipped (not found): %v", len(missing), missing))
 	}
-
 	if len(toInstall) == 0 {
 		logToFile("No valid packages to install.")
 		return missing
@@ -168,14 +173,11 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 		}
 		batch := toInstall[start:end]
 		batchNum := start/batchSize + 1
-
 		if totalBatches > 1 {
 			logToFile(fmt.Sprintf("Batch %d/%d (packages %d-%d of %d): %v", batchNum, totalBatches, start+1, end, len(toInstall), batch))
 		}
-
 		failed = append(failed, installBatchWithFallback(batch, retries, flags)...)
 	}
-
 	return append(missing, failed...)
 }
 
@@ -187,6 +189,7 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 func installBatchWithFallback(batch []string, retries int, flags string) []string {
 	// readline: accepts low-priority defaults automatically but shows
 	// critical prompts (e.g. firmware license agreements) to the user.
+	//
 	// Dpkg::Use-Pty=0: apt normally runs dpkg inside its own internal
 	// pseudo-terminal so it can both show the output live and log a copy
 	// to /var/log/apt/term.log. That mirroring has known bugs (Debian
@@ -199,32 +202,16 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 	// documented workaround for this class of bug.
 	pkgString := strings.Join(batch, " ")
 	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 %s %s", flags, pkgString)
-
 	logToFile(fmt.Sprintf("Installing batch of %d packages...", len(batch)))
 	if err := utils.Exec(cmd); err == nil {
-		logToFile("OK: Batch installed.")
+		logToFile("✅ Batch installed.")
 		return nil
 	}
 
 	// Fallback: install one by one so a single broken package does not
 	// prevent the rest of the batch from being installed. Packages that
 	// still fail after `retries` individual attempts are given up on.
-	logToFile("WARNING: Batch install failed. Retrying package by package to isolate failures...")
-
-	// A package left half-configured by a prior failure (classically: a
-	// DKMS driver module -- wifi/graphics drivers -- that fails to build
-	// against the current kernel) makes dpkg retry configuring THAT same
-	// broken package first on every subsequent invocation, before doing
-	// anything else. If it keeps failing, it silently blocks every batch
-	// that comes after it, for the rest of the run. Confirmed against a
-	// real run: apt-get failed identically for 5 hours straight until
-	// something unrelated happened to clear the backlog. Proactively
-	// flushing here means a stuck package only costs this one retry
-	// round, not the rest of the wear.
-	if err := utils.Exec("dpkg --configure -a"); err != nil {
-		logToFile(fmt.Sprintf("WARNING: dpkg --configure -a reported problems (a package may be stuck half-configured): %v", err))
-	}
-
+	logToFile("⚠️  Batch install failed. Retrying package by package to isolate failures...")
 	pending := batch
 	for attempt := 1; attempt <= retries && len(pending) > 0; attempt++ {
 		var stillFailing []string
@@ -239,7 +226,7 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 				// package we actually asked for installed correctly.
 				// Double-check with dpkg before believing the failure.
 				if isPackageInstalled(pkg) {
-					logToFile(fmt.Sprintf("ℹ  apt-get reported an error installing %s, but dpkg confirms it is installed correctly (likely an unrelated deferred trigger) -- not counting as failed.", pkg))
+					logToFile(fmt.Sprintf("ℹ️  apt-get reported an error installing %s, but dpkg confirms it is installed correctly (likely an unrelated deferred trigger) -- not counting as failed.", pkg))
 				} else {
 					stillFailing = append(stillFailing, pkg)
 				}
@@ -247,16 +234,15 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 		}
 		pending = stillFailing
 		if len(pending) > 0 && attempt < retries {
-			logToFile(fmt.Sprintf("WARNING: %d packages still failing after attempt %d/%d, retrying: %v", len(pending), attempt, retries, pending))
+			logToFile(fmt.Sprintf("⚠️  %d packages still failing after attempt %d/%d, retrying: %v", len(pending), attempt, retries, pending))
 		}
 	}
 
 	if len(pending) > 0 {
-		logToFile(fmt.Sprintf("WARNING: %d packages could not be installed: %v", len(pending), pending))
+		logToFile(fmt.Sprintf("⚠️  %d packages could not be installed: %v", len(pending), pending))
 	} else {
-		logToFile("OK: All packages in batch installed successfully (one by one).")
+		logToFile("✅ All packages in batch installed successfully (one by one).")
 	}
-
 	return pending
 }
 
@@ -289,10 +275,10 @@ func installInteractive(packages []string) []string {
 	available := getAvailablePackages()
 	var toInstall []string
 	var missing []string
-
 	if available != nil {
 		for _, pkg := range packages {
-			if _, ok := available[pkg]; ok {
+			cleanPkg := normalizePkgName(pkg)
+			if _, ok := available[cleanPkg]; ok {
 				toInstall = append(toInstall, pkg)
 			} else {
 				missing = append(missing, pkg)
@@ -305,7 +291,6 @@ func installInteractive(packages []string) []string {
 	if len(missing) > 0 {
 		logToFile(fmt.Sprintf("WARNING: %d interactive packages skipped (not found): %v", len(missing), missing))
 	}
-
 	if len(toInstall) == 0 {
 		return missing
 	}
@@ -314,9 +299,6 @@ func installInteractive(packages []string) []string {
 	cmd := fmt.Sprintf("apt-get install -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
 	logToFile(fmt.Sprintf("Installing interactive packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {
-		// Don't trust apt-get's exit code blindly: check each package
-		// against dpkg before reporting it as failed (see the comment on
-		// isPackageInstalled for why apt-get's exit code alone can lie).
 		var stillFailing []string
 		for _, pkg := range toInstall {
 			if !isPackageInstalled(pkg) {
@@ -324,53 +306,27 @@ func installInteractive(packages []string) []string {
 			}
 		}
 		if len(stillFailing) > 0 {
-			logToFile(fmt.Sprintf("WARNING: Some interactive packages could not be installed: %v", stillFailing))
+			logToFile(fmt.Sprintf("⚠️  Some interactive packages could not be installed: %v", stillFailing))
 		}
 		return append(missing, stillFailing...)
 	}
 	return missing
 }
 
-// removePackages removes packages that the vendor does not want on the
-// system. Delegates to purgeBatched (same batching + dpkg-verification
-// as manifest reconciliation) and, critically, filters out the
-// currently-running kernel package before ever touching apt: a single
-// giant unbatched `apt-get remove` that includes the running kernel can
-// leave dpkg's trigger queue (initramfs regeneration, module rebuilds,
-// etc.) stuck in a broken state that then poisons every subsequent
-// apt-get call for the rest of the run, even completely unrelated ones
-// -- this happened for real: a run's packages_remove list included the
-// running kernel, and every apt-get invocation failed for the next 5
-// hours until a later batch happened to reinstall the new kernel and
-// apt itself, which flushed the stuck triggers and let everything
-// recover on its own.
+// removePackages removes packages that the vendor does not want on the system.
+// Errors are logged but do not abort the process -- a package may simply
+// not be installed on this particular machine.
 func removePackages(packages []string) {
 	if len(packages) == 0 {
 		return
 	}
-
-	var safe []string
-	kernel := currentKernelPackage()
-	for _, pkg := range packages {
-		if kernel != "" && normalizePkgName(pkg) == kernel {
-			logToFile(fmt.Sprintf("WARNING: refusing to remove %s: it is the currently running kernel.", pkg))
-			continue
-		}
-		safe = append(safe, pkg)
+	pkgString := strings.Join(packages, " ")
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
+	logToFile(fmt.Sprintf("Removing packages: %s", pkgString))
+	if err := utils.Exec(cmd); err != nil {
+		logToFile(fmt.Sprintf("⚠️  Some packages could not be removed (may not be installed): %v", err))
 	}
-
-	if len(safe) == 0 {
-		return
-	}
-
-	logToFile(fmt.Sprintf("Removing packages not needed by this vendor: %v", safe))
-	purged, failed := purgeBatched(safe)
-	if len(failed) > 0 {
-		logToFile(fmt.Sprintf("WARNING: %d package(s) could not be removed (may not be installed): %v", len(failed), failed))
-	}
-	if len(purged) > 0 {
-		logToFile(fmt.Sprintf("OK: %d package(s) removed.", len(purged)))
-	}
+	utils.Exec("DEBIAN_FRONTEND=readline apt-get autoremove -o Dpkg::Use-Pty=0 -y")
 }
 
 func printAiPrompt(packages []string) {
@@ -379,29 +335,25 @@ func printAiPrompt(packages []string) {
 
 	gpuCmd := "lspci -k | grep -A 2 -E 'VGA|3D'"
 	gpuInfo, _ := exec.Command("sh", "-c", gpuCmd).Output()
-
 	sessionCmd := "ls /usr/share/xsessions/ 2>/dev/null"
 	sessions, _ := exec.Command("sh", "-c", sessionCmd).Output()
 
 	var sb strings.Builder
-	sb.WriteString("--- AI ASSISTANT PROMPT ---\n")
+	sb.WriteString("\n--- AI ASSISTANT PROMPT ---\n")
 	sb.WriteString(fmt.Sprintf("I am using %s (base %s).\n", d.DistroID, d.DistroLike))
 	sb.WriteString(fmt.Sprintf("I need to install and configure these packages:\n%s\n\n", strings.Join(packages, " ")))
-
 	sb.WriteString("HARDWARE INFO (for video drivers and KMS):\n")
 	if len(gpuInfo) > 0 {
 		sb.WriteString(string(gpuInfo))
 	} else {
 		sb.WriteString("No VGA info found (pciutils not installed?).\n")
 	}
-
 	sb.WriteString("\nAVAILABLE DESKTOP SESSIONS:\n")
 	if len(sessions) > 0 {
 		sb.WriteString(string(sessions))
 	} else {
 		sb.WriteString("No sessions found in /usr/share/xsessions/\n")
 	}
-
 	sb.WriteString("\nPlease give me the exact command to install the equivalent packages on this distro and the steps needed to configure LightDM correctly.\n")
 	sb.WriteString("----------------------------------------\n")
 
@@ -416,14 +368,13 @@ func printAiPrompt(packages []string) {
 
 	promptFile := filepath.Join(userHome, "AIPrompt.txt")
 	err := os.WriteFile(promptFile, []byte(promptContent), 0644)
-
 	if err != nil {
 		logToFile(fmt.Sprintf("Error creating AIPrompt.txt: %v", err))
 	} else {
 		if sudoUser != "" {
 			utils.Exec(fmt.Sprintf("chown %s:%s %s", sudoUser, sudoUser, promptFile))
 		}
-		logToFile(fmt.Sprintf("OK: AIPrompt.txt file generated at: %s", promptFile))
+		logToFile(fmt.Sprintf("✅ AIPrompt.txt file generated at: %s", promptFile))
 		utils.LogNormal("Prompt file generated in Home: %s%s%s\n", utils.ColorYellow, promptFile, utils.ColorReset)
 	}
 }

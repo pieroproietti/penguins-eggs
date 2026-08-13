@@ -54,23 +54,12 @@ func currentKernelPackage() string {
 	return pkg
 }
 
-// normalizePkgName strips the ":arch" multi-arch qualifier some package
-// listings include (e.g. "zlib1g:amd64" -> "zlib1g"), so comparisons
-// against dpkg-query's plain ${Package} output line up correctly.
-func normalizePkgName(name string) string {
-	name = strings.TrimSpace(name)
-	if i := strings.Index(name, ":"); i != -1 {
-		name = name[:i]
-	}
-	return name
-}
-
 // loadPackageManifest reads the target package set from path. It accepts
 // two formats, auto-detected line by line:
-//   - plain: one package name per line ("thunderbird")
-//   - dpkg -l / dpkg-query -W style: "ii  thunderbird  1:128.0-1  amd64  ..."
-//     (only lines starting with a two-letter dpkg status code followed by
-//     whitespace are treated this way; the package name is the 2nd field)
+// - plain: one package name per line ("thunderbird")
+// - dpkg -l / dpkg-query -W style: "ii thunderbird 1:128.0-1 amd64 ..."
+// (only lines starting with a two-letter dpkg status code followed by
+// whitespace are treated this way; the package name is the 2nd field)
 //
 // Blank lines and lines starting with '#' are ignored.
 func loadPackageManifest(path string) ([]string, error) {
@@ -79,26 +68,22 @@ func loadPackageManifest(path string) ([]string, error) {
 		return nil, err
 	}
 	defer f.Close()
-
 	seen := make(map[string]struct{})
 	var result []string
-
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-
 		fields := strings.Fields(line)
 		var pkg string
 		if len(fields) >= 2 && len(fields[0]) <= 3 && isDpkgStatusCode(fields[0]) {
-			// dpkg -l style: "ii  package-name  version  arch  description..."
+			// dpkg -l style: "ii package-name version arch description..."
 			pkg = fields[1]
 		} else {
 			pkg = fields[0]
 		}
-
 		pkg = normalizePkgName(pkg)
 		if pkg == "" {
 			continue
@@ -109,11 +94,9 @@ func loadPackageManifest(path string) ([]string, error) {
 		seen[pkg] = struct{}{}
 		result = append(result, pkg)
 	}
-
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
-
 	return result, nil
 }
 
@@ -126,172 +109,112 @@ func isDpkgStatusCode(s string) bool {
 }
 
 // currentlyInstalledPackages returns the set of packages dpkg currently
-// considers fully installed on the system. Uses `dpkg -l` (the same
-// stable, column-based format the packages_manifest file itself uses,
-// via loadPackageManifest) rather than a custom dpkg-query -f format
-// string, since the latter turned out to have portability quirks that
-// made it silently return an almost-empty set on at least one real
-// system, causing reconciliation to think nearly everything was missing
-// and purge nothing.
+// considers fully installed on the system.
 func currentlyInstalledPackages() (map[string]struct{}, error) {
-	out, err := utils.ExecCapture("dpkg -l")
+	out, err := utils.ExecCapture("dpkg-query -W -f='${Package} ${Status}\n'")
 	if err != nil {
 		return nil, err
 	}
-
 	installed := make(map[string]struct{})
 	for _, line := range strings.Split(out, "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
 		}
+		if !strings.Contains(line, "install ok installed") {
+			continue
+		}
 		fields := strings.Fields(line)
-		if len(fields) < 2 {
+		if len(fields) == 0 {
 			continue
 		}
-		if fields[0] != "ii" {
-			continue
-		}
-		installed[normalizePkgName(fields[1])] = struct{}{}
+		installed[normalizePkgName(fields[0])] = struct{}{}
 	}
 	return installed, nil
 }
 
-// reconcilePackages makes the installed package set match target exactly:
-// anything in target that's missing gets installed, anything installed
-// that's not in target (and not in the never-purge safety net) gets
-// purged. Returns a human-readable summary of what happened for the
-// caller to include in the final wear report.
-func reconcilePackages(target []string) (installedNow []string, purgedNow []string, failedInstall []string, failedPurge []string) {
+// DeclarativeCleanup makes the installed package set match target exactly
+// using native Debian machinery: it marks every currently-installed package
+// as 'auto' (a dependency) and then marks the target set (plus kernel and
+// base packages) as 'manual', finishing with 'apt-get autoremove --purge'.
+//
+// Why not the old chunked-purge approach? Splitting purges into batches of
+// 20 is fundamentally incompatible with apt's dependency resolution: if
+// batch 1 tries to purge libgtk-3-0 while xfce4-session (which depends on
+// it) sits in batch 2, apt aborts the entire batch to protect the system
+// and the cleanup silently fails. By letting apt resolve the full
+// dependency tree at once via autoremove, we get correct, atomic, and
+// idempotent cleanup with no cross-batch interference.
+func DeclarativeCleanup(target []string) {
+	utils.LogNormal("--- Aplicando limpieza declarativa de paquetes ---")
+
+	// 1. Protect the running kernel
+	if kernel := currentKernelPackage(); kernel != "" {
+		utils.Exec(fmt.Sprintf("apt-mark manual %s", kernel))
+	}
+
+	// 2. Protect base-system packages
+	for _, pkg := range neverPurgeBase {
+		utils.Exec(fmt.Sprintf("apt-mark manual %s", pkg))
+	}
+
+	// 3. Mark every currently-installed package as 'auto' (dependency).
+	// After this, nothing is "manually installed" except kernel+base, so
+	// apt would consider everything else removable. We then re-mark the
+	// target set as manual in step 4 so autoremove preserves what the
+	// vendor actually wants.
+	utils.LogNormal("Marcando sistema actual como dependencias automáticas...")
+	utils.Exec("dpkg-query -W -f='${Package}\n' | xargs apt-mark auto >/dev/null 2>&1")
+
+	// 4. Build the filtered target: only packages that are actually
+	// installed right now, deduplicated and normalized.
 	installedSet, err := currentlyInstalledPackages()
 	if err != nil {
-		logToFile(fmt.Sprintf("WARNING: Could not reconcile packages against manifest: failed to query dpkg: %v", err))
-		return nil, nil, nil, nil
+		utils.LogNormal("⚠️  No se pudo obtener la lista de paquetes instalados.")
+		return
 	}
 
-	targetSet := make(map[string]struct{}, len(target))
+	var cleanTarget []string
+	seen := make(map[string]struct{})
 	for _, p := range target {
-		targetSet[normalizePkgName(p)] = struct{}{}
+		pkg := normalizePkgName(p)
+		if pkg == "" {
+			continue
+		}
+		if _, ok := seen[pkg]; !ok {
+			seen[pkg] = struct{}{}
+			if _, isInstalled := installedSet[pkg]; isInstalled {
+				cleanTarget = append(cleanTarget, pkg)
+			}
+		}
 	}
-
-	protect := make(map[string]struct{})
-	for _, p := range neverPurgeBase {
-		protect[p] = struct{}{}
+	// Ensure kernel and base are also marked manual if installed
+	for _, pkg := range neverPurgeBase {
+		if _, isInstalled := installedSet[pkg]; isInstalled {
+			if _, already := seen[pkg]; !already {
+				cleanTarget = append(cleanTarget, pkg)
+			}
+		}
 	}
 	if kernel := currentKernelPackage(); kernel != "" {
-		protect[kernel] = struct{}{}
-	}
-
-	logToFile(fmt.Sprintf("Manifest reconciliation: dpkg reports %d currently-installed package(s); manifest targets %d package(s).", len(installedSet), len(targetSet)))
-	if len(installedSet) < len(targetSet)/2 {
-		// Sanity check: if dpkg reports far fewer installed packages than
-		// the manifest targets, something is almost certainly wrong with
-		// how we're reading dpkg's state (rather than the machine
-		// genuinely having barely anything installed) -- log a sample so
-		// it's visible in the report/log instead of silently proceeding
-		// to (wrongly) try installing almost everything.
-		var sample []string
-		for p := range installedSet {
-			sample = append(sample, p)
-			if len(sample) >= 10 {
-				break
-			}
-		}
-		logToFile(fmt.Sprintf("WARNING: Suspiciously few installed packages detected -- sample of what dpkg reported: %v", sample))
-	}
-
-	var toInstall []string
-	for p := range targetSet {
-		if _, ok := installedSet[p]; !ok {
-			toInstall = append(toInstall, p)
+		if _, already := seen[kernel]; !already {
+			cleanTarget = append(cleanTarget, kernel)
 		}
 	}
 
-	var toPurge []string
-	for p := range installedSet {
-		if _, ok := targetSet[p]; ok {
-			continue
-		}
-		if _, ok := protect[p]; ok {
-			continue
-		}
-		toPurge = append(toPurge, p)
+	if len(cleanTarget) > 0 {
+		pkgString := strings.Join(cleanTarget, " ")
+		utils.LogNormal("Marcando paquetes del wardrobe como manuales: %d paquetes", len(cleanTarget))
+		utils.Exec(fmt.Sprintf("apt-mark manual %s", pkgString))
 	}
 
-	if len(toInstall) > 0 {
-		logToFile(fmt.Sprintf("Manifest reconciliation: %d package(s) missing, installing...", len(toInstall)))
-		failedInstall = installWithRetries(toInstall, 3)
-		for _, p := range toInstall {
-			if !containsStr(failedInstall, p) {
-				installedNow = append(installedNow, p)
-			}
-		}
-	}
-
-	if len(toPurge) > 0 {
-		logToFile(fmt.Sprintf("Manifest reconciliation: %d package(s) present but not in the manifest, purging...", len(toPurge)))
-		purgedNow, failedPurge = purgeBatched(toPurge)
-	}
-
-	return installedNow, purgedNow, failedInstall, failedPurge
-}
-
-func containsStr(list []string, s string) bool {
-	for _, v := range list {
-		if v == s {
-			return true
-		}
-	}
-	return false
-}
-
-// purgeBatched purges packages in small batches (same rationale as
-// installBatchWithFallback: keep each dpkg transaction's trigger
-// processing small, and survive a crash mid-way with partial progress
-// intact). Verifies each failure against dpkg before giving up on it,
-// for the same reason installBatchWithFallback does.
-func purgeBatched(packages []string) (purged []string, failed []string) {
-	for start := 0; start < len(packages); start += batchSize {
-		end := start + batchSize
-		if end > len(packages) {
-			end = len(packages)
-		}
-		batch := packages[start:end]
-
-		pkgString := strings.Join(batch, " ")
-		cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get purge -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
-		logToFile(fmt.Sprintf("Purging batch of %d package(s) not in the manifest: %v", len(batch), batch))
-
-		if err := utils.Exec(cmd); err == nil {
-			purged = append(purged, batch...)
-			continue
-		}
-
-		logToFile("WARNING: Batch purge failed. Retrying package by package to isolate failures...")
-		if err := utils.Exec("dpkg --configure -a"); err != nil {
-			logToFile(fmt.Sprintf("WARNING: dpkg --configure -a reported problems (a package may be stuck half-configured): %v", err))
-		}
-		for _, pkg := range batch {
-			singleCmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get purge -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkg)
-			err := utils.Exec(singleCmd)
-			if err == nil || !isPackageInstalled(pkg) {
-				purged = append(purged, pkg)
-			} else {
-				logToFile(fmt.Sprintf("WARNING: Could not purge: %s", pkg))
-				failed = append(failed, pkg)
-			}
-		}
-	}
-
-	// Clean up now-orphaned dependencies of everything we just purged.
-	// Safe to run generically here since it only touches packages apt
-	// itself marked as automatically installed with no remaining
-	// reverse-dependencies -- it will never touch anything in `target`.
-	if len(purged) > 0 {
-		utils.Exec("DEBIAN_FRONTEND=readline apt-get autoremove -o Dpkg::Use-Pty=0 -y")
-	}
-
-	return purged, failed
+	// 5. autoremove does all the heavy lifting: it walks the dependency
+	// graph from every 'manual' package downward and purges anything
+	// marked 'auto' that is not a dependency of any manual package.
+	// This is the canonical Debian way to strip a system down to a
+	// declared package set.
+	utils.LogNormal("Ejecutando autoremove para purgar lo no declarado...")
+	utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get autoremove --purge -y")
 }
 
 func findManifestPath(costumeDir, manifest string) string {

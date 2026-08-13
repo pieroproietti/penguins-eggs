@@ -14,13 +14,11 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	}
 
 	utils.LogNormal("Starting costume application for: %s", costumeName)
-
 	root, err := getWardrobeRoot()
 	if err != nil {
 		utils.LogError("Wardrobe root error: %v", err)
 		return err
 	}
-
 	costumeDir := filepath.Join(root, "costumes", costumeName)
 	if _, err := os.Stat(costumeDir); os.IsNotExist(err) {
 		return fmt.Errorf("costume '%s' not found in %s", costumeName, costumeDir)
@@ -53,48 +51,60 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 		}
 	}
 
+	// Declarative cleanup: after installing everything the wardrobe wants,
+	// strip the system of anything not in the wardrobe's package set.
+	// We merge suit.Packages + accessories + packages_manifest into one
+	// target and let apt-mark + autoremove do the work.
 	var purgedPackages []string
 	var failedPurges []string
+
+	installedBefore, _ := currentlyInstalledPackages()
+
+	var finalTarget []string
+	finalTarget = append(finalTarget, suit.Packages...)
+	finalTarget = append(finalTarget, suit.PackagesNoRecommends...)
+	finalTarget = append(finalTarget, suit.PackagesInteractive...)
+
 	if manifestPath := findManifestPath(costumeDir, suit.PackagesManifest); manifestPath != "" {
-		utils.LogNormal("--- Reconciling installed packages against manifest: %s ---", manifestPath)
-		target, err := loadPackageManifest(manifestPath)
-		if err != nil {
-			utils.LogNormal(utils.ColorYellow+"WARNING: could not read packages_manifest %s: %v"+utils.ColorReset, manifestPath, err)
+		utils.LogNormal("--- Cargando manifiesto declarativo: %s ---", manifestPath)
+		if targetManifest, err := loadPackageManifest(manifestPath); err == nil {
+			finalTarget = append(finalTarget, targetManifest...)
 		} else {
-			var reconcileInstalled, reconcileFailed []string
-			reconcileInstalled, purgedPackages, reconcileFailed, failedPurges = reconcilePackages(target)
-			installedPackages = append(installedPackages, reconcileInstalled...)
-			failedPackages = append(failedPackages, reconcileFailed...)
+			utils.LogNormal(utils.ColorYellow+"WARNING: could not read packages_manifest %s: %v"+utils.ColorReset, manifestPath, err)
+		}
+	}
+
+	DeclarativeCleanup(finalTarget)
+
+	installedAfter, _ := currentlyInstalledPackages()
+	for p := range installedBefore {
+		if _, ok := installedAfter[p]; !ok {
+			purgedPackages = append(purgedPackages, p)
 		}
 	}
 
 	copySkelToUser()
-
 	reportPath, reportErr := writeWearReport(wearReport{
-		CostumeName:   suit.Name,
-		Installed:     installedPackages,
-		Purged:        purgedPackages,
+		CostumeName: suit.Name,
+		Installed:   installedPackages,
+		Purged:      purgedPackages,
 		FailedInstall: failedPackages,
-		FailedPurge:   failedPurges,
+		FailedPurge: failedPurges,
 	})
 
 	clearScreen()
-
-	utils.LogNormal("OK: Costume '%s' applied. Installed: %d | Removed: %d | Could not be installed: %d | Could not be removed: %d",
+	utils.LogNormal("✅ Costume '%s' applied. Installed: %d | Removed: %d | Could not be installed: %d | Could not be removed: %d",
 		suit.Name, len(installedPackages), len(purgedPackages), len(failedPackages), len(failedPurges))
 
 	if reportErr != nil {
 		utils.LogNormal(utils.ColorYellow+"WARNING: could not write detailed report: %v"+utils.ColorReset, reportErr)
 	} else {
-		utils.LogNormal("Report: %s", reportPath)
+		utils.LogNormal("📄 Detailed report: %s", reportPath)
 	}
-
 	if suit.Reboot {
 		utils.LogNormal(utils.ColorYellow + "This costume recommends a reboot to finish applying all changes." + utils.ColorReset)
 	}
-
 	printKernelCleanupReminder()
-
 	return nil
 }
 
@@ -107,7 +117,6 @@ func applySuit(dir string, suit *Suit) ([]string, []string, error) {
 
 	if suit.Sequence != nil && suit.Sequence.Repositories != nil {
 		setupRepositories(suit.Sequence.Repositories, suit.Name)
-
 		// A repository that was just added is invisible to apt until the
 		// package index is refreshed. Without this, every package that
 		// only exists in a repo added above silently fails to be found
@@ -154,12 +163,10 @@ func applySuit(dir string, suit *Suit) ([]string, []string, error) {
 	if _, err := os.Stat(sysrootPath); os.IsNotExist(err) {
 		sysrootPath = filepath.Join(dir, "dirs")
 	}
-
 	if _, err := os.Stat(sysrootPath); err == nil {
 		utils.LogNormal("[%s] Overlay folder found: %s", suit.Name, sysrootPath)
 		utils.LogNormal("[%s] Running rsync to root /...", suit.Name)
-
-		cmd := fmt.Sprintf("rsync -aAXv %s/ /", sysrootPath)
+		cmd := fmt.Sprintf("rsync -aAXv %s/", sysrootPath)
 		if err := utils.Exec(cmd); err != nil {
 			utils.LogNormal("[%s] Error during overlay: %v", suit.Name, err)
 		} else {
@@ -183,7 +190,6 @@ func applySuit(dir string, suit *Suit) ([]string, []string, error) {
 func copySkelToUser() {
 	targetUser := os.Getenv("SUDO_USER")
 	var userHome string
-
 	if targetUser != "" {
 		userHome = filepath.Join("/home", targetUser)
 	} else if u := firstHumanUser(); u != nil {
