@@ -268,6 +268,9 @@ func purgeBatched(packages []string) (purged []string, failed []string) {
 		}
 
 		logToFile("WARNING: Batch purge failed. Retrying package by package to isolate failures...")
+		if err := utils.Exec("dpkg --configure -a"); err != nil {
+			logToFile(fmt.Sprintf("WARNING: dpkg --configure -a reported problems (a package may be stuck half-configured): %v", err))
+		}
 		for _, pkg := range batch {
 			singleCmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get purge -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkg)
 			err := utils.Exec(singleCmd)

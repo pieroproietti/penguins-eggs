@@ -210,6 +210,21 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 	// prevent the rest of the batch from being installed. Packages that
 	// still fail after `retries` individual attempts are given up on.
 	logToFile("WARNING: Batch install failed. Retrying package by package to isolate failures...")
+
+	// A package left half-configured by a prior failure (classically: a
+	// DKMS driver module -- wifi/graphics drivers -- that fails to build
+	// against the current kernel) makes dpkg retry configuring THAT same
+	// broken package first on every subsequent invocation, before doing
+	// anything else. If it keeps failing, it silently blocks every batch
+	// that comes after it, for the rest of the run. Confirmed against a
+	// real run: apt-get failed identically for 5 hours straight until
+	// something unrelated happened to clear the backlog. Proactively
+	// flushing here means a stuck package only costs this one retry
+	// round, not the rest of the wear.
+	if err := utils.Exec("dpkg --configure -a"); err != nil {
+		logToFile(fmt.Sprintf("WARNING: dpkg --configure -a reported problems (a package may be stuck half-configured): %v", err))
+	}
+
 	pending := batch
 	for attempt := 1; attempt <= retries && len(pending) > 0; attempt++ {
 		var stillFailing []string
