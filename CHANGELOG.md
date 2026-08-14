@@ -13,14 +13,12 @@ This release introduces BIOS filesystem restriction to ext4 in Calamares partiti
 ### 🤖 Model Context Protocol (MCP) Integration
 * **Native MCP Server**: Implemented a built-in Model Context Protocol server in `coa/pkg/mcp/` (`server.go`, `manager.go`, `types.go`), enabling AI assistants and LLMs to interact with `penguins-eggs` directly via standardized MCP tools and resources.
 * **MCP CLI Management**: Added `eggs mcp start`, `eggs mcp stop`, `eggs mcp status`, `eggs mcp enable`, and `eggs mcp disable` commands for full background daemon lifecycle control.
-* **Protocol Documentation**: Added `MCP.md` detailing protocol capabilities, tool definitions, and integration workflows.
 
-### 🚀 Just-ISO Engine & Bootloader Consolidation
-* **Direct ISO Authoring ("Just ISO")**: Streamlined ISO generation in `coa/pkg/worker/xorriso.go`, eliminating intermediate disk image creation overhead for faster, leaner remastering flights.
+### 🚀 ISO Engine & Bootloader Consolidation
 * **Consolidated Bootloader Staging**: Refactored `bootloader-copy.sh` and distribution module scripts across Alpine, Arch-family, Debian, Fedora, and openSUSE (`coa/brain.d/modules/`) for unified EFI/BIOS bootloader staging and reliable live booting.
 
 ### 💻 RISC-V & Spacemit K1 (MUSE-Book) Port
-> Note: I have just a spacemit Musebook k1, so unfortunately can't test and debug for UEFI and ISO images, I need a Spacemit k3. 
+> Note: I have just a Spacemit Musebook M1 unable to boot on UEFI, so unfortunately can't test and debug ISO images, this need Spacemit k3 processor and I don't have it. 
 
 * **6-Partition Layout & bootfs**: Added full support for Spacemit K1 partition layout in Krill (`coa/pkg/sysinstall/krill/engine/partition.go`), provisioning `bootinfo`, `fsbl`, `env`, `opensbi`, `uboot`, `bootfs`, and `rootfs`.
 * **U-Boot & NVMe Integration**: Implemented NVMe boot scanning and U-Boot environment templating (`spacemit/env_k1-x.mustache`, `env_k1-x.26.3.11.mustache`).
