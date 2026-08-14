@@ -2,6 +2,41 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.8.14 - 2026-08-14
+This release introduces BIOS filesystem restriction to ext4 in Calamares partition configuration, Model Context Protocol (MCP) server integration for AI-assisted workflows, streamlined "Just-ISO" bootloader and packaging architecture, full RISC-V / Spacemit K1 (MUSE-Book) hardware support, multi-architecture builder hardening, and a restructured documentation suite.
+
+### 💿 Calamares & BIOS Partition Configuration
+* **BIOS Ext4 Enforcement**: Restricted `availableFileSystemTypes` in `partition.conf` strictly to `ext4` on standard BIOS (`msdos` partition table) systems (`coa/pkg/sysinstall/setup/partition-conf.go`), preventing incompatible filesystem selections on legacy BIOS installations while maintaining full dynamic filesystem discovery on UEFI (`gpt`).
+* **Btrfs Mount Optimization**: Enhanced default Btrfs mount options in `mount.conf.tmpl` with `compress=zstd:1`, async discard (`discard=async`) on SSDs, and `autodefrag` on HDDs.
+* **Unit Test Coverage**: Added unit tests in `coa/pkg/sysinstall/setup/partition-conf_test.go` to validate `partition.conf` generation and filesystem filtering across firmware modes.
+
+### 🤖 Model Context Protocol (MCP) Integration
+* **Native MCP Server**: Implemented a built-in Model Context Protocol server in `coa/pkg/mcp/` (`server.go`, `manager.go`, `types.go`), enabling AI assistants and LLMs to interact with `penguins-eggs` directly via standardized MCP tools and resources.
+* **MCP CLI Management**: Added `eggs mcp start`, `eggs mcp stop`, `eggs mcp status`, `eggs mcp enable`, and `eggs mcp disable` commands for full background daemon lifecycle control.
+* **Protocol Documentation**: Added `MCP.md` detailing protocol capabilities, tool definitions, and integration workflows.
+
+### 🚀 Just-ISO Engine & Bootloader Consolidation
+* **Direct ISO Authoring ("Just ISO")**: Streamlined ISO generation in `coa/pkg/worker/xorriso.go`, eliminating intermediate disk image creation overhead for faster, leaner remastering flights.
+* **Consolidated Bootloader Staging**: Refactored `bootloader-copy.sh` and distribution module scripts across Alpine, Arch-family, Debian, Fedora, and openSUSE (`coa/brain.d/modules/`) for unified EFI/BIOS bootloader staging and reliable live booting.
+
+### 💻 RISC-V & Spacemit K1 (MUSE-Book) Port
+> Note: I have just a spacemit Musebook k1, so unfortunately can't test and debug for UEFI and ISO images, I need a Spacemit k3. 
+
+* **6-Partition Layout & bootfs**: Added full support for Spacemit K1 partition layout in Krill (`coa/pkg/sysinstall/krill/engine/partition.go`), provisioning `bootinfo`, `fsbl`, `env`, `opensbi`, `uboot`, `bootfs`, and `rootfs`.
+* **U-Boot & NVMe Integration**: Implemented NVMe boot scanning and U-Boot environment templating (`spacemit/env_k1-x.mustache`, `env_k1-x.26.3.11.mustache`).
+* **sfdisk Alignment & Fallback**: Configured `first-lba: 256` in sfdisk partition generation for GPT alignment and implemented sfdisk fallback when `sgdisk` is unavailable.
+* **Kernel Symlink Resolution**: Resolved versioned kernel paths and symlinks for U-Boot execution in Krill's `runSystem()`.
+* **Hardware Tooling & Guides**: Added Wi-Fi autoconnect scripts and comprehensive installation documentation under `spacemit/DOCS/`.
+
+### 📦 Multi-Arch Builder & CI Hardening
+* **Multi-Arch Packaging**: Enhanced `coa/pkg/builder/` for multi-architecture package generation (Debian, Fedora, openSUSE), generating compliant control dependencies and architecture-specific GRUB packages.
+* **Scoped Dependencies**: Restricted `genimage` dependencies to ARM and RISC-V architectures.
+* **CI Workflow Fixes**: Resolved `GITHUB_WORKSPACE` expansion in non-root execution environments within `.github/workflows/hammers.yml`.
+
+### 📚 Documentation Reorganization
+* **Structured Hierarchy**: Reorganized `DOCS/` into structured sections: Philosophy (`1-philosophy/`), User Manual (`2-user-manual/`), and Developer Manual (`3-developer-manual/`).
+* **Numbered Navigation**: Added numerical prefixes to documentation files for clear reading order, translated `DOCS/README.md` to English, and positioned the *Manifestum* as the opening document.
+
 ## Release Notes: penguins-eggs v26.7.31 - 2026-07-31
 This release introduces offline locale detection and neutral `en_US.UTF-8` fallback handling in Krill, system-wide NetworkManager connection teardown during target installation, and XDG `/etc/skel` user profile credential sanitization.
 

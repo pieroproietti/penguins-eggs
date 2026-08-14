@@ -45,7 +45,14 @@ func GetAvailableFS() []string {
 
 func partitionConf() error {
 	tableType := getPartitionTableType()
-	fsList := GetAvailableFS()
+	var fsList []string
+
+	// Se il sistema è BIOS standard (msdos), limitiamo la selezione a ext4
+	if tableType == "msdos" {
+		fsList = []string{"ext4"}
+	} else {
+		fsList = GetAvailableFS()
+	}
 
 	// Controlla se btrfs è tra i filesystem disponibili
 	hasBtrfs := false

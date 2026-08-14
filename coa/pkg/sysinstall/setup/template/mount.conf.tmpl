@@ -34,8 +34,6 @@ btrfsSubvolumes:
     subvolume: /@cache
   - mountPoint: /var/log
     subvolume: /@log
-  - mountPoint: /.snapshots
-    subvolume: /@snapshots
 
 btrfsSwapSubvol: /@swap
 
@@ -49,8 +47,12 @@ mountOptions:
       - umask=0077
   - filesystem: btrfs
     options:
-      - defaults{{ if not .IsBIOS }}
-      - compress=zstd:1{{ end }}
+      - defaults
+      - compress=zstd:1
+    ssdOptions:
+      - discard=async
+    hddOptions:
+      - autodefrag
   - filesystem: btrfs_swap
     options:
       - defaults
