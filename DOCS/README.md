@@ -31,6 +31,7 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 - [The Navigator: `parser`](./3-developer-manual/architecture/5-parser.md) — Detection, YAML template rendering, profile creation.
 - [Installer Architecture](./3-developer-manual/architecture/6-installer.md) — `sysinstall`: one engine, two interfaces (Calamares GUI + Krill TUI).
 - [The Engineer: `planner`](./3-developer-manual/architecture/7-planner.md) — Execution plan compilation, exclude lists, breakpoints.
+- [Model Context Protocol (MCP)](./3-developer-manual/architecture/8-mcp.md) — Native MCP server and AI agent integration framework.
 
 ### ⚙️ Development Workflow & CI (`3-developer-manual/workflow/`)
 - [CI Architecture](./3-developer-manual/workflow/ci.md) — The three CI phases: Hammers (packaging), Furnace (remastering), and Incubator (installation).

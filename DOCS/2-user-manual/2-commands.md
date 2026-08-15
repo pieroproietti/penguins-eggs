@@ -20,6 +20,7 @@ The binary is installed as `eggs` (with `coa` working interchangeably as an alia
 | **`wardrobe`** | 🟡 Mixed | Manages and applies the costumes (desktop configurations). |
 | **`tools`** | 🟡 Mixed | Maintenance utilities: build, clean, grub40, repo, skel. |
 | **`config`** | 🟢 Yes | Interactive TUI for viewing and editing the configuration. |
+| **`mcp`** | 🟡 Mixed | Model Context Protocol (MCP) server management for AI agents. |
 | **`version`** | 🔴 No | Prints the eggs / coa version. |
 
 ---
@@ -114,6 +115,61 @@ Shows the current content of `/etc/penguins-eggs.d/custom.exclude.list` and open
 
 #### Save tab
 Choose **Save and exit** or **Exit without saving**. On save, the configuration is written to `/etc/penguins-eggs.d/custom.yaml`.
+
+---
+
+## 🤖 AI Agent & Model Context Protocol (`eggs mcp`)
+
+### `eggs mcp`
+Manages penguins-eggs integration with AI coding assistants and agent environments through the **Model Context Protocol (MCP)**. This allows tools like Google DeepMind Antigravity CLI, Anthropic Claude Desktop, Cursor, Zed, and VSCode Roo-Cline to discover system capabilities, trigger ISO remastering flights, inspect configuration, and run installers directly via JSON-RPC.
+
+*   **Subcommands:**
+    *   `eggs mcp enable`: Provisions `/etc/sudoers.d/penguins-eggs-mcp` for passwordless sudo execution of eggs commands and injects the penguins-eggs MCP server block into detected AI client configuration files.
+        *   **Usage:** `sudo eggs mcp enable`
+    *   `eggs mcp disable`: Removes penguins-eggs MCP configuration from client JSON files and purges `/etc/sudoers.d/penguins-eggs-mcp`.
+        *   **Usage:** `sudo eggs mcp disable`
+    *   `eggs mcp status`: Displays current status of sudoers rules, client JSON configurations, and any running MCP server background daemon processes.
+        *   **Usage:** `eggs mcp status`
+    *   `eggs mcp start`: Launches the interactive Stdio JSON-RPC 2.0 listener daemon. This command is invoked automatically by MCP clients when initializing the agent session. ANSI color styling is disabled automatically to guarantee protocol integrity.
+        *   **Usage:** `eggs mcp start`
+    *   `eggs mcp stop`: Finds and gracefully stops any active `eggs mcp start` background listener instances using `SIGTERM`.
+        *   **Usage:** `eggs mcp stop`
+
+#### Supported MCP Clients
+When running `sudo eggs mcp enable`, the following client configuration files are automatically detected and configured:
+
+| Client | Configuration Path |
+|---|---|
+| **Antigravity CLI** | `~/.config/antigravity/mcp.json` |
+| **Claude Desktop** | `~/.config/Claude/claude_desktop_config.json` |
+| **Roo-Cline (VSCode Server)** | `~/.vscode-server/data/User/globalStorage/rooveterinaryinc.roo-cline/settings/cline_mcp_settings.json` |
+| **Roo-Cline (VSCode Local)** | `~/.config/Code/User/globalStorage/rooveterinaryinc.roo-cline/settings/cline_mcp_settings.json` |
+| **Cursor Editor** | `~/.cursor/mcp.json` |
+| **Zed Editor** | `~/.config/zed/settings.json` |
+
+#### Exposed MCP Tools
+AI agents connected via MCP can invoke the following tools:
+
+| MCP Tool | Description | Parameters |
+|---|---|---|
+| `eggs_remaster` | Remasters the running system into a live bootable ISO. | `clone` (bool), `crypted` (bool), `compression` (string: `zstd`, `xz`, `lz4`, `gzip`), `path` (string), `stop_after` (string), `debug` (bool) |
+| `eggs_wardrobe` | Manages and applies wardrobe presets and desktop costumes. | `action` (required: `list`, `get`, `show`, `wear`), `costume` (string) |
+| `eggs_sysinstall` | Installs the live system environment permanently to local disk storage. | `installer` (`krill`, `calamares`), `unattended` (bool) |
+| `eggs_export` | Exports artifacts (ISO, packages, logs) to remote Proxmox storage. | `target` (required: `iso`, `pkg`, `log`) |
+| `eggs_tools` | Executes system utilities and maintenance tasks. | `tool` (required: `clean`, `grub40`, `skel`, `build`), `args` (string) |
+| `eggs_destroy` | Cleans up the remaster workspace and unmounts temporary filesystems. | *(none)* |
+| `eggs_version` | Retrieves runtime version, build architecture, and git commit details. | *(none)* |
+| `eggs_exec` | Executes an arbitrary eggs command string safely. | `command` (required: string, e.g. `"remaster --clone"`) |
+
+#### Exposed MCP Resources
+AI agents can read system state directly using MCP resources:
+
+| MCP Resource URI | Name | Description |
+|---|---|---|
+| `eggs://config` | Penguins Eggs Configuration | Contents of `/etc/penguins-eggs.conf` |
+| `eggs://exclude-list` | Custom Exclude List | Contents of `/etc/penguins-eggs.d/custom.exclude.list` |
+| `eggs://version` | Version Info | Build version, target architecture, and binary details |
+| `eggs://status` | System Remaster Status | Host distribution, family, kernel release, and live environment status |
 
 ---
 

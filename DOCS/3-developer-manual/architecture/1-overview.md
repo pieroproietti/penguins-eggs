@@ -20,6 +20,7 @@ The `cmd` package contains the user interface. Each file maps a command the user
 | `wardrobe` | No | Manages the costumes (themes/configurations) with `get`, `list`, `show` and `wear`. |
 | `tools` | Mixed | Maintenance utilities: `build` (native packages), `clean`, `grub40`, `repo`, `skel`. |
 | `config` | Yes | Interactive TUI for viewing and editing the configuration (`/etc/penguins-eggs.d/custom.yaml` and the custom exclude list). |
+| `mcp` | Mixed | Model Context Protocol server daemon and client integrations for AI agents (`enable`, `disable`, `status`, `start`, `stop`). → [8-mcp.md](./8-mcp.md) |
 | `_gen_docs` | No | Hidden command used at build time to autogenerate Markdown docs, man pages and shell completions. |
 
 ---
@@ -63,6 +64,7 @@ This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution
 | `builder` | Generates the native coa/oa packages (.deb, PKGBUILD, .rpm) for each distribution. |
 | `bleach` | Cleanup routines for the various distributions. |
 | `tailor` | The tailor managing the wardrobe (costumes). |
+| `mcp` | Native Model Context Protocol (MCP) server daemon and client management. → [8-mcp.md](./8-mcp.md) |
 | `worker` | The Go modules executed on behalf of the C engine (`coa ell`). → [ell.md](./4-ell.md) |
 | `context` | The structured `RuntimeContext` passed across packages. |
 | `pathDefaults` | Centralized default paths (`/home/eggs`, `/tmp/coa`, log file). |

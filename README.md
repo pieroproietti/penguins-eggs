@@ -13,7 +13,7 @@ The goal is ambitious: a truly universal approach to Linux remastering. Every di
 We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
 
 ### 🧠 [coa](./DOCS/3-developer-manual/architecture/1-overview.md) (**brooding in my dialect**) - The Mind
-It manages the full lifecycle: from laying the ISO to the final installation. It powers the primary **`eggs`** CLI command.
+It manages the full lifecycle: from laying the ISO to the final installation and AI agent orchestration (via MCP). It powers the primary **`eggs`** CLI command.
 
 The name derives from the dialect word coa, referring to the act of brooding or incubating eggs until they are ready to hatch. During early development, the repo was named `oa-tools` with binaries `coa` and `oa`, but `eggs` is the primary CLI executable used by developers and users.
 
@@ -32,7 +32,7 @@ For `eggs` commands, see [eggs Command Reference](./DOCS/2-user-manual/2-command
 
 ## 🚀 Getting Started
 
-> The primary CLI command is **`eggs`** (e.g. `eggs remaster`, `eggs produce`, `eggs sysinstall`, `eggs destroy`). The binary is available as both `eggs` and `coa`. See the [Quick Start](./DOCS/2-user-manual/1-quickstart.md) for the full command usage.
+> The primary CLI command is **`eggs`** (e.g. `eggs remaster`, `eggs produce`, `eggs sysinstall`, `eggs destroy`, `eggs mcp`). The binary is available as both `eggs` and `coa`. See the [Quick Start](./DOCS/2-user-manual/1-quickstart.md) for the full command usage.
 
 ### Prerequisites
 - A Linux system (Debian-based, Arch-based, Fedora-based or Manjaro-based).

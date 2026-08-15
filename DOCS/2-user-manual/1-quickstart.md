@@ -105,6 +105,18 @@ sudo eggs tools grub40 /path/to/my.iso --write
 sudo update-grub
 ```
 
+### Connect with AI Agents (MCP)
+
+```bash
+# Enable MCP server and configure AI clients (Antigravity, Claude, Roo-Cline, Cursor, Zed)
+sudo eggs mcp enable
+
+# Check status of MCP integration
+eggs mcp status
+```
+
+Once enabled, your AI assistant can discover penguins-eggs tools and remaster your system, wear costumes, or inspect configuration on demand.
+
 ## Supported distributions
 
 penguins-eggs detects the host automatically. Currently supported families:

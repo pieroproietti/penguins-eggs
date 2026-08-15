@@ -73,6 +73,10 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
     - `eggs wardrobe show`: Outlines specific package declarations and files of a chosen costume.
     - `eggs wardrobe wear`: Installs and applies a designated profile onto the running system.
   - **Intents**: "presets", "blueprints", "apply profile", "install configurations", "dress up system".
+* #### `eggs config`
+  - **Purpose**: Interactive TUI for viewing and editing system configuration (`/etc/penguins-eggs.d/custom.yaml`) and custom exclude lists.
+  - **Rules**: Requires root privileges (`sudo`).
+  - **Intents**: "configure eggs", "change compression", "edit exclude list", "settings TUI".
 * #### `eggs adapt`
   - **Purpose**: Detects and adapts the video rendering resolution on the fly to fit inside virtual machine windows.
   - **Intents**: "fix screen resolution in VM", "resize monitor window", "adjust guest display".
@@ -87,7 +91,19 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
       - `--unattended`: Non-interactive install with live-user defaults and 10-second abort countdown.
   - **Intents**: "install to disk", "run installer", "start GUI installation", "text-mode setup".
 
-### 3. Build & Artifact Pipeline
+### 3. AI Agent & MCP Integration
+* #### `eggs mcp`
+  - **Purpose**: Manages the Model Context Protocol (MCP) server daemon and client integrations, allowing AI agents (such as Antigravity CLI, Claude Desktop, Cursor, Zed, and Roo-Cline) to interact with eggs via standardized JSON-RPC 2.0 tools and resources.
+  - **Subcommands**:
+    - `eggs mcp enable`: Configures passwordless sudoers rules (`/etc/sudoers.d/penguins-eggs-mcp`) and injects the eggs MCP server configuration into detected AI client config files. (Requires `sudo`).
+    - `eggs mcp disable`: Removes eggs MCP configuration from client config files and purges `/etc/sudoers.d/penguins-eggs-mcp`. (Requires `sudo`).
+    - `eggs mcp status`: Inspects sudoers status, client JSON configs status, and running daemon listener PIDs.
+    - `eggs mcp start`: Launches the interactive Stdio JSON-RPC MCP server daemon listener. Invoked automatically by AI client runtimes.
+    - `eggs mcp stop`: Finds and terminates any running `eggs mcp start` background daemon instances.
+  - **Rules**: `enable` and `disable` require root privileges (`sudo`). `start`, `stop`, and `status` run in user mode.
+  - **Intents**: "AI agent integration", "MCP server", "enable MCP", "connect AI to eggs", "run eggs via MCP", "start MCP daemon".
+
+### 4. Build & Artifact Pipeline
 * #### `eggs export`
   - **Purpose**: Exports finished binaries, logs, or system images directly into an authorized Proxmox remote storage array.
   - **Subcommands**:
@@ -96,26 +112,28 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
     - `eggs export log`: Combines build logs and tracking schemas into a unified transaction transfer.
   - **Intents**: "upload ISO to Proxmox", "send packages to remote storage", "backup system logs".
 * #### `eggs tools`
-  - **Purpose**: Management namespace for development pipelines and host configuration tasks.
-  - **Subcommands**:
-    - `eggs tools build`: Compiles the whole `oa`/`coa` ecosystem from source and packages distribution binaries.
-      - **CRITICAL**: **NEVER invoke with `sudo`**. It incorporates an explicit uid-guard to block root-owned clutter in developer workspaces.
-    - `eggs tools clean`: Sweeps active terminal logs, clears host package caches (`apt`/`pacman`), and unlinks system residues.
-    - `eggs tools grub40 [path/to/iso]`: Universally inspects any Linux ISO via `bsdtar` to automatically extract native kernel/initrd paths and boot parameters. Computes a bulletproof GRUB `40_custom` loopback boot entry, tracking BTRFS subvolumes (e.g., `/@home/`), partition mount points, and applying runtime GRUB `probe` UUID tracking for full Archiso/Debian cross-compatibility.
-      - **Flags**: 
-        - `-w`, `--write`: Directly injects, appends, or surgically replaces the configuration block inside `/etc/grub.d/40_custom` using unique text markers based on the ISO filename. Automatically preserves target file execution bits (`0755`).
-      - **Rules**: Requires root privileges (`sudo`) **ONLY** when invoking the `--write` flag.
-    - `eggs tools skel`: Universally detects the host's Desktop Environment and regenerates the `/etc/skel` directory by securely cloning shell profiles and XDG visual configurations from a source user. Ensures the resulting Live system or newly created users retain the exact look and feel of the configured desktop.
-      - **Flags**:
-        - `-u`, `--user`: Specifies the source user to clone configurations from (defaults automatically to the `SUDO_USER` invoking the command).
-      - **Rules**: Requires root privileges (`sudo`).
-  - **Intents**: "compile source", "clear apt cache", "generate grub entry for iso", "add eggs repository", "boot iso from hard drive", "inject grub loopback configuration", "write to 40_custom", "clone user configuration", "rebuild skel", "copy desktop settings to skel", "configure live visual profile".
+  - **Purpose**: Management namespace for development pipelines and host configuration tasks.
+  - **Subcommands**:
+    - `eggs tools build`: Compiles the whole `oa`/`coa` ecosystem from source and packages distribution binaries.
+      - **CRITICAL**: **NEVER invoke with `sudo`**. It incorporates an explicit uid-guard to block root-owned clutter in developer workspaces.
+    - `eggs tools clean`: Sweeps active terminal logs, clears host package caches (`apt`/`pacman`), and unlinks system residues.
+    - `eggs tools grub40 [path/to/iso]`: Universally inspects any Linux ISO via `bsdtar` to automatically extract native kernel/initrd paths and boot parameters. Computes a bulletproof GRUB `40_custom` loopback boot entry, tracking BTRFS subvolumes (e.g., `/@home/`), partition mount points, and applying runtime GRUB `probe` UUID tracking for full Archiso/Debian cross-compatibility.
+      - **Flags**: 
+        - `-w`, `--write`: Directly injects, appends, or surgically replaces the configuration block inside `/etc/grub.d/40_custom` using unique text markers based on the ISO filename. Automatically preserves target file execution bits (`0755`).
+      - **Rules**: Requires root privileges (`sudo`) **ONLY** when invoking the `--write` flag.
+    - `eggs tools repo [add|rm]`: Adds or removes the official penguins-eggs repository on the host system.
+      - **Rules**: Requires root privileges (`sudo`).
+    - `eggs tools skel`: Universally detects the host's Desktop Environment and regenerates the `/etc/skel` directory by securely cloning shell profiles and XDG visual configurations from a source user. Ensures the resulting Live system or newly created users retain the exact look and feel of the configured desktop.
+      - **Flags**:
+        - `-u`, `--user`: Specifies the source user to clone configurations from (defaults automatically to the `SUDO_USER` invoking the command).
+      - **Rules**: Requires root privileges (`sudo`).
+  - **Intents**: "compile source", "clear apt cache", "generate grub entry for iso", "add eggs repository", "boot iso from hard drive", "inject grub loopback configuration", "write to 40_custom", "clone user configuration", "rebuild skel", "copy desktop settings to skel", "configure live visual profile".
 * #### `eggs destroy`
   - **Purpose**: Clear active staging setups, unmounts temporary runtime target filesystems, and purges the build "nest".
   - **Rules**: Requires root privileges (`sudo`).
   - **Intents**: "clean workspace", "unmount filesystems", "empty build nest", "wipe temp folders".
 
-### 4. System Introspection & Help
+### 5. System Introspection & Help
 * #### `eggs completion [bash|fish|powershell|zsh]`
   - **Purpose**: Generates native shell tab-completion scripts.
 * #### `eggs version`
