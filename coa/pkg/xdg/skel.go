@@ -85,6 +85,12 @@ func HandleSkel(targetUser string) {
 		rsyncIfExist(filepath.Join(userHome, ".config"), "/etc/skel/")
 		rsyncIfExist(filepath.Join(userHome, ".gtkrc-2.0"), "/etc/skel/")
 
+	} else if hasExecutable("openbox") || hasExecutable("openbox-session") {
+		// OPENBOX (Mabox, etc.) - panel/compositor/theme tools each own a
+		// top-level ~/.config dir (openbox, tint2, conky, ...), so copy it whole
+		rsyncIfExist(filepath.Join(userHome, ".config"), "/etc/skel/")
+		rsyncIfExist(filepath.Join(userHome, ".gtkrc-2.0"), "/etc/skel/")
+
 	} else if hasExecutable("xfce4-session") {
 		// XFCE4
 		utils.ExecQuiet("mkdir -p /etc/skel/.config")
