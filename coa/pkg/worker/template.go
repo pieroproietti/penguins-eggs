@@ -85,6 +85,11 @@ func RunTemplate(payload []byte) error {
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("unable to create directories for %s: %w", fullPath, err)
 	}
+	// MkdirAll's mode is umask-shrunk like any mkdir(2); force it explicitly,
+	// same reasoning as the file chmod below.
+	if err := os.Chmod(dir, 0755); err != nil {
+		return fmt.Errorf("error setting permissions for %s: %w", dir, err)
+	}
 
 	perms := config.Params.Permissions
 	if perms == 0 {

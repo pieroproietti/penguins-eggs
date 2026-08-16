@@ -11,6 +11,9 @@ OVERLAY="$BASEPATH/.overlay"
 
 # 1. SETUP STRUTTURA
 mkdir -p "$LIVEROOT" "$OVERLAY/upperdir" "$OVERLAY/workdir" "$OVERLAY/lowerdir"
+# LIVEROOT stesso diventa la '/' dello squashfs finale: mkdir -p non corregge
+# i bit su una dir preesistente da un run precedente con umask ristretto.
+chmod 0755 "$LIVEROOT"
 
 # 1.1. SELF-BIND OF LIVEROOT
 # Needed so pacman sees "/" as a mountpoint inside the chroot (otherwise

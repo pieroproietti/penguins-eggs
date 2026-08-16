@@ -58,7 +58,9 @@ func HandleBuild(d *distro.Distro) {
 	recipe(ctx, dist, data)
 
 	// normalize perms: staging/recipe writes are umask-sensitive, packagers aren't
-	normalizePerms(ctx.StageDir)
+	if err := normalizePerms(ctx.StageDir); err != nil {
+		utils.LogWarning("normalizePerms: %v", err)
+	}
 
 	// 4. Packager
 	packager(ctx, dist, data)
