@@ -57,6 +57,9 @@ func HandleBuild(d *distro.Distro) {
 	// 3. addBuildRecipe
 	recipe(ctx, dist, data)
 
+	// normalize perms: staging/recipe writes are umask-sensitive, packagers aren't
+	normalizePerms(ctx.StageDir)
+
 	// 4. Packager
 	packager(ctx, dist, data)
 }

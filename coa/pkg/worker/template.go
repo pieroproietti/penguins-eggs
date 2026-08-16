@@ -95,6 +95,13 @@ func RunTemplate(payload []byte) error {
 		return fmt.Errorf("error writing file: %w", err)
 	}
 
+	// WriteFile's mode goes through the caller's umask like any open(2);
+	// force it explicitly so a restrictive umask can't silently shrink it
+	// (e.g. this polkit policy needing to stay world-readable for polkitd).
+	if err := os.Chmod(fullPath, perms); err != nil {
+		return fmt.Errorf("error setting permissions for %s: %w", fullPath, err)
+	}
+
 	fmt.Printf("📦 [worker] Template rendered and written to: %s\n", fullPath)
 	return nil
 }

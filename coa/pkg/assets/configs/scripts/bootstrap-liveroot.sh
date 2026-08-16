@@ -70,6 +70,10 @@ for ovlDir in usr var; do
 
     # FIX: Aggiunto $MERGED alla lista delle directory da creare
     mkdir -p "$LOWER" "$UPPER" "$WORK" "$MERGED"
+    # L'overlay eredita i bit di upperdir per la root del merge: mkdir -p
+    # non li corregge su una dir preesistente (es. run precedente con umask
+    # ristretto), e senza questo dbus non riesce piu' a leggere /usr o /var.
+    chmod 0755 "$UPPER"
     mountpoint -q "$LOWER" || mount --bind "/$ovlDir" "$LOWER"
     mountpoint -q "$MERGED" || mount -t overlay overlay -o lowerdir="$LOWER",upperdir="$UPPER",workdir="$WORK" "$MERGED"
 done
