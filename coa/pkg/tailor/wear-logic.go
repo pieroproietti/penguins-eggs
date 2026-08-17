@@ -131,11 +131,10 @@ func installPackagesImpl(packages []string, retries int, noRecommends bool) []st
 	var missing []string
 	if available != nil {
 		for _, pkg := range packages {
-			// FIX: strip ":amd64" from package name so apt-cache pkgnames
-			// (which outputs bare names) matches correctly. Manifests
-			// exported from `dpkg -l` include arch qualifiers; without this
-			// normalization every such package was silently skipped as
-			// "not found in repository".
+			// FIX: strip ":amd64" before checking the cache. apt-cache
+			// pkgnames outputs bare names, but manifests exported from
+			// `dpkg -l` include arch qualifiers; without this every such
+			// package was silently skipped as "not found in repository".
 			cleanPkg := normalizePkgName(pkg)
 			if _, ok := available[cleanPkg]; ok {
 				toInstall = append(toInstall, pkg)
@@ -208,10 +207,17 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 		return nil
 	}
 
+	// A failed postinst (dkms build, debconf, etc.) can leave dpkg in an
+	// interrupted state that makes EVERY subsequent apt-get call fail in
+	// cascade. Heal the state before the per-package fallback.
+	logToFile("⚠️  Batch install failed. Healing dpkg state before retrying...")
+	utils.Exec("dpkg --configure -a")
+	utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get install -f -y")
+
 	// Fallback: install one by one so a single broken package does not
 	// prevent the rest of the batch from being installed. Packages that
 	// still fail after `retries` individual attempts are given up on.
-	logToFile("⚠️  Batch install failed. Retrying package by package to isolate failures...")
+	logToFile("⚠️  Retrying package by package to isolate failures...")
 	pending := batch
 	for attempt := 1; attempt <= retries && len(pending) > 0; attempt++ {
 		var stillFailing []string
@@ -247,22 +253,23 @@ func installBatchWithFallback(batch []string, retries int, flags string) []strin
 }
 
 // isPackageInstalled reports whether dpkg considers pkg to be correctly
-// and fully installed ("install ok installed"), independent of what the
-// most recent apt-get call's exit code said. Used to avoid false-positive
-// failure reports caused by unrelated deferred dpkg triggers poisoning an
-// otherwise-successful package's apt-get exit code.
+// and fully installed. Reads the dpkg status file directly: the previous
+// subprocess-based version returned false on the test VM whenever the
+// capture failed, which turned every already-installed package into a
+// "could not be installed" report during the per-package fallback.
 func isPackageInstalled(pkg string) bool {
-	out, err := utils.ExecCapture(fmt.Sprintf("dpkg-query -W -f='${Status}' %s 2>/dev/null", pkg))
+	installed, err := currentlyInstalledPackages()
 	if err != nil {
 		return false
 	}
-	return strings.Contains(out, "install ok installed")
+	_, ok := installed[normalizePkgName(pkg)]
+	return ok
 }
 
 // installInteractive installs packages without suppressing debconf prompts.
 // Use this for packages that require user interaction (e.g. license acceptance).
 // Dpkg::Use-Pty=0 avoids apt's internal pty-mirroring bug that can drop the
-// live prompt from the real terminal (see the comment in installPackagesImpl).
+// live prompt from the real terminal (see the comment in installBatchWithFallback).
 // Returns the packages that could not be installed (missing from apt's
 // cache, or the whole batch if the bulk apt-get call failed -- interactive
 // packages are typically few and license-related, so we don't attempt the
@@ -315,12 +322,27 @@ func installInteractive(packages []string) []string {
 
 // removePackages removes packages that the vendor does not want on the system.
 // Errors are logged but do not abort the process -- a package may simply
-// not be installed on this particular machine.
+// not be installed on this particular machine. The currently running kernel
+// is always protected, even if a vendor lists it by mistake.
 func removePackages(packages []string) {
 	if len(packages) == 0 {
 		return
 	}
-	pkgString := strings.Join(packages, " ")
+
+	kernel := currentKernelPackage()
+	var safe []string
+	for _, p := range packages {
+		if kernel != "" && normalizePkgName(p) == kernel {
+			logToFile(fmt.Sprintf("⚠️  Refusing to remove the running kernel package: %s", p))
+			continue
+		}
+		safe = append(safe, p)
+	}
+	if len(safe) == 0 {
+		return
+	}
+
+	pkgString := strings.Join(safe, " ")
 	cmd := fmt.Sprintf("DEBIAN_FRONTEND=readline apt-get remove -o Dpkg::Options::='--force-confold' -o Dpkg::Use-Pty=0 -y %s", pkgString)
 	logToFile(fmt.Sprintf("Removing packages: %s", pkgString))
 	if err := utils.Exec(cmd); err != nil {

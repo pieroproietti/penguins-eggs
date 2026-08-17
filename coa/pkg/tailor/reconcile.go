@@ -17,9 +17,13 @@ import (
 // vendor's intent, since all of these are expected to be in any correct
 // manifest anyway.
 var neverPurgeBase = []string{
+	// package management
 	"dpkg",
 	"apt",
 	"apt-utils",
+	"apt-transport-https",
+	"ca-certificates",
+	// base system
 	"base-files",
 	"base-passwd",
 	"init",
@@ -30,6 +34,25 @@ var neverPurgeBase = []string{
 	"libc6",
 	"coreutils",
 	"bash",
+	"dash",
+	"util-linux",
+	"e2fsprogs",
+	"mount",
+	// remastering tools: the wardrobe must never uninstall itself
+	"penguins-eggs",
+	"coa",
+	// boot
+	"grub-pc",
+	"grub-common",
+	"grub2-common",
+	"grub-efi-amd64",
+	"linux-base",
+	"initramfs-tools",
+	// networking / remote access
+	"openssh-server",
+	"openssh-client",
+	"network-manager",
+	"network-manager-gnome",
 }
 
 // currentKernelPackage returns the package that owns the currently
@@ -55,12 +78,10 @@ func currentKernelPackage() string {
 }
 
 // loadPackageManifest reads the target package set from path. It accepts
-// two formats, auto-detected line by line:
+// multiple formats, auto-detected line by line:
 // - plain: one package name per line ("thunderbird")
+// - YAML-style: "    - thunderbird" or "- thunderbird"
 // - dpkg -l / dpkg-query -W style: "ii thunderbird 1:128.0-1 amd64 ..."
-// (only lines starting with a two-letter dpkg status code followed by
-// whitespace are treated this way; the package name is the 2nd field)
-//
 // Blank lines and lines starting with '#' are ignored.
 func loadPackageManifest(path string) ([]string, error) {
 	f, err := os.Open(path)
@@ -76,14 +97,22 @@ func loadPackageManifest(path string) ([]string, error) {
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		fields := strings.Fields(line)
+
 		var pkg string
-		if len(fields) >= 2 && len(fields[0]) <= 3 && isDpkgStatusCode(fields[0]) {
-			// dpkg -l style: "ii package-name version arch description..."
-			pkg = fields[1]
+
+		// YAML-style: "    - package" or "- package"
+		if strings.HasPrefix(line, "- ") {
+			pkg = strings.TrimPrefix(line, "- ")
 		} else {
-			pkg = fields[0]
+			fields := strings.Fields(line)
+			if len(fields) >= 2 && len(fields[0]) <= 3 && isDpkgStatusCode(fields[0]) {
+				// dpkg -l style: "ii package-name version arch description..."
+				pkg = fields[1]
+			} else {
+				pkg = fields[0]
+			}
 		}
+
 		pkg = normalizePkgName(pkg)
 		if pkg == "" {
 			continue
@@ -108,113 +137,137 @@ func isDpkgStatusCode(s string) bool {
 	return false
 }
 
-// currentlyInstalledPackages returns the set of packages dpkg currently
-// considers fully installed on the system.
+// currentlyInstalledPackages reads the dpkg status database DIRECTLY from
+// /var/lib/dpkg/status instead of shelling out to dpkg-query. Shelling out
+// via utils.ExecCapture proved fragile on the test VM: an empty capture
+// made the cleanup run with an empty keep-list, which purged hundreds of
+// packages (lightdm, rsync, even penguins-eggs itself). Parsing the status
+// file needs no subprocess and cannot silently come back empty.
 func currentlyInstalledPackages() (map[string]struct{}, error) {
-	out, err := utils.ExecCapture("dpkg-query -W -f='${Package} ${Status}\n'")
+	f, err := os.Open("/var/lib/dpkg/status")
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
+
 	installed := make(map[string]struct{})
-	for _, line := range strings.Split(out, "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
+	var curPkg string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		switch {
+		case strings.HasPrefix(line, "Package: "):
+			curPkg = normalizePkgName(strings.TrimPrefix(line, "Package: "))
+		case strings.HasPrefix(line, "Status: "):
+			if strings.TrimPrefix(line, "Status: ") == "install ok installed" && curPkg != "" {
+				installed[curPkg] = struct{}{}
+			}
 		}
-		if !strings.Contains(line, "install ok installed") {
-			continue
-		}
-		fields := strings.Fields(line)
-		if len(fields) == 0 {
-			continue
-		}
-		installed[normalizePkgName(fields[0])] = struct{}{}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
 	}
 	return installed, nil
 }
 
-// DeclarativeCleanup makes the installed package set match target exactly
-// using native Debian machinery: it marks every currently-installed package
-// as 'auto' (a dependency) and then marks the target set (plus kernel and
-// base packages) as 'manual', finishing with 'apt-get autoremove --purge'.
-//
-// Why not the old chunked-purge approach? Splitting purges into batches of
-// 20 is fundamentally incompatible with apt's dependency resolution: if
-// batch 1 tries to purge libgtk-3-0 while xfce4-session (which depends on
-// it) sits in batch 2, apt aborts the entire batch to protect the system
-// and the cleanup silently fails. By letting apt resolve the full
-// dependency tree at once via autoremove, we get correct, atomic, and
-// idempotent cleanup with no cross-batch interference.
-func DeclarativeCleanup(target []string) {
-	utils.LogNormal("--- Aplicando limpieza declarativa de paquetes ---")
-
-	// 1. Protect the running kernel
-	if kernel := currentKernelPackage(); kernel != "" {
-		utils.Exec(fmt.Sprintf("apt-mark manual %s", kernel))
-	}
-
-	// 2. Protect base-system packages
-	for _, pkg := range neverPurgeBase {
-		utils.Exec(fmt.Sprintf("apt-mark manual %s", pkg))
-	}
-
-	// 3. Mark every currently-installed package as 'auto' (dependency).
-	// After this, nothing is "manually installed" except kernel+base, so
-	// apt would consider everything else removable. We then re-mark the
-	// target set as manual in step 4 so autoremove preserves what the
-	// vendor actually wants.
-	utils.LogNormal("Marcando sistema actual como dependencias automáticas...")
-	utils.Exec("dpkg-query -W -f='${Package}\n' | xargs apt-mark auto >/dev/null 2>&1")
-
-	// 4. Build the filtered target: only packages that are actually
-	// installed right now, deduplicated and normalized.
+// purgeExplicit purges exactly the given packages in a SINGLE apt
+// transaction (so apt can resolve removal cascades consistently), then
+// sweeps orphaned dependencies. Packages that are not installed, or that
+// belong to the safety net (neverPurgeBase / running kernel), are
+// silently skipped.
+func purgeExplicit(toRemove []string) {
 	installedSet, err := currentlyInstalledPackages()
 	if err != nil {
-		utils.LogNormal("⚠️  No se pudo obtener la lista de paquetes instalados.")
+		utils.LogNormal("WARNING: could not read installed packages; skipping explicit purge.")
 		return
 	}
 
-	var cleanTarget []string
+	protect := make(map[string]struct{})
+	for _, p := range neverPurgeBase {
+		protect[normalizePkgName(p)] = struct{}{}
+	}
+	if k := currentKernelPackage(); k != "" {
+		protect[normalizePkgName(k)] = struct{}{}
+	}
+
 	seen := make(map[string]struct{})
-	for _, p := range target {
-		pkg := normalizePkgName(p)
-		if pkg == "" {
+	var list []string
+	for _, p := range toRemove {
+		p = normalizePkgName(p)
+		if p == "" {
 			continue
 		}
-		if _, ok := seen[pkg]; !ok {
-			seen[pkg] = struct{}{}
-			if _, isInstalled := installedSet[pkg]; isInstalled {
-				cleanTarget = append(cleanTarget, pkg)
+		if _, ok := seen[p]; ok {
+			continue
+		}
+		seen[p] = struct{}{}
+		if _, ok := protect[p]; ok {
+			continue
+		}
+		if _, ok := installedSet[p]; !ok {
+			continue
+		}
+		list = append(list, p)
+	}
+
+	if len(list) == 0 {
+		utils.LogNormal("Explicit purge: nothing to remove.")
+		return
+	}
+
+	utils.LogNormal("Explicit purge: removing %d packages declared absent from the vendor manifest...", len(list))
+	cmd := fmt.Sprintf("DEBIAN_FRONTEND=noninteractive apt-get purge -o Dpkg::Use-Pty=0 -o Dpkg::Options::='--force-confold' -y %s", strings.Join(list, " "))
+	if err := utils.Exec(cmd); err != nil {
+		utils.LogNormal("WARNING: bulk explicit purge reported an error; healing and retrying once...")
+		utils.Exec("dpkg --configure -a")
+		utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get install -f -y")
+		utils.Exec(cmd)
+	}
+
+	utils.LogNormal("Sweeping orphaned dependencies of removed packages...")
+	utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get autoremove -o Dpkg::Use-Pty=0 --purge -y")
+}
+
+// getInstallReason returns a human-readable string explaining why apt kept
+// pkg installed even though it is not in the declarative manifest. Uses
+// aptitude if available (gives the full dependency chain, e.g.
+// "pkgA Recommends pkg"), falls back to apt-cache rdepends otherwise.
+func getInstallReason(pkg string) string {
+	// aptitude gives the cleanest answer ("A Recommends B")
+	if _, err := exec.LookPath("aptitude"); err == nil {
+		out, err := utils.ExecCapture(fmt.Sprintf("aptitude why -v %s 2>/dev/null", pkg))
+		if err == nil {
+			lines := strings.Split(strings.TrimSpace(out), "\n")
+			if len(lines) > 0 && lines[0] != "" {
+				// take only the first line, which is the dependency chain
+				first := strings.TrimSpace(lines[0])
+				if len(first) > 120 {
+					first = first[:117] + "..."
+				}
+				return first
 			}
 		}
 	}
-	// Ensure kernel and base are also marked manual if installed
-	for _, pkg := range neverPurgeBase {
-		if _, isInstalled := installedSet[pkg]; isInstalled {
-			if _, already := seen[pkg]; !already {
-				cleanTarget = append(cleanTarget, pkg)
-			}
+	// Fallback: apt-cache rdepends --installed lists the reverse deps
+	out, err := utils.ExecCapture(fmt.Sprintf("apt-cache rdepends --installed %s 2>/dev/null", pkg))
+	if err != nil {
+		return "unknown"
+	}
+	var deps []string
+	for _, line := range strings.Split(out, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || line == pkg || strings.HasPrefix(line, "Reverse Depends:") {
+			continue
+		}
+		deps = append(deps, strings.TrimPrefix(line, "|"))
+		if len(deps) >= 3 {
+			break
 		}
 	}
-	if kernel := currentKernelPackage(); kernel != "" {
-		if _, already := seen[kernel]; !already {
-			cleanTarget = append(cleanTarget, kernel)
-		}
+	if len(deps) == 0 {
+		return "orphan (autoremove missed it)"
 	}
-
-	if len(cleanTarget) > 0 {
-		pkgString := strings.Join(cleanTarget, " ")
-		utils.LogNormal("Marcando paquetes del wardrobe como manuales: %d paquetes", len(cleanTarget))
-		utils.Exec(fmt.Sprintf("apt-mark manual %s", pkgString))
-	}
-
-	// 5. autoremove does all the heavy lifting: it walks the dependency
-	// graph from every 'manual' package downward and purges anything
-	// marked 'auto' that is not a dependency of any manual package.
-	// This is the canonical Debian way to strip a system down to a
-	// declared package set.
-	utils.LogNormal("Ejecutando autoremove para purgar lo no declarado...")
-	utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get autoremove --purge -y")
+	return "kept by: " + strings.Join(deps, ", ")
 }
 
 func findManifestPath(costumeDir, manifest string) string {

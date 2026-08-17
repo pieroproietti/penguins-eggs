@@ -31,6 +31,12 @@ type Suit struct {
 	// e.g. the currently running kernel). This is what makes a wardrobe
 	// authoritative/declarative instead of purely additive.
 	PackagesManifest string `yaml:"packages_manifest"`
+	// PackagesInstallFile points to a file (relative to the costume dir)
+	// listing packages to install (plain, YAML-style or dpkg -l format).
+	PackagesInstallFile string `yaml:"packages_install_file"`
+	// PackagesRemoveFile points to a file (relative to the costume dir)
+	// listing packages that must be purged after installation.
+	PackagesRemoveFile string `yaml:"packages_remove_file"`
 	PackagesNoRecommends []string `yaml:"-"`
 	// Popolato da normalize() a partire da Sequence.PackagesInteractive.
 	// These packages are installed without DEBIAN_FRONTEND=noninteractive
