@@ -15,11 +15,6 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 		return fmt.Errorf("must be run as root")
 	}
 
-	// DKMS safety: make sure the headers for the RUNNING kernel are in
-	// place before any package is unpacked, so DKMS postinsts that build
-	// for the current kernel do not abort mid-transaction.
-	ensureKernelHeaders()
-
 	utils.LogNormal("Starting costume application for: %s", costumeName)
 	root, err := getWardrobeRoot()
 	if err != nil {
@@ -36,6 +31,19 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	if err != nil {
 		return err
 	}
+
+	// Enforce distribution compatibility BEFORE anything else, including
+	// kernel header installation, so an incompatible system aborts cleanly
+	// without touching the machine or producing unrelated apt output.
+	if err := checkCostumeCompatibility(costumeDir, suit); err != nil {
+		return err
+	}
+
+	// DKMS safety: make sure the headers for the RUNNING kernel are in
+	// place before any package is unpacked, so DKMS postinsts that build
+	// for the current kernel do not abort mid-transaction. Only reached on
+	// compatible systems.
+	ensureKernelHeaders()
 
 	utils.LogNormal("--- Applying Costume: %s ---", suit.Name)
 
@@ -146,11 +154,72 @@ func Wear(costumeName string, noAcc bool, noFirm bool) error {
 	return nil
 }
 
-// ensureKernelHeaders installs the kernel headers matching the currently
-// running kernel (plus the architecture meta-package) before any DKMS
-// package is unpacked. A DKMS postinst aborts the whole transaction when
-// the headers for a target kernel are missing, leaving dpkg in a
-// half-configured state.
+// checkCostumeCompatibility enforces the distribution compatibility declared
+// by the costume. It compares the "distributions" key from index.yaml
+// (already parsed into suit.Distributions) against the running distribution
+// codename. If the costume declares supported distributions and the running
+// one is not among them, the wear is aborted BEFORE any package is installed.
+// The wardrobe-check script, when present, is run only to print a localized
+// message; the enforcement does not depend on it.
+func checkCostumeCompatibility(costumeDir string, suit *Suit) error {
+	if len(suit.Distributions) == 0 {
+		// Costume does not declare supported distributions; assume compatible
+		// with any distribution (backward compatibility with older wardrobes)
+		return nil
+	}
+
+	current := currentDistroCodename()
+	if current == "" {
+		utils.LogNormal("WARNING: could not detect the running distribution; skipping compatibility check.")
+		return nil
+	}
+
+	for _, d := range suit.Distributions {
+		if strings.EqualFold(strings.TrimSpace(d), current) {
+			return nil
+		}
+	}
+
+	// Incompatible. Print ONE detailed explanation: the localized message
+	// from the wardrobe-check script when present, or a generic one otherwise.
+	script := filepath.Join(costumeDir, "wardrobe-check")
+	if _, err := os.Stat(script); err == nil {
+		cmd := exec.Command("bash", script)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		_ = cmd.Run()
+	} else {
+		fmt.Fprintf(os.Stderr,
+			"This costume (%s) is only compatible with: %s. Detected distribution: %s.\n",
+			suit.Name, strings.Join(suit.Distributions, ", "), current)
+	}
+
+	// Short error: the detailed explanation was already printed above, so
+	// keep the returned error terse to avoid repeating the long text.
+	return fmt.Errorf("aborted: distribution %q not supported", current)
+}
+
+// currentDistroCodename reads /etc/os-release and returns the VERSION_CODENAME
+// value (e.g. "daedalus", "bookworm", "excalibur"), or an empty string if it
+// cannot be determined.
+func currentDistroCodename() string {
+	data, err := os.ReadFile("/etc/os-release")
+	if err != nil {
+		return ""
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "VERSION_CODENAME=") {
+			return strings.Trim(strings.TrimPrefix(line, "VERSION_CODENAME="), `"`)
+		}
+	}
+	return ""
+}
+
+// ensureKernelHeaders instala los headers del kernel en ejecución más el
+// meta-paquete de la arquitectura antes de desempacar cualquier paquete,
+// para que los postinst de DKMS que compilan para el kernel actual no
+// aborten la transacción por falta de headers.
 func ensureKernelHeaders() {
 	out, err := exec.Command("uname", "-r").Output()
 	if err != nil {
@@ -171,11 +240,11 @@ func ensureKernelHeaders() {
 	utils.Exec("DEBIAN_FRONTEND=noninteractive apt-get install -o Dpkg::Use-Pty=0 -y " + pkgs)
 }
 
-// healAndRetryFailed repairs the half-configured dpkg state that DKMS
-// packages leave behind when kernel headers were not yet in place, then
-// retries every failed package that actually exists in the apt cache.
-// Packages that are simply absent from the repositories stay in the
-// returned list so they keep being reported as failed.
+// healAndRetryFailed repara el estado medio-configurado que dejan los
+// paquetes DKMS cuando faltaban los headers, y reintenta cada paquete
+// fallido que realmente existe en el cache de apt. Los paquetes que
+// simplemente no están en los repos quedan en la lista para seguir
+// reportándose como fallidos.
 func healAndRetryFailed(failed []string) []string {
 	if len(failed) == 0 {
 		return nil
@@ -212,9 +281,9 @@ func healAndRetryFailed(failed []string) []string {
 	return still
 }
 
-// applySuit applies a costume/accessory and returns the list of packages
-// that could not be installed (across packages, packages_no_install_recommends
-// and packages_interactive), so the caller can report them to the user.
+// applySuit aplica un costume/accesorio y devuelve la lista de paquetes
+// que no pudieron instalarse (a través de packages, packages_no_install_recommends
+// y packages_interactive), para que el caller los reporte al usuario.
 func applySuit(dir string, suit *Suit) ([]string, []string, error) {
 	var installedPackages []string
 	var failedPackages []string
