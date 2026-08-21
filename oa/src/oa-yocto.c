@@ -48,6 +48,10 @@ int yocto_sanitize_file(const char *src_path, int min_id, int max_id) {
 
     fclose(src);
     fclose(dst);
+
+    // passwd/group must stay world-readable; fopen("w")'s creation mode is
+    // umask-shrunk otherwise, and rename() never fixes it back up.
+    chmod(tmp_path, 0644);
     return rename(tmp_path, src_path);
 }
 
@@ -219,6 +223,7 @@ int yocto_sanitize_subid(const char *subid_path, const char *passwd_path) {
 
     fclose(src);
     fclose(dst);
+    chmod(tmp_path, 0644);
     return rename(tmp_path, subid_path);
 }
 
@@ -267,5 +272,6 @@ void yocto_add_user_to_groups(const char *group_file, const char *username, cJSO
 
     fclose(src);
     fclose(dst);
+    chmod(tmp_file, 0644);
     rename(tmp_file, group_file);
 }

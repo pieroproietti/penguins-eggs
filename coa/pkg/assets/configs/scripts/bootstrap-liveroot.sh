@@ -11,6 +11,9 @@ OVERLAY="$BASEPATH/.overlay"
 
 # 1. SETUP STRUTTURA
 mkdir -p "$LIVEROOT" "$OVERLAY/upperdir" "$OVERLAY/workdir" "$OVERLAY/lowerdir"
+# LIVEROOT stesso diventa la '/' dello squashfs finale: mkdir -p non corregge
+# i bit su una dir preesistente da un run precedente con umask ristretto.
+chmod 0755 "$LIVEROOT"
 
 # 1.1. SELF-BIND OF LIVEROOT
 # Needed so pacman sees "/" as a mountpoint inside the chroot (otherwise
@@ -70,6 +73,10 @@ for ovlDir in usr var; do
 
     # FIX: Aggiunto $MERGED alla lista delle directory da creare
     mkdir -p "$LOWER" "$UPPER" "$WORK" "$MERGED"
+    # L'overlay eredita i bit di upperdir per la root del merge: mkdir -p
+    # non li corregge su una dir preesistente (es. run precedente con umask
+    # ristretto), e senza questo dbus non riesce piu' a leggere /usr o /var.
+    chmod 0755 "$UPPER"
     mountpoint -q "$LOWER" || mount --bind "/$ovlDir" "$LOWER"
     mountpoint -q "$MERGED" || mount -t overlay overlay -o lowerdir="$LOWER",upperdir="$UPPER",workdir="$WORK" "$MERGED"
 done
