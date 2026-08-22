@@ -85,6 +85,11 @@ func RunTemplate(payload []byte) error {
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("unable to create directories for %s: %w", fullPath, err)
 	}
+	// MkdirAll's mode is umask-shrunk like any mkdir(2); force it explicitly,
+	// same reasoning as the file chmod below.
+	if err := os.Chmod(dir, 0755); err != nil {
+		return fmt.Errorf("error setting permissions for %s: %w", dir, err)
+	}
 
 	perms := config.Params.Permissions
 	if perms == 0 {
@@ -93,6 +98,13 @@ func RunTemplate(payload []byte) error {
 
 	if err := os.WriteFile(fullPath, buf.Bytes(), perms); err != nil {
 		return fmt.Errorf("error writing file: %w", err)
+	}
+
+	// WriteFile's mode goes through the caller's umask like any open(2);
+	// force it explicitly so a restrictive umask can't silently shrink it
+	// (e.g. this polkit policy needing to stay world-readable for polkitd).
+	if err := os.Chmod(fullPath, perms); err != nil {
+		return fmt.Errorf("error setting permissions for %s: %w", fullPath, err)
 	}
 
 	fmt.Printf("📦 [worker] Template rendered and written to: %s\n", fullPath)

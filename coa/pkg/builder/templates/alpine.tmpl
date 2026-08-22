@@ -55,6 +55,7 @@ fishcomp() { return 0; }
 package() {
     mkdir -p "$pkgdir/usr"
     mkdir -p "$pkgdir/etc"
+    chmod 0755 "$pkgdir/usr" "$pkgdir/etc"
 
     cp -a "$startdir/usr/"* "$pkgdir/usr/"
     cp -a "$startdir/etc/"* "$pkgdir/etc/"

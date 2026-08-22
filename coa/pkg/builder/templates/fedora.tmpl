@@ -52,6 +52,7 @@ necessary tools for Linux system remastering and administration.
 # Tracciamo i confini nella "buildroot" temporanea di RPM
 mkdir -p %{buildroot}/usr
 mkdir -p %{buildroot}/etc
+chmod 0755 %{buildroot}/usr %{buildroot}/etc
 
 # Copiamo i file dal nostro staging (che gli passeremo via riga di comando come _stagedir)
 cp -a %{_stagedir}/usr/* %{buildroot}/usr/

@@ -20,6 +20,23 @@ type Suit struct {
 	Sequence      *Sequence        `yaml:"sequence"`
 	Finalize      *Finalize        `yaml:"finalize"`
 	Reboot        bool             `yaml:"reboot"`
+	// PackagesManifest points to a file (relative to the costume dir)
+	// listing the COMPLETE, exact set of packages the system should end
+	// up with -- either plain "one package name per line" or the output
+	// of `dpkg -l` / `dpkg-query -W`. When set, wear() reconciles the
+	// system against it after the regular install steps: anything in the
+	// manifest that's missing gets installed, and anything installed on
+	// the system that is NOT in the manifest gets purged (except for a
+	// small hardcoded set of packages that are never safe to remove,
+	// e.g. the currently running kernel). This is what makes a wardrobe
+	// authoritative/declarative instead of purely additive.
+	PackagesManifest string `yaml:"packages_manifest"`
+	// PackagesInstallFile points to a file (relative to the costume dir)
+	// listing packages to install (plain, YAML-style or dpkg -l format).
+	PackagesInstallFile string `yaml:"packages_install_file"`
+	// PackagesRemoveFile points to a file (relative to the costume dir)
+	// listing packages that must be purged after installation.
+	PackagesRemoveFile string `yaml:"packages_remove_file"`
 	PackagesNoRecommends []string `yaml:"-"`
 	// Popolato da normalize() a partire da Sequence.PackagesInteractive.
 	// These packages are installed without DEBIAN_FRONTEND=noninteractive
