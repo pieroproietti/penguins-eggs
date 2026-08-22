@@ -32,7 +32,7 @@ For `eggs` commands, see [eggs Command Reference](./DOCS/2-user-manual/2-command
 
 ## 🚀 Getting Started
 
-> The primary CLI command is **`eggs`** (e.g. `eggs remaster`, `eggs produce`, `eggs sysinstall`, `eggs destroy`, `eggs mcp`). The binary is available as both `eggs` and `coa`. See the [Quick Start](./DOCS/2-user-manual/1-quickstart.md) for the full command usage.
+> The primary CLI command is **`eggs`** (e.g. `eggs remaster`, `eggs wizard`, `eggs sysinstall`, `eggs destroy`, `eggs mcp`). The binary is available as both `eggs` and `coa`. See the [Quick Start](./DOCS/2-user-manual/1-quickstart.md) for the full command usage.
 
 ### Prerequisites
 - A Linux system (Debian-based, Arch-based, Fedora-based or Manjaro-based).

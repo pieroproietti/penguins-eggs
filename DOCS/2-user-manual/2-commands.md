@@ -13,6 +13,7 @@ The binary is installed as `eggs` (with `coa` working interchangeably as an alia
 | Command | Sudo | Description |
 | :--- | :---: | :--- |
 | **`remaster`** | 🟢 Yes | Builds the live ISO. |
+| **`wizard`** | 🟢 Yes | Interactive 3-step wizard for configuring and launching remastering. |
 | **`sysinstall`** | 🟡 Mixed | Launches the system installer (GUI or TUI) on the target. |
 | **`destroy`** | 🟢 Yes | Unmounts the filesystems and safely cleans the workspace (`kill` is an alias). |
 | **`adapt`** | 🔴 No | Dynamically adapts the video resolution inside a VM. |
@@ -27,17 +28,24 @@ The binary is installed as `eggs` (with `coa` working interchangeably as an alia
 
 ## 🚀 Main Commands
 
+### `eggs wizard`
+A lightweight, guided 3-step interactive flow to quickly configure remaster mode (Standard Live, System Clone, Crypted Clone), choose squashfs compression level (Fast, Standard, Maximum), review flight details, and start remastering.
+
+*   **Usage:** `sudo eggs wizard [flags]`
+*   **Flags:**
+    *   `--path <string>`: working directory. Default: `/home/eggs`.
+
 ### `eggs remaster`
 The heart of the system. Reads the YAML profile through the parser, generates the JSON plan through the planner and executes the C engine to build the egg (the ISO).
 
 *   **Usage:** `sudo eggs remaster [flags]`
 *   **Flags:**
+    *   `-w`, `--wizard`: starts the interactive 3-step wizard flow.
     *   `--clone`: clone mode — preserves users and `/home` in the ISO.
     *   `--crypted`: LUKS-encrypted mode — produces an encrypted squashfs (Debian family only). Mutually exclusive with `--clone`.
     *   `--path <string>`: working directory. Default: `/home/eggs`.
     *   `--stop-after <step>`: **[debug]** stops execution after a specific step (e.g. `coa-initrd`), leaving the *chroot* mounted for manual inspection.
     *   `--debug`: prints the JSON plan (or the pre-processed YAML) and exits without building anything.
-*   **Alias:** `eggs produce` (legacy compatibility).
 
 #### LUKS Encryption (`--crypted`)
 

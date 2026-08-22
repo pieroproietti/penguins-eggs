@@ -46,18 +46,18 @@ func (c CryptoConfig) FormatArgs() string {
 	return args
 }
 
-// printLuksInfo mostra il profilo di sicurezza corrente all'utente
+// printLuksInfo displays the current security profile to the user
 func printLuksInfo(cfg CryptoConfig) {
-	fmt.Println("\n================================================================")
-	fmt.Println("🛡️  ENCRYPTION PROFILE SUMMARY")
-	fmt.Println("================================================================")
-	fmt.Printf("  • ENCRYPTION:      %s (%d-bit)\n", cfg.Cipher, cfg.KeySize)
-	fmt.Printf("  • KEY DERIVATION:  %s\n", cfg.Pbkdf)
-	fmt.Printf("  • MEMORY COST:     %d KiB\n", cfg.PbkdfMemory)
-	fmt.Printf("  • CPU EFFORT:      %d thread(s)\n", cfg.PbkdfParallel)
-	fmt.Println("----------------------------------------------------------------")
-	fmt.Println("This configuration provides MAXIMUM security protection.")
-	fmt.Println("================================================================")
+	utils.LogNormal("================================================================")
+	utils.LogNormal("🛡️  ENCRYPTION PROFILE SUMMARY")
+	utils.LogNormal("================================================================")
+	utils.LogNormal("  • ENCRYPTION:      %s (%d-bit)", cfg.Cipher, cfg.KeySize)
+	utils.LogNormal("  • KEY DERIVATION:  %s", cfg.Pbkdf)
+	utils.LogNormal("  • MEMORY COST:     %d KiB", cfg.PbkdfMemory)
+	utils.LogNormal("  • CPU EFFORT:      %d thread(s)", cfg.PbkdfParallel)
+	utils.LogNormal("----------------------------------------------------------------")
+	utils.LogNormal("This configuration provides MAXIMUM security protection.")
+	utils.LogNormal("================================================================")
 }
 
 func promptLuksPassword() (string, error) {

@@ -8,9 +8,9 @@ import (
 	"coa/pkg/pathDefaults"
 )
 
-// buildEncryptedInitramfs sostituisce il passo standard di initramfs.
-// Prepara il chroot (liveroot) per il boot cifrato iniettando gli script necessari
-// e genera l'initrd, disinnescando temporaneamente gli hook di sistema ostili.
+// buildEncryptedInitramfs replaces the standard initramfs step.
+// Prepares the chroot (liveroot) for encrypted boot by injecting required scripts
+// and generates the initrd, temporarily disarming conflicting host system hooks.
 func buildEncryptedInitramfs(workPath string) OATask {
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
 	cmd := fmt.Sprintf(`#!/bin/bash
@@ -20,19 +20,19 @@ KERNEL="$(uname -r)"
 PREMOUNT_DIR="$LIVEROOT/etc/initramfs-tools/scripts/live-premount"
 HOOKS_DIR="$LIVEROOT/etc/initramfs-tools/hooks"
 
-echo "LUKS: Preparazione initrd cifrato per il kernel $KERNEL..."
+echo "LUKS: Preparing encrypted initrd for kernel $KERNEL..."
 
-# 1. Iniezione script di pre-mount e creazione dummy crypttab
+# 1. Inject pre-mount script and create dummy crypttab
 mkdir -p "$PREMOUNT_DIR"
 cp /etc/penguins-eggs.d/scripts/boot-encrypted-root.sh "$PREMOUNT_DIR/"
 chmod +x "$PREMOUNT_DIR/boot-encrypted-root.sh"
-printf "# Dummy entry per forzare l'inclusione dei binari LUKS\ncryptroot UUID=none none luks\n" > "$LIVEROOT/etc/crypttab"
+printf "# Dummy entry to force inclusion of LUKS binaries\ncryptroot UUID=none none luks\n" > "$LIVEROOT/etc/crypttab"
 
-# 2. Generazione dinamica degli hook per losetup e rsync
+# 2. Dynamically generate hooks for losetup and rsync
 mkdir -p "$HOOKS_DIR"
 for CMDPATH in /usr/sbin/losetup /usr/bin/rsync; do
     if [ ! -e "$LIVEROOT/$CMDPATH" ]; then
-        echo "LUKS: WARN: $CMDPATH non trovato nel sistema guest, lo salto."
+        echo "LUKS: WARN: $CMDPATH not found on guest system, skipping."
         continue
     fi
     BASENAME=$(basename "$CMDPATH")
@@ -51,23 +51,23 @@ HOOKEOF
     chmod +x "$HOOK_FILE"
 done
 
-# 3. Disinnesco dell'hook cryptroot ufficiale di Debian 
-# Evita l'errore fatale "Couldn't resolve device overlay" durante la generazione
+# 3. Disarm official Debian cryptroot hook
+# Avoids fatal error "Couldn't resolve device overlay" during generation
 if [ -f "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot" ]; then
-    echo "LUKS: Disabilitazione temporanea hook cryptroot di sistema..."
+    echo "LUKS: Temporarily disabling host cryptroot hook..."
     mv "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot" "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot.disabled"
 fi
 
-# 4. Generazione Initramfs (Senza redirigere l'output su /dev/null per mantenere i log visibili in caso di crash)
-echo "LUKS: Generazione initramfs in corso (potrebbe richiedere qualche minuto)..."
+# 4. Generate Initramfs (keeping output visible for debugging)
+echo "LUKS: Generating initramfs (may take a few minutes)..."
 chroot "$LIVEROOT" env CRYPTSETUP=y mkinitramfs -o /tmp/oa-initrd.img-luks "$KERNEL"
 
-# 5. Pulizia e ripristino dell'hook disabilitato
+# 5. Clean up and restore disabled hook
 if [ -f "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot.disabled" ]; then
     mv "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot.disabled" "$LIVEROOT/usr/share/initramfs-tools/hooks/cryptroot"
 fi
 
-echo "✅ LUKS initrd completato con successo: /tmp/oa-initrd.img-luks"
+echo "✅ LUKS initrd completed successfully: /tmp/oa-initrd.img-luks"
 `, liveRoot)
 
 	return OATask{
@@ -81,7 +81,7 @@ echo "✅ LUKS initrd completato con successo: /tmp/oa-initrd.img-luks"
 	}
 }
 
-// luksKernelCopyStep sostituisce "copy-kernel-initrd" in modalità crypted.
+// luksKernelCopyStep replaces "copy-kernel-initrd" in crypted mode.
 func luksKernelCopyStep(workPath string) OATask {
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
 	isoDir := fmt.Sprintf("%s/isodir/live", workPath)
@@ -115,11 +115,11 @@ echo "LUKS: LUKS initrd moved to $ISODIR/initrd.img"
 	}
 }
 
-// luksWrapStep inietta il passo LUKS dopo mksquashfs.
-// Prende filesystem.squashfs, lo inserisce in un container LUKS ext4,
-// e produce isodir/live/root.img al posto di filesystem.squashfs.
-// La passphrase viene passata via stdin a cryptsetup (--key-file -)
-// per evitare di scriverla su disco.
+// luksWrapStep injects the LUKS step after mksquashfs.
+// Takes filesystem.squashfs, places it inside a LUKS ext4 container,
+// and produces isodir/live/root.img in place of filesystem.squashfs.
+// The passphrase is piped via stdin to cryptsetup (--key-file -)
+// to avoid writing it to disk.
 func luksWrapStep(workPath, passphrase string) OATask {
 	squashfs := fmt.Sprintf("%s/isodir/live/filesystem.squashfs", workPath)
 	rootImg := fmt.Sprintf("%s/isodir/live/root.img", workPath)
@@ -132,7 +132,7 @@ LUKS_TMP="/var/tmp/root.img"
 LUKS_MOUNT="/tmp/mnt/root.img"
 MAPPER="luks-root-build"
 
-# Cleanup in caso di errore
+# Cleanup on error
 cleanup() {
     set +e
     mount | grep -q "$LUKS_MOUNT" && umount -lf "$LUKS_MOUNT"
@@ -171,7 +171,7 @@ printf '%%s' '%s' | cryptsetup luksFormat --batch-mode $LUKS_CRYPTO_ARGS --key-f
 echo "LUKS: luksOpen → /dev/mapper/$MAPPER..."
 printf '%%s' '%s' | cryptsetup luksOpen --key-file - "$LUKS_TMP" "$MAPPER"
 
-echo "LUKS: mkfs.ext4 su /dev/mapper/$MAPPER..."
+echo "LUKS: mkfs.ext4 on /dev/mapper/$MAPPER..."
 mkfs.ext4 -m 0 -O ^has_journal -L live-root /dev/mapper/"$MAPPER"
 
 mkdir -p "$LUKS_MOUNT"
@@ -204,12 +204,8 @@ echo "LUKS: root.img created successfully → $ROOT_IMG"
 	}
 }
 
-// shellEscape protegge una stringa dall'interpretazione della shell
-// dentro un contesto single-quoted di printf.
+// shellEscape protects a string from shell interpretation
+// inside a printf single-quoted context.
 func shellEscape(s string) string {
 	return strings.ReplaceAll(s, "'", "'\\''")
 }
-
-// Per rimuovere eventuali residui di LUKS
-// sudo rm /etc/initramfs-tools/scripts/live-premount/ -rf
-// sudo update-inintramfs -u

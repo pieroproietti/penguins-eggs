@@ -61,10 +61,14 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
 ### 1. Remastering & System Customization
 * #### `eggs remaster`
   - **Purpose**: Starts a system remastering flight to generate a fresh, live, bootable custom ISO from the currently running host.
-  - **Flags**: `--clone` (preserve users and /home), `--crypted` (LUKS encryption, Debian family only), `--path`, `--stop-after`, `--debug`.
-  - **Alias**: `eggs produce` (legacy compatibility).
+  - **Flags**: `-w`, `--wizard` (run interactive 3-step wizard), `--clone` (preserve users and /home), `--crypted` (LUKS encryption, Debian family only), `--path`, `--stop-after`, `--debug`.
   - **Rules**: Requires root privileges (`sudo`). `--clone` and `--crypted` are mutually exclusive.
   - **Intents**: "create an ISO", "backup system", "clone OS", "produce live image".
+* #### `eggs wizard`
+  - **Purpose**: Dedicated 3-step lightweight interactive wizard to select remaster mode (Standard, Clone, Crypted), squashfs compression level (Fast, Standard, Maximum), and launch the remastering flight.
+  - **Flags**: `--path` (working directory, defaults to `/home/eggs`).
+  - **Rules**: Requires root privileges (`sudo`).
+  - **Intents**: "guided remaster", "interactive ISO creation", "wizard", "easy ISO build".
 * #### `eggs wardrobe`
   - **Purpose**: Configuration profile management framework ("wardrobes") to dress up and automate target layout installations.
   - **Subcommands**:

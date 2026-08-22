@@ -76,9 +76,8 @@ sudo update-initramfs -u
 Once the initramfs of the host system has been updated, run `eggs` to produce the remastered live ISO:
 
 ```bash
-sudo eggs produce
+sudo eggs remaster
 ```
-*(or `sudo eggs remaster` depending on your build target)*
 
 ---
 
