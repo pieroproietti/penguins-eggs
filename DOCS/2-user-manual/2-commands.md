@@ -18,7 +18,6 @@ The binary is installed as `eggs` (with `coa` working interchangeably as an alia
 | **`destroy`** | 🟢 Yes | Unmounts the filesystems and safely cleans the workspace (`kill` is an alias). |
 | **`adapt`** | 🔴 No | Dynamically adapts the video resolution inside a VM. |
 | **`export`** | 🔴 No | Transfers artifacts (ISO/packages/logs) to a remote server. |
-| **`wardrobe`** | 🟡 Mixed | Manages and applies the costumes (desktop configurations). |
 | **`tools`** | 🟡 Mixed | Maintenance utilities: build, clean, grub40, repo, skel. |
 | **`config`** | 🟢 Yes | Interactive TUI for viewing and editing the configuration. |
 | **`mcp`** | 🟡 Mixed | Model Context Protocol (MCP) server management for AI agents. |
@@ -79,21 +78,6 @@ The orchestrator for installing the operating system to disk. Acts as a router t
 The "safe destroyer". Tears down the remastering environment: it uses `MNT_DETACH` (lazy unmount) to free the virtual mount points (`/proc`, `/sys`, `/dev`) without kernel panics or host hangs, then deletes the working directory.
 
 *   **Usage:** `sudo eggs destroy`
-
----
-
-## 👔 Wardrobe (costumes)
-
-### `eggs wardrobe`
-Manages the wardrobe: ready-made desktop configurations ("costumes") that can be applied to the system before remastering.
-
-*   **Subcommands:**
-    *   `eggs wardrobe get`: downloads or updates the wardrobe.
-    *   `eggs wardrobe list`: lists the available costumes.
-    *   `eggs wardrobe show <costume>`: shows the details of a costume.
-    *   `eggs wardrobe wear <costume>`: wears a costume from the wardrobe.
-        *   `--no-acc`: skip accessory installation.
-        *   `--no-firm`: skip firmware installation.
 
 ---
 
@@ -161,7 +145,6 @@ AI agents connected via MCP can invoke the following tools:
 | MCP Tool | Description | Parameters |
 |---|---|---|
 | `eggs_remaster` | Remasters the running system into a live bootable ISO. | `clone` (bool), `crypted` (bool), `compression` (string: `zstd`, `xz`, `lz4`, `gzip`), `path` (string), `stop_after` (string), `debug` (bool) |
-| `eggs_wardrobe` | Manages and applies wardrobe presets and desktop costumes. | `action` (required: `list`, `get`, `show`, `wear`), `costume` (string) |
 | `eggs_sysinstall` | Installs the live system environment permanently to local disk storage. | `installer` (`krill`, `calamares`), `unattended` (bool) |
 | `eggs_export` | Exports artifacts (ISO, packages, logs) to remote Proxmox storage. | `target` (required: `iso`, `pkg`, `log`) |
 | `eggs_tools` | Executes system utilities and maintenance tasks. | `tool` (required: `clean`, `grub40`, `skel`, `build`), `args` (string) |

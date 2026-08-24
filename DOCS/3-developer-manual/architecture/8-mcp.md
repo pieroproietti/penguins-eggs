@@ -2,7 +2,7 @@
 
 `penguins-eggs` includes a native **Model Context Protocol (MCP)** server embedded directly inside the Go orchestrator (`coa`). MCP is an open standard (initiated by Anthropic) that defines how AI coding assistants and autonomous agents (such as Google DeepMind Antigravity CLI, Claude Desktop, Cursor, Zed, and Roo-Cline) discover and execute tools or read resources from external systems.
 
-By embedding an MCP server into `eggs`, AI agents can inspect host configurations, trigger live ISO remastering flights, wear costumes, test installers, and manage artifacts natively through standardized JSON-RPC 2.0.
+By embedding an MCP server into `eggs`, AI agents can inspect host configurations, trigger live ISO remastering flights, test installers, and manage artifacts natively through standardized JSON-RPC 2.0.
 
 ---
 
@@ -56,11 +56,10 @@ To protect the stream:
 
 ## 🛠️ Exposed MCP Tools
 
-The server exposes eight granular tools that mirror the CLI hierarchy:
+The server exposes seven granular tools that mirror the CLI hierarchy:
 
 ```
 ├── eggs_remaster    -> Live ISO flight (clone, crypted, compression, stop_after, debug)
-├── eggs_wardrobe    -> Preset desktop costumes (list, get, show, wear)
 ├── eggs_sysinstall  -> System installer deployment (krill TUI, calamares GUI, unattended)
 ├── eggs_export      -> Remote artifact transfer to Proxmox (iso, pkg, log)
 ├── eggs_tools       -> Maintenance routines (clean, grub40, skel, build)
@@ -70,7 +69,7 @@ The server exposes eight granular tools that mirror the CLI hierarchy:
 ```
 
 ### Privilege Handling in Tool Execution
-- **Root Operations**: Commands like `eggs remaster`, `eggs wardrobe wear`, `eggs sysinstall`, `eggs tools clean/grub40/skel`, and `eggs destroy` are automatically prepended with `sudo`.
+- **Root Operations**: Commands like `eggs remaster`, `eggs sysinstall`, `eggs tools clean/grub40/skel`, and `eggs destroy` are automatically prepended with `sudo`.
 - **User-Level Operations**: Commands like `eggs tools build` strictly omit `sudo` to prevent developer workspace file ownership pollution (honoring project development policies).
 
 ---

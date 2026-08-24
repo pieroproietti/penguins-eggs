@@ -69,14 +69,6 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
   - **Flags**: `--path` (working directory, defaults to `/home/eggs`).
   - **Rules**: Requires root privileges (`sudo`).
   - **Intents**: "guided remaster", "interactive ISO creation", "wizard", "easy ISO build".
-* #### `eggs wardrobe`
-  - **Purpose**: Configuration profile management framework ("wardrobes") to dress up and automate target layout installations.
-  - **Subcommands**:
-    - `eggs wardrobe get`: Downloads or updates the remote wardrobe blueprint repository.
-    - `eggs wardrobe list`: Lists all available system costumes and configuration presets.
-    - `eggs wardrobe show`: Outlines specific package declarations and files of a chosen costume.
-    - `eggs wardrobe wear`: Installs and applies a designated profile onto the running system.
-  - **Intents**: "presets", "blueprints", "apply profile", "install configurations", "dress up system".
 * #### `eggs config`
   - **Purpose**: Interactive TUI for viewing and editing system configuration (`/etc/penguins-eggs.d/custom.yaml`) and custom exclude lists.
   - **Rules**: Requires root privileges (`sudo`).

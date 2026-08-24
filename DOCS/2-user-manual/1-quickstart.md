@@ -39,18 +39,6 @@ That's it. The ISO is hybrid (BIOS + UEFI) and ready to boot from USB or in a VM
 
 ## Common workflows
 
-### Customize the desktop, then remaster
-
-```bash
-# Apply a preset desktop configuration ("costume")
-eggs wardrobe get
-eggs wardrobe list
-sudo eggs wardrobe wear colibri
-
-# Build the ISO
-sudo eggs remaster
-```
-
 ### Customize compression and ISO naming
 
 ```bash
@@ -115,7 +103,7 @@ sudo eggs mcp enable
 eggs mcp status
 ```
 
-Once enabled, your AI assistant can discover penguins-eggs tools and remaster your system, wear costumes, or inspect configuration on demand.
+Once enabled, your AI assistant can discover penguins-eggs tools and remaster your system or inspect configuration on demand.
 
 ## Supported distributions
 

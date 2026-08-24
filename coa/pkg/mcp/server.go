@@ -146,18 +146,6 @@ func (s *Server) handleToolsList(id interface{}) {
 			},
 		},
 		{
-			Name:        "eggs_wardrobe",
-			Description: "Manage wardrobes and system configuration presets (eggs wardrobe)",
-			InputSchema: InputSchema{
-				Type: "object",
-				Properties: map[string]Property{
-					"action":  {Type: "string", Description: "Action to execute: list, get, show, wear", Enum: []string{"list", "get", "show", "wear"}},
-					"costume": {Type: "string", Description: "Costume or profile name for show or wear"},
-				},
-				Required: []string{"action"},
-			},
-		},
-		{
 			Name:        "eggs_sysinstall",
 			Description: "Install live system environment permanently to local disk storage (eggs sysinstall)",
 			InputSchema: InputSchema{
@@ -261,18 +249,6 @@ func (s *Server) handleToolCall(id interface{}, rawParams json.RawMessage) {
 			cmdArgs = append(cmdArgs, "--debug")
 		}
 		cmdStr = fmt.Sprintf("sudo %s %s", eggsBin, strings.Join(cmdArgs, " "))
-
-	case "eggs_wardrobe":
-		action, _ := params.Arguments["action"].(string)
-		costume, _ := params.Arguments["costume"].(string)
-		if action == "" {
-			action = "list"
-		}
-		if costume != "" {
-			cmdStr = fmt.Sprintf("sudo %s wardrobe %s %s", eggsBin, action, costume)
-		} else {
-			cmdStr = fmt.Sprintf("sudo %s wardrobe %s", eggsBin, action)
-		}
 
 	case "eggs_sysinstall":
 		installer, _ := params.Arguments["installer"].(string)

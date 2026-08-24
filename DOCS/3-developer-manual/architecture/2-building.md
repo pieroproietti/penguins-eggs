@@ -6,7 +6,7 @@ To generate native packages for **penguins-eggs** (Debian `.deb`, Arch/Manjaro `
 Regardless of the distribution, these are mandatory to compile the "Mind" (Go) and the "Arm" (C):
 *   **Go Compiler (1.25+)**: Required to compile the `coa` orchestrator.
 *   **GCC & Make**: Required to compile the `oa` C engine.
-*   **Git**: Required for versioning and managing the `wardrobe`.
+*   **Git**: Required for versioning and build information.
 
 ## 2. Distribution-Specific Requirements
 

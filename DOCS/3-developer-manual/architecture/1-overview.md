@@ -17,7 +17,6 @@ The `cmd` package contains the user interface. Each file maps a command the user
 | `adapt` | No | Post-boot utility for virtual machines: iterates over the virtual video outputs and runs `xrandr --auto` to instantly fit the live session to the hypervisor window. |
 | `export` | No | Network orchestrator with subcommands `iso`, `pkg` and `log`: sends artifacts over `scp` with SSH multiplexing to a remote Proxmox storage. The global `--clean` flag deletes old versions on the server before uploading. |
 | `sysinstall` | Mixed | Parent command routing to the final installer: GUI (`calamares`) or TUI (`krill`). |
-| `wardrobe` | No | Manages the costumes (themes/configurations) with `get`, `list`, `show` and `wear`. |
 | `tools` | Mixed | Maintenance utilities: `build` (native packages), `clean`, `grub40`, `repo`, `skel`. |
 | `config` | Yes | Interactive TUI for viewing and editing the configuration (`/etc/penguins-eggs.d/custom.yaml` and the custom exclude list). |
 | `mcp` | Mixed | Model Context Protocol server daemon and client integrations for AI agents (`enable`, `disable`, `status`, `start`, `stop`). → [8-mcp.md](./8-mcp.md) |
@@ -63,7 +62,6 @@ This two-phase design (logic and abstraction in **Go** ➔ raw syscall execution
 | `sysinstall/krill` | The native TUI installer (Bubbletea) and its engine. → [installer.md](./6-installer.md) |
 | `builder` | Generates the native coa/oa packages (.deb, PKGBUILD, .rpm) for each distribution. |
 | `bleach` | Cleanup routines for the various distributions. |
-| `tailor` | The tailor managing the wardrobe (costumes). |
 | `mcp` | Native Model Context Protocol (MCP) server daemon and client management. → [8-mcp.md](./8-mcp.md) |
 | `worker` | The Go modules executed on behalf of the C engine (`coa ell`). → [ell.md](./4-ell.md) |
 | `context` | The structured `RuntimeContext` passed across packages. |

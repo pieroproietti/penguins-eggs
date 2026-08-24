@@ -37,14 +37,48 @@ func vendorFinishStep() error {
 		return err
 	}
 
+	runnerContent := `#!/bin/bash
+set -e
+
+# Target root detection
+TARGET_ROOT=${ROOT}
+if [ -z "$TARGET_ROOT" ]; then
+    TARGET_ROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+fi
+if [ -z "$TARGET_ROOT" ]; then
+    TARGET_ROOT=$(ls -d /tmp/calamares-root-* 2>/dev/null | head -n 1)
+fi
+if [ -z "$TARGET_ROOT" ]; then
+    TARGET_ROOT="/tmp/calamares-root-krill"
+fi
+
+if [ ! -d "$TARGET_ROOT" ]; then
+    echo "Vendor finish: target root '$TARGET_ROOT' not found!"
+    exit 1
+fi
+
+SCRIPT="/etc/penguins-eggs.d/installer.d/vendor-finish.sh"
+if [ -f "$SCRIPT" ]; then
+    echo "Vendor finish: executing inside $TARGET_ROOT"
+    cp "$SCRIPT" "$TARGET_ROOT/tmp/vendor-finish.sh"
+    chmod +x "$TARGET_ROOT/tmp/vendor-finish.sh"
+    chroot "$TARGET_ROOT" /bin/bash /tmp/vendor-finish.sh
+    rm -f "$TARGET_ROOT/tmp/vendor-finish.sh"
+fi
+`
+	runnerTarget := filepath.Join(InstallerDRoot, "vendor-finish-runner.sh")
+	if err := os.WriteFile(runnerTarget, []byte(runnerContent), 0755); err != nil {
+		return err
+	}
+
 	confContent := `# /etc/penguins-eggs.d/installer.d/modules/shellprocess_vendor-finish.conf
 i18n:
      name: "Applying vendor customizations..."
 
-dontChroot: false
+dontChroot: true
 timeout: 300
 script:
-  - /etc/penguins-eggs.d/installer.d/vendor-finish.sh
+  - /bin/bash /etc/penguins-eggs.d/installer.d/vendor-finish-runner.sh
 `
 	confTarget := filepath.Join(InstallerDRoot, "modules", "shellprocess_vendor-finish.conf")
 	if err := os.WriteFile(confTarget, []byte(confContent), 0644); err != nil {
