@@ -105,6 +105,11 @@ remaster:
         echo "# UNCONFIGURED CRYPTTAB" > /home/eggs/liveroot/etc/crypttab
         chmod 644 /home/eggs/liveroot/etc/fstab /home/eggs/liveroot/etc/crypttab
 
+        # Sanitize resume/swap configuration for initramfs-tools (Debian/Devuan/Ubuntu)
+        if [ -d /home/eggs/liveroot/etc/initramfs-tools/conf.d ]; then
+            echo "RESUME=none" > /home/eggs/liveroot/etc/initramfs-tools/conf.d/resume
+        fi
+
         # Prevent systemd-firstboot prompts if the base template has no timezone/localtime configured
         if [ ! -e /home/eggs/liveroot/etc/localtime ] && [ ! -L /home/eggs/liveroot/etc/localtime ]; then
             ln -sf /usr/share/zoneinfo/UTC /home/eggs/liveroot/etc/localtime

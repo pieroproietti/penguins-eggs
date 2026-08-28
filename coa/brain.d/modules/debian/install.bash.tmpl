@@ -3,8 +3,9 @@
 # ==============================================================================
 
 {{ define "install_distro_initramfs" }}
+mkdir -p /etc/initramfs-tools/conf.d
 echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
-update-initramfs -u
+update-initramfs -u -k all
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
