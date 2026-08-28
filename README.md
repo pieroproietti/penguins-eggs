@@ -60,6 +60,15 @@ Documentation can be found on [DOCS](./DOCS/README.md). See also the [Manifestum
 
 The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosophy can be read on my blog.
 
+## 👔 Ecosystem: Tailoring & Wardrobe Ateliers
+
+`penguins-eggs` works hand-in-hand with dedicated companion tools and configuration repositories:
+
+* **[penguins-tailor](https://github.com/pieroproietti/penguins-tailor)**: The CLI tool providing the `tailor` command to configure, dress, and customize your Linux system with desktop profiles ("costumes") and "accessories" before remastering.
+* **Wardrobe Ateliers** (Costumes & Accessories):
+  * **Main Atelier**: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (maintained by Piero Proietti)
+  * **Quirinux Atelier**: [charliemartinez/penguins-wardrobe](https://github.com/charliemartinez/penguins-wardrobe) (maintained by Charlie Martinez for Quirinux)
+
 [![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
 
 

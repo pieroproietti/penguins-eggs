@@ -39,6 +39,24 @@ That's it. The ISO is hybrid (BIOS + UEFI) and ready to boot from USB or in a VM
 
 ## Common workflows
 
+### Customize the desktop with penguins-tailor, then remaster
+
+You can configure and dress your system with ready-made desktop configurations ("costumes") and accessories before remastering using the companion tool **[penguins-tailor](https://github.com/pieroproietti/penguins-tailor)** (`tailor`). Costumes are retrieved from wardrobe ateliers (such as the main atelier [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) or Charlie Martinez's [charliemartinez/penguins-wardrobe](https://github.com/charliemartinez/penguins-wardrobe)):
+
+```bash
+# 1. Download or update costumes from the atelier
+tailor get
+
+# 2. List available costumes
+tailor list
+
+# 3. Apply a costume (e.g. colibri)
+sudo tailor wear colibri
+
+# 4. Remaster the tailored system into a live ISO
+sudo eggs remaster
+```
+
 ### Customize compression and ISO naming
 
 ```bash

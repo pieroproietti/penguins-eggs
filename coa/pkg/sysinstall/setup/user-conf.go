@@ -25,7 +25,7 @@ func userConf() error {
 		return err
 	}
 
-	// If the vendor wardrobe ships a complete users.conf override under
+	// If the vendor costume/atelier ships a complete users.conf override under
 	// /etc/penguins-eggs.d/brain.d/assets/calamares/users.conf, copy it
 	// directly to the installer modules directory and return -- no need
 	// to render the template at all.
@@ -75,7 +75,7 @@ func userConf() error {
 	// 3. The "require strong passwords" checkbox is visible by default
 	// (Piero's original choice). A vendor can hide it by shipping:
 	//   /etc/penguins-eggs.d/brain.d/assets/hide-weak-password-checkbox
-	// (e.g. the 'quirinux' costume from oa-wardrobe) -- mere presence
+	// (e.g. the 'quirinux' costume from penguins-wardrobe atelier) -- mere presence
 	// is enough, content does not matter. No vendor file -> no change.
 	allowWeakPasswords := true
 	if _, err := os.Stat("/etc/penguins-eggs.d/brain.d/assets/hide-weak-password-checkbox"); err == nil {

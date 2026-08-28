@@ -158,14 +158,14 @@ This release introduces a new **Go-based Incubator CI** for automated ISO testin
 * **Target Failures Monitoring**: The chroot runner script now returns a non-zero exit code if any execution step fails, ensuring installation failures are visible in logs.
 * **Autologin Recovery**: Enabled `chroot: true` for the `autologin-gui` module in [coa/brain.d/base.yaml.tmpl](file:///home/artisan/forge/penguins-eggs/coa/brain.d/base.yaml.tmpl) and updated [RunAutologin()](file:///home/artisan/forge/penguins-eggs/coa/pkg/worker/autologin-gui.go#L12) to dynamically handle the custom live username instead of using a hardcoded placeholder.
 
-### 👔 Wardrobe & tailor Enhancements
-* **su Elevation Support**: Enhanced [getWardrobeRoot()](file:///home/artisan/forge/penguins-eggs/coa/pkg/tailor/get-wardrobe-root.go#L24) to resolve the real user's home directory using kernel audit `logname` and `/etc/passwd` scanning, ensuring wardrobe functions work on distros using `su` instead of `sudo`.
-* **Early Privilege Check**: Force `coa wardrobe wear` to exit immediately if executed without root privileges, removing redundant internal `sudo` command executions.
+### 👔 Wardrobe Ateliers & Tailor Integration
+* **su Elevation Support**: Enhanced `getWardrobeRoot()` to resolve the real user's home directory using kernel audit `logname` and `/etc/passwd` scanning, ensuring wardrobe functions work on distros using `su` instead of `sudo`.
+* **Early Privilege Check**: Force costume wearing to exit immediately if executed without root privileges, removing redundant internal `sudo` command executions.
 * **skel Sync Permissions**: Sincronized `/etc/skel` files using `rsync` with explicit non-root user chown arguments, preventing target home folder assets from being locked by root ownership.
 
 ### 🎨 Custom Vendor Branding
 * **Vendor Custom Finish Step**: Support executing a custom vendor `finish.sh` script via [vendorFinishStep()](file:///home/artisan/forge/penguins-eggs/coa/pkg/sysinstall/setup/vendor-finish.go#L25) during the Calamares sequence before the bootloader installation, allowing costumes to customize configuration templates.
-* **Branding Asset Overlays**: Allow wardrobes to supply customized logos, slideshows, and `branding.desc` descriptors under the `/etc/penguins-eggs.d/brain.d/assets/calamares/` path.
+* **Branding Asset Overlays**: Allow costumes from wardrobe ateliers (e.g. `penguins-wardrobe`) to supply customized logos, slideshows, and `branding.desc` descriptors under the `/etc/penguins-eggs.d/brain.d/assets/calamares/` path.
 
 ### 🛠️ Core Optimizations
 * **Native SHA-512 Hashing**: Replaced external `openssl` shell calls with the native Go `sha512_crypt` library in [hashPassword()](file:///home/artisan/forge/penguins-eggs/coa/pkg/planner/hash-password.go#L10) for hashing password inputs during planning.

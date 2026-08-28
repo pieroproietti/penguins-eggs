@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// vendorFinishAsset es la ruta que un costume del wardrobe puede poblar
+// vendorFinishAsset es la ruta que un costume dell'atelier (penguins-wardrobe) puede poblar
 // (via su overlay sysroot normal, sin comandos extra) con un script de
 // pasos finales especificos del vendor -- mismo directorio ya usado para
 // el splash de GRUB/ISOLINUX y el branding.desc de Calamares.

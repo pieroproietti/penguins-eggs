@@ -97,11 +97,11 @@ func brandingDesc(oaVersion string) error {
 	}
 
 	// 6. Sovrascriviamo/completiamo il branding generico con gli asset del
-	// vendor, se presenti. Un costume del wardrobe (es. "quirinux") puo'
-	// depositare qui logo, slideshow e un branding.desc proprio tramite il
+	// vendor, se presenti. Un costume dell'atelier (es. "quirinux" da penguins-wardrobe)
+	// puo' depositare qui logo, slideshow e un branding.desc proprio tramite il
 	// suo overlay sysroot (stessa cartella usata per lo splash di
 	// GRUB/ISOLINUX in base.yaml.tmpl), senza bisogno di alcun comando
-	// aggiuntivo oltre a 'coa wardrobe wear'.
+	// aggiuntivo oltre all'applicazione del costume con penguins-tailor ('tailor wear').
 	vendorBranding := "/etc/penguins-eggs.d/brain.d/assets/calamares"
 	if fi, err := os.Stat(vendorBranding); err == nil && fi.IsDir() {
 		if err := copyBrandingOverlay(vendorBranding, targetDir); err != nil {

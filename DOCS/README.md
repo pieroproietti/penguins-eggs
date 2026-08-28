@@ -36,3 +36,12 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 ### ⚙️ Development Workflow & CI (`3-developer-manual/workflow/`)
 - [CI Architecture](./3-developer-manual/workflow/ci.md) — The three CI phases: Hammers (packaging), Furnace (remastering), and Incubator (installation).
 - [Proxmox Integration](./3-developer-manual/workflow/proxmox.md) — VirtFS configuration, Guest Agent, serial console, and export.
+
+---
+
+## 👔 4. Companion Ecosystem: Tailoring & Wardrobe Ateliers
+- **[penguins-tailor](https://github.com/pieroproietti/penguins-tailor)** — Standalone system tailoring tool providing the `tailor` CLI command to configure and dress systems with desktop profiles and accessories before remastering.
+- **Wardrobe Ateliers** — Configuration repositories containing costumes and accessories:
+  - Main Atelier: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (by Piero Proietti)
+  - Quirinux Atelier: [charliemartinez/penguins-wardrobe](https://github.com/charliemartinez/penguins-wardrobe) (by Charlie Martinez)
+
