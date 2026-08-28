@@ -4,7 +4,12 @@
 
 {{ define "install_distro_initramfs" }}
 mkdir -p /etc/initramfs-tools/conf.d
-echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
+SWAP_UUID=$(awk '$3 == "swap" && $1 ~ /^UUID=/ {sub(/^UUID=/, "", $1); print $1}' /etc/fstab | head -n 1)
+if [ -n "$SWAP_UUID" ]; then
+    echo "RESUME=UUID=$SWAP_UUID" > /etc/initramfs-tools/conf.d/resume
+else
+    echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
+fi
 if [ -f /etc/initramfs-tools/initramfs.conf ]; then
     sed -i 's/^RESUME=.*/RESUME=none/' /etc/initramfs-tools/initramfs.conf
 fi
