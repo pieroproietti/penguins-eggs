@@ -5,6 +5,9 @@
 {{ define "install_distro_initramfs" }}
 mkdir -p /etc/initramfs-tools/conf.d
 echo "RESUME=none" > /etc/initramfs-tools/conf.d/resume
+if [ -f /etc/initramfs-tools/initramfs.conf ]; then
+    sed -i 's/^RESUME=.*/RESUME=none/' /etc/initramfs-tools/initramfs.conf
+fi
 update-initramfs -u -k all
 {{ end }}
 
@@ -16,6 +19,13 @@ if [ -f /etc/default/grub ]; then
         sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     else
         echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+    fi
+
+    # Avoid 30-second delay if recordfail is triggered
+    if grep -q "^GRUB_RECORDFAIL_TIMEOUT=" /etc/default/grub; then
+        sed -i 's/^GRUB_RECORDFAIL_TIMEOUT=.*/GRUB_RECORDFAIL_TIMEOUT=0/' /etc/default/grub
+    else
+        echo "GRUB_RECORDFAIL_TIMEOUT=0" >> /etc/default/grub
     fi
 fi
 

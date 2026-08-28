@@ -16,6 +16,13 @@ if [ -f /etc/default/grub ]; then
     else
         echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
     fi
+
+    # Avoid 30-second delay if recordfail is triggered
+    if grep -q "^GRUB_RECORDFAIL_TIMEOUT=" /etc/default/grub; then
+        sed -i 's/^GRUB_RECORDFAIL_TIMEOUT=.*/GRUB_RECORDFAIL_TIMEOUT=0/' /etc/default/grub
+    else
+        echo "GRUB_RECORDFAIL_TIMEOUT=0" >> /etc/default/grub
+    fi
 fi
 
 if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then

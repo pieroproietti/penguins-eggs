@@ -109,6 +109,9 @@ remaster:
         if [ -d /home/eggs/liveroot/etc/initramfs-tools/conf.d ]; then
             echo "RESUME=none" > /home/eggs/liveroot/etc/initramfs-tools/conf.d/resume
         fi
+        if [ -f /home/eggs/liveroot/etc/initramfs-tools/initramfs.conf ]; then
+            sed -i 's/^RESUME=.*/RESUME=none/' /home/eggs/liveroot/etc/initramfs-tools/initramfs.conf
+        fi
 
         # Prevent systemd-firstboot prompts if the base template has no timezone/localtime configured
         if [ ! -e /home/eggs/liveroot/etc/localtime ] && [ ! -L /home/eggs/liveroot/etc/localtime ]; then
@@ -347,9 +350,13 @@ install:
       command: |
         if [ -f /usr/lib/systemd/system/NetworkManager.service ] || [ -f /etc/systemd/system/NetworkManager.service ]; then
             systemctl enable NetworkManager.service 2>/dev/null || true
+            systemctl disable NetworkManager-wait-online.service 2>/dev/null || true
         fi
         if [ -f /usr/lib/systemd/system/systemd-resolved.service ]; then
             systemctl enable systemd-resolved.service 2>/dev/null || true
+        fi
+        if [ -f /usr/lib/systemd/system/systemd-networkd-wait-online.service ] || [ -f /etc/systemd/system/systemd-networkd-wait-online.service ]; then
+            systemctl disable systemd-networkd-wait-online.service 2>/dev/null || true
         fi
 
   - name: "install-initramfs"
