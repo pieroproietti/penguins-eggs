@@ -11,8 +11,17 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
-# debian: distro_initramfs_cmd: no need operations
-"true"
+#!/bin/bash
+set -e
+# debian: distro_initramfs_cmd
+echo "-> Rigenerazione initramfs Debian/Ubuntu (update-initramfs)..."
+if [ -x /usr/sbin/update-initramfs.orig.initramfs-tools ]; then
+    /usr/sbin/update-initramfs.orig.initramfs-tools -u -k all
+elif command -v update-initramfs >/dev/null 2>&1; then
+    touch /.live-build
+    update-initramfs -u -k all
+    rm -f /.live-build
+fi
 {{ end -}}
 
 # ----------------------------------------------------------------------------
@@ -23,11 +32,33 @@
 set -e
 # debian: distro_copy_kernel_cmd
 
+LIVEROOT="/home/eggs/liveroot"
+ISODIR="/home/eggs/isodir"
 KERNEL_VERSION=$(uname -r)
+
 echo "-> Copia Kernel Debian/Ubuntu ($KERNEL_VERSION)..."
 
-cp "/boot/vmlinuz-$KERNEL_VERSION" /home/eggs/isodir/live/vmlinuz
-cp "/boot/initrd.img-$KERNEL_VERSION" /home/eggs/isodir/live/initrd.img
+if [ -f "$LIVEROOT/boot/vmlinuz-$KERNEL_VERSION" ]; then
+    KERNEL_SRC="$LIVEROOT/boot/vmlinuz-$KERNEL_VERSION"
+    INITRD_SRC="$LIVEROOT/boot/initrd.img-$KERNEL_VERSION"
+else
+    KERNEL_SRC=$(find "$LIVEROOT/boot" -maxdepth 1 -name "vmlinuz-*" -type f | sort -V | tail -n 1)
+    INITRD_SRC=$(find "$LIVEROOT/boot" -maxdepth 1 -name "initrd.img-*" -type f | sort -V | tail -n 1)
+fi
+
+if [ ! -f "$KERNEL_SRC" ]; then
+    echo "[FATAL ERROR] Impossibile trovare il kernel in $LIVEROOT/boot!"
+    exit 1
+fi
+
+if [ ! -f "$INITRD_SRC" ]; then
+    echo "[FATAL ERROR] Impossibile trovare l'initrd in $LIVEROOT/boot!"
+    exit 1
+fi
+
+mkdir -p "$ISODIR/live"
+cp "$KERNEL_SRC" "$ISODIR/live/vmlinuz"
+cp "$INITRD_SRC" "$ISODIR/live/initrd.img"
 {{ end }}
 
 # ----------------------------------------------------------------------------

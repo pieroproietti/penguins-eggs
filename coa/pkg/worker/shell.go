@@ -29,7 +29,7 @@ func RunShell(payload []byte) error {
 		return fmt.Errorf("no command specified in 'command' parameter")
 	}
 
-	scriptContent := []byte("set -e\n\n" + config.Params.Command)
+	scriptContent := []byte("set -e\nexport PATH=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH\"\n\n" + config.Params.Command)
 
 	return executeUnifiedShell(config, scriptContent)
 }

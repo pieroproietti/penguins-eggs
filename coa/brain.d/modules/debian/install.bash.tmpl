@@ -13,7 +13,13 @@ fi
 if [ -f /etc/initramfs-tools/initramfs.conf ]; then
     sed -i 's/^RESUME=.*/RESUME=none/' /etc/initramfs-tools/initramfs.conf
 fi
-update-initramfs -u -k all
+if [ -x /usr/sbin/update-initramfs.orig.initramfs-tools ]; then
+    /usr/sbin/update-initramfs.orig.initramfs-tools -u -k all
+elif command -v update-initramfs >/dev/null 2>&1; then
+    touch /.live-build
+    update-initramfs -u -k all
+    rm -f /.live-build
+fi
 {{ end }}
 
 {{ define "install_distro_bootloader" }}
