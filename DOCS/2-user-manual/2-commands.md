@@ -43,7 +43,7 @@ The heart of the system. Reads the YAML profile through the parser, generates th
     *   `--clone`: clone mode — preserves users and `/home` in the ISO.
     *   `--crypted`: LUKS-encrypted mode — produces an encrypted squashfs (Debian family only). Mutually exclusive with `--clone`.
     *   `--path <string>`: working directory. Default: `/home/eggs`.
-    *   `--stop-after <step>`: **[debug]** stops execution after a specific step (e.g. `coa-initrd`), leaving the *chroot* mounted for manual inspection.
+    *   `--stop-after <step>`: **[debug]** stops execution after a specific step (e.g. `initramfs`), leaving the *chroot* mounted for manual inspection.
     *   `--debug`: prints the JSON plan (or the pre-processed YAML) and exits without building anything.
 
 #### LUKS Encryption (`--crypted`)

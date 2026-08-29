@@ -8,6 +8,7 @@ This release introduces an interactive remaster wizard (`eggs wizard` / `eggs re
 ### 🧙 Interactive Remaster Wizard & Compression Selector
 * **Interactive Wizard CLI**: Added `eggs wizard` and the `-w` / `--wizard` flag to `eggs remaster` (`coa/pkg/cmd/wizard.go`, `remaster.go`), providing a guided 3-step interactive TUI for selecting remaster flight mode (Standard, Clone, Crypted) and SquashFS compression levels (Fast, Standard, Maximum).
 * **Direct Compression Flag**: Added `-c` / `--compression` flag to `eggs remaster` to dynamically adjust SquashFS compression algorithm and ratio directly from CLI invocations.
+* **CLI Uniformity (eggs as Primary Command)**: Standardized root command usage, examples, error suggestions, and man pages across all commands to consistently present `eggs` instead of internal `coa` references.
 * **Unit Testing**: Added test coverage in `coa/pkg/cmd/wizard_test.go` to validate wizard argument parsing and interactive selection logic.
 
 ### ✂️ Ecosystem Decoupling: Standalone penguins-tailor

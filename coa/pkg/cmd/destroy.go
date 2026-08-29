@@ -15,7 +15,7 @@ var destroyCmd = &cobra.Command{
 	Long: `Safely tears down the remastering environment. 
 It uses MNT_DETACH to unmount the OverlayFS and virtual API filesystems (/dev, /proc, /sys) without affecting the running host, then removes the temporary workspace.`,
 	Example: `  # Clean up the default workspace
-  sudo coa destroy`,
+  sudo eggs destroy`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 		handledestroy()

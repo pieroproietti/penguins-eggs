@@ -17,9 +17,9 @@ If run without subcommands, it automatically launches Calamares (if present and 
 or falls back to Krill TUI installer.
 
 Examples:
-  sudo coa sysinstall
-  sudo coa sysinstall calamares
-  sudo coa sysinstall krill`,
+  sudo eggs sysinstall
+  sudo eggs sysinstall calamares
+  sudo eggs sysinstall krill`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements("sysinstall", true)
 		if !utils.IsLive() {

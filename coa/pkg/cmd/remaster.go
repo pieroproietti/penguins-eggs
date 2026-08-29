@@ -49,22 +49,22 @@ var remasterCmd = &cobra.Command{
 It uses the new Coala architecture to read the agnostic Brain profile 
 and generate a precise execution plan for the OA planner.`,
 	Example: `  # Standard ISO remastering
-  sudo ./coa remaster
+  sudo eggs remaster
 
   # Interactive wizard mode
-  sudo ./coa remaster --wizard
+  sudo eggs remaster --wizard
 
   # Clone mode (preserves users and /home)
-  sudo ./coa remaster --clone
+  sudo eggs remaster --clone
 
   # Crypted mode (LUKS-encrypted squashfs)
-  sudo ./coa remaster --crypted
+  sudo eggs remaster --crypted
 
   # Debug mode: stop after a specific step
-  sudo ./coa remaster --stop-after coa-initrd
+  sudo eggs remaster --stop-after initramfs
 
   # Print the generated JSON plan and exit
-  sudo ./coa remaster --debug`,
+  sudo eggs remaster --debug`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if wizardFlag || interactiveFlag {
 			RunWizard(producePath)
@@ -342,7 +342,7 @@ func init() {
 	remasterCmd.Flags().BoolVar(&cryptedCloneFlag, "cryptedclone", false, "Alias for --crypted")
 	_ = remasterCmd.Flags().MarkHidden("cryptedclone")
 	remasterCmd.Flags().StringVar(&compressionFlag, "compression", "", "SquashFS compression algorithm (zstd, xz, lz4, gzip)")
-	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Stop execution after a specific step (e.g. coa-initrd)")
+	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Stop execution after a specific step (e.g. initramfs)")
 	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Print the JSON plan and exit without remastering")
 	remasterCmd.Flags().StringVar(&fdtFlag, "fdt", "", "path to Flattened Device Tree (DTB) file or directory")
 

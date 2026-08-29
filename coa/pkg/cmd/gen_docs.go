@@ -35,7 +35,7 @@ var genDocsCmd = &cobra.Command{
 		}
 
 		header := &doc.GenManHeader{
-			Title:   "COA",
+			Title:   "EGGS",
 			Section: "1",
 		}
 		if err := doc.GenManTree(rootCmd, header, manDir); err != nil {
@@ -43,16 +43,16 @@ var genDocsCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		rootCmd.GenBashCompletionFile(filepath.Join(compDir, "coa.bash"))
-		rootCmd.GenZshCompletionFile(filepath.Join(compDir, "coa.zsh"))
-		rootCmd.GenFishCompletionFile(filepath.Join(compDir, "coa.fish"), true)
-
-		originalUse := rootCmd.Use
-		rootCmd.Use = "eggs"
-
 		rootCmd.GenBashCompletionFile(filepath.Join(compDir, "eggs.bash"))
 		rootCmd.GenZshCompletionFile(filepath.Join(compDir, "eggs.zsh"))
 		rootCmd.GenFishCompletionFile(filepath.Join(compDir, "eggs.fish"), true)
+
+		originalUse := rootCmd.Use
+		rootCmd.Use = "coa"
+
+		rootCmd.GenBashCompletionFile(filepath.Join(compDir, "coa.bash"))
+		rootCmd.GenZshCompletionFile(filepath.Join(compDir, "coa.zsh"))
+		rootCmd.GenFishCompletionFile(filepath.Join(compDir, "coa.fish"), true)
 
 		rootCmd.Use = originalUse
 

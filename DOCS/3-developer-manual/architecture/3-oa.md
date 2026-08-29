@@ -81,7 +81,7 @@ Tears down the workspace mounts in strict order using the `umount2()` syscall wi
 4. The overlay `lowerdir`s inside `.overlay`
 5. Finally, `liveroot` itself
 
-This is the same routine behind `coa destroy` and the `oa cleanup` emergency handle.
+This is the same routine behind `eggs destroy` and the `oa cleanup` emergency handle.
 
 ---
 

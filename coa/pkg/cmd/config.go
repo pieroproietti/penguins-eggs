@@ -547,7 +547,7 @@ the penguins-eggs configuration stored in /etc/penguins-eggs.d/custom.yaml.
 
 You can change the live user password, compression settings, ISO naming,
 and edit the custom exclude list for squashfs generation.`,
-	Example: `  sudo coa config`,
+	Example: `  sudo eggs config`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 

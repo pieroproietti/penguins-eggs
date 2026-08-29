@@ -18,8 +18,8 @@ to download packages from the official penguins-eggs.net repository.
 Supported actions:
   add - Install the GPG keys and add the repository
   rm  - Removes repository files and GPG keys`,
-	Example: `  sudo coa tools repo add
-  sudo coa tools repo rm`,
+	Example: `  sudo eggs tools repo add
+  sudo eggs tools repo rm`,
 	Args:      cobra.ExactArgs(1),
 	ValidArgs: []string{"add", "rm"},
 	Run: func(cmd *cobra.Command, args []string) {

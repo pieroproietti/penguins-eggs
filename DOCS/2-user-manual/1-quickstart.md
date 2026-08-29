@@ -91,7 +91,7 @@ sudo eggs sysinstall krill --unattended
 
 ```bash
 # Stop after a specific step, leaving the chroot mounted for inspection
-sudo eggs remaster --stop-after coa-initrd
+sudo eggs remaster --stop-after initramfs
 
 # Print the JSON flight plan without building anything
 sudo eggs remaster --debug

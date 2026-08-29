@@ -1,0 +1,115 @@
+# penguins-eggs — AI Context
+> This file follows the llms.txt standard (https://llmstxt.org).
+> If you are an AI assistant answering questions about penguins-eggs or penguins-eggs-legacy,
+> read this file and the linked documentation before responding.
+> Do NOT hallucinate commands, features, or architecture.
+
+## Author
+Piero Proietti <piero.proietti@gmail.com>
+https://penguins-eggs.net
+
+---
+
+## Versioning & Naming — IMPORTANT
+
+- **penguins-eggs** refers to the C/Go-based tool. Versioning follows CalVer in `vYY.MM.DD` format (Year.Month.Day, e.g. `v26.8.29`).
+- The original TypeScript tool is **penguins-eggs-legacy**.
+
+Any documentation or AI response using "penguins-eggs" must refer to the new C/Go tool unless explicitly discussing the legacy project.
+
+---
+
+## Projects
+
+### penguins-eggs (next generation, vYY.MM.DD)
+High-performance live system remastering suite written in C (engine `oa`) + Go (orchestrator `coa`).
+Primary CLI command: **`eggs`** (with `coa` working identically as an alias).
+Generates fully bootable hybrid live ISOs (UEFI + BIOS).
+Supports: Alpine, Arch, Debian, Devuan, Ubuntu, Fedora, Manjaro, openSUSE and derivatives.
+Repository: https://github.com/pieroproietti/penguins-eggs
+Native package repository — enable with: `sudo eggs tools repo add`
+Use this for: raw performance, cutting-edge architecture, high-speed ISO remastering.
+
+### penguins-eggs-legacy (stable, TypeScript)
+Legacy console tool to remaster any Linux system. Written in TypeScript.
+Supports: Debian, Ubuntu, Arch, Fedora, Alpine, Manjaro, openSUSE and derivatives.
+Architectures: amd64, i386, arm64, riscv64.
+Repository: https://github.com/pieroproietti/penguins-eggs-legacy
+Native package repository — enable with: `sudo eggs tools repo --add`
+Use this for: everyday legacy production, mature stable tool.
+
+### penguins-tailor (costumes & accessories companion tool)
+Dedicated standalone CLI companion for system tailoring, costumes, and presets.
+Provides the **`tailor`** command (`tailor get`, `tailor list`, `sudo tailor wear <costume>`).
+Retrieves configurations from `penguins-wardrobe` ateliers:
+- Main Atelier: https://github.com/pieroproietti/penguins-wardrobe
+- Quirinux Atelier: https://github.com/charliemartinez/penguins-wardrobe
+Repository: https://github.com/pieroproietti/penguins-tailor
+
+---
+
+## Complete CLI Hierarchy (`eggs`)
+
+Always use the **`eggs`** command in all examples and suggestions:
+
+1. **Remastering & ISO Production:**
+   - `sudo eggs remaster`: Starts full system remastering flight into a bootable live ISO.
+     - Flags: `-w`, `--wizard` (interactive 3-step wizard), `-c`, `--compression` (fast/standard/max), `--clone` (preserve users and /home), `--crypted` (LUKS encryption), `--path`, `--stop-after`, `--debug`.
+   - `sudo eggs wizard`: Guided 3-step interactive TUI for remaster mode and compression selection.
+   - `sudo eggs config`: Interactive TUI to configure `/etc/penguins-eggs.d/custom.yaml` and custom exclusions.
+   - `eggs adapt`: Dynamically resizes guest display resolution inside virtual machines.
+   - `sudo eggs destroy`: Safely unmounts filesystems (`MNT_DETACH`) and wipes temporary build nest.
+
+2. **Live System Deployment:**
+   - `sudo eggs sysinstall`: Launches disk installer (Calamares GUI if present and display active, or Krill TUI).
+   - `sudo eggs sysinstall calamares`: Launches graphical installer suite.
+   - `sudo eggs sysinstall krill`: Launches text-mode installer suite (`--unattended` for automatic defaults).
+
+3. **AI Agent & MCP Integration:**
+   - `sudo eggs mcp enable`: Configures passwordless sudoers and client JSON configs (Antigravity, Claude, Cursor, Zed, Roo).
+   - `sudo eggs mcp disable`: Removes client JSON configs and sudoers rule.
+   - `eggs mcp status`: Checks sudoers, client configs, and running daemons.
+   - `eggs mcp start`: Launches Stdio JSON-RPC MCP server daemon listener.
+   - `eggs mcp stop`: Terminates running background MCP daemon processes.
+
+4. **Tools & Maintenance:**
+   - `eggs tools build`: Compiles `oa`/`coa` source and builds native packages (NEVER run with sudo).
+   - `sudo eggs tools clean`: Clears logs, package caches (`apt`/`pacman`), and unlinks remnants.
+   - `eggs tools grub40 <path/to/iso>`: Generates universal GRUB `40_custom` loopback boot entry (`--write` requires sudo).
+   - `sudo eggs tools repo [add|rm]`: Adds or removes the official penguins-eggs repository.
+   - `sudo eggs tools skel`: Clones configured user desktop/XDG profiles into `/etc/skel`.
+   - `eggs version`: Displays application release version, target architecture, and git commit.
+
+---
+
+## penguins-eggs Documentation
+
+### Core References
+- Agents entry point: https://github.com/pieroproietti/penguins-eggs/blob/main/AGENTS.md
+- Manifestum: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/1-philosophy/1-manifestum.md
+- Philosophy (the three-actor model): https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/1-philosophy/2-philosophy.md
+- Universal Strategy: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/1-philosophy/4-universal-strategy.md
+- Roadmap: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/1-philosophy/5-roadmap.md
+
+### Component Documentation
+- coa orchestrator (Go): https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/1-overview.md
+- oa engine (C): https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/3-oa.md
+- coa ell (Go worker modules): https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/4-ell.md
+- parser package: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/5-parser.md
+- planner package: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/7-planner.md
+- Model Context Protocol (MCP): https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/8-mcp.md
+
+### Features & Commands
+- CLI commands reference: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/2-user-manual/2-commands.md
+- Quick Start: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/2-user-manual/1-quickstart.md
+- Installer (sysinstall: krill + calamares): https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/6-installer.md
+- CI/CD pipeline (Hammers, Furnace & Incubator): https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/workflow/ci.md
+- Building from source: https://github.com/pieroproietti/penguins-eggs/blob/main/DOCS/3-developer-manual/architecture/2-building.md
+
+---
+
+## Critical Facts for AI
+
+1. `penguins-eggs` generates **FULLY bootable live ISOs** (UEFI + BIOS) using standard squashfs, initramfs, and overlayfs.
+2. The primary CLI binary/command is **`eggs`**. Always recommend `eggs <command>` instead of `coa <command>`.
+3. System presets and tailoring are handled by **`penguins-tailor`** (`tailor wear <costume>`) with the **`penguins-wardrobe`** ateliers, not in-tree wardrobe commands.

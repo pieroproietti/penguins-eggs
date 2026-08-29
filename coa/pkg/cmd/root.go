@@ -11,11 +11,11 @@ import (
 var AppVersion = "development"
 
 var rootCmd = &cobra.Command{
-	Use:     "coa",
-	Short:   "coa - The Universal Orchestrator and Worker for penguins-eggs",
-	Long: `coa means "to hatch". It is the main engine behind penguins-eggs.
-Designed to be lightweight and solid, it takes care of incubating all the 
-necessary tasks from the Brain to seamlessly hatch your remastered system.`,
+	Use:     "eggs",
+	Short:   "eggs - The Universal Orchestrator and Worker for penguins-eggs",
+	Long: `penguins-eggs (eggs) is the universal live system remastering framework.
+Designed to be lightweight, fast, and solid, it incubates all necessary tasks from the 
+Brain to seamlessly hatch your remastered live systems.`,
 	Version: AppVersion,
 }
 
@@ -60,7 +60,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 func CheckSudoRequirements(cmdName string, needSudo bool) {
 	if needSudo && os.Geteuid() != 0 {
 		utils.LogWarning("The command '%s' requires root privileges.", cmdName)
-		utils.LogNormal("Run: sudo coa %s", cmdName)
+		utils.LogNormal("Run: sudo eggs %s", cmdName)
 		os.Exit(1)
 	}
 }

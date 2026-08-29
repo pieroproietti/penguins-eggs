@@ -7,7 +7,7 @@ import (
 var toolsCmd = &cobra.Command{
 	Use:   "tools",
 	Short: "Useful tools for maintenance and system management",
-	Long: `A suite of auxiliary tools provided by coa for the management,
+	Long: `A suite of auxiliary tools provided by eggs for the management,
 cleaning, and inspection of the host system and ISOs.`,
 }
 

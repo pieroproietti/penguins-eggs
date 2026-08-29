@@ -15,7 +15,7 @@ var adaptCmd = &cobra.Command{
 
 When executed, it forces the guest operating system to dynamically resize its display resolution to perfectly match the current dimensions of the host's VM window, improving the user experience during testing.`,
 	Example: `  # Automatically resize the live system display to fit the VM window
-  coa adapt`,
+  eggs adapt`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), false)
 		handleAdapt()

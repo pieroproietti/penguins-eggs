@@ -13,9 +13,9 @@ var toolsCleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "Log rotation, package manager cache cleanup, and host system remnants",
 	Long: `It streamlines the system by removing unnecessary files.
-Ideal to run before ‘coa remaster’ to create a more compact ISO.`,
-	Example: `  sudo coa tools clean
-  sudo coa tools clean --verbose`,
+Ideal to run before 'eggs remaster' to create a more compact ISO.`,
+	Example: `  sudo eggs tools clean
+  sudo eggs tools clean --verbose`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements(cmd.Name(), true)
 

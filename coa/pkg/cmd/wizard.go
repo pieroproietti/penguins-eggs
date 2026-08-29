@@ -19,10 +19,10 @@ var wizardCmd = &cobra.Command{
 	Long: `The 'wizard' command provides a lightweight, guided 3-step interactive flow
 to configure remaster mode, compression level, and launch the ISO remastering flight.`,
 	Example: `  # Start interactive remastering wizard
-  sudo coa wizard
+  sudo eggs wizard
 
   # Start wizard with a custom work path
-  sudo coa wizard --path /home/eggs`,
+  sudo eggs wizard --path /home/eggs`,
 	Run: func(cmd *cobra.Command, args []string) {
 		RunWizard(wizardPath)
 	},
