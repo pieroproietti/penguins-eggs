@@ -2,6 +2,38 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.8.29 - 2026-08-29
+This release introduces an interactive remaster wizard (`eggs wizard` / `eggs remaster -w`), decouples the wardrobe/costumes subsystem to the standalone `penguins-tailor` companion CLI, hardens Debian/Ubuntu initramfs generation and live-tools handling in Krill sysinstall, speeds up installed system startup (disabling wait-online services and zeroing GRUB recordfail timeout), extends XDG skel profile cloning to Openbox desktop sessions, and refines documentation across the suite.
+
+### 🧙 Interactive Remaster Wizard & Compression Selector
+* **Interactive Wizard CLI**: Added `eggs wizard` and the `-w` / `--wizard` flag to `eggs remaster` (`coa/pkg/cmd/wizard.go`, `remaster.go`), providing a guided 3-step interactive TUI for selecting remaster flight mode (Standard, Clone, Crypted) and SquashFS compression levels (Fast, Standard, Maximum).
+* **Direct Compression Flag**: Added `-c` / `--compression` flag to `eggs remaster` to dynamically adjust SquashFS compression algorithm and ratio directly from CLI invocations.
+* **Unit Testing**: Added test coverage in `coa/pkg/cmd/wizard_test.go` to validate wizard argument parsing and interactive selection logic.
+
+### ✂️ Ecosystem Decoupling: Standalone penguins-tailor
+* **Wardrobe Removal & Replacement**: Removed legacy in-tree `wardrobe` commands and `coa/pkg/tailor` implementation from `penguins-eggs`, fully replacing them with the new standalone package [penguins-tailor](https://github.com/pieroproietti/penguins-tailor) (providing the `tailor` CLI command).
+* **Dedicated Companion Tool**: Delegated desktop customization, costume wear, and accessory configurations to the external standalone companion CLI [penguins-tailor](https://github.com/pieroproietti/penguins-tailor) (`tailor` command), drawing from the [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) ateliers.
+* **Clean Architectural Boundaries**: Focused `penguins-eggs` strictly on core live system generation, ISO remastering, and deployment engines.
+
+### 🌀 Debian/Ubuntu Initramfs & Krill Sysinstall Hardening
+* **Live-Tools Diversion Bypass**: Bypassed the `live-tools` initramfs wrapper during Krill target disk installation (`coa/brain.d/modules/debian/install.bash.tmpl`) by executing `/usr/sbin/update-initramfs.orig.initramfs-tools` or creating temporary `/.live-build`, ensuring full initramfs regeneration for all installed kernels (`-k all`).
+* **Dynamic Resume / Swap UUID Resolution**: Automatically parsed `/etc/fstab` in Krill target installation to extract swap partition UUID and set `RESUME=UUID=<id>` in `/etc/initramfs-tools/conf.d/resume`, preventing boot delays and missing resume device warnings on installed systems.
+* **Sanitized Live Root Resume**: Enforced `RESUME=none` during live system sanitization in `/home/eggs/liveroot` to ensure reliable live ISO boot behavior.
+* **Preserved Live-Boot Initrd in Remaster**: Streamlined Debian live ISO remastering (`coa/brain.d/modules/debian/remaster.bash.tmpl`) by directly leveraging host `live-boot` initrd without redundant regeneration steps.
+* **Universal Kernel & Initrd Copy**: Enhanced kernel and initrd copy routines in `remaster.bash.tmpl` to locate versioned files in `$LIVEROOT/boot/` with automatic fallback.
+
+### ⚡ System Startup & Bootloader Optimizations
+* **GRUB Recordfail Timeout Elimination**: Injected `GRUB_RECORDFAIL_TIMEOUT=0` into `/etc/default/grub` across installed systems to eliminate the 30-second hang on subsequent reboots after an ungraceful shutdown.
+* **Disabled Blocking Network Wait-Online Services**: Automatically masked/disabled `systemd-networkd-wait-online.service` and `NetworkManager-wait-online.service` on installed targets, drastically reducing system boot times on offline or slow network configurations.
+* **Hardened Worker Shell PATH**: Ensured complete standard PATH environment `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin` in `coa/pkg/worker/shell.go`.
+
+### 🪟 XDG Desktop Profiles & Openbox Support
+* **Openbox Session Support**: Extended desktop session detection in `HandleSkel()` (`coa/pkg/xdg/skel.go`) to recognize Openbox sessions (such as Mabox Linux), correctly synchronizing Openbox, Tint2, and Conky desktop configurations into `/etc/skel`.
+
+### 📚 Documentation & Architecture Specs
+* **MCP Integration Specs**: Added comprehensive developer documentation for the Model Context Protocol architecture in `DOCS/3-developer-manual/architecture/8-mcp.md` and user manual guides.
+* **Ecosystem Reference Updates**: Updated documentation, manpages, and `AGENTS.md` guidelines to reflect `penguins-tailor` and `penguins-wardrobe` ateliers workflows.
+
 ## Release Notes: penguins-eggs v26.8.14 - 2026-08-14
 This release introduces BIOS filesystem restriction to ext4 in Calamares partition configuration, Model Context Protocol (MCP) server integration for AI-assisted workflows, streamlined "Just-ISO" bootloader and packaging architecture, full RISC-V / Spacemit K1 (MUSE-Book) hardware support, multi-architecture builder hardening, and a restructured documentation suite.
 
