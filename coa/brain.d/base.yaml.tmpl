@@ -47,14 +47,17 @@ remaster:
     module: "shell"
     params:
       command: |
-        [ -f "/etc/penguins-eggs.d/brain.d/assets/splash.png" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/splash.png /home/eggs/isodir/boot/grub/splash.png
-        [ -f "/etc/penguins-eggs.d/brain.d/assets/splash.png" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/splash.png /home/eggs/isodir/isolinux/splash.png
-        [ -f "/etc/penguins-eggs.d/brain.d/assets/grub-theme.cfg" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/grub-theme.cfg /home/eggs/isodir/boot/grub/theme.cfg
-        [ -f "/etc/penguins-eggs.d/brain.d/assets/isolinux-theme.cfg" ] && cp -f /etc/penguins-eggs.d/brain.d/assets/isolinux-theme.cfg /home/eggs/isodir/isolinux/isolinux.theme.cfg
+        LIVECD_BRANDING=/etc/penguins-eggs.d/branding/livecd
+        LEGACY_BRANDING=/etc/penguins-eggs.d/brain.d/assets
+        [ -f "$LIVECD_BRANDING/splash.png" ] || LIVECD_BRANDING=$LEGACY_BRANDING
+        [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/boot/grub/splash.png
+        [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/isolinux/splash.png
+        [ -f "$LIVECD_BRANDING/grub.theme.cfg" ] && cp -f "$LIVECD_BRANDING/grub.theme.cfg" /home/eggs/isodir/boot/grub/theme.cfg
+        [ -f "$LIVECD_BRANDING/isolinux.theme.cfg" ] && cp -f "$LIVECD_BRANDING/isolinux.theme.cfg" /home/eggs/isodir/isolinux/isolinux.theme.cfg
         if [ -f "/usr/share/grub/unicode.pf2" ]; then
             cp -f /usr/share/grub/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
-        elif [ -f "/etc/penguins-eggs.d/brain.d/assets/unicode.pf2" ]; then
-            cp -f /etc/penguins-eggs.d/brain.d/assets/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
+        elif [ -f "$LIVECD_BRANDING/unicode.pf2" ]; then
+            cp -f "$LIVECD_BRANDING/unicode.pf2" /home/eggs/isodir/boot/grub/font.pf2
         fi
 
 # ----------------------------------------------------------------------------

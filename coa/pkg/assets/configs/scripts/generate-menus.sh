@@ -17,6 +17,38 @@ fi
 
 echo "Generazione menu GRUB e ISOLINUX in corso..."
 
+BRANDING_DIR="/etc/penguins-eggs.d/branding/livecd"
+
+# Render the Mustache-compatible templates installed by penguins-tailor.
+# Only the small, documented set of scalar placeholders is expanded here.
+render_branding_template() {
+    local source="$1"
+    local target="$2"
+    local content
+
+    content=$(cat "$source")
+    content=${content//\{\{\{fullname\}\}\}/$PRETTY_NAME}
+    content=${content//\{\{\{kernel\}\}\}/$(uname -r)}
+    content=${content//\{\{\{vmlinuz\}\}\}//live/vmlinuz}
+    content=${content//\{\{\{initrdImg\}\}\}//live/initrd.img}
+    content=${content//\{\{\{kernel_parameters\}\}\}/$BOOT_PARAMS}
+    content=${content//\{\{\{rmModules\}\}\}/}
+    printf '%s\n' "$content" > "$target"
+}
+
+if [ -f "$BRANDING_DIR/grub.main.cfg" ] && [ -f "$BRANDING_DIR/isolinux.main.cfg" ]; then
+    render_branding_template "$BRANDING_DIR/grub.main.cfg" "$ISODIR/boot/grub/grub.cfg"
+    render_branding_template "$BRANDING_DIR/isolinux.main.cfg" "$ISODIR/isolinux/isolinux.cfg"
+
+    cat <<EOF > "$ISODIR/EFI/BOOT/grub.cfg"
+search --set=root --label OA_LIVE
+set prefix=(\$root)/boot/grub
+configfile \$prefix/grub.cfg
+EOF
+    echo "Menu di branding generati con successo."
+    exit 0
+fi
+
 MENU_TITLE="penguins-eggs"
 START_LABEL="Chick of"
 RAM_LABEL="RAM mode"

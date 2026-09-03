@@ -52,6 +52,7 @@ func BuildInstaller(oaVersion string) error {
 		unpackfsConf,
 		shellprocessOaChrootRunner,
 		machineIdConf,
+		calamaresModulesOverlay,
 	}
 
 	for _, task := range tasks {
@@ -63,4 +64,3 @@ func BuildInstaller(oaVersion string) error {
 
 	return nil
 }
-

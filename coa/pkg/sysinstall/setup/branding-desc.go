@@ -102,7 +102,10 @@ func brandingDesc(oaVersion string) error {
 	// suo overlay sysroot (stessa cartella usata per lo splash di
 	// GRUB/ISOLINUX in base.yaml.tmpl), senza bisogno di alcun comando
 	// aggiuntivo oltre all'applicazione del costume con penguins-tailor ('tailor wear').
-	vendorBranding := "/etc/penguins-eggs.d/brain.d/assets/calamares"
+	vendorBranding := "/etc/penguins-eggs.d/branding/calamares/branding"
+	if fi, err := os.Stat(vendorBranding); err != nil || !fi.IsDir() {
+		vendorBranding = "/etc/penguins-eggs.d/brain.d/assets/calamares"
+	}
 	if fi, err := os.Stat(vendorBranding); err == nil && fi.IsDir() {
 		if err := copyBrandingOverlay(vendorBranding, targetDir); err != nil {
 			return fmt.Errorf("unable to apply vendor calamares branding from %s: %v", vendorBranding, err)
