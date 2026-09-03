@@ -3,8 +3,8 @@
 componentName: eggs
 
 images:
-  productIcon:    "eggs.png"
-  productLogo:    "eggs.png"
+  productIcon:    "logo.png"
+  productLogo:    "logo.png"
   productWelcome: "welcome.png"
 
 slideshow:       "show.qml"
@@ -34,4 +34,3 @@ style:
   sidebarTextCurrent:       "#292F34"
 
 welcomeStyleCalamares: true
-
