@@ -49,9 +49,7 @@ remaster:
       command: |
         DEFAULT_BRANDING=/etc/penguins-eggs.d/branding.default/livecd
         LIVECD_BRANDING=/etc/penguins-eggs.d/branding/livecd
-        LEGACY_BRANDING=/etc/penguins-eggs.d/brain.d/assets
         [ -f "$LIVECD_BRANDING/splash.png" ] || LIVECD_BRANDING=$DEFAULT_BRANDING
-        [ -f "$LIVECD_BRANDING/splash.png" ] || LIVECD_BRANDING=$LEGACY_BRANDING
         [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/boot/grub/splash.png
         [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/isolinux/splash.png
         [ -f "$LIVECD_BRANDING/grub.theme.cfg" ] && cp -f "$LIVECD_BRANDING/grub.theme.cfg" /home/eggs/isodir/boot/grub/theme.cfg

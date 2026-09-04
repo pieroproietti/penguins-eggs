@@ -25,15 +25,6 @@ func userConf() error {
 		return err
 	}
 
-	// If the vendor costume/atelier ships a complete users.conf override under
-	// /etc/penguins-eggs.d/brain.d/assets/calamares/users.conf, copy it
-	// directly to the installer modules directory and return -- no need
-	// to render the template at all.
-	vendorUsersConf := "/etc/penguins-eggs.d/brain.d/assets/calamares/users.conf"
-	if data, err := os.ReadFile(vendorUsersConf); err == nil {
-		return os.WriteFile(targetPath, data, 0644)
-	}
-
 	// 1. Identify the live user
 	liveUser := os.Getenv("SUDO_USER")
 	if liveUser == "" || liveUser == "root" {
@@ -72,15 +63,8 @@ func userConf() error {
 		}
 	}
 
-	// 3. The "require strong passwords" checkbox is visible by default
-	// (Piero's original choice). A vendor can hide it by shipping:
-	//   /etc/penguins-eggs.d/brain.d/assets/hide-weak-password-checkbox
-	// (e.g. the 'quirinux' costume from penguins-wardrobe atelier) -- mere presence
-	// is enough, content does not matter. No vendor file -> no change.
+	// 3. The "require strong passwords" checkbox is visible by default.
 	allowWeakPasswords := true
-	if _, err := os.Stat("/etc/penguins-eggs.d/brain.d/assets/hide-weak-password-checkbox"); err == nil {
-		allowWeakPasswords = false
-	}
 
 	// 4. Read default hostname from /etc/hostname if present, fallback to ${host}
 	defaultHostname := "${host}"

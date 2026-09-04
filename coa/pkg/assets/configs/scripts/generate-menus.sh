@@ -57,9 +57,6 @@ fi
 MENU_TITLE="penguins-eggs"
 START_LABEL="Chick of"
 RAM_LABEL="RAM mode"
-if [ -f "/etc/penguins-eggs.d/brain.d/assets/menu-strings.conf" ]; then
-    . "/etc/penguins-eggs.d/brain.d/assets/menu-strings.conf"
-fi
 
 # Optional "RAM mode" entry: some vendors (systems typically installed
 # on low-RAM hardware) prefer to omit it to avoid confusion.
