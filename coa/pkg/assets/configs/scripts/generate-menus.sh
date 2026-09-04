@@ -17,7 +17,12 @@ fi
 
 echo "Generazione menu GRUB e ISOLINUX in corso..."
 
+DEFAULT_BRANDING_DIR="/etc/penguins-eggs.d/branding.default/livecd"
 BRANDING_DIR="/etc/penguins-eggs.d/branding/livecd"
+
+if [ ! -d "$BRANDING_DIR" ]; then
+    BRANDING_DIR="$DEFAULT_BRANDING_DIR"
+fi
 
 # Render the Mustache-compatible templates installed by penguins-tailor.
 # Only the small, documented set of scalar placeholders is expanded here.

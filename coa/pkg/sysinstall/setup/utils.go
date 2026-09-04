@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"path/filepath"
 	"text/template"
 )
 
@@ -33,6 +34,25 @@ func renderAndSaveEmbedded(tmplName, outPath string, data interface{}, perm os.F
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
 		return fmt.Errorf("error rendering template %s: %w", tmplName, err)
+	}
+
+	return os.WriteFile(outPath, buf.Bytes(), perm)
+}
+
+func renderAndSaveFile(tmplPath, outPath string, data interface{}, perm os.FileMode) error {
+	tmplContent, err := os.ReadFile(tmplPath)
+	if err != nil {
+		return fmt.Errorf("unable to read template %s: %w", tmplPath, err)
+	}
+
+	t, err := template.New(filepath.Base(tmplPath)).Parse(string(tmplContent))
+	if err != nil {
+		return fmt.Errorf("error parsing template %s: %w", tmplPath, err)
+	}
+
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, data); err != nil {
+		return fmt.Errorf("error rendering template %s: %w", tmplPath, err)
 	}
 
 	return os.WriteFile(outPath, buf.Bytes(), perm)

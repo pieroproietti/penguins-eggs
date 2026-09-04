@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var defaultCalamaresBranding = "/etc/penguins-eggs.d/branding.default/calamares/branding"
+
 // BrandingConfig contiene i dati dinamici da iniettare nel template
 type BrandingConfig struct {
 	ProductName         string
@@ -84,7 +86,7 @@ func brandingDesc(oaVersion string) error {
 		ReleaseNotesUrl:     releaseNotesUrl,
 	}
 
-	// 5. Scrittura del file tramite template
+	// 5. Materializziamo gli asset predefiniti nel workspace temporaneo.
 	targetDir := filepath.Join(InstallerDRoot, "branding", "eggs")
 	targetPath := filepath.Join(targetDir, "branding.desc")
 
@@ -92,11 +94,22 @@ func brandingDesc(oaVersion string) error {
 		return fmt.Errorf("unable to create branding directory: %v", err)
 	}
 
-	if err := renderAndSaveEmbedded("branding.desc.tmpl", targetPath, config, 0644); err != nil {
+	defaultTemplate := filepath.Join(defaultCalamaresBranding, "branding.desc.tmpl")
+	if fi, err := os.Stat(defaultCalamaresBranding); err == nil && fi.IsDir() {
+		if err := copyBrandingOverlay(defaultCalamaresBranding, targetDir); err != nil {
+			return fmt.Errorf("unable to apply default Calamares branding from %s: %v", defaultCalamaresBranding, err)
+		}
+		if err := renderAndSaveFile(defaultTemplate, targetPath, config, 0644); err != nil {
+			return err
+		}
+		if err := os.Remove(filepath.Join(targetDir, "branding.desc.tmpl")); err != nil && !os.IsNotExist(err) {
+			return fmt.Errorf("unable to remove rendered branding template: %v", err)
+		}
+	} else if err := renderAndSaveEmbedded("branding.desc.tmpl", targetPath, config, 0644); err != nil {
 		return err
 	}
 
-	// 6. Sovrascriviamo/completiamo il branding generico con gli asset del
+	// 6. Sovrascriviamo/completiamo il branding predefinito con gli asset del
 	// vendor, se presenti. Un costume dell'atelier (es. "quirinux" da penguins-wardrobe)
 	// puo' depositare qui logo, slideshow e un branding.desc proprio tramite il
 	// suo overlay sysroot (stessa cartella usata per lo splash di

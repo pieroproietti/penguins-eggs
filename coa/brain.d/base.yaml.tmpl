@@ -47,8 +47,10 @@ remaster:
     module: "shell"
     params:
       command: |
+        DEFAULT_BRANDING=/etc/penguins-eggs.d/branding.default/livecd
         LIVECD_BRANDING=/etc/penguins-eggs.d/branding/livecd
         LEGACY_BRANDING=/etc/penguins-eggs.d/brain.d/assets
+        [ -f "$LIVECD_BRANDING/splash.png" ] || LIVECD_BRANDING=$DEFAULT_BRANDING
         [ -f "$LIVECD_BRANDING/splash.png" ] || LIVECD_BRANDING=$LEGACY_BRANDING
         [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/boot/grub/splash.png
         [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/isolinux/splash.png
@@ -207,26 +209,26 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "create-live-launcher"
     description: "Add universal desktop launcher"
-    module: "template"
-    chroot: true
+    module: "shell"
+    chroot: false
     params:
-      dest: "/usr/share/applications/install-system.desktop"
-      permissions: 493 # 0755 octal
-      content: |
-        [Desktop Entry]
-        Type=Application
-        Version=1.0
-        Name=Install System
-        GenericName=Live Installer
-        Comment=Install this system to your hard disk
-        Exec=pkexec eggs sysinstall
-        Icon=penguins-eggs
-        {{ if .HasCalamares -}}
-        Terminal=false
-        {{ else -}}
-        Terminal=true
-        {{ end -}}
-        Categories=System;
+      command: |
+        DEFAULT_SRC=/etc/penguins-eggs.d/branding.default/applications/install-system.desktop.tmpl
+        ACTIVE_SRC=/etc/penguins-eggs.d/branding/applications/install-system.desktop.tmpl
+        SRC=$DEFAULT_SRC
+        DEST=/home/eggs/liveroot/usr/share/applications/install-system.desktop
+        [ -f "$ACTIVE_SRC" ] && SRC=$ACTIVE_SRC
+        mkdir -p "$(dirname "$DEST")"
+        if [ -f "$SRC" ]; then
+          sed \
+            -e 's/@@TERMINAL@@/{{ if .HasCalamares }}false{{ else }}true{{ end }}/' \
+            -e 's|^Exec=.*$|Exec=pkexec eggs sysinstall|' \
+            "$SRC" > "$DEST"
+          chmod 755 "$DEST"
+        else
+          echo "Missing default installer launcher: $SRC" >&2
+          exit 1
+        fi
 
 # ----------------------------------------------------------------------------
 # 13. TRUST AGENT
@@ -272,22 +274,27 @@ remaster:
 # ----------------------------------------------------------------------------
   - name: "eggs-icon"
     description: "Create Egg Icon"
-    module: "template"
+    module: "shell"
+    chroot: false
     params:
-      dest: "/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg"
-      permissions: 420 # 0644 octal
-      content: |
-        <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <radialGradient id="eggGrad" cx="30%" cy="30%" r="65%">
-            <stop offset="0%" stop-color="#ffe066" />
-            <stop offset="50%" stop-color="#f0ad4e" />
-            <stop offset="100%" stop-color="#b87311" />
-            </radialGradient>
-        </defs>
-        <ellipse cx="32" cy="59" rx="18" ry="3" fill="rgba(0,0,0,0.2)" />
-        <path d="M 32 4 C 18 4, 8 24, 8 42 C 8 55, 18 60, 32 60 C 46 60, 56 55, 56 42 C 56 24, 46 4, 32 4 Z" fill="url(#eggGrad)" />
-        </svg>
+      command: |
+        DEFAULT_SRC=/etc/penguins-eggs.d/branding.default/artwork/penguins-eggs.svg
+        DEFAULT_DEST=/home/eggs/liveroot/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg
+        ACTIVE_SRC=/etc/penguins-eggs.d/branding/artwork/install-system.png
+        ACTIVE_DEST=/home/eggs/liveroot/usr/share/pixmaps/install-system.png
+        mkdir -p "$(dirname "$DEFAULT_DEST")"
+        if [ -f "$DEFAULT_SRC" ]; then
+          cp -f "$DEFAULT_SRC" "$DEFAULT_DEST"
+          chmod 644 "$DEFAULT_DEST"
+        else
+          echo "Missing default installer icon: $DEFAULT_SRC" >&2
+          exit 1
+        fi
+        if [ -f "$ACTIVE_SRC" ]; then
+          mkdir -p "$(dirname "$ACTIVE_DEST")"
+          cp -f "$ACTIVE_SRC" "$ACTIVE_DEST"
+          chmod 644 "$ACTIVE_DEST"
+        fi
 
 # ----------------------------------------------------------------------------
 # 16. FILESYSTEM.SQUASHFS COMPRESSION

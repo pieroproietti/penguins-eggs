@@ -21,7 +21,10 @@ func copyDir(src string, dst string) error {
 		targetPath := filepath.Join(dst, relPath)
 
 		if info.IsDir() {
-			return os.MkdirAll(targetPath, info.Mode())
+			if err := os.MkdirAll(targetPath, packageMode(info.Mode())); err != nil {
+				return err
+			}
+			return os.Chmod(targetPath, packageMode(info.Mode()))
 		}
 
 		return copyFile(path, targetPath)
@@ -50,11 +53,18 @@ func copyFile(src, dst string) error {
 		return err
 	}
 
-	// Preserve the original file permissions
+	// Preserve executable bits while removing group/other write permissions.
+	// Package contents must not depend on the developer's umask or workspace ACLs.
 	info, err := os.Stat(src)
 	if err == nil {
-		os.Chmod(dst, info.Mode())
+		if err := os.Chmod(dst, packageMode(info.Mode())); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func packageMode(mode os.FileMode) os.FileMode {
+	return mode.Perm() &^ 0022
 }

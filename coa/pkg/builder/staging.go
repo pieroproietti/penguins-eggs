@@ -46,6 +46,7 @@ func staging(ctx sysctx.RuntimeContext) string {
 	copyFile(filepath.Join(projRoot, "coa/pkg/assets/configs/custom.exclude.list"), filepath.Join(stageDir, "etc/penguins-eggs.d/custom.exclude.list"))
 
 	copyDir(filepath.Join(projRoot, "coa/pkg/assets/configs/scripts"), filepath.Join(stageDir, "etc/penguins-eggs.d/scripts"))
+	copyDir(filepath.Join(projRoot, "coa/branding.default"), filepath.Join(stageDir, "etc/penguins-eggs.d/branding.default"))
 
 	// Recursive copy of brain.d
 	copyDir(filepath.Join(projRoot, "coa/brain.d"), filepath.Join(stageDir, "etc/penguins-eggs.d/brain.d"))
