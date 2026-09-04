@@ -2,6 +2,24 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.4 - 2026-09-04
+This release consolidates live-system identity into a layered branding model, with a complete built-in default and optional `penguins-tailor` overrides. It also removes the historical assets and Calamares vendor hooks from `brain.d`, leaving distribution logic separate from visual identity.
+
+### 🎨 Layered Branding Architecture
+* **Packaged Default Branding**: Added `/etc/penguins-eggs.d/branding.default` with the standard installer launcher, application icon, live boot artwork, and Calamares presentation.
+* **Tailor Overlay**: The optional `/etc/penguins-eggs.d/branding` supplied by a costume now cleanly overrides the packaged defaults for the live desktop, boot menus, and Calamares branding.
+* **Dynamic Installer Launcher**: Standardized launcher templates around `pkexec eggs sysinstall`, with terminal behavior rendered for the selected installer.
+* **Safe Package Permissions**: Normalized packaged asset permissions by removing group and other write bits while preserving executable files.
+
+### 🧹 Brain Asset Removal
+* **Removed Historical Assets**: Deleted `coa/brain.d/assets`; splash images and boot themes now come exclusively from active or default branding.
+* **Removed Obsolete Vendor Hooks**: Deleted the legacy Calamares `finish.sh`, `users.conf`, weak-password marker, and menu-string override paths tied to `brain.d/assets`.
+* **Bootloader Alignment**: Updated Arch-family Limine and openSUSE installers to use the active branding first and `branding.default` as fallback.
+
+### ✅ End-to-End Validation
+* Built and boot-tested ISO images both without a Tailor costume and with a Tailor branding overlay.
+* Verified successful C/Go compilation, Go tests, Debian package generation, and absence of `brain.d/assets` from the resulting package.
+
 ## Release Notes: penguins-eggs v26.8.29 - 2026-08-29
 This release introduces an interactive remaster wizard (`eggs wizard` / `eggs remaster -w`), decouples the wardrobe/costumes subsystem to the standalone `penguins-tailor` companion CLI, hardens Debian/Ubuntu initramfs generation and live-tools handling in Krill sysinstall, speeds up installed system startup (disabling wait-online services and zeroing GRUB recordfail timeout), extends XDG skel profile cloning to Openbox desktop sessions, and refines documentation across the suite.
 
