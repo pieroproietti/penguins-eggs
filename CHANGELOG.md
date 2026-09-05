@@ -2,6 +2,14 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.5 - 2026-09-05
+This release introduces dynamic Calamares version detection (supporting both legacy Calamares 3.2.x on Debian Bookworm / Devuan Daedalus and modern Calamares 3.3.x on Debian Trixie / Ubuntu Noble / Arch / Fedora), providing specialized `mount.conf` templates for full backwards and cross-distribution installer compatibility.
+
+### 🐧 Calamares 3.2 & 3.3 Dynamic Compatibility
+* **Dedicated Mount Templates**: Split `mount.conf` into version-specific templates `mount.conf.3.2.tmpl` (using scalar mount options and `extraMountsEfi` for 3.2.x compatibility) and `mount.conf.3.3.tmpl` (featuring array mount options, `btrfsSubvolumes`, and `efi: true` for 3.3.x).
+* **Headless & Package Manager Detection**: Implemented robust detection querying distribution package managers (`dpkg-query`, `pacman`, `rpm`) and falling back to headless offscreen execution (`QT_QPA_PLATFORM=offscreen calamares --version`), preventing Qt display abort errors when running under `sudo` or in terminal environments.
+* **Unit Test Coverage**: Added comprehensive test cases in `coa/pkg/sysinstall/setup/mount-conf_test.go` covering version string parsing and template rendering for both Calamares generations.
+
 ## Release Notes: penguins-eggs v26.9.4 - 2026-09-04
 This release consolidates live-system identity into a layered branding model, with a complete built-in default and optional `penguins-tailor` overrides. It also removes the historical assets and Calamares vendor hooks from `brain.d`, leaving distribution logic separate from visual identity.
 
