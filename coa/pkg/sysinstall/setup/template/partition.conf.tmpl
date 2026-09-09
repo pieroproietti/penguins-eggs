@@ -29,6 +29,13 @@ initialSwapChoice: none
 lvm:
     enable: false
 
+
+partitionLayout:
+  - name: "root"
+    filesystem: unknown
+    mountPoint: "/"
+    size: 100%
+
 {{ if .HasBtrfs }}# Regole di subvolume essenziali per BTRFS
 btrfs:
   - mountPoint: /
