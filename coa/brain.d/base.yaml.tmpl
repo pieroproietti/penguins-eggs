@@ -278,20 +278,34 @@ remaster:
       command: |
         DEFAULT_SRC=/etc/penguins-eggs.d/branding.default/artwork/penguins-eggs.svg
         DEFAULT_DEST=/home/eggs/liveroot/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg
+        PIXMAPS_SVG=/home/eggs/liveroot/usr/share/pixmaps/penguins-eggs.svg
         ACTIVE_SRC=/etc/penguins-eggs.d/branding/artwork/install-system.png
         ACTIVE_DEST=/home/eggs/liveroot/usr/share/pixmaps/install-system.png
+        PIXMAPS_PNG=/home/eggs/liveroot/usr/share/pixmaps/penguins-eggs.png
+
         mkdir -p "$(dirname "$DEFAULT_DEST")"
+        mkdir -p "$(dirname "$PIXMAPS_SVG")"
+
         if [ -f "$DEFAULT_SRC" ]; then
           cp -f "$DEFAULT_SRC" "$DEFAULT_DEST"
           chmod 644 "$DEFAULT_DEST"
+          cp -f "$DEFAULT_SRC" "$PIXMAPS_SVG"
+          chmod 644 "$PIXMAPS_SVG"
         else
           echo "Missing default installer icon: $DEFAULT_SRC" >&2
           exit 1
         fi
+
         if [ -f "$ACTIVE_SRC" ]; then
           mkdir -p "$(dirname "$ACTIVE_DEST")"
           cp -f "$ACTIVE_SRC" "$ACTIVE_DEST"
           chmod 644 "$ACTIVE_DEST"
+          cp -f "$ACTIVE_SRC" "$PIXMAPS_PNG"
+          chmod 644 "$PIXMAPS_PNG"
+        fi
+
+        if [ -d /home/eggs/liveroot ]; then
+          chroot /home/eggs/liveroot sh -c 'command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -f -t /usr/share/icons/hicolor' 2>/dev/null || true
         fi
 
 # ----------------------------------------------------------------------------
