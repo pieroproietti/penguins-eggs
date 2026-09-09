@@ -2,6 +2,17 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.9 - 2026-09-09
+This release addresses Calamares automatic partitioning issues on GPT/UEFI systems (resolving root partition calculation failures on Ubuntu Noble / Linux Mint 22.x) and guarantees universal desktop installer icon resolution by adding fallback installation into `/usr/share/pixmaps` and refreshing the hicolor icon cache in the live filesystem.
+
+### 💿 Calamares Partitioning & GPT/UEFI Layout Fix
+* **Deterministic Root Partition Layout**: Explicitly defined `partitionLayout` with `mountPoint: "/"` and `size: 100%` in `coa/pkg/sysinstall/setup/template/partition.conf.tmpl`. This resolves an upstream geometry calculation bug in Calamares 3.3.5 (shipped with Ubuntu 24.04 Noble and Linux Mint 22.x) where automatic partitioning failed to allocate the root partition on GPT disk layouts.
+* **Cross-Distribution Installation Parity**: Validated and tested end-to-end installation flights across Debian (Trixie, Calamares 3.3.14) and Linux Mint 22.3 (Noble, Calamares 3.3.5).
+
+### 🎨 Universal Icon Resolution in Live Environment
+* **Direct Pixmaps Fallback**: Injected `penguins-eggs.svg` (and active costume branding `penguins-eggs.png`) directly into `/usr/share/pixmaps/` within `coa/brain.d/base.yaml.tmpl` (step 15 `eggs-icon`), ensuring that desktop managers (XFCE Thunar/xfdesktop, Cinnamon Nemo, MATE Caja, GNOME, etc.) immediately resolve `Icon=penguins-eggs` via XDG filesystem fallback without relying on pre-compiled theme caches.
+* **Hicolor Icon Cache Refresh**: Added automatic execution of `gtk-update-icon-cache` inside the live root chroot, ensuring the newly injected scalable icon is properly indexed in `/usr/share/icons/hicolor/icon-theme.cache`.
+
 ## Release Notes: penguins-eggs v26.9.5 - 2026-09-05
 This release introduces dynamic Calamares version detection (supporting both legacy Calamares 3.2.x on Debian Bookworm / Devuan Daedalus and modern Calamares 3.3.x on Debian Trixie / Ubuntu Noble / Arch / Fedora), providing specialized `mount.conf` templates for full backwards and cross-distribution installer compatibility.
 
