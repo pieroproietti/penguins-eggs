@@ -25,6 +25,13 @@ set -e
 
 echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
 
+KERNEL_VERSION=$(uname -r)
+if [ ! -d "/lib/modules/$KERNEL_VERSION" ]; then
+    # Fall back if uname -r doesn't match an installed kernel (e.g. an
+    # unrebooted upgrade) - matches whichever kernel is actually present.
+    KERNEL_VERSION=$(ls -1 /lib/modules | grep -E '^[0-9]' | head -n 1)
+fi
+
 {{ if or (eq .DistroID "garuda") (eq .DistroID "endeavouros") }}
     # ==========================================
     # GARUDA/ENDEAVOUROS BRANCH (Dracut)
@@ -39,7 +46,8 @@ echo "-> Preparing Initramfs configuration for Live (Arch Family)..."
     
     # We are already in chroot, so dracut works directly on /boot
     # Adding -N to disable host-only mode (crucial for live environments)
-    dracut -N -f --add "dmsquash-live" "/boot/oa-initrd.img"
+    echo "-> Generating unique live initramfs for kernel $KERNEL_VERSION via dracut..."
+    dracut -N -f --add "dmsquash-live" --add-drivers "sr_mod iso9660 squashfs loop overlay" --kver "$KERNEL_VERSION" "/boot/oa-initrd.img"
 
 {{ else }}
     # ==========================================
@@ -95,16 +103,6 @@ COMPRESSION="zstd"
 EOF
     {{ end }}
     
-    # Must match distro_copy_kernel_cmd's kernel selection (uname -r): with
-    # both a regular and an -lts kernel installed, picking the alphabetically
-    # first /lib/modules entry silently built the initramfs for the wrong one.
-    KERNEL_VERSION=$(uname -r)
-    if [ ! -d "/lib/modules/$KERNEL_VERSION" ]; then
-        # Fall back if uname -r doesn't match an installed kernel (e.g. an
-        # unrebooted upgrade) - matches whichever kernel is actually present.
-        KERNEL_VERSION=$(ls -1 /lib/modules | grep -E '^[0-9]' | head -n 1)
-    fi
-
     echo "-> Generating unique live initramfs for kernel $KERNEL_VERSION..."
     mkinitcpio -c /etc/mkinitcpio.conf -k "$KERNEL_VERSION" -g "/boot/oa-initrd.img"
 {{ end }}

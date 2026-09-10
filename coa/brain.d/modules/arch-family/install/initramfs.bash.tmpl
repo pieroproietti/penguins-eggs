@@ -37,6 +37,25 @@
         exit 1
     fi
 
+    # Ensure standard Arch naming (e.g. initramfs-linux-zen.img) is linked to INITRD_TARGET
+    # so GRUB (10_linux), Limine, and systemd-boot can reliably find it.
+    PKGBASE_FILE="/lib/modules/$KVER_DIR/pkgbase"
+    [ -f "$PKGBASE_FILE" ] || PKGBASE_FILE="/usr/lib/modules/$KVER_DIR/pkgbase"
+    PKG_NAME=$(cat "$PKGBASE_FILE" 2>/dev/null || echo "")
+    if [ -n "$PKG_NAME" ]; then
+        echo "-> Linking /boot/initramfs-$PKG_NAME.img -> $(basename "$INITRD_TARGET")..."
+        ln -sf "$(basename "$INITRD_TARGET")" "/boot/initramfs-$PKG_NAME.img"
+    fi
+
+    for KV in $(find /boot -maxdepth 1 -name "vmlinuz-*" -type f); do
+        KNAME=$(basename "$KV")
+        SUFFIX="${KNAME#vmlinuz-}"
+        if [ -n "$SUFFIX" ] && [ ! -f "/boot/initramfs-$SUFFIX.img" ]; then
+            echo "-> Linking /boot/initramfs-$SUFFIX.img -> $(basename "$INITRD_TARGET")..."
+            ln -sf "$(basename "$INITRD_TARGET")" "/boot/initramfs-$SUFFIX.img"
+        fi
+    done
+
 {{ else }}
     echo "-> Regenerating mkinitcpio-based initramfs..."
     # Ensure Limine ESP_PATH is configured before mkinitcpio triggers limine hooks

@@ -67,6 +67,21 @@ func TestDistroDetectionCases(t *testing.T) {
 			},
 			wantFamily: "manjaro",
 		},
+		{
+			name: "Garuda explicit detection",
+			osRelease: map[string]string{
+				"ID":      "garuda",
+				"ID_LIKE": "arch",
+			},
+			wantFamily: "archlinux",
+		},
+		{
+			name: "Garuda without ID_LIKE",
+			osRelease: map[string]string{
+				"ID": "garuda",
+			},
+			wantFamily: "archlinux",
+		},
 	}
 
 	for _, tt := range tests {
@@ -88,7 +103,7 @@ func TestDistroDetectionCases(t *testing.T) {
 					family = "alpine"
 				case "manjaro":
 					family = "manjaro"
-				case "arch", "archlinux":
+				case "arch", "archlinux", "garuda", "endeavouros", "cachyos", "archcraft", "rebornos":
 					family = "archlinux"
 				case "fedora", "rhel":
 					family = "fedora"
