@@ -2,6 +2,18 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.10 - 2026-09-10
+This release introduces a dedicated "Replace a partition" installation mode in Krill (the native TUI installer) allowing safe installations into existing partitions alongside other operating systems, and restores complete compatibility for Garuda Linux and Arch-family dracut systems across live ISO remastering and disk installation with Calamares and Krill.
+
+### 🦐 Krill: "Replace a Partition" Installation Mode
+* **Targeted Partition Replacement**: Added an interactive partition selector in Krill allowing users to install the system into a chosen existing partition without repartitioning or wiping the entire disk, preserving other operating systems and partitions.
+* **Automated ESP & Subvolume Handling**: Automatically detects and mounts the system EFI System Partition (ESP) on UEFI systems and configures clean mount layouts and bootloader entries for the replaced root partition.
+
+### 🦅 Garuda Linux & Dracut Live Remastering & Installation Fixes
+* **Live Storage & Boot Modules in Dracut**: Enforced explicit kernel module bundling (`--add-drivers "sr_mod iso9660 squashfs loop overlay"`) and kernel version matching (`--kver "$KERNEL_VERSION"`) during live initramfs generation on Garuda Linux and EndeavourOS, guaranteeing seamless live media boot without dropping into dracut emergency shells.
+* **Installer Initramfs Naming & Bootloader Compatibility**: After generating the target initramfs via dracut during disk installation, automatically links standard Arch kernel image names (`/boot/initramfs-$PKG_NAME.img` such as `initramfs-linux-zen.img` and `/boot/initramfs-$SUFFIX.img`), enabling GRUB (`/etc/grub.d/10_linux`), Limine, and systemd-boot to detect the initramfs and configure bootloader entries properly.
+* **Deterministic Distro Mapping**: Restored explicit mapping for Arch Linux derivatives (`garuda`, `endeavouros`, `cachyos`, `archcraft`, `rebornos`) in `coa/brain.d/index.yaml` and `coa/pkg/distro/distro.go`, ensuring direct recognition without relying solely on fallback resolution.
+
 ## Release Notes: penguins-eggs v26.9.9 - 2026-09-09
 This release addresses Calamares automatic partitioning issues on GPT/UEFI systems (resolving root partition calculation failures on Ubuntu Noble / Linux Mint 22.x) and guarantees universal desktop installer icon resolution by adding fallback installation into `/usr/share/pixmaps` and refreshing the hicolor icon cache in the live filesystem.
 
