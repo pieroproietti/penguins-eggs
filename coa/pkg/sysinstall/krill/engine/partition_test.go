@@ -53,6 +53,19 @@ func TestPartsForMsdos(t *testing.T) {
 	}
 }
 
+func TestPartsForReplace(t *testing.T) {
+	plan := &Plan{
+		Device:          "/dev/sda",
+		Mode:            "replace",
+		TargetPartition: "/dev/sda2",
+		EspPartition:    "/dev/sda1",
+	}
+	l := partsFor(plan)
+	if l.Esp != "/dev/sda1" || l.Root != "/dev/sda2" || l.Swap != "" {
+		t.Errorf("layout replace errato: %+v", l)
+	}
+}
+
 func TestSwapSizeMiB(t *testing.T) {
 	if got := swapSizeMiB("none"); got != 0 {
 		t.Errorf("none = %d, atteso 0", got)

@@ -25,10 +25,13 @@ type Plan struct {
 	Instances  map[string]string // id shellprocess -> file di configurazione
 
 	// Disco
-	Device    string // es. /dev/sda
-	TableType string // gpt | msdos
-	FsType    string // ext4, btrfs, ...
-	Swap      string // none | small | suspend | file
+	Device          string // es. /dev/sda
+	Mode            string // erase (default) | replace
+	TargetPartition string // es. /dev/sda2 (usato in modalità replace)
+	EspPartition    string // es. /dev/sda1 (partizione EFI usata in modalità replace)
+	TableType       string // gpt | msdos
+	FsType          string // ext4, btrfs, ...
+	Swap            string // none | small | suspend | file
 
 	// Utente e sistema
 	Fullname  string
@@ -131,6 +134,9 @@ func Run(plan *Plan, progress func(Event)) error {
 	if plan.Target == "" {
 		plan.Target = DefaultTarget
 	}
+	if plan.Mode == "" {
+		plan.Mode = "erase"
+	}
 
 	logFile, err := os.Create(logPath)
 	if err != nil {
@@ -139,8 +145,8 @@ func Run(plan *Plan, progress func(Event)) error {
 	defer logFile.Close()
 
 	c := &ctx{plan: plan, log: logFile}
-	c.logf("=== krill install: device=%s fs=%s swap=%s target=%s ===",
-		plan.Device, plan.FsType, plan.Swap, plan.Target)
+	c.logf("=== krill install: mode=%s device=%s target_part=%s esp=%s fs=%s swap=%s target=%s ===",
+		plan.Mode, plan.Device, plan.TargetPartition, plan.EspPartition, plan.FsType, plan.Swap, plan.Target)
 
 	total := len(plan.Exec)
 	for i, name := range plan.Exec {

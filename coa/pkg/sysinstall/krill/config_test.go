@@ -150,3 +150,63 @@ func TestDetectLanguage(t *testing.T) {
 		t.Error("DetectLanguage non dovrebbe mai restituire una stringa vuota")
 	}
 }
+
+func TestIsEfiPartition(t *testing.T) {
+	cases := []struct {
+		fs     string
+		label  string
+		pt     string
+		mps    []string
+		expect bool
+	}{
+		{"vfat", "SYSTEM", "c12a7328-f81f-11d2-ba4b-00a0c93ec93b", nil, true},
+		{"vfat", "EFI", "0xef", nil, true},
+		{"vfat", "", "", []string{"/boot/efi"}, true},
+		{"vfat", "EFI", "", nil, true},
+		{"ext4", "ROOT", "0x83", []string{"/"}, false},
+		{"ntfs", "Basic data", "", nil, false},
+	}
+
+	for _, c := range cases {
+		if got := isEfiPartition(c.fs, c.label, c.pt, c.mps); got != c.expect {
+			t.Errorf("isEfiPartition(%q, %q, %q, %v) = %v, want %v", c.fs, c.label, c.pt, c.mps, got, c.expect)
+		}
+	}
+}
+
+func TestGetCandidatePartitions(t *testing.T) {
+	parts := []PartitionInfo{
+		{Path: "/dev/sda1", SizeBytes: 512 * 1024 * 1024, IsEfi: true, FsType: "vfat"},
+		{Path: "/dev/sda2", SizeBytes: 2 * 1024 * 1024 * 1024, FsType: "ext4"}, // < 4GB -> scartata
+		{Path: "/dev/sda3", SizeBytes: 50 * 1024 * 1024 * 1024, FsType: "ext4"},
+		{Path: "/dev/sda4", SizeBytes: 8 * 1024 * 1024 * 1024, FsType: "swap"}, // swap -> scartata
+		{Path: "/dev/sdb1", SizeBytes: 16 * 1024 * 1024 * 1024, FsType: "iso9660", MountPoint: "/run/live/medium"}, // live -> scartata
+	}
+
+	candidates := GetCandidatePartitions(parts, "/dev/sdb")
+	if len(candidates) != 1 {
+		t.Fatalf("attesa 1 partizione candidata, trovate %d: %+v", len(candidates), candidates)
+	}
+	if candidates[0].Path != "/dev/sda3" {
+		t.Errorf("candidata errata: %s, attesa /dev/sda3", candidates[0].Path)
+	}
+
+	efis := GetEfiPartitions(parts)
+	if len(efis) != 1 || efis[0].Path != "/dev/sda1" {
+		t.Errorf("partizioni EFI errate: %+v", efis)
+	}
+}
+
+func TestPartitionDisplayString(t *testing.T) {
+	p := PartitionInfo{
+		Path:   "/dev/sda3",
+		Size:   "50.0G",
+		FsType: "ext4",
+		Label:  "Debian",
+	}
+	got := p.DisplayString()
+	want := `/dev/sda3 (50.0G - ext4 - "Debian")`
+	if got != want {
+		t.Errorf("DisplayString = %q, want %q", got, want)
+	}
+}

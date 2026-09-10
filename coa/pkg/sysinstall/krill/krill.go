@@ -117,15 +117,20 @@ type model struct {
 	netInputs []textinput.Model // address, netmask, gateway, dns
 
 	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
-	diskBios  string
-	diskMode  string
-	disks     []DiskInfo
-	diskIdx   int
-	fsTypes   []string
-	fsIdx     int
-	swapTypes []string
-	swapIdx   int
-	diskField int
+	diskBios       string
+	diskModes      []string
+	diskModeIdx    int
+	disks          []DiskInfo
+	diskIdx        int
+	candidateParts []PartitionInfo
+	partIdx        int
+	efiParts       []PartitionInfo
+	efiIdx         int
+	fsTypes        []string
+	fsIdx          int
+	swapTypes      []string
+	swapIdx        int
+	diskField      int
 
 	// Users: campi di testo editabili più il checkbox autologin
 	userInputs []textinput.Model
@@ -199,6 +204,20 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 		swapTypes = []string{"none", "small", "suspend", "file"}
 	}
 
+	diskModes := []string{"Erase disk", "Replace a partition"}
+	diskModeIdx := 0
+
+	var candidateParts []PartitionInfo
+	var efiParts []PartitionInfo
+	if len(disks) > 0 {
+		allParts := DetectPartitions(disks[0].Path)
+		candidateParts = GetCandidatePartitions(allParts, DetectLiveDisk())
+		efiParts = GetEfiPartitions(allParts)
+		if len(efiParts) == 0 && cfg.FirmwareLabel() == "UEFI" {
+			efiParts = DetectAllEfiPartitions()
+		}
+	}
+
 	inputs := make([]textinput.Model, 5)
 	for i := range inputs {
 		inputs[i] = textinput.New()
@@ -245,14 +264,19 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 		network:   network,
 		netInputs: netInputs,
 
-		diskBios:  cfg.FirmwareLabel(),
-		diskMode:  "Erase disk",
-		disks:     disks,
-		diskIdx:   0,
-		fsTypes:   fsTypes,
-		fsIdx:     indexOf(fsTypes, orDefault(orDefault(fstype, cfg.Partition.DefaultFileSystemType), "ext4")),
-		swapTypes: swapTypes,
-		swapIdx:   indexOf(swapTypes, orDefault(cfg.Partition.InitialSwapChoice, "none")),
+		diskBios:       cfg.FirmwareLabel(),
+		diskModes:      diskModes,
+		diskModeIdx:    diskModeIdx,
+		disks:          disks,
+		diskIdx:        0,
+		candidateParts: candidateParts,
+		partIdx:        0,
+		efiParts:       efiParts,
+		efiIdx:         0,
+		fsTypes:        fsTypes,
+		fsIdx:          indexOf(fsTypes, orDefault(orDefault(fstype, cfg.Partition.DefaultFileSystemType), "ext4")),
+		swapTypes:      swapTypes,
+		swapIdx:        indexOf(swapTypes, orDefault(cfg.Partition.InitialSwapChoice, "none")),
 
 		userInputs: inputs,
 		userFocus:  fieldFullname,
@@ -467,27 +491,101 @@ func (m *model) focusNet(idx int) tea.Cmd {
 	return cmd
 }
 
+func (m *model) refreshPartitions() {
+	if len(m.disks) == 0 || m.diskIdx >= len(m.disks) {
+		m.candidateParts = nil
+		m.efiParts = nil
+		m.partIdx = 0
+		m.efiIdx = 0
+		return
+	}
+	allParts := DetectPartitions(m.disks[m.diskIdx].Path)
+	m.candidateParts = GetCandidatePartitions(allParts, DetectLiveDisk())
+	m.efiParts = GetEfiPartitions(allParts)
+	if len(m.efiParts) == 0 && m.diskBios == "UEFI" {
+		m.efiParts = DetectAllEfiPartitions()
+	}
+	m.partIdx = 0
+	m.efiIdx = 0
+}
+
+type diskFieldKind int
+
+const (
+	diskFieldMode diskFieldKind = iota
+	diskFieldDevice
+	diskFieldTargetPart
+	diskFieldEfi
+	diskFieldFs
+	diskFieldSwap
+)
+
+func (m *model) activeDiskFields() []diskFieldKind {
+	if m.diskModeIdx == 0 {
+		return []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldFs, diskFieldSwap}
+	}
+	fields := []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldTargetPart}
+	if m.diskBios == "UEFI" && len(m.efiParts) > 1 {
+		fields = append(fields, diskFieldEfi)
+	}
+	fields = append(fields, diskFieldFs, diskFieldSwap)
+	return fields
+}
+
+func (m *model) availableSwapTypes() []string {
+	if m.diskModeIdx == 1 {
+		return []string{"none", "file"}
+	}
+	return m.swapTypes
+}
+
 // updateDisk naviga i selettori della schermata Disk.
 func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
+	activeFields := m.activeDiskFields()
+	if m.diskField >= len(activeFields) {
+		m.diskField = len(activeFields) - 1
+	}
+
 	switch key {
 	case "up", "shift+tab":
-		m.diskField = cycle(m.diskField, -1, 3)
+		m.diskField = cycle(m.diskField, -1, len(activeFields))
 	case "down", "tab":
-		m.diskField = cycle(m.diskField, 1, 3)
+		m.diskField = cycle(m.diskField, 1, len(activeFields))
 	case "left", "right":
 		delta := 1
 		if key == "left" {
 			delta = -1
 		}
-		switch m.diskField {
-		case 0:
+		currentKind := activeFields[m.diskField]
+		switch currentKind {
+		case diskFieldMode:
+			m.diskModeIdx = cycle(m.diskModeIdx, delta, len(m.diskModes))
+			m.refreshPartitions()
+			if m.diskField >= len(m.activeDiskFields()) {
+				m.diskField = 0
+			}
+		case diskFieldDevice:
 			m.diskIdx = cycle(m.diskIdx, delta, len(m.disks))
-		case 1:
+			m.refreshPartitions()
+		case diskFieldTargetPart:
+			if len(m.candidateParts) > 0 {
+				m.partIdx = cycle(m.partIdx, delta, len(m.candidateParts))
+			}
+		case diskFieldEfi:
+			if len(m.efiParts) > 0 {
+				m.efiIdx = cycle(m.efiIdx, delta, len(m.efiParts))
+			}
+		case diskFieldFs:
 			m.fsIdx = cycle(m.fsIdx, delta, len(m.fsTypes))
-		case 2:
-			m.swapIdx = cycle(m.swapIdx, delta, len(m.swapTypes))
+		case diskFieldSwap:
+			swaps := m.availableSwapTypes()
+			m.swapIdx = cycle(m.swapIdx, delta, len(swaps))
 		}
 	case "enter":
+		if m.diskModeIdx == 1 && len(m.candidateParts) == 0 {
+			// Non possiamo proseguire se non c'è una partizione valida da sostituire
+			return m, nil
+		}
 		m.state = StateUsers
 		return m, m.focusUser(fieldFullname)
 	}
@@ -741,26 +839,84 @@ func (m model) viewNetwork() string {
 func (m model) viewDisk() string {
 	stepsView := renderSteps(4)
 
+	activeFields := m.activeDiskFields()
 	device := m.disks[m.diskIdx]
-	row1 := fmt.Sprintf("BIOS: %s | Installation mode: %s", cyanText.Render(m.diskBios), cyanText.Render(m.diskMode))
-	row2 := m.selectorRow(0, "Installation device", fmt.Sprintf("%s (%s)", device.Path, device.Size))
-	row3 := m.selectorRow(1, "Filesystem", m.fsTypes[m.fsIdx])
-	row4 := m.selectorRow(2, "User swap choice", m.swapTypes[m.swapIdx])
+
+	rowFirmware := fmt.Sprintf("Firmware: %s", cyanText.Render(m.diskBios))
+
+	var rows []string
+	rows = append(rows, rowFirmware, "")
+
+	for idx, kind := range activeFields {
+		isActive := (idx == m.diskField)
+		switch kind {
+		case diskFieldMode:
+			rows = append(rows, m.selectorRow(isActive, "Installation mode", m.diskModes[m.diskModeIdx]))
+		case diskFieldDevice:
+			rows = append(rows, m.selectorRow(isActive, "Installation device", fmt.Sprintf("%s (%s)", device.Path, device.Size)))
+		case diskFieldTargetPart:
+			partStr := "none available"
+			if len(m.candidateParts) > 0 {
+				partStr = m.candidateParts[m.partIdx].DisplayString()
+			}
+			rows = append(rows, m.selectorRow(isActive, "Target partition", partStr))
+			if m.diskBios == "UEFI" && len(m.efiParts) == 1 {
+				rows = append(rows, fmt.Sprintf("  %-20s: %s %s", "EFI System Partition",
+					greenText.Render(m.efiParts[0].Path+" ("+m.efiParts[0].Size+")"),
+					dimText.Render("[auto-detected, preserved]")))
+			} else if m.diskBios == "UEFI" && len(m.efiParts) == 0 {
+				rows = append(rows, fmt.Sprintf("  %-20s: %s", "EFI System Partition",
+					redBgWhiteText.Render(" none detected ")))
+			}
+		case diskFieldEfi:
+			efiStr := "none"
+			if len(m.efiParts) > 0 {
+				efiStr = m.efiParts[m.efiIdx].Path + " (" + m.efiParts[m.efiIdx].Size + ")"
+			}
+			rows = append(rows, m.selectorRow(isActive, "EFI System Partition", efiStr))
+		case diskFieldFs:
+			rows = append(rows, m.selectorRow(isActive, "Filesystem", m.fsTypes[m.fsIdx]))
+		case diskFieldSwap:
+			swaps := m.availableSwapTypes()
+			swapVal := "none"
+			if m.swapIdx < len(swaps) {
+				swapVal = swaps[m.swapIdx]
+			}
+			rows = append(rows, m.selectorRow(isActive, "User swap choice", swapVal))
+		}
+	}
+
 	help := "\n↑/↓ select field | ←/→ change value"
+	rows = append(rows, help, "")
 
-	warning1 := "(*) this will erase all data currently present on the"
-	warning2 := "installation device: " + device.Path
-	warningBox := lipgloss.JoinVertical(lipgloss.Left, redBgWhiteText.Render(warning1), redBgWhiteText.Render(warning2))
+	if m.diskModeIdx == 0 {
+		warning1 := "(*) this will erase all data currently present on the"
+		warning2 := "installation device: " + device.Path
+		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, redBgWhiteText.Render(warning1), redBgWhiteText.Render(warning2)))
+	} else {
+		targetPath := "selected partition"
+		if len(m.candidateParts) > 0 {
+			targetPath = m.candidateParts[m.partIdx].Path
+		}
+		warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
+		w1 := fmt.Sprintf("(*) this will FORMAT and ERASE only partition: %s", targetPath)
+		w2 := fmt.Sprintf("    all other partitions on %s will NOT be touched.", device.Path)
+		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, warningStyle.Render(w1), dimText.Render(w2)))
+		if len(m.candidateParts) == 0 {
+			noPartWarn := redBgWhiteText.Render(" ⚠️  No candidate partition found on this disk (must be >= 4G and not live/EFI) ")
+			rows = append(rows, "", noPartWarn)
+		}
+	}
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, "", row2, row3, row4, help, "", warningBox)
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, rows...)
 	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
 // selectorRow disegna un campo a scelta multipla della schermata Disk,
 // evidenziando quello su cui si trova il focus.
-func (m model) selectorRow(field int, label, value string) string {
+func (m model) selectorRow(active bool, label, value string) string {
 	marker := "  "
-	if m.diskField == field {
+	if active {
 		marker = cyanText.Render("→ ")
 	}
 	return fmt.Sprintf("%s%-20s: %s", marker, label, cyanText.Render("‹ "+value+" ›"))
@@ -800,6 +956,11 @@ func (m model) viewSummary() string {
 	login := m.userInputs[fieldLogin].Value()
 	hostname := m.userInputs[fieldHostname].Value()
 	device := m.disks[m.diskIdx]
+	swaps := m.availableSwapTypes()
+	swapVal := "none"
+	if m.swapIdx < len(swaps) {
+		swapVal = swaps[m.swapIdx]
+	}
 
 	row1 := fmt.Sprintf("Installing %s", greenText.Render(m.productName))
 	row2 := fmt.Sprintf("User %s pwd %s root pwd %s hostname %s",
@@ -811,25 +972,38 @@ func (m model) viewSummary() string {
 	row4 := fmt.Sprintf("The system language will be set to %s", greenText.Render(languages[m.langIdx]))
 	row5 := fmt.Sprintf("Numbers and date locale will be set to %s", greenText.Render(languages[m.langIdx]))
 	row6 := fmt.Sprintf("Set keyboard model to %s layout %s", greenText.Render(m.kbdModel), greenText.Render(kbdLayouts[m.kbdIdx]))
-	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(m.swapTypes[m.swapIdx]))
+	rowMode := fmt.Sprintf("Installation mode: %s", greenText.Render(m.diskModes[m.diskModeIdx]))
+	row7 := fmt.Sprintf("Filesystem %s, swap %s", greenText.Render(m.fsTypes[m.fsIdx]), greenText.Render(swapVal))
 	row8 := "Network: " + greenText.Render("dhcp")
 
-	warnBox := redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: ALL DATA ON %s (%s) WILL BE PERMANENTLY ERASED! ", device.Path, device.Size))
-
+	var warnBox string
 	noOpt := "  [ No, cancel and go back ]"
-	yesOpt := "  [ YES, erase disk and install ]"
+	yesOptText := "  [ YES, erase disk and install ]"
+	if m.diskModeIdx == 1 {
+		yesOptText = "  [ YES, replace partition and install ]"
+	}
 
+	if m.diskModeIdx == 0 {
+		warnBox = redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: ALL DATA ON %s (%s) WILL BE PERMANENTLY ERASED! ", device.Path, device.Size))
+	} else {
+		targetPart := "n/a"
+		if len(m.candidateParts) > 0 && m.partIdx < len(m.candidateParts) {
+			targetPart = m.candidateParts[m.partIdx].Path
+		}
+		warnBox = redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: PARTITION %s WILL BE FORMATTED! OTHER PARTITIONS PRESERVED. ", targetPart))
+	}
+
+	yesOpt := dimText.Render(yesOptText)
 	if m.confirmChoice == 0 {
 		noOpt = cyanText.Render("→ [ No, cancel and go back ]")
-		yesOpt = dimText.Render("  [ YES, erase disk and install ]")
 	} else {
 		noOpt = dimText.Render("  [ No, cancel and go back ]")
-		yesOpt = redBgWhiteText.Render("→ [ YES, erase disk and install ]")
+		yesOpt = redBgWhiteText.Render("→" + yesOptText[2:])
 	}
 
 	optsRow := fmt.Sprintf("%s    %s", noOpt, yesOpt)
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, row7, row8, "", warnBox, "", optsRow)
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, rowMode, row7, row8, "", warnBox, "", optsRow)
 	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
@@ -932,15 +1106,42 @@ func (m *model) buildPlan() *engine.Plan {
 
 	exec := cfg.Settings.Exec()
 
+	mode := "erase"
+	targetPart := ""
+	espPart := ""
+	tableType := orDefault(cfg.Partition.DefaultPartitionTableType, "msdos")
+
+	if m.diskModeIdx == 1 {
+		mode = "replace"
+		if len(m.candidateParts) > 0 && m.partIdx < len(m.candidateParts) {
+			targetPart = m.candidateParts[m.partIdx].Path
+		}
+		if len(m.efiParts) > 0 && m.efiIdx < len(m.efiParts) {
+			espPart = m.efiParts[m.efiIdx].Path
+		}
+		if len(m.disks) > 0 && m.diskIdx < len(m.disks) {
+			tableType = DetectPartitionTableType(m.disks[m.diskIdx].Path)
+		}
+	}
+
+	swaps := m.availableSwapTypes()
+	swapChoice := "none"
+	if m.swapIdx < len(swaps) {
+		swapChoice = swaps[m.swapIdx]
+	}
+
 	return &engine.Plan{
 		ConfigRoot: cfg.Root,
 		Exec:       exec,
 		Instances:  instances,
 
-		Device:    m.disks[m.diskIdx].Path,
-		TableType: orDefault(cfg.Partition.DefaultPartitionTableType, "msdos"),
-		FsType:    m.fsTypes[m.fsIdx],
-		Swap:      m.swapTypes[m.swapIdx],
+		Device:          m.disks[m.diskIdx].Path,
+		Mode:            mode,
+		TargetPartition: targetPart,
+		EspPartition:    espPart,
+		TableType:       tableType,
+		FsType:          m.fsTypes[m.fsIdx],
+		Swap:            swapChoice,
 
 		Fullname:  m.userInputs[fieldFullname].Value(),
 		Login:     m.userInputs[fieldLogin].Value(),

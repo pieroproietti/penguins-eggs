@@ -7,6 +7,7 @@
 package krill
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -210,6 +211,235 @@ type DiskInfo struct {
 	Size string
 }
 
+// PartitionInfo descrive una partizione presente sul disco.
+type PartitionInfo struct {
+	Path       string // es. /dev/sda2
+	Name       string // es. sda2
+	Size       string // es. 50.0G
+	SizeBytes  int64  // dimensione in byte
+	FsType     string // es. ext4, ntfs, btrfs, vfat
+	Label      string // etichetta del filesystem (se presente)
+	PartType   string // tipo o GUID della partizione
+	MountPoint string // eventuale punto di mount attivo
+	IsEfi      bool   // true se è una partizione EFI System
+}
+
+func (p PartitionInfo) DisplayString() string {
+	var parts []string
+	if p.Size != "" {
+		parts = append(parts, p.Size)
+	}
+	if p.FsType != "" {
+		parts = append(parts, p.FsType)
+	} else {
+		parts = append(parts, "free/raw")
+	}
+	if p.Label != "" {
+		parts = append(parts, fmt.Sprintf("%q", p.Label))
+	}
+	info := strings.Join(parts, " - ")
+	return fmt.Sprintf("%s (%s)", p.Path, info)
+}
+
+type lsblkRoot struct {
+	BlockDevices []lsblkItem `json:"blockdevices"`
+}
+
+type lsblkItem struct {
+	Path        string          `json:"path"`
+	Name        string          `json:"name"`
+	Size        json.RawMessage `json:"size"`
+	Type        string          `json:"type"`
+	FsType      *string         `json:"fstype"`
+	Label       *string         `json:"label"`
+	PartType    *string         `json:"parttype"`
+	MountPoints []string        `json:"mountpoints"`
+	Children    []lsblkItem     `json:"children"`
+}
+
+func parseLsblkSize(raw json.RawMessage) (int64, string) {
+	if len(raw) == 0 {
+		return 0, "?"
+	}
+	var num int64
+	if err := json.Unmarshal(raw, &num); err == nil && num > 0 {
+		human := fmt.Sprintf("%.1fG", float64(num)/(1024*1024*1024))
+		return num, human
+	}
+	var str string
+	if err := json.Unmarshal(raw, &str); err == nil && str != "" {
+		return 0, str
+	}
+	return 0, "?"
+}
+
+func isEfiPartition(fsType, label, partType string, mountPoints []string) bool {
+	// 1. GUID GPT per EFI System Partition
+	if strings.EqualFold(partType, "c12a7328-f81f-11d2-ba4b-00a0c93ec93b") {
+		return true
+	}
+	// 2. ID MBR per EFI System Partition
+	if strings.EqualFold(partType, "0xef") || strings.EqualFold(partType, "ef") {
+		return true
+	}
+	// 3. Mountpoint /boot/efi
+	for _, mp := range mountPoints {
+		if mp == "/boot/efi" {
+			return true
+		}
+	}
+	// 4. File system vfat/fat32 con label EFI o ESP
+	fsLower := strings.ToLower(fsType)
+	labelLower := strings.ToLower(label)
+	if (fsLower == "vfat" || fsLower == "fat32" || fsLower == "fat16") &&
+		(labelLower == "efi" || labelLower == "esp" || strings.Contains(labelLower, "efi")) {
+		return true
+	}
+	return false
+}
+
+func collectPartitions(items []lsblkItem) []PartitionInfo {
+	var parts []PartitionInfo
+	for _, item := range items {
+		if item.Type == "part" {
+			sizeBytes, humanSize := parseLsblkSize(item.Size)
+			fs := ""
+			if item.FsType != nil {
+				fs = *item.FsType
+			}
+			label := ""
+			if item.Label != nil {
+				label = *item.Label
+			}
+			pt := ""
+			if item.PartType != nil {
+				pt = *item.PartType
+			}
+			mp := ""
+			if len(item.MountPoints) > 0 {
+				mp = item.MountPoints[0]
+			}
+			isEfi := isEfiPartition(fs, label, pt, item.MountPoints)
+
+			parts = append(parts, PartitionInfo{
+				Path:       item.Path,
+				Name:       item.Name,
+				Size:       humanSize,
+				SizeBytes:  sizeBytes,
+				FsType:     fs,
+				Label:      label,
+				PartType:   pt,
+				MountPoint: mp,
+				IsEfi:      isEfi,
+			})
+		}
+		if len(item.Children) > 0 {
+			parts = append(parts, collectPartitions(item.Children)...)
+		}
+	}
+	return parts
+}
+
+// DetectLiveDisk individua il device del supporto live per evitarne la scrittura accidentale.
+func DetectLiveDisk() string {
+	if mOut, mErr := exec.Command("sh", "-c", "mount | grep /run/live/medium | awk '{print $1}'").Output(); mErr == nil {
+		mDev := strings.TrimSpace(string(mOut))
+		if mDev != "" {
+			if pk, pkErr := exec.Command("lsblk", "-dno", "PKNAME", mDev).Output(); pkErr == nil && len(pk) > 0 {
+				pkName := strings.TrimSpace(string(pk))
+				if pkName != "" {
+					return "/dev/" + pkName
+				}
+			}
+		}
+	}
+	return ""
+}
+
+// DetectPartitions restituisce tutte le partizioni presenti su un disco fisico.
+func DetectPartitions(diskPath string) []PartitionInfo {
+	out, err := exec.Command("lsblk", "-J", "-b", "-o", "PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,MOUNTPOINTS", diskPath).Output()
+	if err != nil {
+		return nil
+	}
+	var root lsblkRoot
+	if err := json.Unmarshal(out, &root); err != nil {
+		return nil
+	}
+	return collectPartitions(root.BlockDevices)
+}
+
+// DetectAllEfiPartitions cerca tutte le partizioni EFI presenti sui dischi di sistema.
+func DetectAllEfiPartitions() []PartitionInfo {
+	out, err := exec.Command("lsblk", "-J", "-b", "-o", "PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,MOUNTPOINTS").Output()
+	if err != nil {
+		return nil
+	}
+	var root lsblkRoot
+	if err := json.Unmarshal(out, &root); err != nil {
+		return nil
+	}
+	all := collectPartitions(root.BlockDevices)
+	return GetEfiPartitions(all)
+}
+
+// GetCandidatePartitions filtra le partizioni idonee ad essere sostituite.
+func GetCandidatePartitions(parts []PartitionInfo, liveDisk string) []PartitionInfo {
+	var candidates []PartitionInfo
+	for _, p := range parts {
+		if p.IsEfi {
+			continue
+		}
+		if liveDisk != "" && strings.HasPrefix(p.Path, liveDisk) {
+			continue
+		}
+		if p.MountPoint != "" {
+			if strings.HasPrefix(p.MountPoint, "/run/live") ||
+				p.MountPoint == "/run" ||
+				p.MountPoint == "/rofs" ||
+				p.MountPoint == "/lib/live/mount" {
+				continue
+			}
+		}
+		// Dimensione minima di 4 GiB se la dimensione in byte è nota
+		if p.SizeBytes > 0 && p.SizeBytes < 4*1024*1024*1024 {
+			continue
+		}
+		if p.FsType == "swap" {
+			continue
+		}
+		candidates = append(candidates, p)
+	}
+	return candidates
+}
+
+// GetEfiPartitions estrae solo le partizioni EFI tra quelle fornite.
+func GetEfiPartitions(parts []PartitionInfo) []PartitionInfo {
+	var efis []PartitionInfo
+	for _, p := range parts {
+		if p.IsEfi {
+			efis = append(efis, p)
+		}
+	}
+	return efis
+}
+
+// DetectPartitionTableType rileva il tipo di tabella delle partizioni (gpt o msdos).
+func DetectPartitionTableType(diskPath string) string {
+	out, err := exec.Command("lsblk", "-dno", "PTTYPE", diskPath).Output()
+	if err != nil {
+		return "gpt"
+	}
+	pt := strings.TrimSpace(string(out))
+	if pt == "dos" {
+		return "msdos"
+	}
+	if pt == "gpt" {
+		return "gpt"
+	}
+	return "gpt"
+}
+
 // DetectDisks restituisce i dischi fisici disponibili (esclusi mtdblock, loop, zram).
 func DetectDisks() []DiskInfo {
 	out, err := exec.Command("lsblk", "-bno", "NAME,SIZE,TYPE").Output()
@@ -217,18 +447,7 @@ func DetectDisks() []DiskInfo {
 		return nil
 	}
 
-	liveDisk := ""
-	if mOut, mErr := exec.Command("sh", "-c", "mount | grep /run/live/medium | awk '{print $1}'").Output(); mErr == nil {
-		mDev := strings.TrimSpace(string(mOut))
-		if mDev != "" {
-			if pk, pkErr := exec.Command("lsblk", "-dno", "PKNAME", mDev).Output(); pkErr == nil && len(pk) > 0 {
-				pkName := strings.TrimSpace(string(pk))
-				if pkName != "" {
-					liveDisk = "/dev/" + pkName
-				}
-			}
-		}
-	}
+	liveDisk := DetectLiveDisk()
 
 	var targetDisks []DiskInfo
 	var fallbackDisks []DiskInfo

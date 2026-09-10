@@ -27,9 +27,21 @@ type layout struct {
 // così ogni modulo (partition, mount, fstab) vede lo stesso layout.
 func partsFor(plan *Plan) layout {
 	if runtime.GOARCH == "riscv64" {
+		if plan.Mode == "replace" {
+			return layout{
+				Boot: devPart(plan.Device, 5),
+				Root: plan.TargetPartition,
+			}
+		}
 		return layout{
 			Boot: devPart(plan.Device, 5),
 			Root: devPart(plan.Device, 6),
+		}
+	}
+	if plan.Mode == "replace" {
+		return layout{
+			Esp:  plan.EspPartition,
+			Root: plan.TargetPartition,
 		}
 	}
 	n := 1
@@ -90,6 +102,24 @@ func ramSizeMiB() int {
 
 func runPartition(c *ctx) error {
 	plan := c.plan
+
+	if plan.Mode == "replace" {
+		if plan.TargetPartition == "" {
+			return fmt.Errorf("nessuna partizione target specificata per la modalità replace")
+		}
+		if mounted, err := deviceInUse(plan.TargetPartition); err == nil && mounted {
+			return fmt.Errorf("la partizione %s ha partizioni o filesystem montati: smontarla prima di procedere", plan.TargetPartition)
+		}
+
+		c.logf("replace mode: wiping filesystem signatures on %s", plan.TargetPartition)
+		_ = c.run("wipefs", "-a", plan.TargetPartition)
+		c.logf("formatting %s as %s", plan.TargetPartition, plan.FsType)
+		if err := c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), plan.TargetPartition)...); err != nil {
+			return fmt.Errorf("formattazione %s come %s fallita: %w", plan.TargetPartition, plan.FsType, err)
+		}
+		_ = c.run("udevadm", "settle")
+		return nil
+	}
 
 	// Guardia: mai partizionare un disco con filesystem montati
 	// (per esempio la chiavetta da cui gira il sistema live).
