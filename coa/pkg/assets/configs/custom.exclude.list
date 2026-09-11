@@ -1,5 +1,7 @@
 # /etc/penguins-eggs.d/custom.exclude.list
-# Esclusioni personalizzate per la creazione della Live ISO
+# Custom exclusions for live ISO generation.
+# Paths listed below are excluded from filesystem.squashfs.
+# Comment the line (prepend '#') to include it on the live system.
 
 # ==========================================
 # DOCKER & CONTAINERD
