@@ -2,6 +2,15 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.11 - 2026-09-11
+This release refines console output during the bootloader verification stage of remastering by eliminating redundant log messages, and updates configuration header comments in `custom.exclude.list` to clarify include/exclude semantics for live ISO filesystem generation.
+
+### 📦 Bootloader Download Feedback
+* **Streamlined Console Output**: Removed duplicate log messages when downloading bootloaders during `eggs remaster`, presenting a clean "Downloading bootloaders..." status only when an actual download is necessary.
+
+### 📝 Configuration Clarification
+* **Custom Exclude List Documentation**: Clarified header instructions in `/etc/penguins-eggs.d/custom.exclude.list` (`coa/pkg/assets/configs/custom.exclude.list`) detailing that paths are excluded from `filesystem.squashfs` by default and commenting them out includes them in the live image.
+
 ## Release Notes: penguins-eggs v26.9.10 - 2026-09-10
 This release introduces a dedicated "Replace a partition" installation mode in Krill (the native TUI installer) allowing safe installations into existing partitions alongside other operating systems, and restores complete compatibility for Garuda Linux and Arch-family dracut systems across live ISO remastering and disk installation with Calamares and Krill.
 
