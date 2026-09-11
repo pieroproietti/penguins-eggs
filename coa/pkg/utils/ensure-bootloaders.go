@@ -27,7 +27,7 @@ func EnsureBootloaders(targetDir string) error {
 		return nil
 	}
 
-	LogNormal("Bootloaders not found (or incomplete) in %s. Starting download...", targetDir)
+	LogNormal("Downloading bootloaders...")
 
 	// 2. Wipe any partial leftovers from an interrupted previous run,
 	// then download and extract fresh.

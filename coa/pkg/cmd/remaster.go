@@ -211,7 +211,6 @@ func RunRemasterFlight(opts RemasterOptions) {
 		profile.Settings.Remaster.Compression.Level = opts.CompressionLevel
 	}
 
-	utils.LogNormal("Fetching bootloaders (penguins-bootloaders)...")
 	if err := utils.EnsureBootloaders(pathDefaults.BootloadersDir); err != nil {
 		utils.Fatal("Failed to ensure bootloaders: %v", err)
 	}
