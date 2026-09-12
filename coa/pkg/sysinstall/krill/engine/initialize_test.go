@@ -15,22 +15,23 @@ import (
 
 func TestCalculateCoexistLayout(t *testing.T) {
 	for _, tc := range []struct {
-		gib   uint64
-		slots int
-	}{{33, 2}, {40, 2}, {64, 5}, {128, 13}, {256, 29}, {2048, 253}} {
+		gib, rootGiB uint64
+		slots        int
+	}{{33, 8, 2}, {40, 8, 2}, {64, 8, 5}, {128, 8, 13}, {256, 8, 29}, {2048, 8, 253},
+		{64, 16, 2}, {128, 16, 6}, {256, 16, 14}, {2048, 16, 126}, {4096, 16, 254}, {25, 4, 2}, {64, 4, 11}} {
 		for _, sector := range []uint64{512, 4096} {
-			l, err := CalculateCoexistLayout("/dev/nvme0n1", tc.gib<<30, sector)
+			l, err := CalculateCoexistLayout("/dev/nvme0n1", tc.gib<<30, sector, tc.rootGiB<<30)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(l.Partitions) != tc.slots+2 {
+			if len(l.Partitions) != tc.slots+2 || l.RootBytes != tc.rootGiB<<30 {
 				t.Fatalf("%d GiB: got %d root slots", tc.gib, len(l.Partitions)-2)
 			}
 			esp, home := l.Partitions[0], l.Partitions[len(l.Partitions)-1]
 			if esp.Device != "/dev/nvme0n1p1" || esp.Type != espGUID || esp.Sectors*sector != CoexistESPBytes || esp.Filesystem != "vfat" {
 				t.Fatalf("ESP: %+v", esp)
 			}
-			if home.Sectors*sector < CoexistMinHomeBytes || home.Sectors*sector >= CoexistMinHomeBytes+CoexistRootBytes {
+			if home.Sectors*sector < CoexistMinHomeBytes || home.Sectors*sector >= CoexistMinHomeBytes+(tc.rootGiB<<30) {
 				t.Fatalf("HOME/minimum/maximum slots: %+v", home)
 			}
 			arraySectors := (uint64(l.TableEntries)*128 + sector - 1) / sector
@@ -38,7 +39,7 @@ func TestCalculateCoexistLayout(t *testing.T) {
 				t.Fatal("HOME does not consume remainder")
 			}
 			for n, p := range l.Partitions[1 : len(l.Partitions)-1] {
-				if p.Sectors*sector != CoexistRootBytes || p.Filesystem != "ext4" || p.Start != l.Partitions[n].Start+l.Partitions[n].Sectors || p.Start*sector%(1<<20) != 0 {
+				if p.Sectors*sector != tc.rootGiB<<30 || p.Filesystem != "ext4" || p.Start != l.Partitions[n].Start+l.Partitions[n].Sectors || p.Start*sector%(1<<20) != 0 {
 					t.Fatalf("root: %+v", p)
 				}
 			}
@@ -50,18 +51,18 @@ func TestCalculateCoexistLayout(t *testing.T) {
 	}
 	minimum := CoexistESPBytes + 2*CoexistRootBytes + CoexistMinHomeBytes + initMiB + 33*512
 	for _, bytes := range []uint64{0, 16 << 30, 32 << 30, minimum - 512} {
-		if _, err := CalculateCoexistLayout("/dev/test", bytes, 512); err == nil {
+		if _, err := CalculateCoexistLayout("/dev/test", bytes, 512, CoexistRootBytes); err == nil {
 			t.Fatalf("accepted insufficient %d bytes", bytes)
 		}
 	}
-	if _, err := CalculateCoexistLayout("/dev/test", minimum, 512); err != nil {
+	if _, err := CalculateCoexistLayout("/dev/test", minimum, 512, CoexistRootBytes); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestInitializationSafety(t *testing.T) {
 	if !IsUEFI() {
-		if _, err := PreviewCoexistDisk("/dev/test", ""); err == nil || !strings.Contains(err.Error(), "requires UEFI") {
+		if _, err := PreviewCoexistDisk("/dev/test", "", CoexistRootBytes); err == nil || !strings.Contains(err.Error(), "requires UEFI") {
 			t.Fatal("BIOS initialization was not refused before disk probing")
 		}
 	}
@@ -93,7 +94,7 @@ func TestInitializationSafety(t *testing.T) {
 }
 
 func TestInitializationDispatchAndFailures(t *testing.T) {
-	l, err := CalculateCoexistLayout("/dev/test", 40<<30, 512)
+	l, err := CalculateCoexistLayout("/dev/test", 40<<30, 512, CoexistRootBytes)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,7 +113,7 @@ func TestInitializationDispatchAndFailures(t *testing.T) {
 			}
 			return nil
 		}
-		preview := func(string, string) (CoexistDiskLayout, error) { return l, nil }
+		preview := func(string, string, uint64) (CoexistDiskLayout, error) { return l, nil }
 		if err := initializeCoexistDisk(c, l, "yes", preview); err == nil || len(commands) != 0 {
 			t.Fatal("unconfirmed wipe")
 		}
@@ -128,7 +129,7 @@ func TestInitializationDispatchAndFailures(t *testing.T) {
 	c, _ := testContext(t, &Plan{Device: l.Device})
 	c.execute = func(string, string, ...string) error { t.Fatal("wrote after failed recheck"); return nil }
 	for _, probeErr := range []error{nil, errors.New("disk now in use")} {
-		err := initializeCoexistDisk(c, l, l.Device, func(string, string) (CoexistDiskLayout, error) {
+		err := initializeCoexistDisk(c, l, l.Device, func(string, string, uint64) (CoexistDiskLayout, error) {
 			changed := l
 			changed.identity = "different disk"
 			return changed, probeErr
@@ -148,7 +149,8 @@ func TestCoexistSfdiskLayout(t *testing.T) {
 			t.Skip("sfdisk unavailable")
 		}
 	}
-	for _, bytes := range []uint64{64 << 30, 2048 << 30} {
+	for _, tc := range []struct{ bytes, rootBytes uint64 }{{64 << 30, CoexistRootBytes}, {2048 << 30, CoexistRootBytes}, {64 << 30, 16 << 30}} {
+		bytes := tc.bytes
 		file, err := os.CreateTemp(t.TempDir(), "disk.img")
 		if err != nil {
 			t.Fatal(err)
@@ -159,7 +161,7 @@ func TestCoexistSfdiskLayout(t *testing.T) {
 		if err := file.Close(); err != nil {
 			t.Fatal(err)
 		}
-		l, err := CalculateCoexistLayout(file.Name(), bytes, 512)
+		l, err := CalculateCoexistLayout(file.Name(), bytes, 512, tc.rootBytes)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -191,5 +193,58 @@ func TestCoexistSfdiskLayout(t *testing.T) {
 				t.Fatalf("partition %d: got %+v, want %+v", n, p, want)
 			}
 		}
+	}
+}
+
+func TestCoexistRootSizeBoundaries(t *testing.T) {
+	if CoexistRootBytes != 8<<30 {
+		t.Fatal("default root size changed")
+	}
+	for _, rootBytes := range []uint64{4 << 30, 8 << 30, 16 << 30} {
+		for _, sector := range []uint64{512, 4096} {
+			backupBytes := (128*128/sector + 1) * sector
+			minimum := CoexistESPBytes + 2*rootBytes + CoexistMinHomeBytes + initMiB + backupBytes
+			if _, err := CalculateCoexistLayout("/dev/test", minimum-sector, sector, rootBytes); err == nil {
+				t.Fatalf("accepted disk one sector below minimum: root %d, sector %d", rootBytes, sector)
+			}
+			l, err := CalculateCoexistLayout("/dev/test", minimum, sector, rootBytes)
+			if err != nil || len(l.Partitions) != 4 || l.Partitions[3].Sectors*sector != CoexistMinHomeBytes {
+				t.Fatalf("exact minimum: %+v, %v", l, err)
+			}
+		}
+	}
+	for _, rootBytes := range []uint64{0, 1, 3 << 30, (4 << 30) - 1, (4 << 30) + 512, 24 << 30, 64 << 30, 1 << 63, ^uint64(0)} {
+		if _, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, rootBytes); err == nil {
+			t.Fatalf("accepted invalid or oversized root size: %d", rootBytes)
+		}
+	}
+	if l, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, 23<<30); err != nil || len(l.Partitions) != 4 {
+		t.Fatalf("largest whole-GiB roots on 64 GiB disk rejected: %+v, %v", l, err)
+	}
+}
+
+func TestInitializationRechecksSelectedRootSize(t *testing.T) {
+	l, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, 16<<30)
+	if err != nil {
+		t.Fatal(err)
+	}
+	l.liveDevice, l.identity = "/dev/live", "same disk"
+	c, commands := testContext(t, &Plan{Device: l.Device})
+	preview := func(device, liveDevice string, rootBytes uint64) (CoexistDiskLayout, error) {
+		if device != l.Device || liveDevice != l.liveDevice || rootBytes != 16<<30 {
+			t.Fatal("selected size or disk safety context lost during recheck")
+		}
+		fresh, err := CalculateCoexistLayout(device, l.DiskBytes, l.SectorSize, rootBytes)
+		fresh.liveDevice, fresh.identity = l.liveDevice, l.identity
+		return fresh, err
+	}
+	if err := initializeCoexistDisk(c, l, l.Device, preview); err != nil || len(*commands) == 0 {
+		t.Fatalf("selected layout did not reach partitioning: %v", err)
+	}
+	*commands = nil
+	// A layout that does not match its size parameter must still be refused.
+	l.Partitions[1].Sectors++
+	if err := initializeCoexistDisk(c, l, l.Device, preview); err == nil || len(*commands) != 0 {
+		t.Fatal("altered layout bypassed recheck")
 	}
 }

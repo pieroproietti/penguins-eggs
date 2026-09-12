@@ -3,7 +3,9 @@ package krill
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"coa/pkg/sysinstall/krill/engine"
 	"coa/pkg/utils"
@@ -17,6 +19,9 @@ type coexistInitialization struct {
 	view           viewport.Model
 	confirmation   string
 	busy, reviewed bool
+	rootSize       string
+	editingSize    bool
+	sizeError      string
 }
 
 type coexistPreviewMsg struct {
@@ -29,36 +34,51 @@ type coexistInitializedMsg struct {
 	err    error
 }
 
-func PreviewCoexistInitialization(device string) (engine.CoexistDiskLayout, error) {
-	return engine.PreviewCoexistDisk(device, DetectLiveDisk())
+func PreviewCoexistInitialization(device string, rootBytes uint64) (engine.CoexistDiskLayout, error) {
+	return engine.PreviewCoexistDisk(device, DetectLiveDisk(), rootBytes)
 }
 
-func (m model) startCoexistPreview(preview func(string) (engine.CoexistDiskLayout, error)) (tea.Model, tea.Cmd) {
+func (m model) startCoexistPreview(preview func(string, uint64) (engine.CoexistDiskLayout, error)) (tea.Model, tea.Cmd) {
 	if m.diskModeIdx != 2 || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
 		return m, nil
 	}
 	device := m.disks[m.diskIdx].Path
-	m.initialization = &coexistInitialization{busy: true}
+	rootSize := strconv.FormatUint(engine.CoexistRootBytes>>30, 10)
+	if m.initialization != nil {
+		rootSize = m.initialization.rootSize
+	}
+	gib, err := strconv.ParseUint(rootSize, 10, 64)
+	if err != nil || gib < engine.CoexistMinRootBytes>>30 || gib > ^uint64(0)>>30 {
+		m.initialization.sizeError = "Root slot size must be a whole number of GiB, at least 4 GiB, within the disk capacity."
+		return m, nil
+	}
+	m.initialization = &coexistInitialization{busy: true, rootSize: rootSize}
 	m.diskError = ""
 	return m, func() tea.Msg {
-		layout, err := preview(device)
+		layout, err := preview(device, gib<<30)
 		return coexistPreviewMsg{layout, err}
 	}
 }
 
 func (m model) receiveCoexistPreview(msg coexistPreviewMsg) (tea.Model, tea.Cmd) {
-	if msg.err != nil {
+	if msg.err != nil && msg.layout.DiskBytes == 0 {
 		m.initialization, m.diskError = nil, msg.err.Error()
 		return m, nil
 	}
-	v := viewport.New(max(50, m.termWidth-8), max(4, m.termHeight-14))
+	v := viewport.New(max(50, m.termWidth-8), max(4, m.termHeight-16))
 	var rows []string
 	for _, p := range msg.layout.Partitions {
 		rows = append(rows, fmt.Sprintf("%-20s %-13s %8.2f GiB  %s", p.Device, p.Label, float64(p.Sectors*msg.layout.SectorSize)/(1<<30), p.Filesystem))
 	}
-	rows[len(rows)-1] += " (remainder)"
+	if len(rows) > 0 {
+		rows[len(rows)-1] += " (remainder)"
+	}
 	v.SetContent(strings.Join(rows, "\n"))
-	m.initialization = &coexistInitialization{layout: msg.layout, view: v, reviewed: v.AtBottom()}
+	m.initialization = &coexistInitialization{layout: msg.layout, view: v, reviewed: v.AtBottom(), rootSize: strconv.FormatUint(msg.layout.RootBytes>>30, 10)}
+	if msg.err != nil {
+		m.initialization.sizeError = msg.err.Error()
+		m.initialization.editingSize, m.initialization.reviewed = true, false
+	}
 	return m, nil
 }
 
@@ -67,7 +87,27 @@ func (m model) updateCoexistInitialization(msg tea.KeyMsg) (tea.Model, tea.Cmd) 
 	if i.busy {
 		return m, nil
 	}
+	if i.editingSize {
+		switch msg.String() {
+		case "esc", "ctrl+c":
+			m.initialization = nil
+		case "backspace", "ctrl+h":
+			if len(i.rootSize) > 0 {
+				_, size := utf8.DecodeLastRuneInString(i.rootSize)
+				i.rootSize = i.rootSize[:len(i.rootSize)-size]
+			}
+		case "enter":
+			return m.startCoexistPreview(PreviewCoexistInitialization)
+		default:
+			if msg.Type == tea.KeyRunes {
+				i.rootSize += string(msg.Runes)
+			}
+		}
+		return m, nil
+	}
 	switch msg.String() {
+	case "tab":
+		i.editingSize, i.reviewed, i.confirmation = true, false, ""
 	case "esc", "ctrl+c":
 		m.initialization = nil
 	case "home":
@@ -94,7 +134,7 @@ func (m model) updateCoexistInitialization(msg tea.KeyMsg) (tea.Model, tea.Cmd) 
 
 func (m model) confirmCoexistInitialization(initialize func(engine.CoexistDiskLayout, string) error, discover func(engine.CoexistDiskLayout) ([]PartitionInfo, error)) (tea.Model, tea.Cmd) {
 	i := m.initialization
-	if i == nil || i.busy || !i.reviewed || i.confirmation != i.layout.Device {
+	if i == nil || i.busy || i.editingSize || i.sizeError != "" || !i.reviewed || i.confirmation != i.layout.Device {
 		return m, nil
 	}
 	layout, confirmation := i.layout, i.confirmation
@@ -158,9 +198,15 @@ func (m model) viewCoexistInitialization() string {
 	if i.reviewed {
 		confirmation = "Type " + i.layout.Device + " and press Enter to ERASE it: " + i.confirmation
 	}
+	layoutView := i.view.View()
+	if i.editingSize {
+		layoutView = "Edit root slot size, then press Enter to recalculate the proposed layout."
+		confirmation = i.sizeError
+	}
 	return redBgWhiteText.Render("Initialize disk for Coexist: ALL DATA ON "+i.layout.Device+" WILL BE ERASED") +
-		"\nGPT / UEFI | ESP 512 MiB | roots 8 GiB each | HOME at least 16 GiB\n\n" +
-		i.view.View() + "\n\n↑/↓ or PgUp/PgDown: review layout | Esc: cancel\n" + confirmation
+		"\nGPT / UEFI | ESP 512 MiB | HOME at least 16 GiB" +
+		"\nRoot slot size (GiB, minimum 4): " + i.rootSize + "\n\n" +
+		layoutView + "\n\n↑/↓ or PgUp/PgDown: review layout | Tab: edit root size | Esc: cancel\n" + confirmation
 }
 
 func rediscoverInitializedDisk(l engine.CoexistDiskLayout) ([]PartitionInfo, error) {
