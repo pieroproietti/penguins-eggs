@@ -22,16 +22,14 @@ func safeChecks() partitionChecks {
 			}
 			return filesystemInfo{Type: fs, UUID: "test-uuid"}, nil
 		},
-		inspectHome:          func(string, string) error { return nil },
-		inspectHomeReinstall: func(string, string) error { return nil },
-		debianEFI:            func() bool { return true },
-		inspectEFI:           func(string, string) error { return nil },
-		inspectEFIReinstall:  func(string, string) error { return nil },
+		inspectHome: func(string, string) error { return nil },
+		debianEFI:   func() bool { return true },
+		inspectEFI:  func(string, string) error { return nil },
 	}
 }
 
 func coexistPlan() *Plan {
-	return &Plan{Mode: "coexist", EFIBootloaderID: "colibri-1", HomePartition: "/dev/test2", HomeNamespace: "debian-sid", Device: "/dev/test", TargetPartition: "/dev/test5", EspPartition: "/dev/test1", FsType: "ext4", TableType: "gpt", Swap: "none"}
+	return &Plan{Mode: "coexist", EFIBootloaderID: "colibri-1", HomePartition: "/dev/test2", HomeNamespace: "colibri-1", Device: "/dev/test", TargetPartition: "/dev/test5", EspPartition: "/dev/test1", FsType: "ext4", TableType: "gpt", Swap: "none"}
 }
 
 func TestCoexistSafety(t *testing.T) {
@@ -116,7 +114,7 @@ func TestCoexistRootLabelIsValidatedBeforeWipe(t *testing.T) {
 		return nil
 	}}
 
-	if err := runPartition(c); err == nil || !strings.Contains(err.Error(), "maximum 16 bytes") {
+	if err := runPartition(c); err == nil || !strings.Contains(err.Error(), "1–16 ASCII") {
 		t.Fatalf("long ext4 label error = %v", err)
 	}
 	if len(commands) != 0 {
@@ -124,10 +122,10 @@ func TestCoexistRootLabelIsValidatedBeforeWipe(t *testing.T) {
 	}
 }
 
-func TestCoexistRootLabelUsesFilesystemLimit(t *testing.T) {
+func TestCoexistRootLabelAtInstallationIDLimit(t *testing.T) {
 	p, checks := coexistPlan(), safeChecks()
 	p.FsType = "btrfs"
-	p.EFIBootloaderID = strings.Repeat("a", 64)
+	p.EFIBootloaderID = strings.Repeat("a", 16)
 	var commands []string
 	c := &ctx{plan: p, checks: &checks, execute: func(_ string, name string, args ...string) error {
 		commands = append(commands, strings.Join(append([]string{name}, args...), " "))

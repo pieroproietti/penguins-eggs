@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"unicode/utf8"
 
 	"coa/pkg/distro"
 	"coa/pkg/sysinstall/krill/engine"
@@ -118,27 +119,26 @@ type model struct {
 	netInputs []textinput.Model // address, netmask, gateway, dns
 
 	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
-	homeParts       []PartitionInfo
-	homeIdx         int
-	homeNamespace   string
-	efiBootloaderID string
-	debianEFI       bool
-	diskError       string
-	diskBios        string
-	diskModes       []string
-	diskModeIdx     int
-	disks           []DiskInfo
-	diskIdx         int
-	candidateParts  []PartitionInfo
-	partIdx         int
-	efiParts        []PartitionInfo
-	efiIdx          int
-	fsTypes         []string
-	fsIdx           int
-	swapTypes       []string
-	swapIdx         int
-	diskField       int
-	initialization  *coexistInitialization
+	homeParts      []PartitionInfo
+	homeIdx        int
+	homeNamespace  string
+	debianEFI      bool
+	diskError      string
+	diskBios       string
+	diskModes      []string
+	diskModeIdx    int
+	disks          []DiskInfo
+	diskIdx        int
+	candidateParts []PartitionInfo
+	partIdx        int
+	efiParts       []PartitionInfo
+	efiIdx         int
+	fsTypes        []string
+	fsIdx          int
+	swapTypes      []string
+	swapIdx        int
+	diskField      int
+	initialization *coexistInitialization
 
 	// Users: campi di testo editabili più il checkbox autologin
 	userInputs []textinput.Model
@@ -353,7 +353,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateKeyboard(key)
 		case StateDisk:
 			fields := m.activeDiskFields()
-			if m.diskField >= 0 && m.diskField < len(fields) && (fields[m.diskField] == diskFieldNamespace || fields[m.diskField] == diskFieldEFIID) && msg.Type == tea.KeyRunes {
+			if m.diskField >= 0 && m.diskField < len(fields) && fields[m.diskField] == diskFieldNamespace && msg.Type == tea.KeyRunes {
 				for _, ch := range msg.Runes {
 					next, _ := m.updateDisk(string(ch))
 					m = next.(model)
@@ -564,7 +564,6 @@ const (
 	diskFieldEfi
 	diskFieldHome
 	diskFieldNamespace
-	diskFieldEFIID
 	diskFieldFs
 	diskFieldSwap
 	diskFieldInitialize
@@ -580,9 +579,6 @@ func (m *model) activeDiskFields() []diskFieldKind {
 	}
 	if m.diskModeIdx == 2 {
 		fields = append(fields, diskFieldHome, diskFieldNamespace)
-		if m.debianEFI {
-			fields = append(fields, diskFieldEFIID)
-		}
 	}
 	fields = append(fields, diskFieldFs, diskFieldSwap)
 	if m.diskModeIdx == 2 {
@@ -608,33 +604,37 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		return m.startCoexistPreview(PreviewCoexistInitialization)
 	}
 
-	if activeFields[m.diskField] == diskFieldNamespace || activeFields[m.diskField] == diskFieldEFIID {
-		value := &m.homeNamespace
-		if activeFields[m.diskField] == diskFieldEFIID {
-			value = &m.efiBootloaderID
-		}
+	if activeFields[m.diskField] == diskFieldNamespace {
+		edited := false
 		switch key {
 		case "backspace", "ctrl+h":
-			if len(*value) > 0 {
-				*value = (*value)[:len(*value)-1]
+			if len(m.homeNamespace) > 0 {
+				_, size := utf8.DecodeLastRuneInString(m.homeNamespace)
+				m.homeNamespace = m.homeNamespace[:len(m.homeNamespace)-size]
 			}
-			return m, nil
+			edited = true
 		case "up", "down", "tab", "shift+tab", "enter", "left", "right":
 		default:
-			if len(key) == 1 && len(*value)+len(key) <= 64 {
-				valid := key != ""
-				for _, ch := range key {
-					if !(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9' || ch == '-' || ch == '_') {
-						valid = false
-					}
-				}
-				if valid {
-					*value += key
-				}
+			// Retain invalid input, including pasted Unicode and overlong IDs,
+			// so validation rejects it visibly instead of silently sanitizing it.
+			if utf8.RuneCountInString(key) == 1 {
+				m.homeNamespace += key
+				edited = true
+			}
+		}
+		if edited {
+			m.diskError = ""
+			if err := engine.ValidateHomeNamespace(m.homeNamespace); err != nil {
+				m.diskError = err.Error()
+			} else if err := engine.ValidateEFIBootloaderID(m.homeNamespace); err != nil {
+				m.diskError = err.Error()
+			} else if len(m.userInputs) > fieldHostname {
+				m.userInputs[fieldHostname].SetValue(m.homeNamespace)
 			}
 			return m, nil
 		}
 	}
+
 	switch key {
 	case "up", "shift+tab":
 		m.diskField = cycle(m.diskField, -1, len(activeFields))
@@ -685,8 +685,8 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			if err := engine.ValidateHomeNamespace(m.homeNamespace); err != nil && m.diskError == "" {
 				m.diskError = err.Error()
 			}
-			if m.debianEFI && m.diskError == "" {
-				if err := engine.ValidateEFIBootloaderID(m.efiBootloaderID); err != nil {
+			if m.diskError == "" {
+				if err := engine.ValidateEFIBootloaderID(m.homeNamespace); err != nil {
 					m.diskError = err.Error()
 				}
 			}
@@ -1007,9 +1007,7 @@ func (m model) viewDisk() string {
 			}
 			rows = append(rows, m.selectorRow(isActive, "Shared HOME (preserve)", part))
 		case diskFieldNamespace:
-			rows = append(rows, m.selectorRow(isActive, "HOME namespace (type)", m.homeNamespace))
-		case diskFieldEFIID:
-			rows = append(rows, m.selectorRow(isActive, "EFI bootloader ID (type)", m.efiBootloaderID))
+			rows = append(rows, m.selectorRow(isActive, "Installation ID", m.homeNamespace))
 		case diskFieldFs:
 			rows = append(rows, m.selectorRow(isActive, "Filesystem", m.fsTypes[m.fsIdx]))
 		case diskFieldSwap:
@@ -1043,7 +1041,7 @@ func (m model) viewDisk() string {
 		if m.diskModeIdx == 2 {
 			w2 = "ESP filesystem is preserved; existing bootloader installation behavior still applies."
 			if m.debianEFI {
-				w2 = "GRUB uses the selected EFI bootloader ID and preserves EFI/BOOT."
+				w2 = "GRUB replaces only EFI/<Installation ID> if present; EFI/BOOT is preserved."
 			}
 		}
 		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, warningStyle.Render(w1), dimText.Render(w2)))
@@ -1285,10 +1283,7 @@ func (m *model) buildPlan() *engine.Plan {
 
 	homePart, namespace, efiID := "", "", ""
 	if mode == "coexist" {
-		namespace = m.homeNamespace
-		if m.debianEFI {
-			efiID = m.efiBootloaderID
-		}
+		namespace, efiID = m.homeNamespace, m.homeNamespace
 		if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
 			homePart = m.homeParts[m.homeIdx].Path
 		}
@@ -1374,7 +1369,6 @@ func Run(fstype string) error {
 // coexistResources separates formatting from preservation in both disk and summary views.
 func (m model) coexistResources() string {
 	root, esp, home := "SELECT ROOT", "SELECT ESP", "SELECT SHARED HOME"
-	reinstall := false
 	if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
 		home = m.homeParts[m.homeIdx].Path
 	}
@@ -1384,34 +1378,20 @@ func (m model) coexistResources() string {
 		if part.Label != "" {
 			root += " [" + part.Label + "]"
 		}
-		reinstall = m.debianEFI && m.efiBootloaderID != "" && part.Label == m.efiBootloaderID
 	}
 	if m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
 		esp = m.efiParts[m.efiIdx].Path
 	}
-	bootloader := "Bootloader behavior is unchanged."
+	rows := []string{
+		cyanText.Render("COEXIST\n  Installation ID: " + m.homeNamespace),
+		redBgWhiteText.Render("FORMAT:\n  Root: " + root + "\n  New label: " + m.homeNamespace),
+		greenText.Render("PRESERVE (no formatting):\n  ESP: " + esp + "\n  Shared HOME: " + home +
+			"\n  HOME namespace: /srv/homes/" + m.homeNamespace + " (create if absent)"),
+	}
 	if m.debianEFI {
-		bootloader = "EFI bootloader: EFI/" + m.efiBootloaderID + " (new directory; preserve EFI/BOOT)"
-		if reinstall {
-			bootloader = "EFI bootloader: EFI/" + m.efiBootloaderID + " (replace this directory; preserve EFI/BOOT)"
-		}
+		rows = append(rows,
+			redBgWhiteText.Render("REPLACE if present / CREATE if absent:\n  EFI/"+m.homeNamespace),
+			dimText.Render("Preserve sibling EFI namespaces and EFI/BOOT."))
 	}
-	installKind := ""
-	if reinstall {
-		installKind = "COEXIST — REINSTALL\n  Installation: " + m.efiBootloaderID
-	}
-	rows := []string{}
-	if reinstall {
-		rows = append(rows, redBgWhiteText.Render(installKind))
-	}
-	rows = append(rows,
-		redBgWhiteText.Render("FORMAT:\n  Root: "+root),
-		greenText.Render("PRESERVE (no formatting):\n  EFI:  "+esp+"\n  Shared HOME: "+home))
-	if reinstall {
-		rows = append(rows, cyanText.Render("REPLACE:\n  EFI/"+m.efiBootloaderID))
-	}
-	rows = append(rows,
-		cyanText.Render("HOME:\n  Namespace: "+m.homeNamespace+"\n  Target: /srv/homes/"+m.homeNamespace),
-		dimText.Render(bootloader))
 	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }

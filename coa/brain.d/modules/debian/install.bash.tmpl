@@ -28,15 +28,14 @@ if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
     [ -d /sys/firmware/efi ] || { echo "[FATAL ERROR] Coexist GRUB requires UEFI" >&2; exit 1; }
     EFI_ID=${KRILL_EFI_BOOTLOADER_ID:-}
     case "$EFI_ID" in
-        ''|boot|kubuntu|devuan|[!a-z0-9]*|*[!a-z0-9_-]*)
+        ''|boot|kubuntu|devuan|[!a-z0-9]*|*[!a-z0-9]|*[!a-z0-9-]*)
             echo "[FATAL ERROR] Unsafe or reserved Coexist EFI bootloader ID" >&2; exit 1 ;;
     esac
-    [ "${#EFI_ID}" -le 64 ] || { echo "[FATAL ERROR] EFI bootloader ID too long" >&2; exit 1; }
+    [ "${#EFI_ID}" -le 16 ] || { echo "[FATAL ERROR] EFI bootloader ID too long" >&2; exit 1; }
 
     # Recheck immediately before bootloader operations, including case variants.
-    # New installations must never merge with an existing EFI destination.
-    # A reinstall may remove only the already-proven matching namespace.
-    reinstall_destination=""
+    # The selected ID is authoritative: replace only that exact namespace.
+    efi_destination=""
     for efi_dir in /boot/efi/[Ee][Ff][Ii]; do
         [ -e "$efi_dir" ] || [ -L "$efi_dir" ] || continue
         [ -d "$efi_dir" ] && [ ! -L "$efi_dir" ] || exit 1
@@ -44,24 +43,20 @@ if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
             [ -e "$destination" ] || [ -L "$destination" ] || continue
             existing_id=$(basename "$destination" | LC_ALL=C tr 'A-Z' 'a-z')
             if [ "$existing_id" = "$EFI_ID" ]; then
-                if [ "${KRILL_REINSTALL:-0}" != 1 ]; then
-                    echo "[FATAL ERROR] EFI destination already exists: $destination" >&2
-                    exit 1
-                fi
                 [ -d "$destination" ] && [ ! -L "$destination" ] || {
                     echo "[FATAL ERROR] EFI destination is not a directory: $destination" >&2
                     exit 1
                 }
-                [ -z "$reinstall_destination" ] || {
+                [ -z "$efi_destination" ] || {
                     echo "[FATAL ERROR] Multiple EFI destinations match $EFI_ID" >&2
                     exit 1
                 }
-                reinstall_destination="$destination"
+                efi_destination="$destination"
             fi
         done
     done
-    if [ "${KRILL_REINSTALL:-0}" = 1 ] && [ -n "$reinstall_destination" ]; then
-        rm -rf -- "$reinstall_destination"
+    if [ -n "$efi_destination" ]; then
+        rm -rf -- "$efi_destination" || exit 1
     fi
 
     # Standard Debian configuration, retained independently of penguins-eggs.

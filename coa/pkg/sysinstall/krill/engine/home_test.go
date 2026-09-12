@@ -45,12 +45,12 @@ func TestHomePreflight(t *testing.T) {
 		{"mount failed", func(_ *Plan, c *partitionChecks) {
 			c.inspectHome = func(string, string) error { return errors.New("mount failed") }
 		}},
-		{"existing namespace", func(p *Plan, c *partitionChecks) {
+		{"namespace is a file", func(p *Plan, c *partitionChecks) {
 			storage := t.TempDir()
-			if err := os.Mkdir(filepath.Join(storage, p.HomeNamespace), 0755); err != nil {
+			if err := os.WriteFile(filepath.Join(storage, p.HomeNamespace), nil, 0644); err != nil {
 				t.Fatal(err)
 			}
-			c.inspectHome = func(_ string, ns string) error { return namespaceAbsent(storage, ns) }
+			c.inspectHome = func(_ string, ns string) error { return validateHomeDestination(storage, ns) }
 		}},
 	}
 	for _, tc := range cases {
@@ -79,10 +79,10 @@ func TestNamespaceRejectsSymlinksAndPreservesSiblings(t *testing.T) {
 	if err := os.Symlink("missing", filepath.Join(dir, "arch")); err != nil {
 		t.Fatal(err)
 	}
-	if err := namespaceAbsent(dir, "arch"); err == nil {
+	if err := validateHomeDestination(dir, "arch"); err == nil {
 		t.Fatal("dangling symlink accepted")
 	}
-	if err := namespaceAbsent(dir, "debian-sid"); err != nil {
+	if err := validateHomeDestination(dir, "debian-sid"); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -155,10 +155,13 @@ func TestSharedMountAndFstab(t *testing.T) {
 				t.Fatal(err)
 			}
 			text := string(data)
-			for _, entry := range []string{"UUID=test2-uuid /srv/homes ext4 defaults,noatime 0 2", "/srv/homes/debian-sid /home none bind 0 0", "UUID=test1-uuid /boot/efi vfat"} {
+			for _, entry := range []string{"UUID=test2-uuid /srv/homes ext4 defaults,noatime 0 2", "/srv/homes/colibri-1 /home none bind 0 0", "UUID=test1-uuid /boot/efi vfat", "UUID=test5-uuid / "} {
 				if !strings.Contains(text, entry) {
 					t.Fatalf("missing %q in %s", entry, text)
 				}
+			}
+			if strings.Contains(text, "LABEL=") {
+				t.Fatal("descriptive label used instead of UUID")
 			}
 			if strings.Count(text, " /home ") != 1 || strings.Contains(text, "@home") {
 				t.Fatal("competing HOME entry")
@@ -169,16 +172,15 @@ func TestSharedMountAndFstab(t *testing.T) {
 					t.Fatal("sibling modified")
 				}
 			}
-			if err := runCoexistMount(c); err == nil {
-				t.Fatal("existing namespace reused")
+			if err := runCoexistMount(c); err != nil {
+				t.Fatalf("existing namespace rejected: %v", err)
 			}
 		})
 	}
 }
 
-func TestCoexistReinstallPreservesExistingHomeNamespace(t *testing.T) {
+func TestCoexistPreservesExistingHomeNamespace(t *testing.T) {
 	p := coexistPlan()
-	p.CoexistReinstall = true
 	c, _ := testContext(t, p)
 	storage := c.tpath("srv", "homes")
 	namespace := filepath.Join(storage, p.HomeNamespace)
@@ -188,6 +190,11 @@ func TestCoexistReinstallPreservesExistingHomeNamespace(t *testing.T) {
 	keep := filepath.Join(namespace, "keep")
 	if err := os.WriteFile(keep, []byte("preserve"), 0600); err != nil {
 		t.Fatal(err)
+	}
+
+	c.checks.inspectHome = func(_ string, ns string) error { return validateHomeDestination(storage, ns) }
+	if err := validatePlan(p, *c.checks); err != nil {
+		t.Fatalf("preflight rejected existing HOME: %v", err)
 	}
 
 	if err := runCoexistMount(c); err != nil {

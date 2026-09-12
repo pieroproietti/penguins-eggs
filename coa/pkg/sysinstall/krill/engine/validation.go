@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,17 +18,14 @@ func IsUEFI() bool {
 
 // partitionChecks keeps safety probes testable without accessing real disks.
 type partitionChecks struct {
-	uefi                 func() bool
-	partition            func(string) (string, error)
-	esp                  func(string) (bool, error)
-	inUse                func(string) (bool, error)
-	filesystem           func(string) (filesystemInfo, error)
-	rootFilesystem       func(string) (filesystemInfo, error)
-	inspectHome          func(string, string) error
-	inspectHomeReinstall func(string, string) error
-	debianEFI            func() bool
-	inspectEFI           func(string, string) error
-	inspectEFIReinstall  func(string, string) error
+	uefi        func() bool
+	partition   func(string) (string, error)
+	esp         func(string) (bool, error)
+	inUse       func(string) (bool, error)
+	filesystem  func(string) (filesystemInfo, error)
+	inspectHome func(string, string) error
+	debianEFI   func() bool
+	inspectEFI  func(string, string) error
 }
 
 func (c *ctx) safetyChecks() partitionChecks {
@@ -41,17 +37,14 @@ func (c *ctx) safetyChecks() partitionChecks {
 
 func livePartitionChecks() partitionChecks {
 	return partitionChecks{
-		uefi:                 IsUEFI,
-		partition:            canonicalPartition,
-		esp:                  isESP,
-		inUse:                deviceInUse,
-		filesystem:           probeFilesystem,
-		rootFilesystem:       probeRootFilesystem,
-		inspectHome:          inspectHomePartition,
-		inspectHomeReinstall: inspectHomePartitionForReinstall,
-		debianEFI:            func() bool { return distro.NewDistro().FamilyID == "debian" },
-		inspectEFI:           inspectEFIPartition,
-		inspectEFIReinstall:  inspectEFIPartitionForReinstall,
+		uefi:        IsUEFI,
+		partition:   canonicalPartition,
+		esp:         isESP,
+		inUse:       deviceInUse,
+		filesystem:  probeFilesystem,
+		inspectHome: inspectHomePartition,
+		debianEFI:   func() bool { return distro.NewDistro().FamilyID == "debian" },
+		inspectEFI:  inspectEFIPartition,
 	}
 }
 
@@ -109,7 +102,6 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	default:
 		return fmt.Errorf("unknown installation mode %q", plan.Mode)
 	}
-	plan.CoexistReinstall = false
 	if !checks.uefi() {
 		return fmt.Errorf("Coexist requires a live system booted in UEFI mode")
 	}
@@ -130,14 +122,6 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	if root == esp {
 		return fmt.Errorf("Coexist root and ESP must be different partitions")
 	}
-	rootFilesystem := checks.rootFilesystem
-	if rootFilesystem == nil {
-		rootFilesystem = checks.filesystem
-	}
-	rootInfo, err := rootFilesystem(root)
-	if err != nil {
-		return fmt.Errorf("Coexist root filesystem: %w", err)
-	}
 	valid, err := checks.esp(esp)
 	if err != nil {
 		return fmt.Errorf("Coexist ESP check: %w", err)
@@ -145,21 +129,12 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	if !valid {
 		return fmt.Errorf("Coexist requires an existing FAT EFI System Partition")
 	}
+	if err := ValidateEFIBootloaderID(plan.EFIBootloaderID); err != nil {
+		return err
+	}
 	if checks.debianEFI() {
-		if err := ValidateEFIBootloaderID(plan.EFIBootloaderID); err != nil {
-			return err
-		}
 		if err := checks.inspectEFI(esp, plan.EFIBootloaderID); err != nil {
-			if !errors.Is(err, errEFIDestinationExists) || rootInfo.Label != plan.EFIBootloaderID {
-				return fmt.Errorf("Coexist EFI inspection: %w", err)
-			}
-			if checks.inspectEFIReinstall == nil {
-				return fmt.Errorf("Coexist EFI inspection: reinstall check unavailable")
-			}
-			if err := checks.inspectEFIReinstall(esp, plan.EFIBootloaderID); err != nil {
-				return fmt.Errorf("Coexist EFI reinstall inspection: %w", err)
-			}
-			plan.CoexistReinstall = true
+			return fmt.Errorf("Coexist EFI inspection: %w", err)
 		}
 	}
 	inUse, err := checks.inUse(root)
@@ -200,9 +175,6 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 		return fmt.Errorf("Coexist ESP UUID unavailable: %v", err)
 	}
 	inspectHome := checks.inspectHome
-	if plan.CoexistReinstall {
-		inspectHome = checks.inspectHomeReinstall
-	}
 	if inspectHome == nil {
 		return fmt.Errorf("Coexist HOME inspection unavailable")
 	}

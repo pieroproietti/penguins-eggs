@@ -5,34 +5,26 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"coa/pkg/utils"
 )
 
-var homeNamespacePattern = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$`)
-
 func ValidateHomeNamespace(namespace string) error {
-	if !homeNamespacePattern.MatchString(namespace) || namespace == "common" {
-		return fmt.Errorf("HOME namespace must be 1–64 letters, digits, hyphens or underscores, start with a letter or digit, and not be common")
+	if err := ValidateInstallationID(namespace); err != nil {
+		return err
+	}
+	if namespace == "common" {
+		return fmt.Errorf("Installation ID cannot be common (reserved shared HOME namespace)")
 	}
 	return nil
 }
 
-type filesystemInfo struct{ Type, UUID, Label string }
+type filesystemInfo struct{ Type, UUID string }
 
 func shellQuote(s string) string { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
 
 func probeFilesystem(device string) (filesystemInfo, error) {
-	return probeFilesystemInfo(device, true)
-}
-
-func probeRootFilesystem(device string) (filesystemInfo, error) {
-	return probeFilesystemInfo(device, false)
-}
-
-func probeFilesystemInfo(device string, requireUUID bool) (filesystemInfo, error) {
 	out, err := utils.ExecCapture("blkid -p -o export " + shellQuote(device))
 	if err != nil {
 		return filesystemInfo{}, err
@@ -48,39 +40,27 @@ func probeFilesystemInfo(device string, requireUUID bool) (filesystemInfo, error
 			info.Type = value
 		case "UUID":
 			info.UUID = value
-		case "LABEL":
-			info.Label = value
 		}
 	}
-	if info.Type == "" || (requireUUID && info.UUID == "") || strings.ContainsAny(info.UUID, " \t\n\\") {
+	if info.Type == "" || info.UUID == "" || strings.ContainsAny(info.UUID, " \t\n\\") {
 		return info, fmt.Errorf("missing or invalid filesystem type/UUID on %s", device)
 	}
 	return info, nil
 }
 
-func namespaceAbsent(storage, namespace string) error {
-	if err := ValidateHomeNamespace(namespace); err != nil {
-		return err
-	}
-	_, err := os.Lstat(filepath.Join(storage, namespace))
-	if err == nil {
-		return fmt.Errorf("HOME namespace %q already exists; refusing to merge or overwrite", namespace)
-	}
-	if !os.IsNotExist(err) {
-		return err
-	}
-	return nil
-}
-
-func namespacePresent(storage, namespace string) error {
+// A missing namespace will be created; an existing real directory is preserved.
+func validateHomeDestination(storage, namespace string) error {
 	if err := ValidateHomeNamespace(namespace); err != nil {
 		return err
 	}
 	info, err := os.Lstat(filepath.Join(storage, namespace))
+	if os.IsNotExist(err) {
+		return nil
+	}
 	if err != nil {
 		return err
 	}
-	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
+	if !info.IsDir() {
 		return fmt.Errorf("HOME namespace %q is not a real directory", namespace)
 	}
 	return nil
@@ -88,14 +68,6 @@ func namespacePresent(storage, namespace string) error {
 
 // Inspect without replaying the ext4 journal or exposing shared storage to unpackfs.
 func inspectHomePartition(device, namespace string) (result error) {
-	return inspectHomePartitionMode(device, namespace, false)
-}
-
-func inspectHomePartitionForReinstall(device, namespace string) (result error) {
-	return inspectHomePartitionMode(device, namespace, true)
-}
-
-func inspectHomePartitionMode(device, namespace string, allowExisting bool) (result error) {
 	dir, err := os.MkdirTemp("", "krill-home-check-")
 	if err != nil {
 		return err
@@ -105,10 +77,7 @@ func inspectHomePartitionMode(device, namespace string, allowExisting bool) (res
 		return err
 	}
 	defer func() { result = errors.Join(result, utils.ExecQuiet("umount "+shellQuote(dir))) }()
-	if allowExisting {
-		return namespacePresent(dir, namespace)
-	}
-	return namespaceAbsent(dir, namespace)
+	return validateHomeDestination(dir, namespace)
 }
 
 // Insert one installer-only module into the existing sequence, rejecting unsafe
@@ -193,18 +162,11 @@ func runCoexistMount(c *ctx) error {
 		return err
 	}
 	namespace := filepath.Join(storage, p.HomeNamespace)
-	if p.CoexistReinstall {
-		if err := namespacePresent(storage, p.HomeNamespace); err != nil {
-			return err
-		}
-	} else {
-		if err := namespaceAbsent(storage, p.HomeNamespace); err != nil {
-			return err
-		}
-		// Exclusive creation: never reuse an existing directory for a new slot.
-		if err := os.Mkdir(namespace, 0755); err != nil {
-			return err
-		}
+	if err := os.Mkdir(namespace, 0755); err != nil && !os.IsExist(err) {
+		return err
+	}
+	if err := validateHomeDestination(storage, p.HomeNamespace); err != nil {
+		return err
 	}
 	if err := c.mount("--bind", namespace, home); err != nil {
 		return err

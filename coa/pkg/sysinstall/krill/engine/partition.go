@@ -154,16 +154,16 @@ func runRootFormat(c *ctx) error {
 // The existing Coexist identity is also useful as a human-readable filesystem
 // label, but labels remain descriptive; fstab continues to use UUIDs.
 func rootFilesystemLabelArgs(plan *Plan) ([]string, error) {
-	if plan.Mode != "coexist" || plan.EFIBootloaderID == "" {
+	if plan.Mode != "coexist" {
 		return nil, nil
 	}
 
+	if err := ValidateInstallationID(plan.EFIBootloaderID); err != nil {
+		return nil, err
+	}
 	option, maxBytes := filesystemLabelSpec(plan.FsType)
 	if option == "" {
 		return nil, fmt.Errorf("Coexist root filesystem %q does not support a known label format", plan.FsType)
-	}
-	if strings.IndexByte(plan.EFIBootloaderID, 0) >= 0 {
-		return nil, fmt.Errorf("Coexist root filesystem label contains NUL")
 	}
 	if len([]byte(plan.EFIBootloaderID)) > maxBytes {
 		return nil, fmt.Errorf("Coexist root filesystem label %q is too long for %s (maximum %d bytes)", plan.EFIBootloaderID, plan.FsType, maxBytes)

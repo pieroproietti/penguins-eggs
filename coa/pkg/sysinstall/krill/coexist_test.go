@@ -81,7 +81,7 @@ func TestCoexistDiskSelections(t *testing.T) {
 		t.Fatalf("namespace: %q", m.homeNamespace)
 	}
 	view := m.coexistResources()
-	for _, text := range []string{"FORMAT:", "Root: /dev/test5", "PRESERVE (no formatting):", "EFI:  /dev/test1", "Shared HOME: /dev/test2", "Namespace: debian-sid", "Target: /srv/homes/debian-sid"} {
+	for _, text := range []string{"FORMAT:", "Root: /dev/test5", "PRESERVE (no formatting):", "ESP: /dev/test1", "Shared HOME: /dev/test2", "Installation ID: debian-sid", "HOME namespace: /srv/homes/debian-sid", "New label: debian-sid"} {
 		if !strings.Contains(view, text) {
 			t.Fatalf("missing %q in resources", text)
 		}
@@ -106,11 +106,11 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 		}
 	}
 	m.debianEFI = true
-	m.efiBootloaderID = "arch-colibri-4"
+	m.homeNamespace = "arch-colibri-4"
 	resources := m.coexistResources()
-	for _, text := range []string{"COEXIST", "REINSTALL", "Installation: arch-colibri-4", "REPLACE:", "EFI/arch-colibri-4", "Root: /dev/sda5 [arch-colibri-4]"} {
+	for _, text := range []string{"COEXIST", "Installation ID: arch-colibri-4", "REPLACE if present / CREATE if absent:", "EFI/arch-colibri-4", "Root: /dev/sda5 [arch-colibri-4]"} {
 		if !strings.Contains(resources, text) {
-			t.Fatalf("reinstall summary missing %q: %s", text, resources)
+			t.Fatalf("summary missing %q: %s", text, resources)
 		}
 	}
 }

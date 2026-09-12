@@ -70,7 +70,7 @@ func TestInitializedDiscovery(t *testing.T) {
 
 func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	l, tree := initializedFixture(t)
-	m := model{state: StateDisk, diskModeIdx: 2, disks: []DiskInfo{{Path: l.Device}}, homeNamespace: "untouched", efiBootloaderID: "also-untouched", termHeight: 18}
+	m := model{state: StateDisk, diskModeIdx: 2, disks: []DiskInfo{{Path: l.Device}}, homeNamespace: "untouched", termHeight: 18}
 	if !slices.Contains(m.activeDiskFields(), diskFieldInitialize) {
 		t.Fatal("missing initialization action")
 	}
@@ -138,7 +138,7 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	if m.candidateParts[m.partIdx].Path != l.Partitions[1].Device || m.efiParts[m.efiIdx].Path != l.Partitions[0].Device || m.homeParts[m.homeIdx].Path != l.Partitions[len(l.Partitions)-1].Device {
 		t.Fatal("new partitions not selected")
 	}
-	if m.homeNamespace != "untouched" || m.efiBootloaderID != "also-untouched" || m.installCh != nil {
+	if m.homeNamespace != "untouched" || m.installCh != nil {
 		t.Fatal("initialization changed namespaces or started install")
 	}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldTargetPart)

@@ -11,29 +11,30 @@ import (
 	"coa/pkg/utils"
 )
 
-var efiIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,63}$`)
+var installationIDPattern = regexp.MustCompile(`^[a-z0-9]([a-z0-9-]{0,14}[a-z0-9])?$`)
 
-var errEFIDestinationExists = errors.New("EFI destination already exists")
-
-// Debian lowercases GRUB_DISTRIBUTOR and aliases kubuntu/devuan during upgrades.
-// Require an ID that is stable under that transformation.
-func ValidateEFIBootloaderID(id string) error {
-	if !efiIDPattern.MatchString(id) || id == "boot" || id == "kubuntu" || id == "devuan" {
-		return fmt.Errorf("EFI bootloader ID must be 1–64 lowercase letters, digits, hyphens or underscores, start with a letter or digit, and not be boot, kubuntu or devuan")
+func ValidateInstallationID(id string) error {
+	if !installationIDPattern.MatchString(id) {
+		return fmt.Errorf("Installation ID must be 1–16 ASCII lowercase letters, digits or hyphens, and start and end with a letter or digit")
 	}
 	return nil
 }
 
-// Read only: FAT names collide case-insensitively, including the EFI component.
-func efiDestinationAbsent(esp, id string) error {
-	return efiDestinationState(esp, id, false)
+// Debian lowercases GRUB_DISTRIBUTOR and aliases kubuntu/devuan during upgrades.
+// Require an ID that is stable under that transformation; BOOT is shared.
+func ValidateEFIBootloaderID(id string) error {
+	if err := ValidateInstallationID(id); err != nil {
+		return err
+	}
+	if id == "boot" || id == "kubuntu" || id == "devuan" {
+		return fmt.Errorf("Installation ID cannot be boot, kubuntu or devuan (reserved EFI IDs)")
+	}
+	return nil
 }
 
-func efiDestinationForReinstall(esp, id string) error {
-	return efiDestinationState(esp, id, true)
-}
-
-func efiDestinationState(esp, id string, allowExisting bool) error {
+// Read only: allow reuse of the selected directory, but reject unsafe paths.
+// FAT names compare case-insensitively, including the EFI component.
+func efiDestinationState(esp, id string) error {
 	if err := ValidateEFIBootloaderID(id); err != nil {
 		return err
 	}
@@ -55,35 +56,20 @@ func efiDestinationState(esp, id string, allowExisting bool) error {
 		}
 		for _, child := range children {
 			if strings.EqualFold(child.Name(), id) {
-				if allowExisting {
-					if !child.IsDir() {
-						return fmt.Errorf("EFI destination %q is not a directory", child.Name())
-					}
-					if found {
-						return fmt.Errorf("multiple EFI destinations match %q", id)
-					}
-					found = true
-					continue
+				if !child.IsDir() {
+					return fmt.Errorf("EFI destination %q is not a directory", child.Name())
 				}
-				return fmt.Errorf("%w: %q; refusing to merge or overwrite", errEFIDestinationExists, child.Name())
+				if found {
+					return fmt.Errorf("multiple EFI destinations match %q", id)
+				}
+				found = true
 			}
 		}
-	}
-	if allowExisting && !found {
-		return fmt.Errorf("EFI destination %q disappeared during reinstall check", id)
 	}
 	return nil
 }
 
 func inspectEFIPartition(device, id string) (result error) {
-	return inspectEFIPartitionMode(device, id, false)
-}
-
-func inspectEFIPartitionForReinstall(device, id string) (result error) {
-	return inspectEFIPartitionMode(device, id, true)
-}
-
-func inspectEFIPartitionMode(device, id string, allowExisting bool) (result error) {
 	dir, err := os.MkdirTemp("", "krill-efi-check-")
 	if err != nil {
 		return err
@@ -93,5 +79,5 @@ func inspectEFIPartitionMode(device, id string, allowExisting bool) (result erro
 		return err
 	}
 	defer func() { result = errors.Join(result, utils.ExecQuiet("umount "+shellQuote(dir))) }()
-	return efiDestinationState(dir, id, allowExisting)
+	return efiDestinationState(dir, id)
 }

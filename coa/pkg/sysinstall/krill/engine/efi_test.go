@@ -14,80 +14,52 @@ import (
 )
 
 func TestEFIBootloaderID(t *testing.T) {
-	for _, id := range []string{"", "BOOT", "boot", "Boot", ".", "..", "a/b", `a\b`, "../colibri", "a b", "a\n", "a'", "$(id)", "-id", "Colibri", "devuan", "kubuntu", strings.Repeat("a", 65)} {
+	for _, id := range []string{"", "BOOT", "boot", "Boot", ".", "..", "a/b", `a\b`, "../colibri", "a b", "a\n", "a'", "$(id)", "-id", "Colibri", "colibri_1", "colibri-", "é", "devuan", "kubuntu", strings.Repeat("a", 17)} {
 		if err := ValidateEFIBootloaderID(id); err == nil {
 			t.Errorf("accepted unsafe or unstable ID %q", id)
 		}
 	}
-	for _, id := range []string{"colibri-1", "colibri_2", "common", "debian", "0", strings.Repeat("a", 64)} {
+	for _, id := range []string{"colibri-1", "arch-2", "arch-colibri-4", "common", "debian", "0", strings.Repeat("a", 16)} {
 		if err := ValidateEFIBootloaderID(id); err != nil {
 			t.Errorf("rejected %q: %v", id, err)
 		}
 	}
 }
 
-func TestEFIPreflightBeforeFormatting(t *testing.T) {
-	for _, existing := range []string{"colibri-1", "COLIBRI-1"} {
-		t.Run(existing, func(t *testing.T) {
-			esp := t.TempDir()
-			writeEFITestFile(t, filepath.Join(esp, "eFi", existing, "grubx64.efi"), "first install", 0644)
-			before := efiTree(t, esp)
-			p, checks := coexistPlan(), safeChecks()
-			checks.inspectEFI = func(device, id string) error {
-				if device != p.EspPartition || id != p.EFIBootloaderID {
-					t.Fatal("wrong EFI preflight inputs")
+func TestEFIPreflightAllowsSelectedNamespaceRegardlessOfOldRoot(t *testing.T) {
+	for _, oldLabel := range []string{"colibri-1", "root2", ""} {
+		for _, existing := range []string{"colibri-1", "COLIBRI-1"} {
+			t.Run(oldLabel+"/"+existing, func(t *testing.T) {
+				esp := t.TempDir()
+				writeEFITestFile(t, filepath.Join(esp, "eFi", existing, "grubx64.efi"), "first install", 0644)
+				before := efiTree(t, esp)
+				p, checks := coexistPlan(), safeChecks()
+				probe := checks.filesystem
+				checks.filesystem = func(device string) (filesystemInfo, error) {
+					if device == p.TargetPartition {
+						t.Fatalf("inspected old root metadata (label %q)", oldLabel)
+					}
+					return probe(device)
 				}
-				return efiDestinationAbsent(esp, id)
-			}
-			c := &ctx{plan: p, checks: &checks, execute: func(string, string, ...string) error {
-				t.Fatal("command executed before collision rejected")
-				return nil
-			}}
-			if err := runPartition(c); err == nil || !strings.Contains(err.Error(), "already exists") {
-				t.Fatalf("collision result: %v", err)
-			}
-			if !reflect.DeepEqual(before, efiTree(t, esp)) {
-				t.Fatal("preflight changed ESP")
-			}
-		})
-	}
-}
-
-func TestCoexistReinstallRequiresMatchingRootLabel(t *testing.T) {
-	for _, tc := range []struct {
-		name      string
-		rootLabel string
-		reinstall bool
-	}{
-		{name: "same root", rootLabel: "colibri-1", reinstall: true},
-		{name: "different root", rootLabel: "colibri-2"},
-		{name: "unknown root", rootLabel: ""},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			esp := t.TempDir()
-			writeEFITestFile(t, filepath.Join(esp, "EFI", "colibri-1", "grubx64.efi"), "existing", 0644)
-			p, checks := coexistPlan(), safeChecks()
-			probe := checks.filesystem
-			checks.filesystem = func(device string) (filesystemInfo, error) {
-				info, err := probe(device)
-				if device == p.TargetPartition {
-					info.Label = tc.rootLabel
+				checks.inspectEFI = func(device, id string) error {
+					if device != p.EspPartition || id != p.EFIBootloaderID {
+						t.Fatal("wrong EFI preflight inputs")
+					}
+					return efiDestinationState(esp, id)
 				}
-				return info, err
-			}
-			checks.inspectEFI = func(device, id string) error {
-				return efiDestinationAbsent(esp, id)
-			}
-			checks.inspectEFIReinstall = func(device, id string) error {
-				return efiDestinationForReinstall(esp, id)
-			}
-			if err := validatePlan(p, checks); (err == nil) != tc.reinstall {
-				t.Fatalf("validation error = %v, reinstall = %t", err, tc.reinstall)
-			}
-			if p.CoexistReinstall != tc.reinstall {
-				t.Fatalf("CoexistReinstall = %t, want %t", p.CoexistReinstall, tc.reinstall)
-			}
-		})
+				c, commands := testContext(t, p)
+				c.checks = &checks
+				if err := runPartition(c); err != nil {
+					t.Fatalf("existing namespace rejected: %v", err)
+				}
+				if !strings.Contains(strings.Join(*commands, "\n"), "mkfs.ext4 -F -L colibri-1 /dev/test5") {
+					t.Fatal("selected root was not formatted with the Installation ID")
+				}
+				if !reflect.DeepEqual(before, efiTree(t, esp)) {
+					t.Fatal("preflight changed ESP")
+				}
+			})
+		}
 	}
 }
 
@@ -101,7 +73,6 @@ func TestEFIValidationScope(t *testing.T) {
 		}
 	}
 	p, checks := coexistPlan(), safeChecks()
-	p.EFIBootloaderID = ""
 	checks.debianEFI = func() bool { return false }
 	checks.inspectEFI = func(string, string) error { t.Fatal("inspected other family"); return nil }
 	if err := validatePlan(p, checks); err != nil {
@@ -196,12 +167,6 @@ func runEFIScript(root, mode, id, script string) (string, error) {
 		" /bin/sh -c " + shellQuote(script))
 }
 
-func runEFIScriptReinstall(root, mode, id, script string) (string, error) {
-	return utils.ExecCaptureCombined("env PATH=" + shellQuote(root+"/bin:"+os.Getenv("PATH")) +
-		" KRILL_INSTALL_MODE=" + shellQuote(mode) + " KRILL_EFI_BOOTLOADER_ID=" + shellQuote(id) +
-		" KRILL_REINSTALL=1 /bin/sh -c " + shellQuote(script))
-}
-
 func TestDebianEFITemplateModes(t *testing.T) {
 	for _, mode := range []string{"coexist", "replace", "erase"} {
 		for _, fallback := range []bool{false, true} {
@@ -262,8 +227,8 @@ func TestDebianEFITemplateModes(t *testing.T) {
 	}
 }
 
-func TestDebianEFITemplateRejectsUnsafeOrExistingID(t *testing.T) {
-	for _, id := range []string{"", "BOOT", ".", "..", "a/b", "a'", "$(id)", "devuan", "kubuntu", "colibri-1", "colibri-2"} {
+func TestDebianEFITemplateRejectsUnsafeID(t *testing.T) {
+	for _, id := range []string{"", "BOOT", ".", "..", "a/b", "a'", "$(id)", "devuan", "kubuntu", "colibri_1", "colibri-", "-colibri", "Colibri-1", "é", strings.Repeat("a", 17)} {
 		t.Run(id, func(t *testing.T) {
 			root, script := debianEFIFixture(t)
 			writeEFITestFile(t, root+"/esp/EFI/colibri-1/grubx64.efi", "first", 0644)
@@ -279,23 +244,29 @@ func TestDebianEFITemplateRejectsUnsafeOrExistingID(t *testing.T) {
 	}
 }
 
-func TestDebianEFITemplateReinstallReplacesOnlyMatchingDirectory(t *testing.T) {
-	root, script := debianEFIFixture(t)
-	writeEFITestFile(t, root+"/esp/EFI/colibri-1/grubx64.efi", "old slot", 0644)
-	writeEFITestFile(t, root+"/esp/EFI/colibri-2/grubx64.efi", "sibling", 0644)
-	writeEFITestFile(t, root+"/esp/EFI/BOOT/BOOTX64.EFI", "fallback", 0644)
-
-	if out, err := runEFIScriptReinstall(root, "coexist", "colibri-1", script); err != nil {
-		t.Fatalf("reinstall failed: %v: %s", err, out)
-	}
-	if got, err := os.ReadFile(root + "/esp/EFI/colibri-1/grubx64.efi"); err != nil || string(got) != "colibri-1" {
-		t.Fatalf("matching EFI directory was not replaced: %q, %v", got, err)
-	}
-	if got, err := os.ReadFile(root + "/esp/EFI/colibri-2/grubx64.efi"); err != nil || string(got) != "sibling" {
-		t.Fatalf("sibling EFI directory changed: %q, %v", got, err)
-	}
-	if got, err := os.ReadFile(root + "/esp/EFI/BOOT/BOOTX64.EFI"); err != nil || string(got) != "fallback" {
-		t.Fatalf("EFI/BOOT changed: %q, %v", got, err)
+func TestDebianEFITemplateReplacesOnlyMatchingDirectory(t *testing.T) {
+	for _, existing := range []string{"colibri-1", "COLIBRI-1"} {
+		t.Run(existing, func(t *testing.T) {
+			root, script := debianEFIFixture(t)
+			for _, sibling := range []string{"colibri-2", "arch-1", "fedora-1", "BOOT"} {
+				writeEFITestFile(t, root+"/esp/EFI/"+sibling+"/keep.efi", sibling, 0644)
+			}
+			before := efiTree(t, root+"/esp")
+			writeEFITestFile(t, root+"/esp/EFI/"+existing+"/grubx64.efi", "old slot", 0644)
+			writeEFITestFile(t, root+"/esp/EFI/"+existing+"/obsolete.efi", "remove", 0644)
+			if out, err := runEFIScript(root, "coexist", "colibri-1", script); err != nil {
+				t.Fatalf("replacement failed: %v: %s", err, out)
+			}
+			if got, err := os.ReadFile(root + "/esp/EFI/colibri-1/grubx64.efi"); err != nil || string(got) != "colibri-1" {
+				t.Fatalf("matching EFI directory was not replaced: %q, %v", got, err)
+			}
+			after := efiTree(t, root+"/esp")
+			delete(after, root+"/esp/EFI/colibri-1")
+			delete(after, root+"/esp/EFI/colibri-1/grubx64.efi")
+			if !reflect.DeepEqual(before, after) {
+				t.Fatalf("old files survived or siblings/EFI/BOOT changed: before=%v after=%v", before, after)
+			}
+		})
 	}
 }
 
@@ -345,6 +316,56 @@ func TestDebianEFIStopsOnGRUBOrConfigurationFailure(t *testing.T) {
 				if _, err := os.Stat(root + "/grub-args"); !os.IsNotExist(err) {
 					t.Fatal("installed GRUB after persistence failure")
 				}
+			}
+		})
+	}
+}
+
+func TestEFIStructuralSafety(t *testing.T) {
+	for _, unsafe := range []string{"file", "symlink", "dangling symlink", "EFI symlink", "EFI file", "duplicate"} {
+		t.Run(unsafe, func(t *testing.T) {
+			root, script := debianEFIFixture(t)
+			outside := t.TempDir()
+			writeEFITestFile(t, outside+"/keep", "untouched", 0644)
+			if err := os.Mkdir(root+"/esp/EFI", 0755); err != nil {
+				t.Fatal(err)
+			}
+			destination := root + "/esp/EFI/colibri-1"
+			var err error
+			switch unsafe {
+			case "file":
+				err = os.WriteFile(destination, []byte("keep"), 0644)
+			case "symlink":
+				err = os.Symlink(outside, destination)
+			case "dangling symlink":
+				err = os.Symlink(outside+"/missing", destination)
+			case "EFI symlink", "EFI file":
+				if err := os.Remove(root + "/esp/EFI"); err != nil {
+					t.Fatal(err)
+				}
+				if unsafe == "EFI symlink" {
+					err = os.Symlink(outside, root+"/esp/EFI")
+				} else {
+					err = os.WriteFile(root+"/esp/EFI", []byte("keep"), 0644)
+				}
+			case "duplicate":
+				writeEFITestFile(t, destination+"/keep", "first", 0644)
+				writeEFITestFile(t, root+"/esp/EFI/COLIBRI-1/keep", "second", 0644)
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := efiDestinationState(root+"/esp", "colibri-1"); err == nil {
+				t.Fatal("preflight accepted unsafe EFI structure")
+			}
+			if out, err := runEFIScript(root, "coexist", "colibri-1", script); err == nil {
+				t.Fatalf("template accepted unsafe EFI structure: %s", out)
+			}
+			if _, err := os.Stat(root + "/grub-args"); !os.IsNotExist(err) {
+				t.Fatal("GRUB ran with unsafe EFI structure")
+			}
+			if got, err := os.ReadFile(outside + "/keep"); err != nil || string(got) != "untouched" {
+				t.Fatalf("symlink target changed: %q, %v", got, err)
 			}
 		})
 	}
