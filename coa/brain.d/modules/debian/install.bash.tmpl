@@ -34,7 +34,9 @@ if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
     [ "${#EFI_ID}" -le 64 ] || { echo "[FATAL ERROR] EFI bootloader ID too long" >&2; exit 1; }
 
     # Recheck immediately before bootloader operations, including case variants.
-    # Do not create, merge, delete or copy anything on the ESP during this check.
+    # New installations must never merge with an existing EFI destination.
+    # A reinstall may remove only the already-proven matching namespace.
+    reinstall_destination=""
     for efi_dir in /boot/efi/[Ee][Ff][Ii]; do
         [ -e "$efi_dir" ] || [ -L "$efi_dir" ] || continue
         [ -d "$efi_dir" ] && [ ! -L "$efi_dir" ] || exit 1
@@ -42,11 +44,25 @@ if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
             [ -e "$destination" ] || [ -L "$destination" ] || continue
             existing_id=$(basename "$destination" | LC_ALL=C tr 'A-Z' 'a-z')
             if [ "$existing_id" = "$EFI_ID" ]; then
-                echo "[FATAL ERROR] EFI destination already exists: $destination" >&2
-                exit 1
+                if [ "${KRILL_REINSTALL:-0}" != 1 ]; then
+                    echo "[FATAL ERROR] EFI destination already exists: $destination" >&2
+                    exit 1
+                fi
+                [ -d "$destination" ] && [ ! -L "$destination" ] || {
+                    echo "[FATAL ERROR] EFI destination is not a directory: $destination" >&2
+                    exit 1
+                }
+                [ -z "$reinstall_destination" ] || {
+                    echo "[FATAL ERROR] Multiple EFI destinations match $EFI_ID" >&2
+                    exit 1
+                }
+                reinstall_destination="$destination"
             fi
         done
     done
+    if [ "${KRILL_REINSTALL:-0}" = 1 ] && [ -n "$reinstall_destination" ]; then
+        rm -rf -- "$reinstall_destination"
+    fi
 
     # Standard Debian configuration, retained independently of penguins-eggs.
     mkdir -p /etc/default/grub.d

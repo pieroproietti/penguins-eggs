@@ -1374,11 +1374,17 @@ func Run(fstype string) error {
 // coexistResources separates formatting from preservation in both disk and summary views.
 func (m model) coexistResources() string {
 	root, esp, home := "SELECT ROOT", "SELECT ESP", "SELECT SHARED HOME"
+	reinstall := false
 	if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
 		home = m.homeParts[m.homeIdx].Path
 	}
 	if m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
-		root = m.candidateParts[m.partIdx].Path
+		part := m.candidateParts[m.partIdx]
+		root = part.Path
+		if part.Label != "" {
+			root += " [" + part.Label + "]"
+		}
+		reinstall = m.debianEFI && m.efiBootloaderID != "" && part.Label == m.efiBootloaderID
 	}
 	if m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
 		esp = m.efiParts[m.efiIdx].Path
@@ -1386,10 +1392,26 @@ func (m model) coexistResources() string {
 	bootloader := "Bootloader behavior is unchanged."
 	if m.debianEFI {
 		bootloader = "EFI bootloader: EFI/" + m.efiBootloaderID + " (new directory; preserve EFI/BOOT)"
+		if reinstall {
+			bootloader = "EFI bootloader: EFI/" + m.efiBootloaderID + " (replace this directory; preserve EFI/BOOT)"
+		}
 	}
-	return lipgloss.JoinVertical(lipgloss.Left,
+	installKind := ""
+	if reinstall {
+		installKind = "COEXIST — REINSTALL\n  Installation: " + m.efiBootloaderID
+	}
+	rows := []string{}
+	if reinstall {
+		rows = append(rows, redBgWhiteText.Render(installKind))
+	}
+	rows = append(rows,
 		redBgWhiteText.Render("FORMAT:\n  Root: "+root),
-		greenText.Render("PRESERVE (no formatting):\n  EFI:  "+esp+"\n  Shared HOME: "+home),
+		greenText.Render("PRESERVE (no formatting):\n  EFI:  "+esp+"\n  Shared HOME: "+home))
+	if reinstall {
+		rows = append(rows, cyanText.Render("REPLACE:\n  EFI/"+m.efiBootloaderID))
+	}
+	rows = append(rows,
 		cyanText.Render("HOME:\n  Namespace: "+m.homeNamespace+"\n  Target: /srv/homes/"+m.homeNamespace),
 		dimText.Render(bootloader))
+	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }

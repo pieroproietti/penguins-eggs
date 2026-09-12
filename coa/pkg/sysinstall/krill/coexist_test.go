@@ -87,3 +87,30 @@ func TestCoexistDiskSelections(t *testing.T) {
 		}
 	}
 }
+
+func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
+	m := model{
+		diskModeIdx:    2,
+		diskModes:      []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
+		disks:          []DiskInfo{{Path: "/dev/test"}},
+		candidateParts: []PartitionInfo{{Path: "/dev/sda5", Size: "8G", FsType: "ext4", Label: "arch-colibri-4"}},
+		partIdx:        0,
+		fsTypes:        []string{"ext4"},
+		swapTypes:      []string{"none", "file"},
+	}
+
+	view := m.viewDisk()
+	for _, text := range []string{"/dev/sda5", "8G", "ext4", "arch-colibri-4"} {
+		if !strings.Contains(view, text) {
+			t.Fatalf("target selector missing %q: %s", text, view)
+		}
+	}
+	m.debianEFI = true
+	m.efiBootloaderID = "arch-colibri-4"
+	resources := m.coexistResources()
+	for _, text := range []string{"COEXIST", "REINSTALL", "Installation: arch-colibri-4", "REPLACE:", "EFI/arch-colibri-4", "Root: /dev/sda5 [arch-colibri-4]"} {
+		if !strings.Contains(resources, text) {
+			t.Fatalf("reinstall summary missing %q: %s", text, resources)
+		}
+	}
+}

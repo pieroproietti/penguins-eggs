@@ -13,6 +13,8 @@ import (
 
 var efiIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,63}$`)
 
+var errEFIDestinationExists = errors.New("EFI destination already exists")
+
 // Debian lowercases GRUB_DISTRIBUTOR and aliases kubuntu/devuan during upgrades.
 // Require an ID that is stable under that transformation.
 func ValidateEFIBootloaderID(id string) error {
@@ -24,9 +26,18 @@ func ValidateEFIBootloaderID(id string) error {
 
 // Read only: FAT names collide case-insensitively, including the EFI component.
 func efiDestinationAbsent(esp, id string) error {
+	return efiDestinationState(esp, id, false)
+}
+
+func efiDestinationForReinstall(esp, id string) error {
+	return efiDestinationState(esp, id, true)
+}
+
+func efiDestinationState(esp, id string, allowExisting bool) error {
 	if err := ValidateEFIBootloaderID(id); err != nil {
 		return err
 	}
+	found := false
 	entries, err := os.ReadDir(esp)
 	if err != nil {
 		return err
@@ -44,14 +55,35 @@ func efiDestinationAbsent(esp, id string) error {
 		}
 		for _, child := range children {
 			if strings.EqualFold(child.Name(), id) {
-				return fmt.Errorf("EFI destination %q already exists; refusing to merge or overwrite", child.Name())
+				if allowExisting {
+					if !child.IsDir() {
+						return fmt.Errorf("EFI destination %q is not a directory", child.Name())
+					}
+					if found {
+						return fmt.Errorf("multiple EFI destinations match %q", id)
+					}
+					found = true
+					continue
+				}
+				return fmt.Errorf("%w: %q; refusing to merge or overwrite", errEFIDestinationExists, child.Name())
 			}
 		}
+	}
+	if allowExisting && !found {
+		return fmt.Errorf("EFI destination %q disappeared during reinstall check", id)
 	}
 	return nil
 }
 
 func inspectEFIPartition(device, id string) (result error) {
+	return inspectEFIPartitionMode(device, id, false)
+}
+
+func inspectEFIPartitionForReinstall(device, id string) (result error) {
+	return inspectEFIPartitionMode(device, id, true)
+}
+
+func inspectEFIPartitionMode(device, id string, allowExisting bool) (result error) {
 	dir, err := os.MkdirTemp("", "krill-efi-check-")
 	if err != nil {
 		return err
@@ -61,5 +93,5 @@ func inspectEFIPartition(device, id string) (result error) {
 		return err
 	}
 	defer func() { result = errors.Join(result, utils.ExecQuiet("umount "+shellQuote(dir))) }()
-	return efiDestinationAbsent(dir, id)
+	return efiDestinationState(dir, id, allowExisting)
 }

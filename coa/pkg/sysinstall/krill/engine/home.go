@@ -20,11 +20,19 @@ func ValidateHomeNamespace(namespace string) error {
 	return nil
 }
 
-type filesystemInfo struct{ Type, UUID string }
+type filesystemInfo struct{ Type, UUID, Label string }
 
 func shellQuote(s string) string { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
 
 func probeFilesystem(device string) (filesystemInfo, error) {
+	return probeFilesystemInfo(device, true)
+}
+
+func probeRootFilesystem(device string) (filesystemInfo, error) {
+	return probeFilesystemInfo(device, false)
+}
+
+func probeFilesystemInfo(device string, requireUUID bool) (filesystemInfo, error) {
 	out, err := utils.ExecCapture("blkid -p -o export " + shellQuote(device))
 	if err != nil {
 		return filesystemInfo{}, err
@@ -40,9 +48,11 @@ func probeFilesystem(device string) (filesystemInfo, error) {
 			info.Type = value
 		case "UUID":
 			info.UUID = value
+		case "LABEL":
+			info.Label = value
 		}
 	}
-	if info.Type == "" || info.UUID == "" || strings.ContainsAny(info.UUID, " \t\n\\") {
+	if info.Type == "" || (requireUUID && info.UUID == "") || strings.ContainsAny(info.UUID, " \t\n\\") {
 		return info, fmt.Errorf("missing or invalid filesystem type/UUID on %s", device)
 	}
 	return info, nil
@@ -62,8 +72,30 @@ func namespaceAbsent(storage, namespace string) error {
 	return nil
 }
 
+func namespacePresent(storage, namespace string) error {
+	if err := ValidateHomeNamespace(namespace); err != nil {
+		return err
+	}
+	info, err := os.Lstat(filepath.Join(storage, namespace))
+	if err != nil {
+		return err
+	}
+	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
+		return fmt.Errorf("HOME namespace %q is not a real directory", namespace)
+	}
+	return nil
+}
+
 // Inspect without replaying the ext4 journal or exposing shared storage to unpackfs.
 func inspectHomePartition(device, namespace string) (result error) {
+	return inspectHomePartitionMode(device, namespace, false)
+}
+
+func inspectHomePartitionForReinstall(device, namespace string) (result error) {
+	return inspectHomePartitionMode(device, namespace, true)
+}
+
+func inspectHomePartitionMode(device, namespace string, allowExisting bool) (result error) {
 	dir, err := os.MkdirTemp("", "krill-home-check-")
 	if err != nil {
 		return err
@@ -73,6 +105,9 @@ func inspectHomePartition(device, namespace string) (result error) {
 		return err
 	}
 	defer func() { result = errors.Join(result, utils.ExecQuiet("umount "+shellQuote(dir))) }()
+	if allowExisting {
+		return namespacePresent(dir, namespace)
+	}
 	return namespaceAbsent(dir, namespace)
 }
 
@@ -157,13 +192,19 @@ func runCoexistMount(c *ctx) error {
 	if err := c.mount("-t", info.Type, p.HomePartition, storage); err != nil {
 		return err
 	}
-	if err := namespaceAbsent(storage, p.HomeNamespace); err != nil {
-		return err
-	}
 	namespace := filepath.Join(storage, p.HomeNamespace)
-	// Exclusive creation: never reuse an existing directory, even after preflight.
-	if err := os.Mkdir(namespace, 0755); err != nil {
-		return err
+	if p.CoexistReinstall {
+		if err := namespacePresent(storage, p.HomeNamespace); err != nil {
+			return err
+		}
+	} else {
+		if err := namespaceAbsent(storage, p.HomeNamespace); err != nil {
+			return err
+		}
+		// Exclusive creation: never reuse an existing directory for a new slot.
+		if err := os.Mkdir(namespace, 0755); err != nil {
+			return err
+		}
 	}
 	if err := c.mount("--bind", namespace, home); err != nil {
 		return err

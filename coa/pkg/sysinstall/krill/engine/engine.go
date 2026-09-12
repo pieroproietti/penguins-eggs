@@ -25,16 +25,17 @@ type Plan struct {
 	Instances  map[string]string // id shellprocess -> file di configurazione
 
 	// Disco
-	Device          string // es. /dev/sda
-	Mode            string // erase (default) | replace | coexist
-	TargetPartition string // es. /dev/sda2 (usato in modalità replace)
-	EspPartition    string // es. /dev/sda1 (partizione EFI usata in modalità replace)
-	HomePartition   string // existing shared storage (Coexist only)
-	HomeNamespace   string // directory on shared storage; independent of EFI identity
-	EFIBootloaderID string // Debian Coexist EFI identity; independent of HOME namespace
-	TableType       string // gpt | msdos
-	FsType          string // ext4, btrfs, ...
-	Swap            string // none | small | suspend | file
+	Device           string // es. /dev/sda
+	Mode             string // erase (default) | replace | coexist
+	TargetPartition  string // es. /dev/sda2 (usato in modalità replace)
+	EspPartition     string // es. /dev/sda1 (partizione EFI usata in modalità replace)
+	HomePartition    string // existing shared storage (Coexist only)
+	HomeNamespace    string // directory on shared storage; independent of EFI identity
+	EFIBootloaderID  string // Debian Coexist EFI identity; independent of HOME namespace
+	CoexistReinstall bool   // set after preflight proves this is the same Coexist slot
+	TableType        string // gpt | msdos
+	FsType           string // ext4, btrfs, ...
+	Swap             string // none | small | suspend | file
 
 	// Utente e sistema
 	Fullname  string

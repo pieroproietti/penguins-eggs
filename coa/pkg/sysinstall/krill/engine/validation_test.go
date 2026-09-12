@@ -22,9 +22,11 @@ func safeChecks() partitionChecks {
 			}
 			return filesystemInfo{Type: fs, UUID: "test-uuid"}, nil
 		},
-		inspectHome: func(string, string) error { return nil },
-		debianEFI:   func() bool { return true },
-		inspectEFI:  func(string, string) error { return nil },
+		inspectHome:          func(string, string) error { return nil },
+		inspectHomeReinstall: func(string, string) error { return nil },
+		debianEFI:            func() bool { return true },
+		inspectEFI:           func(string, string) error { return nil },
+		inspectEFIReinstall:  func(string, string) error { return nil },
 	}
 }
 
@@ -92,6 +94,9 @@ func TestPartitionDispatchCommands(t *testing.T) {
 				t.Fatal(err)
 			}
 			want := []string{"wipefs -a /dev/test5", "mkfs.ext4 -F /dev/test5", "udevadm settle"}
+			if mode == "coexist" {
+				want[1] = "mkfs.ext4 -F -L colibri-1 /dev/test5"
+			}
 			if mode == "erase" {
 				want = []string{"wipefs -a /dev/test", "sfdisk --wipe always /dev/test", "udevadm settle", "wipefs -a /dev/test1", "mkfs.fat -F32 /dev/test1", "wipefs -a /dev/test2", "mkfs.ext4 -F /dev/test2"}
 			}
@@ -99,6 +104,59 @@ func TestPartitionDispatchCommands(t *testing.T) {
 				t.Fatalf("commands = %q, want %q", commands, want)
 			}
 		})
+	}
+}
+
+func TestCoexistRootLabelIsValidatedBeforeWipe(t *testing.T) {
+	p, checks := coexistPlan(), safeChecks()
+	p.EFIBootloaderID = strings.Repeat("a", 17)
+	var commands []string
+	c := &ctx{plan: p, checks: &checks, execute: func(_ string, name string, args ...string) error {
+		commands = append(commands, strings.Join(append([]string{name}, args...), " "))
+		return nil
+	}}
+
+	if err := runPartition(c); err == nil || !strings.Contains(err.Error(), "maximum 16 bytes") {
+		t.Fatalf("long ext4 label error = %v", err)
+	}
+	if len(commands) != 0 {
+		t.Fatalf("commands ran before invalid label was rejected: %q", commands)
+	}
+}
+
+func TestCoexistRootLabelUsesFilesystemLimit(t *testing.T) {
+	p, checks := coexistPlan(), safeChecks()
+	p.FsType = "btrfs"
+	p.EFIBootloaderID = strings.Repeat("a", 64)
+	var commands []string
+	c := &ctx{plan: p, checks: &checks, execute: func(_ string, name string, args ...string) error {
+		commands = append(commands, strings.Join(append([]string{name}, args...), " "))
+		return nil
+	}}
+
+	if err := runPartition(c); err != nil {
+		t.Fatal(err)
+	}
+	want := "mkfs.btrfs -f -L " + p.EFIBootloaderID + " /dev/test5"
+	if len(commands) < 2 || commands[1] != want {
+		t.Fatalf("commands = %q, want mkfs command %q", commands, want)
+	}
+}
+
+func TestReplaceRootDoesNotAcquireCoexistLabel(t *testing.T) {
+	p, checks := coexistPlan(), safeChecks()
+	p.Mode = "replace"
+	var commands []string
+	c := &ctx{plan: p, checks: &checks, execute: func(_ string, name string, args ...string) error {
+		commands = append(commands, strings.Join(append([]string{name}, args...), " "))
+		return nil
+	}}
+
+	if err := runPartition(c); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(strings.Join(commands, "\n"), "-L ") {
+		t.Fatalf("Replace unexpectedly received a filesystem label: %q", commands)
 	}
 }
 

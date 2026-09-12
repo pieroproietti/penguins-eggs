@@ -176,6 +176,29 @@ func TestSharedMountAndFstab(t *testing.T) {
 	}
 }
 
+func TestCoexistReinstallPreservesExistingHomeNamespace(t *testing.T) {
+	p := coexistPlan()
+	p.CoexistReinstall = true
+	c, _ := testContext(t, p)
+	storage := c.tpath("srv", "homes")
+	namespace := filepath.Join(storage, p.HomeNamespace)
+	if err := os.MkdirAll(namespace, 0755); err != nil {
+		t.Fatal(err)
+	}
+	keep := filepath.Join(namespace, "keep")
+	if err := os.WriteFile(keep, []byte("preserve"), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := runCoexistMount(c); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(keep)
+	if err != nil || string(data) != "preserve" {
+		t.Fatalf("existing HOME namespace changed: %q, %v", data, err)
+	}
+}
+
 func TestCoexistFstabProbeFailure(t *testing.T) {
 	for _, device := range []string{"/dev/test5", "/dev/test1", "/dev/test2"} {
 		t.Run(device, func(t *testing.T) {

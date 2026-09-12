@@ -132,17 +132,67 @@ func runRootFormat(c *ctx) error {
 	if err == nil && mounted {
 		return fmt.Errorf("la partizione %s ha partizioni o filesystem montati: smontarla prima di procedere", plan.TargetPartition)
 	}
+	labelArgs, err := rootFilesystemLabelArgs(plan)
+	if err != nil {
+		return err
+	}
 
 	c.logf("root-only mode: wiping filesystem signatures on %s", plan.TargetPartition)
 	if err := c.run("wipefs", "-a", plan.TargetPartition); err != nil && plan.Mode == "coexist" {
 		return err
 	}
 	c.logf("formatting %s as %s", plan.TargetPartition, plan.FsType)
-	if err := c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), plan.TargetPartition)...); err != nil {
+	mkfsArgs := append(mkfsForceArgs(plan.FsType), labelArgs...)
+	if err := c.run(mkfsCommand(plan.FsType), append(mkfsArgs, plan.TargetPartition)...); err != nil {
 		return fmt.Errorf("formattazione %s come %s fallita: %w", plan.TargetPartition, plan.FsType, err)
 	}
 	_ = c.run("udevadm", "settle")
 	return nil
+}
+
+// rootFilesystemLabelArgs returns label arguments only for the Coexist root.
+// The existing Coexist identity is also useful as a human-readable filesystem
+// label, but labels remain descriptive; fstab continues to use UUIDs.
+func rootFilesystemLabelArgs(plan *Plan) ([]string, error) {
+	if plan.Mode != "coexist" || plan.EFIBootloaderID == "" {
+		return nil, nil
+	}
+
+	option, maxBytes := filesystemLabelSpec(plan.FsType)
+	if option == "" {
+		return nil, fmt.Errorf("Coexist root filesystem %q does not support a known label format", plan.FsType)
+	}
+	if strings.IndexByte(plan.EFIBootloaderID, 0) >= 0 {
+		return nil, fmt.Errorf("Coexist root filesystem label contains NUL")
+	}
+	if len([]byte(plan.EFIBootloaderID)) > maxBytes {
+		return nil, fmt.Errorf("Coexist root filesystem label %q is too long for %s (maximum %d bytes)", plan.EFIBootloaderID, plan.FsType, maxBytes)
+	}
+	return []string{option, plan.EFIBootloaderID}, nil
+}
+
+// filesystemLabelSpec describes the mkfs option and on-disk label limit for
+// filesystems that Krill can use as an installation root. Keeping the limit
+// here prevents mkfs from silently truncating a user-selected identity.
+func filesystemLabelSpec(fs string) (option string, maxBytes int) {
+	switch strings.ToLower(fs) {
+	case "ext2", "ext3", "ext4", "jfs", "reiserfs":
+		return "-L", 16
+	case "xfs":
+		return "-L", 12
+	case "btrfs":
+		return "-L", 256
+	case "f2fs":
+		return "-L", 512
+	case "fat", "vfat", "fat16", "fat32":
+		return "-n", 11
+	case "exfat":
+		return "-L", 11
+	case "ntfs":
+		return "-L", 128
+	default:
+		return "", 0
+	}
 }
 
 func runErase(c *ctx) error {
