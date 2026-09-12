@@ -20,7 +20,7 @@ func ValidateHomeNamespace(namespace string) error {
 	return nil
 }
 
-type filesystemInfo struct{ Type, UUID string }
+type filesystemInfo struct{ Type, UUID, Label string }
 
 func shellQuote(s string) string { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
 
@@ -40,6 +40,8 @@ func probeFilesystem(device string) (filesystemInfo, error) {
 			info.Type = value
 		case "UUID":
 			info.UUID = value
+		case "LABEL":
+			info.Label = value
 		}
 	}
 	if info.Type == "" || info.UUID == "" || strings.ContainsAny(info.UUID, " \t\n\\") {
@@ -161,6 +163,10 @@ func runCoexistMount(c *ctx) error {
 	if err := c.mount("-t", info.Type, p.HomePartition, storage); err != nil {
 		return err
 	}
+
+	// Tabula rasa: always clean pre-existing home for the ID
+	_ = CleanCoexistHomeMount(storage, p.HomeNamespace)
+
 	namespace := filepath.Join(storage, p.HomeNamespace)
 	if err := os.Mkdir(namespace, 0755); err != nil && !os.IsExist(err) {
 		return err
@@ -175,5 +181,12 @@ func runCoexistMount(c *ctx) error {
 	if err != nil {
 		return err
 	}
-	return c.mount("-t", "vfat", p.EspPartition, esp)
+	if err := c.mount("-t", "vfat", p.EspPartition, esp); err != nil {
+		return err
+	}
+
+	// Tabula rasa: always clean pre-existing boot files and NVRAM for the ID
+	_ = CleanCoexistESPMount(esp, p.EFIBootloaderID)
+	_ = CleanCoexistNVRAM(p.EFIBootloaderID)
+	return nil
 }

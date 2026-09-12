@@ -179,7 +179,7 @@ func TestSharedMountAndFstab(t *testing.T) {
 	}
 }
 
-func TestCoexistPreservesExistingHomeNamespace(t *testing.T) {
+func TestCoexistTabulaRasaCleansExistingHomeNamespace(t *testing.T) {
 	p := coexistPlan()
 	c, _ := testContext(t, p)
 	storage := c.tpath("srv", "homes")
@@ -187,8 +187,16 @@ func TestCoexistPreservesExistingHomeNamespace(t *testing.T) {
 	if err := os.MkdirAll(namespace, 0755); err != nil {
 		t.Fatal(err)
 	}
-	keep := filepath.Join(namespace, "keep")
-	if err := os.WriteFile(keep, []byte("preserve"), 0600); err != nil {
+	stale := filepath.Join(namespace, "stale")
+	if err := os.WriteFile(stale, []byte("stale-data"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	sibling := filepath.Join(storage, "sibling")
+	if err := os.MkdirAll(sibling, 0755); err != nil {
+		t.Fatal(err)
+	}
+	siblingFile := filepath.Join(sibling, "keep")
+	if err := os.WriteFile(siblingFile, []byte("preserve"), 0600); err != nil {
 		t.Fatal(err)
 	}
 
@@ -200,9 +208,12 @@ func TestCoexistPreservesExistingHomeNamespace(t *testing.T) {
 	if err := runCoexistMount(c); err != nil {
 		t.Fatal(err)
 	}
-	data, err := os.ReadFile(keep)
+	if _, err := os.Stat(stale); !os.IsNotExist(err) {
+		t.Fatalf("existing HOME namespace was not cleaned: %v", err)
+	}
+	data, err := os.ReadFile(siblingFile)
 	if err != nil || string(data) != "preserve" {
-		t.Fatalf("existing HOME namespace changed: %q, %v", data, err)
+		t.Fatalf("sibling HOME changed: %q, %v", data, err)
 	}
 }
 
