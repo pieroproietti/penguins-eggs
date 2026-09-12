@@ -17,8 +17,8 @@ func runMount(c *ctx) error {
 
 	if plan.FsType == "btrfs" {
 		// 1. Crea un mount point temporaneo per la root btrfs e crea i subvol
-		tmpMount := "/tmp/btrfs-temp-mount"
-		if err := os.MkdirAll(tmpMount, 0755); err != nil {
+		tmpMount, err := os.MkdirTemp("", "krill-btrfs-")
+		if err != nil {
 			return err
 		}
 		if err := c.run("mount", l.Root, tmpMount); err != nil {
@@ -31,6 +31,9 @@ func runMount(c *ctx) error {
 		}
 
 		for _, sv := range subvols {
+			if plan.Mode == "coexist" && sv == "@home" {
+				continue
+			}
 			svPath := filepath.Join(tmpMount, sv)
 			if !exists(svPath) {
 				if err := c.run("btrfs", "subvolume", "create", svPath); err != nil {
@@ -73,6 +76,9 @@ func runMount(c *ctx) error {
 		}
 
 		for _, m := range mounts {
+			if plan.Mode == "coexist" && m.subvol == "@home" {
+				continue
+			}
 			if err := os.MkdirAll(m.path, 0755); err != nil {
 				return err
 			}
@@ -96,12 +102,12 @@ func runMount(c *ctx) error {
 		}
 	}
 
-	if l.Esp != "" {
+	if l.Esp != "" && plan.Mode != "coexist" {
 		espDir := c.tpath("boot", "efi")
 		if err := os.MkdirAll(espDir, 0755); err != nil {
 			return err
 		}
-		// FIX: Forziamo esplicitamente il tipo vfat per evitare che il 
+		// FIX: Forziamo esplicitamente il tipo vfat per evitare che il
 		// kernel tenti un mount squashfs andando in panic (exit status 32)
 		if err := c.mount("-t", "vfat", l.Esp, espDir); err != nil {
 			return err

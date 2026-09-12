@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 
+	"coa/pkg/distro"
 	"coa/pkg/sysinstall/krill/engine"
 
 	"github.com/charmbracelet/bubbles/progress"
@@ -117,20 +118,27 @@ type model struct {
 	netInputs []textinput.Model // address, netmask, gateway, dns
 
 	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
-	diskBios       string
-	diskModes      []string
-	diskModeIdx    int
-	disks          []DiskInfo
-	diskIdx        int
-	candidateParts []PartitionInfo
-	partIdx        int
-	efiParts       []PartitionInfo
-	efiIdx         int
-	fsTypes        []string
-	fsIdx          int
-	swapTypes      []string
-	swapIdx        int
-	diskField      int
+	homeParts       []PartitionInfo
+	homeIdx         int
+	homeNamespace   string
+	efiBootloaderID string
+	debianEFI       bool
+	diskError       string
+	diskBios        string
+	diskModes       []string
+	diskModeIdx     int
+	disks           []DiskInfo
+	diskIdx         int
+	candidateParts  []PartitionInfo
+	partIdx         int
+	efiParts        []PartitionInfo
+	efiIdx          int
+	fsTypes         []string
+	fsIdx           int
+	swapTypes       []string
+	swapIdx         int
+	diskField       int
+	initialization  *coexistInitialization
 
 	// Users: campi di testo editabili più il checkbox autologin
 	userInputs []textinput.Model
@@ -204,7 +212,7 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 		swapTypes = []string{"none", "small", "suspend", "file"}
 	}
 
-	diskModes := []string{"Erase disk", "Replace a partition"}
+	diskModes := []string{"Erase disk", "Replace a partition", "Coexist with existing installations"}
 	diskModeIdx := 0
 
 	var candidateParts []PartitionInfo
@@ -250,6 +258,7 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 
 	return model{
 		state:       StateWelcome,
+		debianEFI:   distro.NewDistro().FamilyID == "debian",
 		cfg:         cfg,
 		appName:     "krill",
 		productName: orDefault(cfg.Branding.Strings.ProductName, "Linux"),
@@ -325,6 +334,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		key := msg.String()
+		if m.state == StateDisk && m.initialization != nil {
+			return m.updateCoexistInitialization(msg)
+		}
 
 		// Ctrl+C è l'unica scorciatoia per uscire, ovunque: 'q' resta
 		// un carattere digitabile nei campi di testo (Users, Network).
@@ -340,6 +352,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case StateKeyboard:
 			return m.updateKeyboard(key)
 		case StateDisk:
+			fields := m.activeDiskFields()
+			if m.diskField >= 0 && m.diskField < len(fields) && (fields[m.diskField] == diskFieldNamespace || fields[m.diskField] == diskFieldEFIID) && msg.Type == tea.KeyRunes {
+				for _, ch := range msg.Runes {
+					next, _ := m.updateDisk(string(ch))
+					m = next.(model)
+				}
+				return m, nil
+			}
 			return m.updateDisk(key)
 		case StateUsers:
 			return m.updateUsers(msg)
@@ -363,6 +383,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
+	case coexistPreviewMsg:
+		return m.receiveCoexistPreview(msg)
+	case coexistInitializedMsg:
+		return m.receiveCoexistInitialization(msg)
 	case installEventMsg:
 		m.installMsg = msg.Message
 		if msg.Total > 0 {
@@ -502,11 +526,33 @@ func (m *model) refreshPartitions() {
 	allParts := DetectPartitions(m.disks[m.diskIdx].Path)
 	m.candidateParts = GetCandidatePartitions(allParts, DetectLiveDisk())
 	m.efiParts = GetEfiPartitions(allParts)
-	if len(m.efiParts) == 0 && m.diskBios == "UEFI" {
+	if len(m.efiParts) == 0 && (m.diskBios == "UEFI" || (m.diskModeIdx == 2 && engine.IsUEFI())) {
 		m.efiParts = DetectAllEfiPartitions()
 	}
 	m.partIdx = 0
 	m.efiIdx = 0
+	if m.diskModeIdx == 2 {
+		m.efiParts = coexistEfiPartitions(m.efiParts)
+		m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
+		m.homeParts = nil
+		for _, disk := range m.disks {
+			for _, part := range DetectPartitions(disk.Path) {
+				if part.FsType == "ext4" && !part.IsEfi {
+					m.homeParts = append(m.homeParts, part)
+				}
+			}
+		}
+	}
+}
+
+func coexistEfiPartitions(parts []PartitionInfo) []PartitionInfo {
+	var result []PartitionInfo
+	for _, part := range parts {
+		if engine.IsCoexistESP(part.PartType, part.FsType) {
+			result = append(result, part)
+		}
+	}
+	return result
 }
 
 type diskFieldKind int
@@ -516,8 +562,12 @@ const (
 	diskFieldDevice
 	diskFieldTargetPart
 	diskFieldEfi
+	diskFieldHome
+	diskFieldNamespace
+	diskFieldEFIID
 	diskFieldFs
 	diskFieldSwap
+	diskFieldInitialize
 )
 
 func (m *model) activeDiskFields() []diskFieldKind {
@@ -525,15 +575,24 @@ func (m *model) activeDiskFields() []diskFieldKind {
 		return []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldFs, diskFieldSwap}
 	}
 	fields := []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldTargetPart}
-	if m.diskBios == "UEFI" && len(m.efiParts) > 1 {
+	if m.diskModeIdx == 2 || (m.diskBios == "UEFI" && len(m.efiParts) > 1) {
 		fields = append(fields, diskFieldEfi)
 	}
+	if m.diskModeIdx == 2 {
+		fields = append(fields, diskFieldHome, diskFieldNamespace)
+		if m.debianEFI {
+			fields = append(fields, diskFieldEFIID)
+		}
+	}
 	fields = append(fields, diskFieldFs, diskFieldSwap)
+	if m.diskModeIdx == 2 {
+		fields = append(fields, diskFieldInitialize)
+	}
 	return fields
 }
 
 func (m *model) availableSwapTypes() []string {
-	if m.diskModeIdx == 1 {
+	if m.diskModeIdx == 1 || m.diskModeIdx == 2 {
 		return []string{"none", "file"}
 	}
 	return m.swapTypes
@@ -545,7 +604,37 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 	if m.diskField >= len(activeFields) {
 		m.diskField = len(activeFields) - 1
 	}
+	if activeFields[m.diskField] == diskFieldInitialize && key == "enter" {
+		return m.startCoexistPreview(PreviewCoexistInitialization)
+	}
 
+	if activeFields[m.diskField] == diskFieldNamespace || activeFields[m.diskField] == diskFieldEFIID {
+		value := &m.homeNamespace
+		if activeFields[m.diskField] == diskFieldEFIID {
+			value = &m.efiBootloaderID
+		}
+		switch key {
+		case "backspace", "ctrl+h":
+			if len(*value) > 0 {
+				*value = (*value)[:len(*value)-1]
+			}
+			return m, nil
+		case "up", "down", "tab", "shift+tab", "enter", "left", "right":
+		default:
+			if len(key) == 1 && len(*value)+len(key) <= 64 {
+				valid := key != ""
+				for _, ch := range key {
+					if !(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9' || ch == '-' || ch == '_') {
+						valid = false
+					}
+				}
+				if valid {
+					*value += key
+				}
+			}
+			return m, nil
+		}
+	}
 	switch key {
 	case "up", "shift+tab":
 		m.diskField = cycle(m.diskField, -1, len(activeFields))
@@ -575,6 +664,10 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			if len(m.efiParts) > 0 {
 				m.efiIdx = cycle(m.efiIdx, delta, len(m.efiParts))
 			}
+		case diskFieldHome:
+			if len(m.homeParts) > 0 {
+				m.homeIdx = cycle(m.homeIdx, delta, len(m.homeParts))
+			}
 		case diskFieldFs:
 			m.fsIdx = cycle(m.fsIdx, delta, len(m.fsTypes))
 		case diskFieldSwap:
@@ -582,6 +675,25 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			m.swapIdx = cycle(m.swapIdx, delta, len(swaps))
 		}
 	case "enter":
+		m.diskError = ""
+		if m.diskModeIdx == 2 {
+			if !engine.IsUEFI() {
+				m.diskError = "Coexist requires the live system to be booted in UEFI mode."
+			} else if m.partIdx < 0 || m.efiIdx < 0 || m.homeIdx < 0 || len(m.candidateParts) == 0 || len(m.efiParts) == 0 || len(m.homeParts) == 0 {
+				m.diskError = "Explicitly select the root to FORMAT and both EFI and shared HOME to PRESERVE."
+			}
+			if err := engine.ValidateHomeNamespace(m.homeNamespace); err != nil && m.diskError == "" {
+				m.diskError = err.Error()
+			}
+			if m.debianEFI && m.diskError == "" {
+				if err := engine.ValidateEFIBootloaderID(m.efiBootloaderID); err != nil {
+					m.diskError = err.Error()
+				}
+			}
+			if m.diskError != "" {
+				return m, nil
+			}
+		}
 		if m.diskModeIdx == 1 && len(m.candidateParts) == 0 {
 			// Non possiamo proseguire se non c'è una partizione valida da sostituire
 			return m, nil
@@ -722,7 +834,9 @@ func (m model) View() string {
 	finalView := lipgloss.JoinVertical(lipgloss.Center, title, mainWindow)
 
 	footer := "\nPress Ctrl+C to quit."
-	if m.state == StateSummary {
+	if m.initialization != nil {
+		footer = "\nDisk preparation only; installation will not start automatically."
+	} else if m.state == StateSummary {
 		footer = "\n←/→ select option | Press 'Enter' to confirm."
 	} else if m.state != StateInstall {
 		footer += " | Press 'Enter' to continue."
@@ -837,12 +951,22 @@ func (m model) viewNetwork() string {
 }
 
 func (m model) viewDisk() string {
+	if m.initialization != nil {
+		return m.viewCoexistInitialization()
+	}
 	stepsView := renderSteps(4)
 
 	activeFields := m.activeDiskFields()
 	device := m.disks[m.diskIdx]
 
-	rowFirmware := fmt.Sprintf("Firmware: %s", cyanText.Render(m.diskBios))
+	firmware := m.diskBios
+	if m.diskModeIdx == 2 {
+		firmware = "BIOS"
+		if engine.IsUEFI() {
+			firmware = "UEFI"
+		}
+	}
+	rowFirmware := fmt.Sprintf("Firmware: %s", cyanText.Render(firmware))
 
 	var rows []string
 	rows = append(rows, rowFirmware, "")
@@ -854,13 +978,15 @@ func (m model) viewDisk() string {
 			rows = append(rows, m.selectorRow(isActive, "Installation mode", m.diskModes[m.diskModeIdx]))
 		case diskFieldDevice:
 			rows = append(rows, m.selectorRow(isActive, "Installation device", fmt.Sprintf("%s (%s)", device.Path, device.Size)))
+		case diskFieldInitialize:
+			rows = append(rows, m.selectorRow(isActive, "Initialize disk for Coexist", "Enter to review destructive preparation"))
 		case diskFieldTargetPart:
 			partStr := "none available"
-			if len(m.candidateParts) > 0 {
+			if len(m.candidateParts) > 0 && m.partIdx >= 0 {
 				partStr = m.candidateParts[m.partIdx].DisplayString()
 			}
 			rows = append(rows, m.selectorRow(isActive, "Target partition", partStr))
-			if m.diskBios == "UEFI" && len(m.efiParts) == 1 {
+			if m.diskModeIdx != 2 && m.diskBios == "UEFI" && len(m.efiParts) == 1 {
 				rows = append(rows, fmt.Sprintf("  %-20s: %s %s", "EFI System Partition",
 					greenText.Render(m.efiParts[0].Path+" ("+m.efiParts[0].Size+")"),
 					dimText.Render("[auto-detected, preserved]")))
@@ -870,10 +996,20 @@ func (m model) viewDisk() string {
 			}
 		case diskFieldEfi:
 			efiStr := "none"
-			if len(m.efiParts) > 0 {
+			if len(m.efiParts) > 0 && m.efiIdx >= 0 {
 				efiStr = m.efiParts[m.efiIdx].Path + " (" + m.efiParts[m.efiIdx].Size + ")"
 			}
 			rows = append(rows, m.selectorRow(isActive, "EFI System Partition", efiStr))
+		case diskFieldHome:
+			part := "SELECT SHARED HOME (ext4)"
+			if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
+				part = m.homeParts[m.homeIdx].DisplayString()
+			}
+			rows = append(rows, m.selectorRow(isActive, "Shared HOME (preserve)", part))
+		case diskFieldNamespace:
+			rows = append(rows, m.selectorRow(isActive, "HOME namespace (type)", m.homeNamespace))
+		case diskFieldEFIID:
+			rows = append(rows, m.selectorRow(isActive, "EFI bootloader ID (type)", m.efiBootloaderID))
 		case diskFieldFs:
 			rows = append(rows, m.selectorRow(isActive, "Filesystem", m.fsTypes[m.fsIdx]))
 		case diskFieldSwap:
@@ -888,6 +1024,9 @@ func (m model) viewDisk() string {
 
 	help := "\n↑/↓ select field | ←/→ change value"
 	rows = append(rows, help, "")
+	if m.diskModeIdx == 2 {
+		rows = append(rows, m.coexistResources(), redBgWhiteText.Render(m.diskError))
+	}
 
 	if m.diskModeIdx == 0 {
 		warning1 := "(*) this will erase all data currently present on the"
@@ -895,12 +1034,18 @@ func (m model) viewDisk() string {
 		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, redBgWhiteText.Render(warning1), redBgWhiteText.Render(warning2)))
 	} else {
 		targetPath := "selected partition"
-		if len(m.candidateParts) > 0 {
+		if len(m.candidateParts) > 0 && m.partIdx >= 0 {
 			targetPath = m.candidateParts[m.partIdx].Path
 		}
 		warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
 		w1 := fmt.Sprintf("(*) this will FORMAT and ERASE only partition: %s", targetPath)
 		w2 := fmt.Sprintf("    all other partitions on %s will NOT be touched.", device.Path)
+		if m.diskModeIdx == 2 {
+			w2 = "ESP filesystem is preserved; existing bootloader installation behavior still applies."
+			if m.debianEFI {
+				w2 = "GRUB uses the selected EFI bootloader ID and preserves EFI/BOOT."
+			}
+		}
 		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, warningStyle.Render(w1), dimText.Render(w2)))
 		if len(m.candidateParts) == 0 {
 			noPartWarn := redBgWhiteText.Render(" ⚠️  No candidate partition found on this disk (must be >= 4G and not live/EFI) ")
@@ -979,7 +1124,7 @@ func (m model) viewSummary() string {
 	var warnBox string
 	noOpt := "  [ No, cancel and go back ]"
 	yesOptText := "  [ YES, erase disk and install ]"
-	if m.diskModeIdx == 1 {
+	if m.diskModeIdx == 1 || m.diskModeIdx == 2 {
 		yesOptText = "  [ YES, replace partition and install ]"
 	}
 
@@ -987,10 +1132,15 @@ func (m model) viewSummary() string {
 		warnBox = redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: ALL DATA ON %s (%s) WILL BE PERMANENTLY ERASED! ", device.Path, device.Size))
 	} else {
 		targetPart := "n/a"
-		if len(m.candidateParts) > 0 && m.partIdx < len(m.candidateParts) {
+		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
 			targetPart = m.candidateParts[m.partIdx].Path
 		}
 		warnBox = redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: PARTITION %s WILL BE FORMATTED! OTHER PARTITIONS PRESERVED. ", targetPart))
+	}
+
+	if m.diskModeIdx == 2 {
+		yesOptText = "  [ YES, format selected root and install Coexist ]"
+		warnBox = m.coexistResources()
 	}
 
 	yesOpt := dimText.Render(yesOptText)
@@ -1111,12 +1261,15 @@ func (m *model) buildPlan() *engine.Plan {
 	espPart := ""
 	tableType := orDefault(cfg.Partition.DefaultPartitionTableType, "msdos")
 
-	if m.diskModeIdx == 1 {
+	if m.diskModeIdx == 1 || m.diskModeIdx == 2 {
 		mode = "replace"
-		if len(m.candidateParts) > 0 && m.partIdx < len(m.candidateParts) {
+		if m.diskModeIdx == 2 {
+			mode = "coexist"
+		}
+		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
 			targetPart = m.candidateParts[m.partIdx].Path
 		}
-		if len(m.efiParts) > 0 && m.efiIdx < len(m.efiParts) {
+		if len(m.efiParts) > 0 && m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
 			espPart = m.efiParts[m.efiIdx].Path
 		}
 		if len(m.disks) > 0 && m.diskIdx < len(m.disks) {
@@ -1130,6 +1283,16 @@ func (m *model) buildPlan() *engine.Plan {
 		swapChoice = swaps[m.swapIdx]
 	}
 
+	homePart, namespace, efiID := "", "", ""
+	if mode == "coexist" {
+		namespace = m.homeNamespace
+		if m.debianEFI {
+			efiID = m.efiBootloaderID
+		}
+		if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
+			homePart = m.homeParts[m.homeIdx].Path
+		}
+	}
 	return &engine.Plan{
 		ConfigRoot: cfg.Root,
 		Exec:       exec,
@@ -1137,6 +1300,9 @@ func (m *model) buildPlan() *engine.Plan {
 
 		Device:          m.disks[m.diskIdx].Path,
 		Mode:            mode,
+		HomePartition:   homePart,
+		HomeNamespace:   namespace,
+		EFIBootloaderID: efiID,
 		TargetPartition: targetPart,
 		EspPartition:    espPart,
 		TableType:       tableType,
@@ -1203,4 +1369,27 @@ func Run(fstype string) error {
 	}
 
 	return nil
+}
+
+// coexistResources separates formatting from preservation in both disk and summary views.
+func (m model) coexistResources() string {
+	root, esp, home := "SELECT ROOT", "SELECT ESP", "SELECT SHARED HOME"
+	if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
+		home = m.homeParts[m.homeIdx].Path
+	}
+	if m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
+		root = m.candidateParts[m.partIdx].Path
+	}
+	if m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
+		esp = m.efiParts[m.efiIdx].Path
+	}
+	bootloader := "Bootloader behavior is unchanged."
+	if m.debianEFI {
+		bootloader = "EFI bootloader: EFI/" + m.efiBootloaderID + " (new directory; preserve EFI/BOOT)"
+	}
+	return lipgloss.JoinVertical(lipgloss.Left,
+		redBgWhiteText.Render("FORMAT:\n  Root: "+root),
+		greenText.Render("PRESERVE (no formatting):\n  EFI:  "+esp+"\n  Shared HOME: "+home),
+		cyanText.Render("HOME:\n  Namespace: "+m.homeNamespace+"\n  Target: /srv/homes/"+m.homeNamespace),
+		dimText.Render(bootloader))
 }

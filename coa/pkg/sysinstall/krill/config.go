@@ -246,6 +246,8 @@ type lsblkRoot struct {
 }
 
 type lsblkItem struct {
+	TableType   string          `json:"pttype"`
+	Start       uint64          `json:"start"`
 	Path        string          `json:"path"`
 	Name        string          `json:"name"`
 	Size        json.RawMessage `json:"size"`
@@ -670,7 +672,6 @@ func DetectTimezones() TimezoneData {
 	}
 	return td
 }
-
 
 // DetectLanguage restituisce la lingua corrente del sistema live.
 // Se la connessione di rete non è attiva o LANG non è impostato, restituisce "en_US.UTF-8" come fallback neutro.
