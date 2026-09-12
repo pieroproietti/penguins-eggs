@@ -32,6 +32,7 @@ type Plan struct {
 	HomePartition   string // existing shared storage (Coexist only)
 	HomeNamespace   string // directory on shared storage; defaults to Installation ID
 	EFIBootloaderID string // Coexist root label and EFI identity
+	PreviousID      string // Pre-existing Coexist identity on selected slot (if replacing)
 	TableType       string // gpt | msdos
 	FsType          string // ext4, btrfs, ...
 	Swap            string // none | small | suspend | file

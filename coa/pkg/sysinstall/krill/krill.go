@@ -1281,11 +1281,17 @@ func (m *model) buildPlan() *engine.Plan {
 		swapChoice = swaps[m.swapIdx]
 	}
 
-	homePart, namespace, efiID := "", "", ""
+	homePart, namespace, efiID, previousID := "", "", "", ""
 	if mode == "coexist" {
 		namespace, efiID = m.homeNamespace, m.homeNamespace
 		if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
 			homePart = m.homeParts[m.homeIdx].Path
+		}
+		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
+			oldLabel := m.candidateParts[m.partIdx].Label
+			if oldLabel != "" && !engine.IsGenericRootLabel(oldLabel) && engine.ValidateHomeNamespace(oldLabel) == nil {
+				previousID = oldLabel
+			}
 		}
 	}
 	return &engine.Plan{
@@ -1298,6 +1304,7 @@ func (m *model) buildPlan() *engine.Plan {
 		HomePartition:   homePart,
 		HomeNamespace:   namespace,
 		EFIBootloaderID: efiID,
+		PreviousID:      previousID,
 		TargetPartition: targetPart,
 		EspPartition:    espPart,
 		TableType:       tableType,
@@ -1372,11 +1379,15 @@ func (m model) coexistResources() string {
 	if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
 		home = m.homeParts[m.homeIdx].Path
 	}
+	oldLabel := ""
 	if m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
 		part := m.candidateParts[m.partIdx]
 		root = part.Path
 		if part.Label != "" {
 			root += " [" + part.Label + "]"
+			if !engine.IsGenericRootLabel(part.Label) && engine.ValidateHomeNamespace(part.Label) == nil {
+				oldLabel = part.Label
+			}
 		}
 	}
 	if m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
@@ -1387,6 +1398,9 @@ func (m model) coexistResources() string {
 		redBgWhiteText.Render("FORMAT:\n  Root: " + root + "\n  New label: " + m.homeNamespace),
 		greenText.Render("PRESERVE (no formatting):\n  ESP: " + esp + "\n  Shared HOME: " + home +
 			"\n  HOME namespace: /srv/homes/" + m.homeNamespace + " (create if absent)"),
+	}
+	if oldLabel != "" && oldLabel != m.homeNamespace {
+		rows = append(rows, redBgWhiteText.Render("PURGE PREVIOUS ("+oldLabel+"):\n  HOME: /srv/homes/"+oldLabel+"\n  EFI: EFI/"+oldLabel))
 	}
 	if m.debianEFI {
 		rows = append(rows,

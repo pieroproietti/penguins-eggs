@@ -164,8 +164,17 @@ func runCoexistMount(c *ctx) error {
 		return err
 	}
 
-	// Tabula rasa: always clean pre-existing home for the ID
-	_ = CleanCoexistHomeMount(storage, p.HomeNamespace)
+	// Tabula rasa: clean pre-existing home for the ID and any previous installation on this slot
+	idsToClean := []string{p.HomeNamespace}
+	if p.PreviousID != "" && p.PreviousID != p.HomeNamespace {
+		idsToClean = append(idsToClean, p.PreviousID)
+	}
+	for _, id := range idsToClean {
+		if id == p.PreviousID && id != p.HomeNamespace {
+			c.logf("coexist: cleaning previous installation %q from shared HOME", id)
+		}
+		_ = CleanCoexistHomeMount(storage, id)
+	}
 
 	namespace := filepath.Join(storage, p.HomeNamespace)
 	if err := os.Mkdir(namespace, 0755); err != nil && !os.IsExist(err) {
@@ -185,8 +194,13 @@ func runCoexistMount(c *ctx) error {
 		return err
 	}
 
-	// Tabula rasa: always clean pre-existing boot files and NVRAM for the ID
-	_ = CleanCoexistESPMount(esp, p.EFIBootloaderID)
-	_ = CleanCoexistNVRAM(p.EFIBootloaderID)
+	// Tabula rasa: clean pre-existing boot files and NVRAM for the ID and any previous installation on this slot
+	for _, id := range idsToClean {
+		if id == p.PreviousID && id != p.HomeNamespace {
+			c.logf("coexist: cleaning previous installation %q from ESP and NVRAM", id)
+		}
+		_ = CleanCoexistESPMount(esp, id)
+		_ = CleanCoexistNVRAM(id)
+	}
 	return nil
 }

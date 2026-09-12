@@ -217,6 +217,79 @@ func TestCoexistTabulaRasaCleansExistingHomeNamespace(t *testing.T) {
 	}
 }
 
+func TestCoexistCleansPreviousInstallationSlot(t *testing.T) {
+	p := coexistPlan()
+	p.HomeNamespace = "debian"
+	p.EFIBootloaderID = "debian"
+	p.PreviousID = "arch"
+
+	c, _ := testContext(t, p)
+	storage := c.tpath("srv", "homes")
+	esp := c.tpath("boot", "efi")
+
+	// Setup previous arch home and efi
+	archHome := filepath.Join(storage, "arch")
+	if err := os.MkdirAll(filepath.Join(archHome, "user"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	archFile := filepath.Join(archHome, "user", "file.txt")
+	if err := os.WriteFile(archFile, []byte("arch data"), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	// Setup sibling home (e.g. fedora) to ensure it is preserved
+	siblingHome := filepath.Join(storage, "fedora")
+	if err := os.MkdirAll(siblingHome, 0755); err != nil {
+		t.Fatal(err)
+	}
+	siblingFile := filepath.Join(siblingHome, "keep")
+	if err := os.WriteFile(siblingFile, []byte("fedora data"), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	// Setup previous arch EFI and sibling EFI
+	archEFI := filepath.Join(esp, "EFI", "arch")
+	if err := os.MkdirAll(archEFI, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(archEFI, "grubx64.efi"), []byte("stub"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	siblingEFI := filepath.Join(esp, "EFI", "fedora")
+	if err := os.MkdirAll(siblingEFI, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(siblingEFI, "grubx64.efi"), []byte("fedora-efi"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := runCoexistMount(c); err != nil {
+		t.Fatalf("runCoexistMount failed: %v", err)
+	}
+
+	// Previous arch home must be deleted
+	if _, err := os.Stat(archHome); !os.IsNotExist(err) {
+		t.Errorf("previous arch HOME was not cleaned: %v", err)
+	}
+	// Sibling fedora home must remain intact
+	if data, err := os.ReadFile(siblingFile); err != nil || string(data) != "fedora data" {
+		t.Errorf("sibling fedora HOME modified: %q, %v", data, err)
+	}
+	// New debian home namespace must exist
+	if info, err := os.Stat(filepath.Join(storage, "debian")); err != nil || !info.IsDir() {
+		t.Errorf("new debian HOME namespace was not created")
+	}
+
+	// Previous arch EFI must be deleted
+	if _, err := os.Stat(archEFI); !os.IsNotExist(err) {
+		t.Errorf("previous arch EFI was not cleaned: %v", err)
+	}
+	// Sibling fedora EFI must remain intact
+	if data, err := os.ReadFile(filepath.Join(siblingEFI, "grubx64.efi")); err != nil || string(data) != "fedora-efi" {
+		t.Errorf("sibling fedora EFI modified: %q, %v", data, err)
+	}
+}
+
 func TestCoexistFstabProbeFailure(t *testing.T) {
 	for _, device := range []string{"/dev/test5", "/dev/test1", "/dev/test2"} {
 		t.Run(device, func(t *testing.T) {

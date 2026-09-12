@@ -41,14 +41,15 @@ Non è previsto il supporto per BIOS/Legacy né, al momento, per altri bootloade
 
 Le diverse distribuzioni condividono la stessa ESP e le voci di GRUB permettono di scegliere quale sistema avviare.
 
-### Limitazioni attuali
+### Sostituzione e pulizia di uno slot
 
-Manca ancora la gestione completa della pulizia quando viene eliminata una distribuzione installata.
+Quando si reinstalla o si sostituisce una distribuzione su uno slot già occupato:
+- `krill` legge la `LABEL` del filesystem presente sulla partizione selezionata.
+- Se la label corrisponde a un'installazione Coexist precedente (non generica come `root1`, `root2`), prima di procedere elimina automaticamente:
+  - la directory associata nella partizione condivisa `/srv/homes/<vecchia_label>`
+  - la directory dell'avvio UEFI `/boot/efi/EFI/<vecchia_label>`
+  - le voci di avvio associate nella NVRAM UEFI tramite `efibootmgr`.
 
-Attualmente, quando si cancella una distribuzione, **non vengono eliminati automaticamente i dati che quella distribuzione ha lasciato nella partizione HOME né tutti i file ad essa relativi presenti nel sistema di boot/ESP**.
-
-Di conseguenza possono rimanere tracce di distribuzioni precedentemente installate e successivamente cancellate.
-
-Questa è una delle parti che dobbiamo ancora completare.
+Nella schermata di riepilogo di `krill` viene segnalato chiaramente quali risorse della precedente installazione verranno rimosse (`PURGE PREVIOUS`).
 
 Per il momento considero quindi `coexist` una modalità sperimentale: funziona nei miei test con una macchina virtuale, UEFI, GRUB e un unico disco. Ora dobbiamo provarla con più distribuzioni e in configurazioni reali differenti.

@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/charmbracelet/bubbles/textinput"
 )
 
 func TestCoexistESPDiscoveryMatchesPreflight(t *testing.T) {
@@ -112,5 +114,32 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 		if !strings.Contains(resources, text) {
 			t.Fatalf("summary missing %q: %s", text, resources)
 		}
+	}
+
+	// When replacing with a different namespace, purge notice must be shown and PreviousID populated
+	m.homeNamespace = "debian"
+	m.cfg = &InstallerConfig{}
+	m.userInputs = make([]textinput.Model, 5)
+	m.locData = TimezoneData{Regions: []string{"Europe"}, Zones: map[string][]string{"Europe": {"Rome"}}}
+	resources = m.coexistResources()
+	for _, text := range []string{"PURGE PREVIOUS (arch-colibri-4):", "/srv/homes/arch-colibri-4", "EFI/arch-colibri-4"} {
+		if !strings.Contains(resources, text) {
+			t.Fatalf("summary missing purge notice %q: %s", text, resources)
+		}
+	}
+	plan := m.buildPlan()
+	if plan.PreviousID != "arch-colibri-4" {
+		t.Fatalf("buildPlan() PreviousID = %q, want arch-colibri-4", plan.PreviousID)
+	}
+
+	// Generic slot labels like root2 should not trigger previous purge
+	m.candidateParts[0].Label = "root2"
+	resources = m.coexistResources()
+	if strings.Contains(resources, "PURGE PREVIOUS") {
+		t.Fatalf("unexpected purge notice for generic slot label: %s", resources)
+	}
+	plan = m.buildPlan()
+	if plan.PreviousID != "" {
+		t.Fatalf("buildPlan() PreviousID = %q, want empty for generic label", plan.PreviousID)
 	}
 }
