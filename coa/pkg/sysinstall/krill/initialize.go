@@ -43,10 +43,15 @@ func (m model) startCoexistPreview(preview func(string, uint64) (engine.CoexistD
 		return m, nil
 	}
 	device := m.disks[m.diskIdx].Path
-	rootSize := strconv.FormatUint(engine.CoexistRootBytes>>30, 10)
-	if m.initialization != nil {
-		rootSize = m.initialization.rootSize
+	if m.initialization == nil {
+		m.initialization = &coexistInitialization{
+			rootSize:    strconv.FormatUint(engine.CoexistRootBytes>>30, 10),
+			editingSize: true,
+		}
+		m.diskError = ""
+		return m, nil
 	}
+	rootSize := m.initialization.rootSize
 	gib, err := strconv.ParseUint(rootSize, 10, 64)
 	if err != nil || gib < engine.CoexistMinRootBytes>>30 || gib > ^uint64(0)>>30 {
 		m.initialization.sizeError = "Root slot size must be a whole number of GiB, at least 4 GiB, within the disk capacity."
@@ -194,15 +199,15 @@ func (m model) viewCoexistInitialization() string {
 	if i.busy {
 		return "Checking/preparing Coexist disk. Please wait; do not power off."
 	}
+	if i.editingSize {
+		return "Root partition size (GiB): [" + i.rootSize + "]\n\n" +
+			"Enter: preview layout | Esc: cancel\n" + i.sizeError
+	}
 	confirmation := "Scroll through the full layout before confirming."
 	if i.reviewed {
 		confirmation = "Type " + i.layout.Device + " and press Enter to ERASE it: " + i.confirmation
 	}
 	layoutView := i.view.View()
-	if i.editingSize {
-		layoutView = "Edit root slot size, then press Enter to recalculate the proposed layout."
-		confirmation = i.sizeError
-	}
 	return redBgWhiteText.Render("Initialize disk for Coexist: ALL DATA ON "+i.layout.Device+" WILL BE ERASED") +
 		"\nGPT / UEFI | ESP 512 MiB | HOME at least 16 GiB" +
 		"\nRoot slot size (GiB, minimum 4): " + i.rootSize + "\n\n" +

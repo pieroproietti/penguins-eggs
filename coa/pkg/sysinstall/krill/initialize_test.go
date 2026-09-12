@@ -76,8 +76,9 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldInitialize)
 	next, cmd := m.updateDisk("enter")
-	if cmd == nil || next.(model).initialization == nil {
-		t.Fatal("action did not dispatch preview")
+	m = next.(model)
+	if cmd != nil || m.initialization == nil || !m.initialization.editingSize {
+		t.Fatal("action did not open root size input before preview")
 	}
 	// Execute preview with a read-only fixture; nothing destructive is dispatched.
 	next, cmd = m.startCoexistPreview(func(device string, rootBytes uint64) (engine.CoexistDiskLayout, error) {
@@ -186,29 +187,27 @@ func TestInitializationFailureAndCancel(t *testing.T) {
 func TestInitializationRootSizeEditing(t *testing.T) {
 	l, _ := initializedFixture(t, engine.CoexistRootBytes)
 	m := model{state: StateDisk, diskModeIdx: 2, disks: []DiskInfo{{Path: l.Device}}, termHeight: 18}
-	next, _ := m.receiveCoexistPreview(coexistPreviewMsg{layout: l})
+	m.diskField = slices.Index(m.activeDiskFields(), diskFieldInitialize)
+	next, cmd := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
 	m = next.(model)
-	if m.initialization.rootSize != "8" {
-		t.Fatal("initializer does not default to 8 GiB")
+	if cmd != nil || m.initialization == nil || !m.initialization.editingSize || m.initialization.rootSize != "8" {
+		t.Fatal("initializer did not open an editable input defaulting to 8 GiB")
 	}
-	m.initialization.reviewed, m.initialization.confirmation = true, l.Device
-	next, _ = m.updateCoexistInitialization(tea.KeyMsg{Type: tea.KeyTab})
-	m = next.(model)
-	if !m.initialization.editingSize || m.initialization.reviewed || m.initialization.confirmation != "" {
-		t.Fatal("editing retained destructive confirmation")
+	if view := m.viewDisk(); !strings.Contains(view, "Root partition size (GiB): [8]") || strings.Contains(view, "ERASE") || strings.Contains(view, "root1") {
+		t.Fatalf("size input missing or preview shown before input: %s", view)
 	}
-	next, _ = m.updateCoexistInitialization(tea.KeyMsg{Type: tea.KeyBackspace})
+	next, _ = m.Update(tea.KeyMsg{Type: tea.KeyBackspace})
 	m = next.(model)
-	next, _ = m.updateCoexistInitialization(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("16")})
+	next, _ = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("16")})
 	m = next.(model)
-	if strings.Contains(m.viewCoexistInitialization(), "root1") {
-		t.Fatal("old layout shown for an unapplied size")
+	if view := m.viewDisk(); !strings.Contains(view, "Root partition size (GiB): [16]") || strings.Contains(view, "root1") {
+		t.Fatalf("edited input missing or unapplied layout shown: %s", view)
 	}
-	_, cmd := m.confirmCoexistInitialization(nil, nil)
+	_, cmd = m.confirmCoexistInitialization(nil, nil)
 	if cmd != nil {
 		t.Fatal("size editing dispatched partitioning")
 	}
-	next, cmd = m.updateCoexistInitialization(tea.KeyMsg{Type: tea.KeyEnter})
+	next, cmd = m.Update(tea.KeyMsg{Type: tea.KeyEnter})
 	m = next.(model)
 	if cmd == nil || !m.initialization.busy {
 		t.Fatal("Enter did not request a new preview")
@@ -219,7 +218,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 		if device != l.Device || rootBytes != 16<<30 {
 			t.Fatal("edited size did not reach the preview")
 		}
-		return l, nil
+		return engine.CalculateCoexistLayout(device, 64<<30, 512, rootBytes)
 	})
 	m = next.(model)
 	next, _ = m.Update(cmd())
@@ -228,7 +227,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 		t.Fatal("new preview retained stale size or confirmation")
 	}
 	view := m.viewCoexistInitialization()
-	if strings.Count(view, "16.00 GiB") != 2 || !strings.Contains(view, "SHARED_HOMES") {
+	if strings.Count(view, "16.00 GiB") != 2 || !strings.Contains(view, "SHARED_HOMES") || !strings.Contains(view, "31.50 GiB") || !strings.Contains(view, "0.50 GiB") {
 		t.Fatalf("new layout not shown before confirmation: %s", view)
 	}
 	_, cmd = m.confirmCoexistInitialization(nil, nil)
@@ -252,6 +251,22 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 	m = next.(model)
 	if m.initialization != nil || m.diskError != "" || len(m.candidateParts) != 3 {
 		t.Fatal("custom layout rediscovery failed")
+	}
+}
+
+func TestInitializationRootSizeReeditingClearsConfirmation(t *testing.T) {
+	l, _ := initializedFixture(t, engine.CoexistRootBytes)
+	m := model{state: StateDisk, diskModeIdx: 2}
+	next, _ := m.receiveCoexistPreview(coexistPreviewMsg{layout: l})
+	m = next.(model)
+	m.initialization.reviewed, m.initialization.confirmation = true, l.Device
+	next, _ = m.Update(tea.KeyMsg{Type: tea.KeyTab})
+	m = next.(model)
+	if !m.initialization.editingSize || m.initialization.reviewed || m.initialization.confirmation != "" {
+		t.Fatal("editing retained destructive confirmation")
+	}
+	if _, cmd := m.confirmCoexistInitialization(nil, nil); cmd != nil {
+		t.Fatal("size editing dispatched partitioning")
 	}
 }
 
