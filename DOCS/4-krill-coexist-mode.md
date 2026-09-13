@@ -7,23 +7,31 @@ La modalità `coexist` funziona nel modo seguente. Per ora l'ho provata soltanto
 In `eggs sysinstall krill`, scegliendo **Coexist** nella pagina Disk si apre
 un menu con due operazioni distinte:
 
-- **Prepare a disk for multiple distributions**: scelta del disco,
-  dimensionamento degli slot ROOT e anteprima delle partizioni ESP, ROOT e HOME.
-  Questa operazione cancella l'intero disco; richiede la lettura del layout e
-  la digitazione del device prima di procedere. Al termine compare **Disk ready**:
-  si può scegliere di installare subito la distribuzione live corrente oppure
-  uscire (scelta predefinita). L'installazione non parte automaticamente.
 - **Install a distribution on a prepared disk**: scelta della ROOT da
   formattare, di ESP e HOME da riutilizzare e dell'identificativo dell'installazione.
   Questo percorso non contiene l'azione di preparazione dell'intero disco.
   Prosegue con utenti e riepilogo, compresa la conferma delle eventuali
   cancellazioni dei contenuti HOME/EFI dell'installazione sostituita.
+- **Prepare a disk for multiple distributions**: scelta del disco,
+  dimensionamento degli slot ROOT e anteprima delle partizioni ESP, ROOT e HOME.
+  Questa operazione è **completamente distruttiva: cancella tutti i dati sul disco
+  selezionato**, come evidenziato già nel menu. Richiede la lettura del layout e
+  la digitazione del device prima di procedere. Al termine compare **Disk ready**:
+  si può scegliere di installare subito la distribuzione live corrente oppure
+  uscire (scelta predefinita). L'installazione non parte automaticamente.
 
 In entrambi i percorsi, **Esc** torna al menu Coexist. Durante il dimensionamento
 o l'anteprima, Esc annulla prima la preparazione e torna alla scelta del disco.
 Dalla schermata **Disk ready**, Esc esce senza installare o riavviare.
 Per aggiungere la seconda distribuzione e le successive si sceglie direttamente
 il percorso di installazione, senza preparare nuovamente il disco.
+
+Nel percorso di installazione, **↑/↓** o **Tab** selezionano il campo,
+**←/→** scelgono le partizioni e l'**Installation ID** va digitato
+(per esempio `debian`). **Invio** passa a Users quando tutte le selezioni
+obbligatorie sono valide. Il modulo mantiene visibili campi ed errori su una
+console 80×24; il dettaglio delle directory HOME/EFI da cancellare compare
+nel riepilogo finale, prima della conferma.
 
 La separazione riguarda l'interfaccia: schema di partizionamento, controlli e
 motore d'installazione Coexist restano condivisi con la procedura esistente.

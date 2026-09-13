@@ -577,7 +577,7 @@ func (m *model) activeDiskFields() []diskFieldKind {
 	if m.diskModeIdx == 2 {
 		switch m.coexistStage {
 		case coexistChoose:
-			return []diskFieldKind{diskFieldMode, diskFieldPrepare, diskFieldInstall}
+			return []diskFieldKind{diskFieldMode, diskFieldInstall, diskFieldPrepare}
 		case coexistPrepare:
 			return []diskFieldKind{diskFieldDevice, diskFieldInitialize}
 		case coexistInstall:
@@ -611,9 +611,9 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			return m.updateCoexistReady(key)
 		}
 		if key == "esc" && m.coexistStage != coexistChoose {
-			m.diskField = 1
+			m.diskField = 2
 			if m.coexistStage == coexistInstall {
-				m.diskField = 2
+				m.diskField = 1
 			}
 			m.coexistStage, m.diskError = coexistChoose, ""
 			return m, nil
@@ -1031,9 +1031,10 @@ func (m model) viewDisk() string {
 
 	var rows []string
 	if m.diskModeIdx == 2 {
-		rows = append(rows, cyanText.Render("Coexist — Install a distribution"))
+		rows = append(rows, cyanText.Render("Coexist — Install a distribution")+" | "+rowFirmware)
+	} else {
+		rows = append(rows, rowFirmware, "")
 	}
-	rows = append(rows, rowFirmware, "")
 
 	for idx, kind := range activeFields {
 		isActive := (idx == m.diskField)
@@ -1044,6 +1045,9 @@ func (m model) viewDisk() string {
 			rows = append(rows, m.selectorRow(isActive, "Installation device", fmt.Sprintf("%s (%s)", device.Path, device.Size)))
 		case diskFieldTargetPart:
 			partStr := "none available"
+			if m.diskModeIdx == 2 && len(m.candidateParts) > 0 {
+				partStr = "SELECT ROOT"
+			}
 			if len(m.candidateParts) > 0 && m.partIdx >= 0 {
 				partStr = m.candidateParts[m.partIdx].DisplayString()
 			}
@@ -1052,12 +1056,15 @@ func (m model) viewDisk() string {
 				rows = append(rows, fmt.Sprintf("  %-20s: %s %s", "EFI System Partition",
 					greenText.Render(m.efiParts[0].Path+" ("+m.efiParts[0].Size+")"),
 					dimText.Render("[auto-detected, preserved]")))
-			} else if m.diskBios == "UEFI" && len(m.efiParts) == 0 {
+			} else if m.diskModeIdx != 2 && m.diskBios == "UEFI" && len(m.efiParts) == 0 {
 				rows = append(rows, fmt.Sprintf("  %-20s: %s", "EFI System Partition",
 					redBgWhiteText.Render(" none detected ")))
 			}
 		case diskFieldEfi:
 			efiStr := "none"
+			if m.diskModeIdx == 2 && len(m.efiParts) > 0 {
+				efiStr = "SELECT ESP"
+			}
 			if len(m.efiParts) > 0 && m.efiIdx >= 0 {
 				efiStr = m.efiParts[m.efiIdx].Path + " (" + m.efiParts[m.efiIdx].Size + ")"
 			}
@@ -1069,7 +1076,7 @@ func (m model) viewDisk() string {
 			}
 			rows = append(rows, m.selectorRow(isActive, "Shared HOME (preserve)", part))
 		case diskFieldNamespace:
-			rows = append(rows, m.selectorRow(isActive, "Installation ID", m.homeNamespace))
+			rows = append(rows, m.selectorRow(isActive, "Installation ID", orDefault(m.homeNamespace, "type an ID, e.g. debian")))
 		case diskFieldFs:
 			rows = append(rows, m.selectorRow(isActive, "Filesystem", m.fsTypes[m.fsIdx]))
 		case diskFieldSwap:
@@ -1082,11 +1089,22 @@ func (m model) viewDisk() string {
 		}
 	}
 
+	if m.diskModeIdx == 2 {
+		// Keep the editable form and validation visible on an 80x24 console.
+		// The full list of affected namespaces is shown at final confirmation.
+		rows = append(rows,
+			"↑/↓ select | ←/→ change | Installation ID: type to edit",
+			redBgWhiteText.Render("FORMAT selected ROOT; preserve ESP and shared HOME partitions."),
+			redBgWhiteText.Render("Selected IDs' HOME/EFI contents are deleted. Review details in Summary."),
+		)
+		if m.diskError != "" {
+			rows = append(rows, redBgWhiteText.Render(m.diskError))
+		}
+		return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", strings.Join(rows, "\n"))
+	}
+
 	help := "\n↑/↓ select field | ←/→ change value"
 	rows = append(rows, help, "")
-	if m.diskModeIdx == 2 {
-		rows = append(rows, m.coexistResources(), redBgWhiteText.Render(m.diskError))
-	}
 
 	if m.diskModeIdx == 0 {
 		warning1 := "(*) this will erase all data currently present on the"
@@ -1100,9 +1118,6 @@ func (m model) viewDisk() string {
 		warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
 		w1 := fmt.Sprintf("(*) this will FORMAT and ERASE only partition: %s", targetPath)
 		w2 := fmt.Sprintf("    all other partitions on %s will NOT be touched.", device.Path)
-		if m.diskModeIdx == 2 {
-			w2 = "Selected HOME/EFI namespaces are deleted as listed above; EFI/BOOT is preserved."
-		}
 		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, warningStyle.Render(w1), dimText.Render(w2)))
 		if len(m.candidateParts) == 0 {
 			noPartWarn := redBgWhiteText.Render(" ⚠️  No candidate partition found on this disk (must be >= 4G and not live/EFI) ")

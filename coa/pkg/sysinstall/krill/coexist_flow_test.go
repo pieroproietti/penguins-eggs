@@ -7,7 +7,36 @@ import (
 
 	"coa/pkg/sysinstall/krill/engine"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
+
+func TestCoexistInstallFitsStandardTerminal(t *testing.T) {
+	m := identityModel()
+	m.termWidth, m.termHeight = 80, 24
+	m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
+	for _, message := range []string{
+		"",
+		"Explicitly select the root to FORMAT and both EFI and shared HOME to PRESERVE.",
+		engine.ValidateHomeNamespace("").Error(),
+	} {
+		m.diskError = message
+		view := m.View()
+		if height := lipgloss.Height(view); height > m.termHeight {
+			t.Fatalf("installation form needs %d lines in a %d-line terminal", height, m.termHeight)
+		}
+		// The terminal wraps long validation messages; all words must survive.
+		text := strings.Join(strings.Fields(view), " ")
+		text = strings.ReplaceAll(text, " │ │ ", " ")
+		for _, label := range []string{"Installation device", "Target partition", "EFI System Partition", "Shared HOME", "Installation ID", "type an ID", "Enter: continue"} {
+			if !strings.Contains(view, label) {
+				t.Fatalf("installation form missing %q", label)
+			}
+		}
+		if !strings.Contains(text, message) {
+			t.Fatalf("validation message was clipped: %s", view)
+		}
+	}
+}
 
 func TestCoexistPaths(t *testing.T) {
 	for _, action := range []diskFieldKind{diskFieldPrepare, diskFieldInstall} {

@@ -27,10 +27,11 @@ func (m model) viewCoexistChoice() string {
 	return strings.Join([]string{
 		renderSteps(4), "",
 		m.selectorRow(m.diskField == 0, "Installation mode", "Coexist"), "",
-		m.coexistActionRow(m.diskField == 1, "Prepare a disk for multiple distributions"),
-		"    Create ESP, ROOT slots and shared HOME. Erases the entire disk.", "",
-		m.coexistActionRow(m.diskField == 2, "Install a distribution on a prepared disk"),
+		m.coexistActionRow(m.diskField == 1, "Install a distribution on a prepared disk"),
 		"    Choose a ROOT slot and reuse existing ESP and shared HOME.", "",
+		m.coexistActionRow(m.diskField == 2, "Prepare a disk for multiple distributions"),
+		"    Create ESP, ROOT slots and shared HOME.",
+		"    " + redBgWhiteText.Render("WARNING: Completely destructive. Erases ALL DATA on the selected disk."), "",
 		"↑/↓ select action | ←/→ change installation mode | Enter: open",
 	}, "\n")
 }
