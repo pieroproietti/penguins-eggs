@@ -82,7 +82,7 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	}
 	// Execute preview with a read-only fixture; nothing destructive is dispatched.
 	next, cmd = m.startCoexistPreview(func(device string, rootBytes uint64) (engine.CoexistDiskLayout, error) {
-		if device != l.Device || rootBytes != 8<<30 {
+		if device != l.Device || rootBytes != 10<<30 {
 			t.Fatal("wrong preview device or default size")
 		}
 		return l, nil
@@ -197,16 +197,18 @@ func TestInitializationFailureAndCancel(t *testing.T) {
 
 func TestInitializationRootSizeEditing(t *testing.T) {
 	l, _ := initializedFixture(t, engine.CoexistRootBytes)
-	m := model{state: StateDisk, diskModeIdx: 2, coexistStage: coexistPrepare, disks: []DiskInfo{{Path: l.Device}}, termHeight: 18}
+	m := model{state: StateDisk, diskModeIdx: 2, coexistStage: coexistPrepare, disks: []DiskInfo{{Path: l.Device}}, termWidth: 80, termHeight: 24}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldInitialize)
 	next, cmd := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
 	m = next.(model)
-	if cmd != nil || m.initialization == nil || !m.initialization.editingSize || m.initialization.rootSize != "8" {
-		t.Fatal("initializer did not open an editable input defaulting to 8 GiB")
+	if cmd != nil || m.initialization == nil || !m.initialization.editingSize || m.initialization.rootSize != "10" {
+		t.Fatal("initializer did not open an editable input defaulting to 10 GiB")
 	}
-	if view := m.viewDisk(); !strings.Contains(view, "Root partition size (GiB): [8]") || strings.Contains(view, "ERASE") || strings.Contains(view, "root1") {
+	if view := m.viewDisk(); !strings.Contains(view, "Root partition size (GiB): [10]") || strings.Contains(view, "ERASE") || strings.Contains(view, "root1") {
 		t.Fatalf("size input missing or preview shown before input: %s", view)
 	}
+	next, _ = m.Update(tea.KeyMsg{Type: tea.KeyBackspace})
+	m = next.(model)
 	next, _ = m.Update(tea.KeyMsg{Type: tea.KeyBackspace})
 	m = next.(model)
 	next, _ = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("16")})
@@ -238,7 +240,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 		t.Fatal("new preview retained stale size or confirmation")
 	}
 	view := m.viewCoexistInitialization()
-	if strings.Count(view, "16.00 GiB") != 2 || !strings.Contains(view, "SHARED_HOMES") || !strings.Contains(view, "31.50 GiB") || !strings.Contains(view, "0.50 GiB") {
+	if strings.Count(view, "16.00 GiB") != 3 || !strings.Contains(view, "SHARED_HOMES") || !strings.Contains(view, "15.50 GiB") || !strings.Contains(view, "0.50 GiB") {
 		t.Fatalf("new layout not shown before confirmation: %s", view)
 	}
 	_, cmd = m.confirmCoexistInitialization(nil, nil)
@@ -247,7 +249,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 	}
 	m.initialization.confirmation = l.Device
 	next, cmd = m.confirmCoexistInitialization(func(got engine.CoexistDiskLayout, confirmation string) error {
-		if got.RootBytes != 16<<30 || len(got.Partitions) != 4 || confirmation != l.Device {
+		if got.RootBytes != 16<<30 || len(got.Partitions) != 5 || confirmation != l.Device {
 			t.Fatal("wrong layout passed to initialization")
 		}
 		return nil
@@ -260,7 +262,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 	}
 	next, _ = m.Update(cmd())
 	m = next.(model)
-	if m.initialization != nil || m.diskError != "" || len(m.candidateParts) != 3 {
+	if m.initialization != nil || m.diskError != "" || len(m.candidateParts) != 4 {
 		t.Fatal("custom layout rediscovery failed")
 	}
 }
@@ -305,7 +307,7 @@ func TestInitializationInvalidRootSize(t *testing.T) {
 func TestInitializationInsufficientSpaceCanBeCorrected(t *testing.T) {
 	for _, tc := range []struct {
 		diskGiB, badGiB, goodGiB uint64
-	}{{64, 24, 16}, {25, 8, 4}} {
+	}{{64, 27, 16}, {25, 8, 4}} {
 		l, err := engine.CalculateCoexistLayout("/dev/test", tc.diskGiB<<30, 512, tc.badGiB<<30)
 		if err == nil {
 			t.Fatal("oversized roots accepted")

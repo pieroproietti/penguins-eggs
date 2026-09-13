@@ -59,6 +59,14 @@ func TestCoexistPaths(t *testing.T) {
 			t.Fatal("choosing a path dispatched disk operations")
 		}
 		if action == diskFieldPrepare {
+			if m.coexistStage != coexistHomeLocation || !strings.Contains(m.View(), "Shared Home Location") {
+				t.Fatal("preparation did not start with HOME location")
+			}
+			next, cmd = m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+			m = next.(model)
+			if cmd != nil {
+				t.Fatal("HOME location dispatched disk operations")
+			}
 			if m.coexistStage != coexistPrepare || slices.Contains(m.activeDiskFields(), diskFieldTargetPart) || strings.Contains(m.View(), "Installation ID") {
 				t.Fatal("preparation includes installation settings")
 			}

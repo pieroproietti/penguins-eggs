@@ -38,8 +38,19 @@ func PreviewCoexistInitialization(device string, rootBytes uint64) (engine.Coexi
 	return engine.PreviewCoexistDisk(device, DetectLiveDisk(), rootBytes)
 }
 
+func (m model) previewCoexistInitialization(device string, rootBytes uint64) (engine.CoexistDiskLayout, error) {
+	if m.homeExternal {
+		return engine.PreviewCoexistDiskWithHome(device, DetectLiveDisk(), rootBytes, m.prepareHome.Path)
+	}
+	return PreviewCoexistInitialization(device, rootBytes)
+}
+
 func (m model) startCoexistPreview(preview func(string, uint64) (engine.CoexistDiskLayout, error)) (tea.Model, tea.Cmd) {
 	if m.diskModeIdx != 2 || m.coexistStage != coexistPrepare || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
+		return m, nil
+	}
+	if m.homeExternal && m.prepareHome.Path == "" {
+		m.diskError = "Select an external HOME partition before configuring the disk."
 		return m, nil
 	}
 	device := m.disks[m.diskIdx].Path
@@ -75,7 +86,7 @@ func (m model) receiveCoexistPreview(msg coexistPreviewMsg) (tea.Model, tea.Cmd)
 	for _, p := range msg.layout.Partitions {
 		rows = append(rows, fmt.Sprintf("%-20s %-13s %8.2f GiB  %s", p.Device, p.Label, float64(p.Sectors*msg.layout.SectorSize)/(1<<30), p.Filesystem))
 	}
-	if len(rows) > 0 {
+	if len(rows) > 0 && msg.layout.ExternalHome.Partition == "" {
 		rows[len(rows)-1] += " (remainder)"
 	}
 	v.SetContent(strings.Join(rows, "\n"))
@@ -102,7 +113,7 @@ func (m model) updateCoexistInitialization(msg tea.KeyMsg) (tea.Model, tea.Cmd) 
 				i.rootSize = i.rootSize[:len(i.rootSize)-size]
 			}
 		case "enter":
-			return m.startCoexistPreview(PreviewCoexistInitialization)
+			return m.startCoexistPreview(m.previewCoexistInitialization)
 		default:
 			if msg.Type == tea.KeyRunes {
 				i.rootSize += string(msg.Runes)
@@ -186,9 +197,17 @@ func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Mode
 			m.efiIdx = n
 		}
 	}
-	for n, p := range m.homeParts {
-		if p.Path == l.Partitions[len(l.Partitions)-1].Device {
-			m.homeIdx = n
+	m.homeExternal = l.ExternalHome.Partition != ""
+	m.prepareHome = PartitionInfo{Path: l.ExternalHome.Partition, FsType: "ext4", SizeBytes: int64(l.ExternalHome.SizeBytes)}
+	m.homeIdx = -1
+	if m.homeExternal {
+		m.homeParts = append(m.homeParts, m.prepareHome)
+		m.homeIdx = len(m.homeParts) - 1
+	} else {
+		for n, p := range m.homeParts {
+			if p.Path == l.Partitions[len(l.Partitions)-1].Device {
+				m.homeIdx = n
+			}
 		}
 	}
 	m.diskError = ""
@@ -212,7 +231,7 @@ func (m model) viewCoexistInitialization() string {
 	}
 	layoutView := i.view.View()
 	return redBgWhiteText.Render("Prepare disk for Coexist: ALL DATA ON "+i.layout.Device+" WILL BE ERASED") +
-		"\nGPT / UEFI | ESP 512 MiB | HOME at least 16 GiB" +
+		"\nGPT / UEFI | ESP 512 MiB | HOME: " + m.sharedHomeDescription() +
 		"\nRoot slot size (GiB, minimum 4): " + i.rootSize + "\n\n" +
 		layoutView + "\n\n↑/↓ or PgUp/PgDown: review layout | Tab: edit root size | Esc: cancel\n" + confirmation
 }

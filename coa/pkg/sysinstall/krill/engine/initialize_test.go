@@ -17,8 +17,9 @@ func TestCalculateCoexistLayout(t *testing.T) {
 	for _, tc := range []struct {
 		gib, rootGiB uint64
 		slots        int
-	}{{33, 8, 2}, {40, 8, 2}, {64, 8, 5}, {128, 8, 13}, {256, 8, 29}, {2048, 8, 253},
-		{64, 16, 2}, {128, 16, 6}, {256, 16, 14}, {2048, 16, 126}, {4096, 16, 254}, {25, 4, 2}, {64, 4, 11}} {
+	}{{32, 10, 2}, {40, 10, 2}, {64, 10, 5}, {128, 10, 11}, {256, 10, 24}, {2048, 10, 203},
+		{33, 8, 2}, {40, 8, 3}, {64, 8, 6}, {128, 8, 14}, {256, 8, 30}, {2048, 8, 254},
+		{64, 16, 3}, {128, 16, 7}, {256, 16, 15}, {2048, 16, 127}, {4096, 16, 255}, {25, 4, 3}, {64, 4, 13}} {
 		for _, sector := range []uint64{512, 4096} {
 			l, err := CalculateCoexistLayout("/dev/nvme0n1", tc.gib<<30, sector, tc.rootGiB<<30)
 			if err != nil {
@@ -50,7 +51,7 @@ func TestCalculateCoexistLayout(t *testing.T) {
 		}
 	}
 	minimum := CoexistESPBytes + 2*CoexistRootBytes + CoexistMinHomeBytes + initMiB + 33*512
-	for _, bytes := range []uint64{0, 16 << 30, 32 << 30, minimum - 512} {
+	for _, bytes := range []uint64{0, 16 << 30, 30 << 30, minimum - 512} {
 		if _, err := CalculateCoexistLayout("/dev/test", bytes, 512, CoexistRootBytes); err == nil {
 			t.Fatalf("accepted insufficient %d bytes", bytes)
 		}
@@ -197,7 +198,7 @@ func TestCoexistSfdiskLayout(t *testing.T) {
 }
 
 func TestCoexistRootSizeBoundaries(t *testing.T) {
-	if CoexistRootBytes != 8<<30 {
+	if CoexistRootBytes != 10<<30 || CoexistMinHomeBytes != 10<<30 {
 		t.Fatal("default root size changed")
 	}
 	for _, rootBytes := range []uint64{4 << 30, 8 << 30, 16 << 30} {
@@ -213,12 +214,12 @@ func TestCoexistRootSizeBoundaries(t *testing.T) {
 			}
 		}
 	}
-	for _, rootBytes := range []uint64{0, 1, 3 << 30, (4 << 30) - 1, (4 << 30) + 512, 24 << 30, 64 << 30, 1 << 63, ^uint64(0)} {
+	for _, rootBytes := range []uint64{0, 1, 3 << 30, (4 << 30) - 1, (4 << 30) + 512, 27 << 30, 64 << 30, 1 << 63, ^uint64(0)} {
 		if _, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, rootBytes); err == nil {
 			t.Fatalf("accepted invalid or oversized root size: %d", rootBytes)
 		}
 	}
-	if l, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, 23<<30); err != nil || len(l.Partitions) != 4 {
+	if l, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, 26<<30); err != nil || len(l.Partitions) != 4 {
 		t.Fatalf("largest whole-GiB roots on 64 GiB disk rejected: %+v, %v", l, err)
 	}
 }

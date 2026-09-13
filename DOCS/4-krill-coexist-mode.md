@@ -14,15 +14,25 @@ un menu con due operazioni distinte:
   Questo percorso non contiene l'azione di preparazione dell'intero disco.
   Prosegue con utenti e riepilogo, compresa la conferma delle eventuali
   cancellazioni dei contenuti HOME/EFI dell'installazione sostituita.
-- **Prepare a disk for multiple distributions**: scelta del disco,
-  dimensionamento degli slot ROOT e anteprima delle partizioni ESP, ROOT e HOME.
+- **Prepare a disk for multiple distributions**: scelta iniziale **Shared Home
+  Location**, poi disco da preparare, dimensionamento degli slot ROOT e anteprima
+  delle partizioni. Le opzioni HOME sono **Coexist disk (requires 32 GiB total
+  space)**, predefinita, e **External partition**. La seconda apre un selettore
+  delle partizioni ext4 esistenti e smontate: deve essere scelta una partizione
+  su un altro disco. Non sono ammessi percorsi di directory.
+  Con HOME esterna vengono create soltanto ESP e ROOT; la partizione esterna
+  non viene formattata. Prima dell'anteprima e della scrittura vengono verificati
+  disco di appartenenza, filesystem, UUID, dimensione e stato della partizione.
+  Dopo la preparazione la HOME scelta è preselezionata per l'installazione.
   Questa operazione è **completamente distruttiva: cancella tutti i dati sul disco
   selezionato**, come evidenziato già nel menu. Richiede la lettura del layout e
   la digitazione del device prima di procedere. Al termine compare **Disk ready**:
   si può scegliere di installare subito la distribuzione live corrente oppure
   uscire (scelta predefinita). L'installazione non parte automaticamente.
 
-In entrambi i percorsi, **Esc** torna al menu Coexist. Durante il dimensionamento
+Nella scelta della partizione esterna, **Esc** torna a Shared Home Location;
+qui Esc torna al menu Coexist. Dalla scelta del disco nei due percorsi,
+**Esc** torna al menu Coexist. Durante il dimensionamento
 o l'anteprima, Esc annulla prima la preparazione e torna alla scelta del disco.
 Dalla schermata **Disk ready**, Esc esce senza installare o riavviare.
 Per aggiungere la seconda distribuzione e le successive si sceglie direttamente
@@ -86,7 +96,16 @@ Viene creata una partizione ESP per l'avvio UEFI, poi diverse partizioni destina
 `ROOT3`
 `...`
 
-e infine una partizione `HOME`, che occupa tutto lo spazio rimanente e deve essere maggiore di 16 GB.
+Ogni ROOT ha dimensione predefinita di **10 GiB**, modificabile da 4 GiB.
+Con HOME sul disco coexist viene infine creata `SHARED_HOMES`, che occupa lo
+spazio rimanente con un minimo di **10 GiB**. Un disco da **32 GiB** contiene
+ESP da 512 MiB, due ROOT da 10 GiB e HOME di circa 11,5 GiB, al netto della GPT.
+
+Con **External partition**, il disco coexist contiene soltanto ESP e almeno
+due ROOT; lo spazio residuo inferiore a uno slot resta non allocato. Con le
+ROOT predefinite è sufficiente un disco da **21 GiB**. La partizione HOME ext4
+preesistente su un altro disco viene riutilizzata senza formattazione e senza
+ridimensionamento. Il minimo di 10 GiB riguarda la HOME creata dall'inizializzatore.
 
 L'idea è quella di riservare fin dall'inizio diversi "slot" nei quali poter installare differenti distribuzioni Linux, mantenendo un'unica partizione HOME condivisa.
 
@@ -175,7 +194,7 @@ fstab, creazione utenti, script di installazione e smontaggio.
 | Fase | Comportamento e osservazioni |
 | --- | --- |
 | Preparazione facoltativa | Il percorso `Prepare a disk for multiple distributions` cancella **l'intero disco**. Richiede anteprima, lettura del layout e digitazione del device; ricontrolla geometria e identità prima di scrivere. Termina con `Disk ready` e la scelta tra installare e uscire. Non va usato per aggiungere una distribuzione a un disco già preparato. |
-| Dimensionamento | ESP da 512 MiB, almeno due ROOT, HOME residua di almeno 16 GiB. La ROOT predefinita è 8 GiB, configurabile da 4 GiB. Il minimo geometrico non garantisce che l'immagine estratta trovi spazio. |
+| Dimensionamento | ESP da 512 MiB, almeno due ROOT, HOME locale residua di almeno 10 GiB, oppure partizione ext4 esterna preesistente. La ROOT predefinita è 10 GiB, configurabile da 4 GiB. Il minimo geometrico non garantisce che l'immagine estratta trovi spazio. |
 | Selezione | ROOT esistente sul disco scelto da formattare, ESP unica dello stesso disco fissa e preservata. ESP assente o ambigua blocca l’installazione. HOME ext4 da riutilizzare esplicita, anche su un altro disco. |
 | Preflight | UEFI, famiglia supportata, device distinti, filesystem/UUID, destinazioni HOME/EFI e collisioni delle label. La validazione viene ripetuta nel modulo partition. |
 | Copia | Si formatta soltanto la ROOT. HOME ed ESP condivise sono montate dopo unpackfs e removeuser, così queste operazioni non raggiungono i dati condivisi. |

@@ -140,6 +140,9 @@ type model struct {
 	initialization *coexistInitialization
 
 	// Coexist: separate preparation and installation paths.
+	homeExternal       bool // disk preparation only
+	prepareHome        PartitionInfo
+	externalHomeIdx    int
 	coexistStage       coexistStage
 	coexistReadyChoice int // 0 = install now, 1 = exit
 
@@ -594,7 +597,7 @@ func (m *model) activeDiskFields() []diskFieldKind {
 				return []diskFieldKind{diskFieldDevice}
 			}
 			return []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
-		case coexistReady:
+		case coexistReady, coexistHomeLocation, coexistHomePartition:
 			return nil
 		}
 	}
@@ -619,6 +622,9 @@ func (m *model) availableSwapTypes() []string {
 // updateDisk naviga i selettori della schermata Disk.
 func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 	if m.diskModeIdx == 2 {
+		if m.coexistStage == coexistHomeLocation || m.coexistStage == coexistHomePartition {
+			return m.updateSharedHome(key)
+		}
 		if m.coexistStage == coexistReady {
 			return m.updateCoexistReady(key)
 		}
@@ -636,14 +642,15 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		m.diskField = len(activeFields) - 1
 	}
 	if activeFields[m.diskField] == diskFieldInitialize && key == "enter" {
-		return m.startCoexistPreview(PreviewCoexistInitialization)
+		return m.startCoexistPreview(m.previewCoexistInitialization)
 	}
 	if m.diskModeIdx == 2 && key == "enter" {
 		switch m.coexistStage {
 		case coexistChoose:
 			switch activeFields[m.diskField] {
 			case diskFieldPrepare:
-				m.coexistStage, m.diskField = coexistPrepare, 0
+				m.refreshPartitions()
+				m.coexistStage, m.diskField = coexistHomeLocation, 0
 			case diskFieldInstall:
 				m.coexistStage, m.diskField = coexistInstall, 0
 			default:
@@ -1027,6 +1034,8 @@ func (m model) viewDisk() string {
 		switch m.coexistStage {
 		case coexistChoose:
 			return m.viewCoexistChoice()
+		case coexistHomeLocation, coexistHomePartition:
+			return m.viewSharedHome()
 		case coexistPrepare:
 			return m.viewCoexistPreparation()
 		case coexistInstall:
