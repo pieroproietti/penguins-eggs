@@ -1,0 +1,144 @@
+package krill
+
+import (
+	"encoding/json"
+	"reflect"
+	"strings"
+	"testing"
+
+	"github.com/charmbracelet/bubbles/textinput"
+)
+
+func TestCoexistESPDiscoveryMatchesPreflight(t *testing.T) {
+	var devices lsblkRoot
+	err := json.Unmarshal([]byte(`{"blockdevices":[{"path":"/dev/sda1","name":"sda1","type":"part","fstype":"vfat","parttype":"c12a7328-f81f-11d2-ba4b-00a0c93ec93b"}]}`), &devices)
+	if err != nil {
+		t.Fatal(err)
+	}
+	parts := collectPartitions(devices.BlockDevices)
+	if len(parts) != 1 || !parts[0].IsEfi {
+		t.Fatal("TUI failed to recognize observed ESP")
+	}
+	if got := coexistEfiPartitions(parts); len(got) != 1 || got[0].Path != "/dev/sda1" {
+		t.Fatal("Coexist rejected observed ESP")
+	}
+	parts[0].FsType = "ext4"
+	if len(coexistEfiPartitions(parts)) != 0 {
+		t.Fatal("Coexist accepted non-FAT ESP")
+	}
+	parts[0].FsType = "vfat"
+	parts[0].PartType = "0xef"
+	if len(coexistEfiPartitions(parts)) != 0 {
+		t.Fatal("Coexist accepted non-GPT ESP")
+	}
+}
+
+func TestCoexistDiskSelections(t *testing.T) {
+	m := model{
+		diskModeIdx: 2, diskModes: []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
+		disks:          []DiskInfo{{Path: "/dev/test"}},
+		candidateParts: []PartitionInfo{{Path: "/dev/test5"}},
+		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},
+		homeParts:      []PartitionInfo{{Path: "/dev/test2", FsType: "ext4"}},
+		homeIdx:        -1,
+		partIdx:        -1, efiIdx: -1, fsTypes: []string{"ext4"},
+	}
+	wantFields := []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldTargetPart, diskFieldEfi, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap, diskFieldInitialize}
+	if !reflect.DeepEqual(m.activeDiskFields(), wantFields) {
+		t.Fatal("Coexist must show an explicit ESP selector even with one ESP")
+	}
+	if !reflect.DeepEqual(m.availableSwapTypes(), []string{"none", "file"}) {
+		t.Fatal("partition swap offered")
+	}
+	if view := m.viewDisk(); !strings.Contains(view, "SELECT ROOT") || !strings.Contains(view, "SELECT ESP") {
+		t.Fatal("missing explicit-selection prompts")
+	}
+	m.diskField = 2
+	next, _ := m.updateDisk("right")
+	m = next.(model)
+	if m.partIdx != 0 || m.efiIdx != -1 {
+		t.Fatal("root selection also selected ESP")
+	}
+	m.diskField = 3
+	next, _ = m.updateDisk("right")
+	m = next.(model)
+	if m.efiIdx != 0 {
+		t.Fatal("ESP selection failed")
+	}
+	if m.homeIdx != -1 {
+		t.Fatal("HOME was selected implicitly")
+	}
+	m.diskField = 4
+	next, _ = m.updateDisk("right")
+	m = next.(model)
+	if m.homeIdx != 0 {
+		t.Fatal("HOME selection failed")
+	}
+	m.diskField = 5
+	for _, key := range []string{"d", "e", "b", "i", "a", "n", "-", "s", "i", "d", "x", "backspace"} {
+		next, _ = m.updateDisk(key)
+		m = next.(model)
+	}
+	if m.homeNamespace != "debian-sid" {
+		t.Fatalf("namespace: %q", m.homeNamespace)
+	}
+	view := m.coexistResources()
+	for _, text := range []string{"FORMAT:", "Root: /dev/test5", "PRESERVE (no formatting):", "ESP: /dev/test1", "Shared HOME: /dev/test2", "Installation ID: debian-sid", "HOME namespace: /srv/homes/debian-sid", "New label: debian-sid"} {
+		if !strings.Contains(view, text) {
+			t.Fatalf("missing %q in resources", text)
+		}
+	}
+}
+
+func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
+	m := model{
+		diskModeIdx:    2,
+		diskModes:      []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
+		disks:          []DiskInfo{{Path: "/dev/test"}},
+		candidateParts: []PartitionInfo{{Path: "/dev/sda5", Size: "8G", FsType: "ext4", Label: "arch-colibri-4"}},
+		partIdx:        0,
+		fsTypes:        []string{"ext4"},
+		swapTypes:      []string{"none", "file"},
+	}
+
+	view := m.viewDisk()
+	for _, text := range []string{"/dev/sda5", "8G", "ext4", "arch-colibri-4"} {
+		if !strings.Contains(view, text) {
+			t.Fatalf("target selector missing %q: %s", text, view)
+		}
+	}
+	m.homeNamespace = "arch-colibri-4"
+	resources := m.coexistResources()
+	for _, text := range []string{"COEXIST", "Installation ID: arch-colibri-4", "DELETE CONTENTS if present / CREATE if absent:", "EFI/arch-colibri-4", "Root: /dev/sda5 [arch-colibri-4]"} {
+		if !strings.Contains(resources, text) {
+			t.Fatalf("summary missing %q: %s", text, resources)
+		}
+	}
+
+	// When replacing with a different namespace, purge notice must be shown and PreviousID populated
+	m.homeNamespace = "debian"
+	m.cfg = &InstallerConfig{}
+	m.userInputs = make([]textinput.Model, 5)
+	m.locData = TimezoneData{Regions: []string{"Europe"}, Zones: map[string][]string{"Europe": {"Rome"}}}
+	resources = m.coexistResources()
+	for _, text := range []string{"PURGE PREVIOUS (arch-colibri-4):", "/srv/homes/arch-colibri-4", "EFI/arch-colibri-4"} {
+		if !strings.Contains(resources, text) {
+			t.Fatalf("summary missing purge notice %q: %s", text, resources)
+		}
+	}
+	plan := m.buildPlan()
+	if plan.PreviousID != "arch-colibri-4" {
+		t.Fatalf("buildPlan() PreviousID = %q, want arch-colibri-4", plan.PreviousID)
+	}
+
+	// Generic slot labels like root2 should not trigger previous purge
+	m.candidateParts[0].Label = "root2"
+	resources = m.coexistResources()
+	if strings.Contains(resources, "PURGE PREVIOUS") {
+		t.Fatalf("unexpected purge notice for generic slot label: %s", resources)
+	}
+	plan = m.buildPlan()
+	if plan.PreviousID != "" {
+		t.Fatalf("buildPlan() PreviousID = %q, want empty for generic label", plan.PreviousID)
+	}
+}

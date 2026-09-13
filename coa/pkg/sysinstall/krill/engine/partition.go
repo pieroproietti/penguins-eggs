@@ -26,6 +26,9 @@ type layout struct {
 // partsFor calcola i nomi delle partizioni in modo deterministico,
 // così ogni modulo (partition, mount, fstab) vede lo stesso layout.
 func partsFor(plan *Plan) layout {
+	if plan.Mode == "coexist" {
+		return layout{Esp: plan.EspPartition, Root: plan.TargetPartition}
+	}
 	if runtime.GOARCH == "riscv64" {
 		if plan.Mode == "replace" {
 			return layout{
@@ -103,36 +106,109 @@ func ramSizeMiB() int {
 func runPartition(c *ctx) error {
 	plan := c.plan
 
-	if plan.Mode == "replace" {
-		if plan.TargetPartition == "" {
-			return fmt.Errorf("nessuna partizione target specificata per la modalità replace")
-		}
-		if mounted, err := deviceInUse(plan.TargetPartition); err == nil && mounted {
-			return fmt.Errorf("la partizione %s ha partizioni o filesystem montati: smontarla prima di procedere", plan.TargetPartition)
-		}
+	if err := validatePlan(plan, c.safetyChecks()); err != nil {
+		return err
+	}
+	switch plan.Mode {
+	case "replace", "coexist":
+		return runRootFormat(c)
+	case "erase":
+		return runErase(c)
+	default:
+		return fmt.Errorf("unknown installation mode %q", plan.Mode)
+	}
+}
 
-		c.logf("replace mode: wiping filesystem signatures on %s", plan.TargetPartition)
-		_ = c.run("wipefs", "-a", plan.TargetPartition)
-		c.logf("formatting %s as %s", plan.TargetPartition, plan.FsType)
-		if err := c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), plan.TargetPartition)...); err != nil {
-			return fmt.Errorf("formattazione %s come %s fallita: %w", plan.TargetPartition, plan.FsType, err)
-		}
-		_ = c.run("udevadm", "settle")
-		return nil
+func runRootFormat(c *ctx) error {
+	plan := c.plan
+
+	if plan.TargetPartition == "" {
+		return fmt.Errorf("nessuna partizione target specificata per la modalità replace")
+	}
+	mounted, err := c.safetyChecks().inUse(plan.TargetPartition)
+	if err != nil && plan.Mode == "coexist" {
+		return fmt.Errorf("Coexist root safety check: %w", err)
+	}
+	if err == nil && mounted {
+		return fmt.Errorf("la partizione %s ha partizioni o filesystem montati: smontarla prima di procedere", plan.TargetPartition)
+	}
+	labelArgs, err := rootFilesystemLabelArgs(plan)
+	if err != nil {
+		return err
+	}
+
+	c.logf("root-only mode: wiping filesystem signatures on %s", plan.TargetPartition)
+	if err := c.run("wipefs", "-a", plan.TargetPartition); err != nil && plan.Mode == "coexist" {
+		return err
+	}
+	c.logf("formatting %s as %s", plan.TargetPartition, plan.FsType)
+	mkfsArgs := append(mkfsForceArgs(plan.FsType), labelArgs...)
+	if err := c.run(mkfsCommand(plan.FsType), append(mkfsArgs, plan.TargetPartition)...); err != nil {
+		return fmt.Errorf("formattazione %s come %s fallita: %w", plan.TargetPartition, plan.FsType, err)
+	}
+	_ = c.run("udevadm", "settle")
+	return nil
+}
+
+// rootFilesystemLabelArgs returns label arguments only for the Coexist root.
+// The existing Coexist identity is also useful as a human-readable filesystem
+// label, but labels remain descriptive; fstab continues to use UUIDs.
+func rootFilesystemLabelArgs(plan *Plan) ([]string, error) {
+	if plan.Mode != "coexist" {
+		return nil, nil
+	}
+
+	if err := ValidateInstallationID(plan.EFIBootloaderID); err != nil {
+		return nil, err
+	}
+	option, maxBytes := filesystemLabelSpec(plan.FsType)
+	if option == "" {
+		return nil, fmt.Errorf("Coexist root filesystem %q does not support a known label format", plan.FsType)
+	}
+	if len([]byte(plan.EFIBootloaderID)) > maxBytes {
+		return nil, fmt.Errorf("Coexist root filesystem label %q is too long for %s (maximum %d bytes)", plan.EFIBootloaderID, plan.FsType, maxBytes)
+	}
+	return []string{option, plan.EFIBootloaderID}, nil
+}
+
+// filesystemLabelSpec describes the mkfs option and on-disk label limit for
+// filesystems that Krill can use as an installation root. Keeping the limit
+// here prevents mkfs from silently truncating a user-selected identity.
+func filesystemLabelSpec(fs string) (option string, maxBytes int) {
+	switch strings.ToLower(fs) {
+	case "ext2", "ext3", "ext4", "jfs", "reiserfs":
+		return "-L", 16
+	case "xfs":
+		return "-L", 12
+	case "btrfs":
+		return "-L", 256
+	case "f2fs":
+		return "-L", 512
+	case "fat", "vfat", "fat16", "fat32":
+		return "-n", 11
+	case "exfat":
+		return "-L", 11
+	case "ntfs":
+		return "-L", 128
+	default:
+		return "", 0
+	}
+}
+
+func runErase(c *ctx) error {
+	plan := c.plan
+	if plan.Mode != "erase" {
+		return fmt.Errorf("whole-disk partitioning requires erase mode, got %q", plan.Mode)
 	}
 
 	// Guardia: mai partizionare un disco con filesystem montati
 	// (per esempio la chiavetta da cui gira il sistema live).
-	if mounted, err := deviceInUse(plan.Device); err == nil && mounted {
+	if mounted, err := c.safetyChecks().inUse(plan.Device); err == nil && mounted {
 		return fmt.Errorf("il device %s ha partizioni montate: scegliere un altro disco", plan.Device)
 	}
 
 	if runtime.GOARCH == "riscv64" {
 		return runSpacemitPartition(c, plan)
-	}
-
-	if err := c.run("wipefs", "-a", plan.Device); err != nil {
-		return err
 	}
 
 	// Script per sfdisk: U = EFI System, S = swap, L = Linux.
@@ -151,30 +227,50 @@ func runPartition(c *ctx) error {
 		lines = append(lines, ",,L,*") // root avviabile su msdos
 	}
 
-	script := strings.Join(lines, "\n") + "\n"
-	c.logf("schema sfdisk:\n%s", script)
-	if err := c.runInput(script, "sfdisk", "--wipe", "always", plan.Device); err != nil {
+	if err := c.writePartitionTable(strings.Join(lines, "\n") + "\n"); err != nil {
 		return err
 	}
-
-	// Lasciamo il tempo a udev di creare i device node delle partizioni.
-	c.run("udevadm", "settle")
-
 	l := partsFor(plan)
 	if l.Esp != "" {
-		_ = c.run("wipefs", "-a", l.Esp)
-		if err := c.run("mkfs.fat", "-F32", l.Esp); err != nil {
+		if err := c.formatPartition(l.Esp, "fat", ""); err != nil {
 			return err
 		}
 	}
 	if l.Swap != "" {
-		_ = c.run("wipefs", "-a", l.Swap)
-		if err := c.run("mkswap", l.Swap); err != nil {
+		if err := c.formatPartition(l.Swap, "swap", ""); err != nil {
 			return err
 		}
 	}
-	_ = c.run("wipefs", "-a", l.Root)
-	return c.run(mkfsCommand(plan.FsType), append(mkfsForceArgs(plan.FsType), l.Root)...)
+	return c.formatPartition(l.Root, plan.FsType, "")
+}
+
+// Shared by Erase and the one-time Coexist preparation action. Every failure
+// stops the caller, including signature removal and device-node synchronization.
+func (c *ctx) writePartitionTable(script string) error {
+	if err := c.run("wipefs", "-a", c.plan.Device); err != nil {
+		return err
+	}
+	c.logf("schema sfdisk:\n%s", script)
+	if err := c.runInput(script, "sfdisk", "--wipe", "always", c.plan.Device); err != nil {
+		return err
+	}
+	return c.run("udevadm", "settle")
+}
+
+func (c *ctx) formatPartition(device, fs, label string) error {
+	if err := c.run("wipefs", "-a", device); err != nil {
+		return err
+	}
+	command, args := mkfsCommand(fs), mkfsForceArgs(fs)
+	if fs == "fat" {
+		args = []string{"-F32"}
+	} else if fs == "swap" {
+		command = "mkswap"
+	}
+	if label != "" {
+		args = append(args, "-L", label)
+	}
+	return c.run(command, append(args, device)...)
 }
 
 func runSpacemitPartition(c *ctx, plan *Plan) error {

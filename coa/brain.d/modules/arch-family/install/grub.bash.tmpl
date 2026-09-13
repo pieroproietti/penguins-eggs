@@ -56,15 +56,21 @@ if [ -d /sys/firmware/efi ] && grep -q "/boot/efi" /proc/mounts; then
             ;;
     esac
 
-    if ! grub-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
-        # NVRAM-registration can fail (e.g. OVMF/VM firmware) even though the
-        # EFI binary was written correctly; only abort if it genuinely wasn't.
-        [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
-        echo "-> WARNING: grub-install failed (likely NVRAM-only); EFI binary is present, continuing with removable fallback."
-    fi
+    if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+        # Use the validated runtime identity, keeping normal NVRAM registration.
+        # Coexist must preserve the shared EFI/BOOT fallback.
+        grub-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="${KRILL_EFI_BOOTLOADER_ID:?Missing Coexist EFI bootloader ID}" --recheck || exit 1
+    else
+        if ! grub-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck; then
+            # NVRAM-registration can fail (e.g. OVMF/VM firmware) even though the
+            # EFI binary was written correctly; only abort if it genuinely wasn't.
+            [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
+            echo "-> WARNING: grub-install failed (likely NVRAM-only); EFI binary is present, continuing with removable fallback."
+        fi
 
-    mkdir -p /boot/efi/EFI/BOOT
-    [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+        mkdir -p /boot/efi/EFI/BOOT
+        [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+    fi
 else
     echo "-> BIOS/Legacy installation..."
     ROOT_PART_FSTAB=$(awk '$2 == "/" {print $1}' /etc/fstab)

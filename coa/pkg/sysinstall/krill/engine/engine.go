@@ -26,9 +26,13 @@ type Plan struct {
 
 	// Disco
 	Device          string // es. /dev/sda
-	Mode            string // erase (default) | replace
+	Mode            string // erase (default) | replace | coexist
 	TargetPartition string // es. /dev/sda2 (usato in modalità replace)
 	EspPartition    string // es. /dev/sda1 (partizione EFI usata in modalità replace)
+	HomePartition   string // existing shared storage (Coexist only)
+	HomeNamespace   string // directory on shared storage; defaults to Installation ID
+	EFIBootloaderID string // Coexist root label and EFI identity
+	PreviousID      string // Pre-existing Coexist identity on selected slot (if replacing)
 	TableType       string // gpt | msdos
 	FsType          string // ext4, btrfs, ...
 	Swap            string // none | small | suspend | file
@@ -78,6 +82,7 @@ type Event struct {
 var labels = map[string]string{
 	"partition":      "Partitioning disk",
 	"mount":          "Mounting filesystems",
+	"coexistmount":   "Mounting shared HOME and preserved EFI partition",
 	"unpackfs":       "Copying filesystem (this takes a while)",
 	"machineid":      "Resetting machine-id",
 	"fstab":          "Writing fstab",
@@ -103,9 +108,11 @@ func labelFor(module string) string {
 
 // ctx è lo stato condiviso tra i moduli durante l'esecuzione.
 type ctx struct {
-	plan   *Plan
-	log    *os.File
-	mounts []string // mount point attivi, in ordine di mount
+	plan    *Plan
+	log     *os.File
+	checks  *partitionChecks
+	execute func(input, name string, args ...string) error
+	mounts  []string // mount point attivi, in ordine di mount
 }
 
 type moduleFunc func(*ctx) error
@@ -114,6 +121,7 @@ func modules() map[string]moduleFunc {
 	return map[string]moduleFunc{
 		"partition":      runPartition,
 		"mount":          runMount,
+		"coexistmount":   runCoexistMount,
 		"unpackfs":       runUnpackfs,
 		"machineid":      runMachineid,
 		"fstab":          runFstab,
@@ -138,6 +146,14 @@ func Run(plan *Plan, progress func(Event)) error {
 		plan.Mode = "erase"
 	}
 
+	sequence, err := installationSequence(plan)
+	if err != nil {
+		return err
+	}
+	if err := validatePlan(plan, livePartitionChecks()); err != nil {
+		return err
+	}
+
 	logFile, err := os.Create(logPath)
 	if err != nil {
 		return fmt.Errorf("unable to create %s: %w", logPath, err)
@@ -148,8 +164,8 @@ func Run(plan *Plan, progress func(Event)) error {
 	c.logf("=== krill install: mode=%s device=%s target_part=%s esp=%s fs=%s swap=%s target=%s ===",
 		plan.Mode, plan.Device, plan.TargetPartition, plan.EspPartition, plan.FsType, plan.Swap, plan.Target)
 
-	total := len(plan.Exec)
-	for i, name := range plan.Exec {
+	total := len(sequence)
+	for i, name := range sequence {
 		progress(Event{Index: i, Total: total, Module: name, Message: labelFor(name)})
 		c.logf("--- module %d/%d: %s ---", i+1, total, name)
 
@@ -193,6 +209,9 @@ func (c *ctx) run(name string, args ...string) error {
 
 // runInput come run, ma con input passato sullo stdin del comando.
 func (c *ctx) runInput(input, name string, args ...string) error {
+	if c.execute != nil {
+		return c.execute(input, name, args...)
+	}
 	c.logf("$ %s %s", name, strings.Join(args, " "))
 	cmd := exec.Command(name, args...)
 	if input != "" {

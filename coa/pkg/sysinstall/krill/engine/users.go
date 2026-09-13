@@ -189,10 +189,13 @@ func stripLightdmAutologinKeys(path string) {
 
 func runRemoveuser(c *ctx) error {
 	user := c.plan.RemoveUser
-	if user == "" || user == c.plan.Login {
+	if user == "" || (user == c.plan.Login && c.plan.Mode != "coexist") {
 		return nil
 	}
 	if err := c.chroot("userdel", "-r", user); err != nil {
+		if c.plan.Mode == "coexist" {
+			return fmt.Errorf("remove live user before mounting shared HOME: %w", err)
+		}
 		c.logf("userdel %s failed (non-fatal): %v", user, err)
 	}
 	return nil
@@ -291,4 +294,3 @@ func configureGreetdFile(path, login string) {
 	}
 	os.WriteFile(path, []byte(strings.Join(newLines, "\n")), 0644)
 }
-
