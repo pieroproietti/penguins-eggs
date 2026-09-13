@@ -14,10 +14,13 @@ import (
 )
 
 var efiBootEntryPattern = regexp.MustCompile(`(?i)^Boot([0-9a-fA-F]{4})\*?\s+(.*)$`)
+var efiPartitionPattern = regexp.MustCompile(`(?i)HD\([0-9]+,GPT,([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}),`)
+var partitionUUIDPattern = regexp.MustCompile(`(?i)^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
-// ParseEFIBootEntries finds boot entry numbers matching an identity in efibootmgr output.
-func ParseEFIBootEntries(output, id string) []string {
-	if id == "" {
+// ParseEFIBootEntries matches both the installation identity and the selected
+// ESP's GPT partition UUID. Entries without a verifiable device path are kept.
+func ParseEFIBootEntries(output, id, espUUID string) []string {
+	if id == "" || !partitionUUIDPattern.MatchString(espUUID) {
 		return nil
 	}
 	var toDelete []string
@@ -28,6 +31,10 @@ func ParseEFIBootEntries(output, id string) []string {
 		if len(matches) == 3 {
 			num := matches[1]
 			desc := strings.ToLower(matches[2])
+			partition := efiPartitionPattern.FindStringSubmatch(desc)
+			if len(partition) != 2 || !strings.EqualFold(partition[1], espUUID) {
+				continue
+			}
 			// Match an exact label (the device path follows a tab), never a
 			// description prefix such as "arch backup" belonging to another OS.
 			label, _, _ := strings.Cut(desc, "\t")
@@ -40,17 +47,25 @@ func ParseEFIBootEntries(output, id string) []string {
 	return toDelete
 }
 
-// CleanCoexistNVRAM queries efibootmgr and deletes NVRAM entries associated with id.
-func CleanCoexistNVRAM(id string) error {
+// CleanCoexistNVRAM removes only entries associated with id on espDevice.
+func CleanCoexistNVRAM(espDevice, id string) error {
 	if err := ValidateEFIBootloaderID(id); err != nil {
 		return err
 	}
-	out, err := utils.ExecCapture("efibootmgr")
+	out, err := utils.ExecCapture("efibootmgr --verbose")
 	if err != nil {
 		// Tolerant: system might not have EFI variables mounted or efibootmgr might not be supported.
 		return nil
 	}
-	entries := ParseEFIBootEntries(out, id)
+	espUUID, err := utils.ExecCapture("lsblk -dnro PARTUUID " + shellQuote(espDevice))
+	if err != nil {
+		return fmt.Errorf("read Coexist ESP PARTUUID: %w", err)
+	}
+	espUUID = strings.TrimSpace(espUUID)
+	if !partitionUUIDPattern.MatchString(espUUID) {
+		return fmt.Errorf("invalid Coexist ESP PARTUUID on %s", espDevice)
+	}
+	entries := ParseEFIBootEntries(out, id, espUUID)
 	var errs []error
 	for _, entry := range entries {
 		if err := utils.ExecQuiet(fmt.Sprintf("efibootmgr -b %s -B", entry)); err != nil {
@@ -115,7 +130,7 @@ func CleanCoexistESP(espDevice, id string) (result error) {
 	if err := CleanCoexistESPMount(dir, id); err != nil {
 		return err
 	}
-	return CleanCoexistNVRAM(id)
+	return CleanCoexistNVRAM(espDevice, id)
 }
 
 // CleanCoexistHomeMount removes /<id> from a mounted shared HOME directory, strictly preserving /common and siblings.

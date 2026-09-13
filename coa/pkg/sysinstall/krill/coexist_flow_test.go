@@ -16,7 +16,7 @@ func TestCoexistInstallFitsStandardTerminal(t *testing.T) {
 	m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
 	for _, message := range []string{
 		"",
-		"Explicitly select the root to FORMAT and both EFI and shared HOME to PRESERVE.",
+		"Select the root to FORMAT and existing shared HOME to PRESERVE.",
 		engine.ValidateHomeNamespace("").Error(),
 	} {
 		m.diskError = message
@@ -116,5 +116,37 @@ func TestCoexistReadyCanExitWithoutInstallingOrRestarting(t *testing.T) {
 		if _, ok := cmd().(tea.QuitMsg); !ok || next.(model).installCh != nil {
 			t.Fatal("exit started installation or restart")
 		}
+	}
+}
+
+func TestCoexistMissingESPGuidance(t *testing.T) {
+	m := identityModel()
+	m.efiParts = nil
+	m.efiIdx, m.diskField = -1, 0
+	m.termWidth, m.termHeight = 80, 24
+	for _, key := range []string{"", "tab", "enter"} {
+		if key != "" {
+			next, cmd := m.updateDisk(key)
+			m = next.(model)
+			if cmd != nil || m.state != StateDisk || m.initialization != nil || m.installCh != nil {
+				t.Fatal("missing ESP dispatched an operation or advanced installation")
+			}
+		}
+		view := m.View()
+		for _, text := range []string{"/dev/test", "Installation is blocked", "GParted", "unallocated space", "Resize/Move", "FAT32", "512 MiB", "enable esp", "GPT is required", "restart Krill", "choose another disk"} {
+			if !strings.Contains(view, text) {
+				t.Fatalf("guidance missing %q: %s", text, view)
+			}
+		}
+		if lipgloss.Height(view) > 24 || lipgloss.Width(view) > 80 {
+			t.Fatalf("guidance does not fit 80x24: %dx%d", lipgloss.Width(view), lipgloss.Height(view))
+		}
+		if fields := m.activeDiskFields(); len(fields) != 1 || fields[0] != diskFieldDevice {
+			t.Fatal("missing ESP offered hidden installation fields")
+		}
+	}
+	next, cmd := m.updateDisk("esc")
+	if cmd != nil || next.(model).coexistStage != coexistChoose {
+		t.Fatal("guidance prevented return to Coexist menu")
 	}
 }

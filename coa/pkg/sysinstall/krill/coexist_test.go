@@ -42,29 +42,23 @@ func TestCoexistDiskSelections(t *testing.T) {
 		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},
 		homeParts:      []PartitionInfo{{Path: "/dev/test2", FsType: "ext4"}},
 		homeIdx:        -1,
-		partIdx:        -1, efiIdx: -1, fsTypes: []string{"ext4"},
+		partIdx:        -1, efiIdx: 0, fsTypes: []string{"ext4"},
 	}
-	wantFields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldEfi, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
+	wantFields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
 	if !reflect.DeepEqual(m.activeDiskFields(), wantFields) {
-		t.Fatal("Coexist must show an explicit ESP selector even with one ESP")
+		t.Fatal("Coexist must not offer an ESP selector")
 	}
 	if !reflect.DeepEqual(m.availableSwapTypes(), []string{"none", "file"}) {
 		t.Fatal("partition swap offered")
 	}
-	if view := m.viewDisk(); !strings.Contains(view, "SELECT ROOT") || !strings.Contains(view, "SELECT ESP") {
-		t.Fatal("missing explicit-selection prompts")
+	if view := m.viewDisk(); !strings.Contains(view, "SELECT ROOT") || !strings.Contains(view, "/dev/test1 [fixed, preserved]") {
+		t.Fatal("missing ROOT prompt or fixed ESP")
 	}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldTargetPart)
 	next, _ := m.updateDisk("right")
 	m = next.(model)
-	if m.partIdx != 0 || m.efiIdx != -1 {
-		t.Fatal("root selection also selected ESP")
-	}
-	m.diskField = slices.Index(m.activeDiskFields(), diskFieldEfi)
-	next, _ = m.updateDisk("right")
-	m = next.(model)
-	if m.efiIdx != 0 {
-		t.Fatal("ESP selection failed")
+	if m.partIdx != 0 || m.efiIdx != 0 {
+		t.Fatal("root selection changed fixed ESP")
 	}
 	if m.homeIdx != -1 {
 		t.Fatal("HOME was selected implicitly")
@@ -98,6 +92,7 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 		diskModes:      []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
 		disks:          []DiskInfo{{Path: "/dev/test"}},
 		candidateParts: []PartitionInfo{{Path: "/dev/sda5", Size: "8G", FsType: "ext4", Label: "arch-colibri-4"}},
+		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},
 		partIdx:        0,
 		fsTypes:        []string{"ext4"},
 		swapTypes:      []string{"none", "file"},
@@ -142,5 +137,51 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 	plan = m.buildPlan()
 	if plan.PreviousID != "" {
 		t.Fatalf("buildPlan() PreviousID = %q, want empty for generic label", plan.PreviousID)
+	}
+}
+
+func TestCoexistDiscoveryStaysOnSelectedDiskExceptHome(t *testing.T) {
+	const guid = "c12a7328-f81f-11d2-ba4b-00a0c93ec93b"
+	parts := map[string][]PartitionInfo{
+		"/dev/nvme0n1": {
+			{Path: "/dev/nvme0n1p1", FsType: "vfat", PartType: guid, IsEfi: true},
+			{Path: "/dev/nvme0n1p2", FsType: "ext4"},
+		},
+		"/dev/sdb": {
+			{Path: "/dev/sdb1", FsType: "vfat", PartType: guid, IsEfi: true},
+			{Path: "/dev/sdb2", FsType: "ext4"},
+		},
+	}
+	m := model{diskModeIdx: 2, coexistStage: coexistInstall, diskBios: "UEFI",
+		disks: []DiskInfo{{Path: "/dev/nvme0n1"}, {Path: "/dev/sdb"}}}
+	detect := func(device string) []PartitionInfo { return parts[device] }
+	allEFI := func() []PartitionInfo { t.Fatal("searched for ESP on other disks"); return nil }
+	m.refreshPartitionsWith(detect, "", allEFI)
+	if m.efiIdx != 0 || len(m.efiParts) != 1 || m.efiParts[0].Path != "/dev/nvme0n1p1" {
+		t.Fatal("local ESP was not fixed automatically")
+	}
+	if len(m.candidateParts) != 1 || m.candidateParts[0].Path != "/dev/nvme0n1p2" {
+		t.Fatal("ROOT candidates include another disk or ESP")
+	}
+	if !slices.ContainsFunc(m.homeParts, func(p PartitionInfo) bool { return p.Path == "/dev/sdb2" }) {
+		t.Fatal("external HOME is unavailable")
+	}
+	m.partIdx, m.homeIdx = 0, 1
+	m.diskIdx = 1
+	m.refreshPartitionsWith(detect, "", allEFI)
+	if m.efiParts[m.efiIdx].Path != "/dev/sdb1" || m.partIdx != -1 || m.homeIdx != -1 {
+		t.Fatal("changing disk retained old selections")
+	}
+	parts["/dev/sdb"] = parts["/dev/sdb"][1:]
+	m.refreshPartitionsWith(detect, "", allEFI)
+	if m.efiIdx != -1 || !strings.Contains(m.coexistESPError(), "No valid ESP") {
+		t.Fatal("missing local ESP did not block selection")
+	}
+	parts["/dev/sdb"] = append(parts["/dev/sdb"],
+		PartitionInfo{Path: "/dev/sdb1", FsType: "vfat", PartType: guid, IsEfi: true},
+		PartitionInfo{Path: "/dev/sdb3", FsType: "vfat", PartType: guid, IsEfi: true})
+	m.refreshPartitionsWith(detect, "", allEFI)
+	if m.efiIdx != -1 || !strings.Contains(m.coexistESPError(), "Multiple valid ESPs") {
+		t.Fatal("ambiguous local ESP was selected arbitrarily")
 	}
 }

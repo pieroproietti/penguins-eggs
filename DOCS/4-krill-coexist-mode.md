@@ -7,8 +7,10 @@ La modalità `coexist` funziona nel modo seguente. Per ora l'ho provata soltanto
 In `eggs sysinstall krill`, scegliendo **Coexist** nella pagina Disk si apre
 un menu con due operazioni distinte:
 
-- **Install a distribution on a prepared disk**: scelta della ROOT da
-  formattare, di ESP e HOME da riutilizzare e dell'identificativo dell'installazione.
+- **Install a distribution on an existing disk**: scelta del disco, della ROOT
+  esistente da formattare, della HOME da riutilizzare e dell'identificativo
+  dell'installazione. La ESP è rilevata automaticamente sul disco selezionato
+  e resta fissa, visibile ma non selezionabile.
   Questo percorso non contiene l'azione di preparazione dell'intero disco.
   Prosegue con utenti e riepilogo, compresa la conferma delle eventuali
   cancellazioni dei contenuti HOME/EFI dell'installazione sostituita.
@@ -27,14 +29,51 @@ Per aggiungere la seconda distribuzione e le successive si sceglie direttamente
 il percorso di installazione, senza preparare nuovamente il disco.
 
 Nel percorso di installazione, **↑/↓** o **Tab** selezionano il campo,
-**←/→** scelgono le partizioni e l'**Installation ID** va digitato
+**←/→** scelgono disco, ROOT e HOME; l'**Installation ID** va digitato
 (per esempio `debian`). **Invio** passa a Users quando tutte le selezioni
 obbligatorie sono valide. Il modulo mantiene visibili campi ed errori su una
 console 80×24; il dettaglio delle directory HOME/EFI da cancellare compare
 nel riepilogo finale, prima della conferma.
 
-La separazione riguarda l'interfaccia: schema di partizionamento, controlli e
-motore d'installazione Coexist restano condivisi con la procedura esistente.
+### Dischi preesistenti e ESP fissa
+
+L'installazione usa esclusivamente una ROOT già esistente sul disco selezionato
+e la sua unica ESP valida (tipo GPT ESP, filesystem FAT). Se la ESP manca o ne
+esistono più di una valide, l'installazione viene bloccata: non viene cercata
+una ESP su altri dischi. Il vincolo viene verificato nel preflight e ripetuto
+prima della formattazione. Cambiare disco aggiorna la ESP fissa e azzera la
+scelta di ROOT e HOME.
+
+Non è necessario che il disco sia stato preparato da Krill o che le partizioni
+abbiano label ROOT1, ROOT2, ecc. La HOME condivisa deve essere una partizione
+ext4 preesistente e può stare anche su un altro disco. ESP e HOME non vengono
+formattate; resta applicata la pulizia dei contenuti dell'identificativo
+selezionato descritta sotto. Le label delle altre partizioni non vengono cambiate.
+
+La preparazione distruttiva rimane un percorso separato e facoltativo.
+
+### Avviso quando manca una ESP valida
+
+Selezionando un disco senza ESP valida, Krill mostra subito le istruzioni
+e blocca l'avanzamento. Restano disponibili la scelta di un altro disco,
+il ritorno al menu e l'uscita. La procedura suggerita è:
+
+1. Fare un backup, uscire da Krill e aprire **GParted da una live USB**,
+   selezionando lo stesso disco indicato nell'avviso.
+2. Controllare prima eventuali ESP esistenti: l'avviso può indicare anche
+   un tipo o filesystem non riconosciuto. Non formattarle per tentativi.
+3. Su un disco **GPT**, usare spazio non allocato oppure **Ridimensiona/Sposta**
+   su una partizione smontata, se il filesystem supporta la riduzione.
+4. Nello spazio ricavato creare una **nuova partizione FAT32 da 512 MiB**:
+   è la dimensione consigliata, coerente con la preparazione di Krill.
+   In **Gestione flag** attivare `esp`; la label `ESP` è facoltativa.
+5. Applicare le modifiche, lasciare la ESP smontata e riavviare
+   `sudo eggs sysinstall krill`.
+
+**Non usare “Crea tabella delle partizioni” su un disco da conservare.**
+Per un disco MBR la conversione a GPT richiede una valutazione separata.
+La guida non avvia strumenti né ridimensionamenti automaticamente.
+Riferimento per le operazioni: [manuale GParted](https://gparted.org/display-doc.php?name=help-manual).
 
 ### Schema di partizionamento
 
@@ -102,7 +141,8 @@ Quando si reinstalla o si sostituisce una distribuzione su uno slot già occupat
 - Se la label corrisponde a un'installazione Coexist precedente (non generica come `root1`, `root2`), prima di procedere elimina automaticamente:
   - la directory associata nella partizione condivisa `/srv/homes/<vecchia_label>`
   - la directory dell'avvio UEFI `/boot/efi/EFI/<vecchia_label>`
-  - le voci di avvio associate nella NVRAM UEFI tramite `efibootmgr`.
+  - le voci di avvio associate nella NVRAM UEFI tramite `efibootmgr`, soltanto
+    se il percorso GPT identifica il PARTUUID della ESP utilizzata.
 
 Nella schermata di riepilogo di `krill` viene segnalato chiaramente quali risorse della precedente installazione verranno rimosse (`PURGE PREVIOUS`).
 
@@ -120,7 +160,9 @@ devono utilizzare lo stesso identificativo. ESP e HOME devono essere smontate;
 le destinazioni nuove e precedenti vengono ispezionate prima della scrittura.
 Gli errori restituiti dalla pulizia HOME, EFI e NVRAM interrompono l'installazione.
 Resta tollerata, nella funzione NVRAM esistente, l'impossibilità di interrogare
-`efibootmgr`.
+`efibootmgr`. Quando la lettura riesce, la pulizia usa l'output verbose
+e richiede un PARTUUID valido della ESP: voci omonime su altre ESP e voci
+senza un percorso GPT verificabile vengono conservate.
 
 Per il momento considero quindi `coexist` una modalità sperimentale: funziona nei miei test con una macchina virtuale, UEFI, GRUB e un unico disco. Ora dobbiamo provarla con più distribuzioni e in configurazioni reali differenti.
 
@@ -134,7 +176,7 @@ fstab, creazione utenti, script di installazione e smontaggio.
 | --- | --- |
 | Preparazione facoltativa | Il percorso `Prepare a disk for multiple distributions` cancella **l'intero disco**. Richiede anteprima, lettura del layout e digitazione del device; ricontrolla geometria e identità prima di scrivere. Termina con `Disk ready` e la scelta tra installare e uscire. Non va usato per aggiungere una distribuzione a un disco già preparato. |
 | Dimensionamento | ESP da 512 MiB, almeno due ROOT, HOME residua di almeno 16 GiB. La ROOT predefinita è 8 GiB, configurabile da 4 GiB. Il minimo geometrico non garantisce che l'immagine estratta trovi spazio. |
-| Selezione | ROOT da formattare, ESP e HOME ext4 da riutilizzare sono esplicite. HOME può essere su un altro disco. La ricerca ESP privilegia il disco scelto e cerca altrove soltanto in assenza di ESP locale. |
+| Selezione | ROOT esistente sul disco scelto da formattare, ESP unica dello stesso disco fissa e preservata. ESP assente o ambigua blocca l’installazione. HOME ext4 da riutilizzare esplicita, anche su un altro disco. |
 | Preflight | UEFI, famiglia supportata, device distinti, filesystem/UUID, destinazioni HOME/EFI e collisioni delle label. La validazione viene ripetuta nel modulo partition. |
 | Copia | Si formatta soltanto la ROOT. HOME ed ESP condivise sono montate dopo unpackfs e removeuser, così queste operazioni non raggiungono i dati condivisi. |
 | Utenti e HOME | `/srv/homes/<id>` viene montata con bind su `/home`. Le altre directory e `common` restano separate. La reinstallazione attuale ricrea la HOME dell'identificativo selezionato. |
@@ -147,9 +189,10 @@ fstab, creazione utenti, script di installazione e smontaggio.
 1. **Identità persistente degli slot.** Le label sono descrittive: l'inventario
    aggiunto intercetta collisioni visibili, ma non dimostra la proprietà delle
    directory HOME/EFI. Servirebbe un registro che associ ID, UUID ROOT, UUID HOME
-   e PARTUUID ESP; permette anche di circoscrivere la pulizia NVRAM alla ESP
-   corretta. Un vecchio sistema senza label o su un disco scollegato non è
-   identificabile con il controllo attuale.
+   e PARTUUID ESP. La pulizia NVRAM è già circoscritta al PARTUUID della ESP
+   utilizzata; il registro servirebbe a dimostrare la proprietà delle directory.
+   Un vecchio sistema senza label o su un disco scollegato non è identificabile
+   con il controllo attuale.
 2. **Politica HOME esplicita.** Offrire conservazione o ricreazione, mostrando
    separatamente l'effetto della sostituzione dello slot. La conservazione
    richiede anche verifica UID/GID e proprietà della directory utente.
@@ -165,8 +208,7 @@ fstab, creazione utenti, script di installazione e smontaggio.
    una gestione esplicita nei template.
 5. **Bootloader delle altre famiglie.** Adeguare Fedora e Alpine prima di
    rimuovere il blocco; provare anche persistenza dopo aggiornamenti GRUB e
-   gestione degli errori NVRAM. Rendere selezionabili tutte le ESP anche quando
-   il disco ROOT ne contiene già una.
+   gestione degli errori NVRAM, mantenendo la ESP fissa sul disco selezionato.
 6. **Ripresa e conclusione affidabili.** Valutare rinomina/backup delle vecchie
    directory fino al completamento; riportare gli smontaggi falliti e impedire
    che un errore finale venga presentato come successo.
@@ -175,7 +217,10 @@ fstab, creazione utenti, script di installazione e smontaggio.
 
 I test Go di Krill e setup coprono simulazioni dei dispositivi, conferme TUI,
 layout, collisioni su dischi distinti, errori di pulizia, fstab ext4/Btrfs e
-template GRUB Debian/Arch/Manjaro. I test del modulo Arch/Manjaro eseguono
+template GRUB Debian/Arch/Manjaro. I test del vincolo sul disco verificano
+ESP fissa, HOME esterna, blocco di ROOT/ESP esterne prima della formattazione,
+ESP assenti o ambigue e conservazione delle voci NVRAM di altre ESP.
+I test del modulo Arch/Manjaro eseguono
 il selettore del bootloader e il template GRUB in directory temporanee, con
 GRUB simulato, includendo BigLinux, BigCommunity e una derivata personalizzata.
 Verificano identità EFI, conservazione degli altri slot e del fallback
@@ -186,7 +231,8 @@ Il progetto dispone già di **The Furnace**, con compilazione e packaging
 automatici e voli di remastering su VM Proxmox gestite tramite snapshot, attraverso
 Alpine, Arch, Debian e Fedora. A questa infrastruttura va affiancata una prova
 specifica Coexist: prima installazione Debian, seconda Arch, reinstallazione con
-ID uguale e diverso, ROOT/HOME/ESP su dischi distinti, riavvio di ogni slot e
+ID uguale e diverso, ROOT ed ESP sul disco scelto con HOME anche esterna,
+blocco di ROOT/ESP esterne o ESP ambigue, riavvio di ogni slot e
 confronto dei dati degli slot preservati e di `EFI/BOOT`. Provare inoltre ESP
 piena, NVRAM indisponibile e interruzione durante copia/bootloader. In questa
 revisione sono stati eseguiti test locali, senza avviare installazioni in VM.

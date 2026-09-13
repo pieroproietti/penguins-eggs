@@ -207,7 +207,7 @@ func runCoexistMount(c *ctx) error {
 		if err := CleanCoexistESPMount(esp, id); err != nil {
 			return fmt.Errorf("clean Coexist EFI %q: %w", id, err)
 		}
-		if err := CleanCoexistNVRAM(id); err != nil {
+		if err := CleanCoexistNVRAM(p.EspPartition, id); err != nil {
 			return fmt.Errorf("clean Coexist NVRAM %q: %w", id, err)
 		}
 	}

@@ -26,6 +26,7 @@ func safeChecks() partitionChecks {
 		family:      func() string { return "debian" },
 		inspectEFI:  func(string, string) error { return nil },
 		identities:  func(*Plan) error { return nil },
+		disk:        func(string, string, string) error { return nil },
 	}
 }
 
@@ -41,6 +42,11 @@ func TestCoexistSafety(t *testing.T) {
 		{"unknown", func(p *Plan, _ *partitionChecks) { p.Mode = "typo" }},
 		{"BIOS with GPT", func(_ *Plan, c *partitionChecks) { c.uefi = func() bool { return false } }},
 		{"missing root", func(p *Plan, _ *partitionChecks) { p.TargetPartition = "" }},
+		{"missing disk", func(p *Plan, _ *partitionChecks) { p.Device = "" }},
+		{"disk inspection unavailable", func(_ *Plan, c *partitionChecks) { c.disk = nil }},
+		{"disk inspection failed", func(_ *Plan, c *partitionChecks) {
+			c.disk = func(string, string, string) error { return errors.New("wrong disk") }
+		}},
 		{"missing ESP", func(p *Plan, _ *partitionChecks) { p.EspPartition = "" }},
 		{"same partition", func(p *Plan, _ *partitionChecks) { p.EspPartition = p.TargetPartition }},
 		{"alias", func(_ *Plan, c *partitionChecks) {
@@ -228,6 +234,47 @@ func TestRootWipeFailure(t *testing.T) {
 			}
 			if mode == "replace" && (err != nil || !formatted) {
 				t.Fatal("legacy Replace behavior changed")
+			}
+		})
+	}
+}
+
+func TestCoexistDiskBoundaryBeforeFormatting(t *testing.T) {
+	const tree = `{"blockdevices":[{"path":"/dev/test","type":"disk","children":[
+		{"path":"/dev/test1","type":"part","fstype":"vfat","parttype":"c12a7328-f81f-11d2-ba4b-00a0c93ec93b"},
+		{"path":"/dev/test5","type":"part","fstype":null,"parttype":"0fc63daf-8483-4772-8e79-3d69d8477de4"}
+	]}]}`
+	for _, tc := range []struct {
+		name, root, esp, tree string
+		valid                 bool
+	}{
+		{"existing raw ROOT", "/dev/test5", "/dev/test1", tree, true},
+		{"external ROOT", "/dev/other5", "/dev/test1", tree, false},
+		{"external ESP", "/dev/test5", "/dev/other1", tree, false},
+		{"whole disk ROOT", "/dev/test", "/dev/test1", tree, false},
+		{"missing ROOT", "/dev/test6", "/dev/test1", tree, false},
+		{"ESP as ROOT", "/dev/test1", "/dev/test5", tree, false},
+		{"missing ESP", "/dev/test5", "/dev/test1", strings.ReplaceAll(tree, "vfat", "ext4"), false},
+		{"multiple ESPs", "/dev/test5", "/dev/test1", strings.Replace(tree, `"children":[`, `"children":[{"path":"/dev/test3","type":"part","fstype":"vfat","parttype":"c12a7328-f81f-11d2-ba4b-00a0c93ec93b"},`, 1), false},
+		{"wrong disk", "/dev/test5", "/dev/test1", strings.Replace(tree, `"path":"/dev/test"`, `"path":"/dev/other"`, 1), false},
+		{"not a disk", "/dev/test5", "/dev/test1", strings.Replace(tree, `"type":"disk"`, `"type":"part"`, 1), false},
+		{"probe malformed", "/dev/test5", "/dev/test1", `{`, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			p, checks := coexistPlan(), safeChecks()
+			p.TargetPartition, p.EspPartition = tc.root, tc.esp
+			p.HomePartition = "/dev/external2"
+			checks.disk = func(device, root, esp string) error {
+				return validateCoexistDiskTree(device, root, esp, tc.tree)
+			}
+			commands := 0
+			c := &ctx{plan: p, checks: &checks, execute: func(string, string, ...string) error {
+				commands++
+				return nil
+			}}
+			err := runPartition(c)
+			if (err == nil) != tc.valid || (!tc.valid && commands != 0) {
+				t.Fatalf("validation error=%v, commands=%d, valid=%t", err, commands, tc.valid)
 			}
 		})
 	}

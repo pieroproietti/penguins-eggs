@@ -27,13 +27,47 @@ func (m model) viewCoexistChoice() string {
 	return strings.Join([]string{
 		renderSteps(4), "",
 		m.selectorRow(m.diskField == 0, "Installation mode", "Coexist"), "",
-		m.coexistActionRow(m.diskField == 1, "Install a distribution on a prepared disk"),
-		"    Choose a ROOT slot and reuse existing ESP and shared HOME.", "",
+		m.coexistActionRow(m.diskField == 1, "Install a distribution on an existing disk"),
+		"    Existing ROOT and fixed ESP on that disk; HOME may be on another.", "",
 		m.coexistActionRow(m.diskField == 2, "Prepare a disk for multiple distributions"),
 		"    Create ESP, ROOT slots and shared HOME.",
 		"    " + redBgWhiteText.Render("WARNING: Completely destructive. Erases ALL DATA on the selected disk."), "",
 		"↑/↓ select action | ←/→ change installation mode | Enter: open",
 	}, "\n")
+}
+
+func (m model) coexistESPError() string {
+	if len(m.efiParts) == 0 {
+		return "No valid ESP on selected disk."
+	}
+	if len(m.efiParts) != 1 {
+		return "Multiple valid ESPs on selected disk."
+	}
+	if m.efiIdx != 0 {
+		return "ESP on selected disk is not verified."
+	}
+	return ""
+}
+
+func (m model) viewCoexistMissingESP() string {
+	rows := []string{
+		renderSteps(4), "",
+		cyanText.Render("Coexist — ESP required"),
+		m.selectorRow(true, "Installation device", m.disks[m.diskIdx].Path),
+		redBgWhiteText.Render("No valid ESP on this disk. Installation is blocked."),
+		"Back up data; exit Krill and open GParted from a live USB.",
+		"Inspect existing ESPs first; do not format an existing one.",
+		"On a GPT disk, use unallocated space or shrink an unmounted",
+		"partition if supported by its filesystem (Resize/Move).",
+		"In that space, create a NEW FAT32 partition; 512 MiB recommended.",
+		"Manage Flags: enable esp. Optional filesystem label: ESP.",
+		"GPT is required. Do not create a new partition table to convert.",
+		"Apply changes, leave the ESP unmounted, then restart Krill.",
+	}
+	if m.diskError != "" {
+		rows = append(rows, redBgWhiteText.Render(m.diskError))
+	}
+	return strings.Join(rows, "\n")
 }
 
 func (m model) viewCoexistPreparation() string {

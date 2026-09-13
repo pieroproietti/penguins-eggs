@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -27,6 +28,7 @@ type partitionChecks struct {
 	family      func() string
 	inspectEFI  func(string, string) error
 	identities  func(*Plan) error
+	disk        func(string, string, string) error
 }
 
 func (c *ctx) safetyChecks() partitionChecks {
@@ -47,7 +49,64 @@ func livePartitionChecks() partitionChecks {
 		family:      func() string { return distro.NewDistro().FamilyID },
 		inspectEFI:  inspectEFIPartition,
 		identities:  inspectCoexistIdentities,
+		disk:        inspectCoexistDisk,
 	}
+}
+
+// Inspect only the selected disk. ROOT and the unique valid ESP must be direct
+// partitions of it; shared HOME is deliberately allowed on another disk.
+func inspectCoexistDisk(device, root, esp string) error {
+	device, err := filepath.EvalSymlinks(device)
+	if err != nil {
+		return err
+	}
+	out, err := utils.ExecCapture("lsblk --json --tree --output PATH,TYPE,PARTTYPE,FSTYPE " + shellQuote(device))
+	if err != nil {
+		return err
+	}
+	return validateCoexistDiskTree(device, root, esp, out)
+}
+
+func validateCoexistDiskTree(device, root, esp, output string) error {
+	type block struct {
+		Path     string  `json:"path"`
+		Type     string  `json:"type"`
+		PartType string  `json:"parttype"`
+		FsType   string  `json:"fstype"`
+		Children []block `json:"children"`
+	}
+	var tree struct {
+		Devices []block `json:"blockdevices"`
+	}
+	if err := json.Unmarshal([]byte(output), &tree); err != nil {
+		return err
+	}
+	if len(tree.Devices) != 1 || tree.Devices[0].Type != "disk" || tree.Devices[0].Path != device {
+		return fmt.Errorf("Coexist requires a single selected disk")
+	}
+	rootFound, espFound, espCount := false, false, 0
+	for _, part := range tree.Devices[0].Children {
+		if part.Type != "part" {
+			continue
+		}
+		if part.Path == root {
+			if strings.EqualFold(part.PartType, "c12a7328-f81f-11d2-ba4b-00a0c93ec93b") {
+				return fmt.Errorf("Coexist cannot use an ESP as root")
+			}
+			rootFound = true
+		}
+		if IsCoexistESP(part.PartType, part.FsType) {
+			espCount++
+			espFound = espFound || part.Path == esp
+		}
+	}
+	if !rootFound {
+		return fmt.Errorf("Coexist root must be an existing partition on selected disk %s", device)
+	}
+	if espCount != 1 || !espFound {
+		return fmt.Errorf("Coexist requires the unique valid ESP on selected disk %s", device)
+	}
+	return nil
 }
 
 func canonicalPartition(path string) (string, error) {
@@ -122,7 +181,10 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 		return fmt.Errorf("Coexist requires an explicitly selected root partition")
 	}
 	if plan.EspPartition == "" {
-		return fmt.Errorf("Coexist requires an explicitly selected EFI System Partition")
+		return fmt.Errorf("Coexist requires the fixed EFI System Partition on the selected disk")
+	}
+	if plan.Device == "" || checks.disk == nil {
+		return fmt.Errorf("Coexist selected disk inspection unavailable")
 	}
 	root, err := checks.partition(plan.TargetPartition)
 	if err != nil {
@@ -134,6 +196,9 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	}
 	if root == esp {
 		return fmt.Errorf("Coexist root and ESP must be different partitions")
+	}
+	if err := checks.disk(plan.Device, root, esp); err != nil {
+		return fmt.Errorf("Coexist selected disk: %w", err)
 	}
 	valid, err := checks.esp(esp)
 	if err != nil {

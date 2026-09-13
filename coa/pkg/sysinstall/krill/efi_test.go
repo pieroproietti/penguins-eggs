@@ -17,6 +17,7 @@ func identityModel() model {
 		disks:     []DiskInfo{{Path: "/dev/test"}}, fsTypes: []string{"ext4"},
 		userInputs: make([]textinput.Model, 5),
 		locData:    TimezoneData{Regions: []string{"Europe"}, Zones: map[string][]string{"Europe": {"Rome"}}},
+		efiParts:   []PartitionInfo{{Path: "/dev/test1"}},
 	}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldNamespace)
 	return m

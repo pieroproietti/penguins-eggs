@@ -518,27 +518,36 @@ func (m *model) focusNet(idx int) tea.Cmd {
 }
 
 func (m *model) refreshPartitions() {
+	m.refreshPartitionsWith(DetectPartitions, DetectLiveDisk(), DetectAllEfiPartitions)
+}
+
+func (m *model) refreshPartitionsWith(detect func(string) []PartitionInfo, liveDisk string, allEFI func() []PartitionInfo) {
 	if len(m.disks) == 0 || m.diskIdx >= len(m.disks) {
 		m.candidateParts = nil
 		m.efiParts = nil
+		m.homeParts = nil
+		m.homeIdx = -1
 		m.partIdx = 0
 		m.efiIdx = 0
 		return
 	}
-	allParts := DetectPartitions(m.disks[m.diskIdx].Path)
-	m.candidateParts = GetCandidatePartitions(allParts, DetectLiveDisk())
+	allParts := detect(m.disks[m.diskIdx].Path)
+	m.candidateParts = GetCandidatePartitions(allParts, liveDisk)
 	m.efiParts = GetEfiPartitions(allParts)
-	if len(m.efiParts) == 0 && (m.diskBios == "UEFI" || (m.diskModeIdx == 2 && engine.IsUEFI())) {
-		m.efiParts = DetectAllEfiPartitions()
+	if m.diskModeIdx != 2 && len(m.efiParts) == 0 && m.diskBios == "UEFI" {
+		m.efiParts = allEFI()
 	}
 	m.partIdx = 0
 	m.efiIdx = 0
 	if m.diskModeIdx == 2 {
 		m.efiParts = coexistEfiPartitions(m.efiParts)
 		m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
+		if len(m.efiParts) == 1 {
+			m.efiIdx = 0
+		}
 		m.homeParts = nil
 		for _, disk := range m.disks {
-			for _, part := range DetectPartitions(disk.Path) {
+			for _, part := range detect(disk.Path) {
 				if part.FsType == "ext4" && !part.IsEfi {
 					m.homeParts = append(m.homeParts, part)
 				}
@@ -581,7 +590,10 @@ func (m *model) activeDiskFields() []diskFieldKind {
 		case coexistPrepare:
 			return []diskFieldKind{diskFieldDevice, diskFieldInitialize}
 		case coexistInstall:
-			return []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldEfi, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
+			if len(m.efiParts) == 0 {
+				return []diskFieldKind{diskFieldDevice}
+			}
+			return []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
 		case coexistReady:
 			return nil
 		}
@@ -698,6 +710,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		case diskFieldDevice:
 			m.diskIdx = cycle(m.diskIdx, delta, len(m.disks))
 			m.refreshPartitions()
+			m.diskError = ""
 		case diskFieldTargetPart:
 			if len(m.candidateParts) > 0 {
 				m.partIdx = cycle(m.partIdx, delta, len(m.candidateParts))
@@ -723,8 +736,10 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 				m.diskError = "Coexist requires the live system to be booted in UEFI mode."
 			} else if err := engine.ValidateCoexistFamily(distro.NewDistro().FamilyID); err != nil {
 				m.diskError = err.Error()
-			} else if m.partIdx < 0 || m.efiIdx < 0 || m.homeIdx < 0 || len(m.candidateParts) == 0 || len(m.efiParts) == 0 || len(m.homeParts) == 0 {
-				m.diskError = "Explicitly select the root to FORMAT and both EFI and shared HOME to PRESERVE."
+			} else if err := m.coexistESPError(); err != "" {
+				m.diskError = err
+			} else if m.partIdx < 0 || m.partIdx >= len(m.candidateParts) || m.homeIdx < 0 || m.homeIdx >= len(m.homeParts) {
+				m.diskError = "Select the root to FORMAT and existing shared HOME to PRESERVE."
 			}
 			if err := engine.ValidateHomeNamespace(m.homeNamespace); err != nil && m.diskError == "" {
 				m.diskError = err.Error()
@@ -884,6 +899,9 @@ func (m model) View() string {
 		footer = "\n↑/↓ select | Enter: open selected action | Ctrl+C: quit"
 		if m.coexistStage == coexistPrepare || m.coexistStage == coexistInstall {
 			footer = "\nEnter: continue | Esc: Coexist menu | Ctrl+C: quit"
+			if m.coexistStage == coexistInstall && len(m.efiParts) == 0 {
+				footer = "\n←/→ choose another disk | Esc: Coexist menu | Ctrl+C: quit"
+			}
 		} else if m.coexistStage == coexistReady {
 			footer = "\n↑/↓ select | Enter: confirm | Esc: exit"
 		}
@@ -1011,6 +1029,10 @@ func (m model) viewDisk() string {
 			return m.viewCoexistChoice()
 		case coexistPrepare:
 			return m.viewCoexistPreparation()
+		case coexistInstall:
+			if len(m.efiParts) == 0 {
+				return m.viewCoexistMissingESP()
+			}
 		case coexistReady:
 			return m.viewCoexistReady()
 		}
@@ -1052,7 +1074,13 @@ func (m model) viewDisk() string {
 				partStr = m.candidateParts[m.partIdx].DisplayString()
 			}
 			rows = append(rows, m.selectorRow(isActive, "Target partition", partStr))
-			if m.diskModeIdx != 2 && m.diskBios == "UEFI" && len(m.efiParts) == 1 {
+			if m.diskModeIdx == 2 {
+				esp := m.coexistESPError()
+				if esp == "" {
+					esp = m.efiParts[0].Path + " [fixed, preserved]"
+				}
+				rows = append(rows, m.selectorRow(false, "EFI System Partition", esp))
+			} else if m.diskBios == "UEFI" && len(m.efiParts) == 1 {
 				rows = append(rows, fmt.Sprintf("  %-20s: %s %s", "EFI System Partition",
 					greenText.Render(m.efiParts[0].Path+" ("+m.efiParts[0].Size+")"),
 					dimText.Render("[auto-detected, preserved]")))
@@ -1062,9 +1090,6 @@ func (m model) viewDisk() string {
 			}
 		case diskFieldEfi:
 			efiStr := "none"
-			if m.diskModeIdx == 2 && len(m.efiParts) > 0 {
-				efiStr = "SELECT ESP"
-			}
 			if len(m.efiParts) > 0 && m.efiIdx >= 0 {
 				efiStr = m.efiParts[m.efiIdx].Path + " (" + m.efiParts[m.efiIdx].Size + ")"
 			}
