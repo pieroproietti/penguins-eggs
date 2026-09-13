@@ -19,15 +19,18 @@ Quando viene installata la prima distribuzione in modalità `coexist`, viene uti
 
 Quando si installa una distribuzione, lo slot ROOT utilizzato assume l'identità di quell'installazione.
 
-La corrispondenza che utilizzo è:
+La corrispondenza applicata dall'installer è:
 
-`hostname = LABEL della partizione = GRUB menuentry id`
+`Installation ID = LABEL della ROOT = nome directory EFI = namespace HOME`
 
-Per esempio, se installo Arch con hostname `arch`, la partizione ROOT utilizzata riceve la LABEL `arch` e la relativa voce di GRUB utilizza `arch` come `menuentry --id`.
+Per esempio, scegliendo l'identificativo `arch`, la ROOT riceve la LABEL `arch`,
+GRUB viene installato in `EFI/arch` e la HOME risiede in `/srv/homes/arch`.
+L'identificativo imposta anche l'hostname, che però resta modificabile nella
+pagina Users. Non imposta direttamente il `menuentry --id` generato da GRUB.
 
-Se successivamente installo Manjaro con hostname `manjaro`, avremo:
+Se successivamente installo Manjaro con identificativo `manjaro`, avremo:
 
-`manjaro = LABEL manjaro = GRUB menuentry id manjaro`
+`LABEL manjaro`, `EFI/manjaro` e `/srv/homes/manjaro`.
 
 In questo modo ogni sistema ha la propria partizione root e viene identificato in maniera semplice e coerente.
 
@@ -36,6 +39,12 @@ La partizione HOME è condivisa tra le diverse installazioni, mentre ogni distri
 ### Avvio
 
 Attualmente `coexist` funziona **soltanto su sistemi UEFI** e utilizza **esclusivamente GRUB** come bootloader.
+
+Il preflight permette attualmente l'installazione e l'inizializzazione Coexist
+solo sulle famiglie **Debian e Arch Linux**. I template di Fedora e Alpine
+usano ancora l'identità della distribuzione e scrivono nel fallback `EFI/BOOT`:
+finché non applicano l'isolamento Coexist, il controllo blocca queste famiglie
+prima della formattazione. Questa limitazione riguarda Coexist.
 
 Non è previsto il supporto per BIOS/Legacy né, al momento, per altri bootloader.
 
@@ -52,4 +61,82 @@ Quando si reinstalla o si sostituisce una distribuzione su uno slot già occupat
 
 Nella schermata di riepilogo di `krill` viene segnalato chiaramente quali risorse della precedente installazione verranno rimosse (`PURGE PREVIOUS`).
 
+**Anche la HOME dell'identificativo nuovo viene eliminata, se esiste già**, insieme
+ai relativi file EFI e alle voci NVRAM corrispondenti. Questo vale anche per una
+reinstallazione con lo stesso identificativo. La partizione HOME non viene
+formattata, ma questo non significa che tutti i suoi dati vengano conservati.
+Il riepilogo distingue ora le partizioni preservate dai contenuti cancellati.
+
+Prima di formattare, Krill ricontrolla la label dello slot rispetto alla
+selezione confermata e cerca gli identificativi nuovo e precedente su tutti i
+dispositivi collegati. Una collisione con un altro dispositivo blocca
+l'installazione; `root` e `rootN` sono riservati agli slot liberi. HOME ed EFI
+devono utilizzare lo stesso identificativo. ESP e HOME devono essere smontate;
+le destinazioni nuove e precedenti vengono ispezionate prima della scrittura.
+Gli errori restituiti dalla pulizia HOME, EFI e NVRAM interrompono l'installazione.
+Resta tollerata, nella funzione NVRAM esistente, l'impossibilità di interrogare
+`efibootmgr`.
+
 Per il momento considero quindi `coexist` una modalità sperimentale: funziona nei miei test con una macchina virtuale, UEFI, GRUB e un unico disco. Ora dobbiamo provarla con più distribuzioni e in configurazioni reali differenti.
+
+### Revisione della procedura — 13 settembre 2026
+
+Il percorso esaminato comprende TUI, inizializzazione, preflight, formattazione,
+montaggio, estrazione squashfs, rimozione dell'utente live, HOME condivisa,
+fstab, creazione utenti, script di installazione e smontaggio.
+
+| Fase | Comportamento e osservazioni |
+| --- | --- |
+| Preparazione facoltativa | `Initialize disk for Coexist` cancella **l'intero disco**. Richiede anteprima, lettura del layout e digitazione del device; ricontrolla geometria e identità prima di scrivere. Non va usato per aggiungere una distribuzione a un disco già preparato. |
+| Dimensionamento | ESP da 512 MiB, almeno due ROOT, HOME residua di almeno 16 GiB. La ROOT predefinita è 8 GiB, configurabile da 4 GiB. Il minimo geometrico non garantisce che l'immagine estratta trovi spazio. |
+| Selezione | ROOT da formattare, ESP e HOME ext4 da riutilizzare sono esplicite. HOME può essere su un altro disco. La ricerca ESP privilegia il disco scelto e cerca altrove soltanto in assenza di ESP locale. |
+| Preflight | UEFI, famiglia supportata, device distinti, filesystem/UUID, destinazioni HOME/EFI e collisioni delle label. La validazione viene ripetuta nel modulo partition. |
+| Copia | Si formatta soltanto la ROOT. HOME ed ESP condivise sono montate dopo unpackfs e removeuser, così queste operazioni non raggiungono i dati condivisi. |
+| Utenti e HOME | `/srv/homes/<id>` viene montata con bind su `/home`. Le altre directory e `common` restano separate. La reinstallazione attuale ricrea la HOME dell'identificativo selezionato. |
+| Fstab | Usa UUID, con una sola voce `/home`; in Coexist Btrfs non crea il subvolume `@home` concorrente. |
+| Bootloader | Debian e Arch installano GRUB in `EFI/<id>` senza sostituire `EFI/BOOT`. Debian conserva l'identità anche nella configurazione GRUB per gli aggiornamenti. |
+| Errori | La pulizia non ignora più gli errori restituiti dalle operazioni. Non esiste però un rollback di ROOT, HOME o EFI già cancellate. Lo smontaggio finale richiede ancora una gestione più rigorosa degli errori. |
+
+### Miglioramenti successivi, in ordine di priorità
+
+1. **Identità persistente degli slot.** Le label sono descrittive: l'inventario
+   aggiunto intercetta collisioni visibili, ma non dimostra la proprietà delle
+   directory HOME/EFI. Servirebbe un registro che associ ID, UUID ROOT, UUID HOME
+   e PARTUUID ESP; permette anche di circoscrivere la pulizia NVRAM alla ESP
+   corretta. Un vecchio sistema senza label o su un disco scollegato non è
+   identificabile con il controllo attuale.
+2. **Politica HOME esplicita.** Offrire conservazione o ricreazione, mostrando
+   separatamente l'effetto della sostituzione dello slot. La conservazione
+   richiede anche verifica UID/GID e proprietà della directory utente.
+3. **Preflight completo prima di wipefs.** Verificare sorgente squashfs,
+   strumenti, configurazioni shellprocess e spazio necessario all'estrazione.
+   Oggi alcuni errori, come una sorgente mancante, emergono soltanto dopo la
+   formattazione. Rafforzare inoltre il controllo dei dispositivi con holder
+   attivi: il controllo ordinario usa i mountpoint, mentre l'inizializzatore
+   controlla anche gli holder in sysfs.
+4. **Identità coerente nell'interfaccia.** La modifica dell'Installation ID
+   aggiorna l'hostname, ma la pagina Users permette poi di cambiarlo separatamente.
+   L'eventuale uso dello stesso ID anche come `menuentry --id` di GRUB richiede
+   una gestione esplicita nei template.
+5. **Bootloader delle altre famiglie.** Adeguare Fedora e Alpine prima di
+   rimuovere il blocco; provare anche persistenza dopo aggiornamenti GRUB e
+   gestione degli errori NVRAM. Rendere selezionabili tutte le ESP anche quando
+   il disco ROOT ne contiene già una.
+6. **Ripresa e conclusione affidabili.** Valutare rinomina/backup delle vecchie
+   directory fino al completamento; riportare gli smontaggi falliti e impedire
+   che un errore finale venga presentato come successo.
+
+### Verifica e prove in VM
+
+I test Go di Krill e setup coprono simulazioni dei dispositivi, conferme TUI,
+layout, collisioni su dischi distinti, errori di pulizia, fstab ext4/Btrfs e
+template GRUB Debian/Arch. Non costituiscono una prova di avvio su firmware reale.
+
+Il progetto dispone già di **The Furnace**, con compilazione e packaging
+automatici e voli di remastering su VM Proxmox gestite tramite snapshot, attraverso
+Alpine, Arch, Debian e Fedora. A questa infrastruttura va affiancata una prova
+specifica Coexist: prima installazione Debian, seconda Arch, reinstallazione con
+ID uguale e diverso, ROOT/HOME/ESP su dischi distinti, riavvio di ogni slot e
+confronto dei dati degli slot preservati e di `EFI/BOOT`. Provare inoltre ESP
+piena, NVRAM indisponibile e interruzione durante copia/bootloader. In questa
+revisione sono stati eseguiti test locali, senza avviare installazioni in VM.

@@ -15,6 +15,8 @@ Boot0001* debian	HD(1,GPT,e8b835a2-...,0x800,0x100000)/File(\EFI\debian\grubx64.
 Boot0002* arch	HD(1,GPT,e8b835a2-...,0x800,0x100000)/File(\EFI\arch\grubx64.efi)
 Boot0003* Arch Linux	HD(1,GPT,e8b835a2-...,0x800,0x100000)/File(\EFI\arch\grubx64.efi)
 Boot0004* Windows Boot Manager	HD(1,GPT,e8b835a2-...,0x800,0x100000)/File(\EFI\Microsoft\Boot\bootmgfw.efi)
+Boot0005* arch backup	HD(1,GPT,other,0x800,0x100000)/File(\EFI\arch-backup\grubx64.efi)
+Boot0006* arch rescue
 `
 	got := ParseEFIBootEntries(efibootmgrOutput, "arch")
 	want := []string{"0002", "0003"}

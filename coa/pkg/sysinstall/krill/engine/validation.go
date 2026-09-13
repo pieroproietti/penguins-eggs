@@ -24,8 +24,9 @@ type partitionChecks struct {
 	inUse       func(string) (bool, error)
 	filesystem  func(string) (filesystemInfo, error)
 	inspectHome func(string, string) error
-	debianEFI   func() bool
+	family      func() string
 	inspectEFI  func(string, string) error
+	identities  func(*Plan) error
 }
 
 func (c *ctx) safetyChecks() partitionChecks {
@@ -43,8 +44,9 @@ func livePartitionChecks() partitionChecks {
 		inUse:       deviceInUse,
 		filesystem:  probeFilesystem,
 		inspectHome: inspectHomePartition,
-		debianEFI:   func() bool { return distro.NewDistro().FamilyID == "debian" },
+		family:      func() string { return distro.NewDistro().FamilyID },
 		inspectEFI:  inspectEFIPartition,
+		identities:  inspectCoexistIdentities,
 	}
 }
 
@@ -94,6 +96,14 @@ func parseESPProperties(path, out string) (bool, error) {
 	return IsCoexistESP(fields[0], fields[1]), nil
 }
 
+// ValidateCoexistFamily is also used before offering destructive disk preparation.
+func ValidateCoexistFamily(family string) error {
+	if family != "debian" && family != "archlinux" {
+		return fmt.Errorf("Coexist bootloader isolation is not implemented for family %q; installation stopped before formatting", family)
+	}
+	return nil
+}
+
 func validatePlan(plan *Plan, checks partitionChecks) error {
 	switch plan.Mode {
 	case "erase", "replace":
@@ -104,6 +114,9 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	}
 	if !checks.uefi() {
 		return fmt.Errorf("Coexist requires a live system booted in UEFI mode")
+	}
+	if err := ValidateCoexistFamily(checks.family()); err != nil {
+		return err
 	}
 	if plan.TargetPartition == "" {
 		return fmt.Errorf("Coexist requires an explicitly selected root partition")
@@ -132,10 +145,11 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	if err := ValidateEFIBootloaderID(plan.EFIBootloaderID); err != nil {
 		return err
 	}
-	if checks.debianEFI() {
-		if err := checks.inspectEFI(esp, plan.EFIBootloaderID); err != nil {
-			return fmt.Errorf("Coexist EFI inspection: %w", err)
-		}
+	if used, err := checks.inUse(esp); err != nil || used {
+		return fmt.Errorf("Coexist ESP must be unmounted and readable (in use: %t, probe error: %v)", used, err)
+	}
+	if err := checks.inspectEFI(esp, plan.EFIBootloaderID); err != nil {
+		return fmt.Errorf("Coexist EFI inspection: %w", err)
 	}
 	inUse, err := checks.inUse(root)
 	if err != nil {
@@ -152,6 +166,17 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	}
 	if err := ValidateHomeNamespace(plan.HomeNamespace); err != nil {
 		return err
+	}
+	if plan.HomeNamespace != plan.EFIBootloaderID {
+		return fmt.Errorf("Coexist HOME namespace and EFI identity must match")
+	}
+	if plan.PreviousID != "" {
+		if err := ValidateHomeNamespace(plan.PreviousID); err != nil {
+			return err
+		}
+		if err := ValidateEFIBootloaderID(plan.PreviousID); err != nil {
+			return err
+		}
 	}
 	home, err := checks.partition(plan.HomePartition)
 	if err != nil {
@@ -181,8 +206,19 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	if err := inspectHome(home, plan.HomeNamespace); err != nil {
 		return fmt.Errorf("Coexist HOME inspection: %w", err)
 	}
+	if plan.PreviousID != "" && plan.PreviousID != plan.HomeNamespace {
+		if err := inspectHome(home, plan.PreviousID); err != nil {
+			return fmt.Errorf("Coexist previous HOME inspection: %w", err)
+		}
+		if err := checks.inspectEFI(esp, plan.PreviousID); err != nil {
+			return fmt.Errorf("Coexist previous EFI inspection: %w", err)
+		}
+	}
 	plan.HomePartition = home
 	// Use the verified canonical devices throughout the remaining modules.
 	plan.TargetPartition, plan.EspPartition = root, esp
-	return nil
+	if checks.identities == nil {
+		return fmt.Errorf("Coexist identity inspection unavailable")
+	}
+	return checks.identities(plan)
 }

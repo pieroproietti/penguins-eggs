@@ -11,7 +11,7 @@ import (
 
 func identityModel() model {
 	m := model{
-		state: StateDisk, debianEFI: true, diskModeIdx: 2,
+		state: StateDisk, diskModeIdx: 2,
 		diskModes: []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
 		cfg:       &InstallerConfig{},
 		disks:     []DiskInfo{{Path: "/dev/test"}}, fsTypes: []string{"ext4"},
@@ -23,9 +23,8 @@ func identityModel() model {
 }
 
 func TestInstallationIDPropagation(t *testing.T) {
-	for _, debian := range []bool{true, false} {
+	for _, mode := range []int{0, 1} {
 		m := identityModel()
-		m.debianEFI = debian
 		next, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("colibri-2"), Paste: true})
 		m = next.(model)
 		p := m.buildPlan()
@@ -36,12 +35,10 @@ func TestInstallationIDPropagation(t *testing.T) {
 		if !strings.Contains(view, "Installation ID") || strings.Contains(view, "HOME namespace (type)") || strings.Contains(view, "EFI bootloader ID (type)") {
 			t.Fatal("expected one Installation ID input")
 		}
-		for _, mode := range []int{0, 1} {
-			m.diskModeIdx = mode
-			p = m.buildPlan()
-			if slices.Contains(m.activeDiskFields(), diskFieldNamespace) || p.EFIBootloaderID != "" || p.HomeNamespace != "" {
-				t.Fatal("normal install acquired a Coexist identity")
-			}
+		m.diskModeIdx = mode
+		p = m.buildPlan()
+		if slices.Contains(m.activeDiskFields(), diskFieldNamespace) || p.EFIBootloaderID != "" || p.HomeNamespace != "" {
+			t.Fatal("normal install acquired a Coexist identity")
 		}
 	}
 }

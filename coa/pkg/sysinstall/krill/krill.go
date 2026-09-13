@@ -122,7 +122,6 @@ type model struct {
 	homeParts      []PartitionInfo
 	homeIdx        int
 	homeNamespace  string
-	debianEFI      bool
 	diskError      string
 	diskBios       string
 	diskModes      []string
@@ -258,7 +257,6 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 
 	return model{
 		state:       StateWelcome,
-		debianEFI:   distro.NewDistro().FamilyID == "debian",
 		cfg:         cfg,
 		appName:     "krill",
 		productName: orDefault(cfg.Branding.Strings.ProductName, "Linux"),
@@ -679,6 +677,8 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		if m.diskModeIdx == 2 {
 			if !engine.IsUEFI() {
 				m.diskError = "Coexist requires the live system to be booted in UEFI mode."
+			} else if err := engine.ValidateCoexistFamily(distro.NewDistro().FamilyID); err != nil {
+				m.diskError = err.Error()
 			} else if m.partIdx < 0 || m.efiIdx < 0 || m.homeIdx < 0 || len(m.candidateParts) == 0 || len(m.efiParts) == 0 || len(m.homeParts) == 0 {
 				m.diskError = "Explicitly select the root to FORMAT and both EFI and shared HOME to PRESERVE."
 			}
@@ -1039,10 +1039,7 @@ func (m model) viewDisk() string {
 		w1 := fmt.Sprintf("(*) this will FORMAT and ERASE only partition: %s", targetPath)
 		w2 := fmt.Sprintf("    all other partitions on %s will NOT be touched.", device.Path)
 		if m.diskModeIdx == 2 {
-			w2 = "ESP filesystem is preserved; existing bootloader installation behavior still applies."
-			if m.debianEFI {
-				w2 = "GRUB replaces only EFI/<Installation ID> if present; EFI/BOOT is preserved."
-			}
+			w2 = "Selected HOME/EFI namespaces are deleted as listed above; EFI/BOOT is preserved."
 		}
 		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, warningStyle.Render(w1), dimText.Render(w2)))
 		if len(m.candidateParts) == 0 {
@@ -1397,15 +1394,12 @@ func (m model) coexistResources() string {
 		cyanText.Render("COEXIST\n  Installation ID: " + m.homeNamespace),
 		redBgWhiteText.Render("FORMAT:\n  Root: " + root + "\n  New label: " + m.homeNamespace),
 		greenText.Render("PRESERVE (no formatting):\n  ESP: " + esp + "\n  Shared HOME: " + home +
-			"\n  HOME namespace: /srv/homes/" + m.homeNamespace + " (create if absent)"),
+			"\n  Other HOME namespaces and EFI/BOOT"),
+		redBgWhiteText.Render("DELETE CONTENTS if present / CREATE if absent:\n  HOME namespace: /srv/homes/" + m.homeNamespace +
+			"\n  EFI/" + m.homeNamespace + "\n  Matching UEFI NVRAM entries"),
 	}
 	if oldLabel != "" && oldLabel != m.homeNamespace {
-		rows = append(rows, redBgWhiteText.Render("PURGE PREVIOUS ("+oldLabel+"):\n  HOME: /srv/homes/"+oldLabel+"\n  EFI: EFI/"+oldLabel))
-	}
-	if m.debianEFI {
-		rows = append(rows,
-			redBgWhiteText.Render("REPLACE if present / CREATE if absent:\n  EFI/"+m.homeNamespace),
-			dimText.Render("Preserve sibling EFI namespaces and EFI/BOOT."))
+		rows = append(rows, redBgWhiteText.Render("PURGE PREVIOUS ("+oldLabel+"):\n  HOME: /srv/homes/"+oldLabel+"\n  EFI: EFI/"+oldLabel+"\n  Matching UEFI NVRAM entries"))
 	}
 	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }

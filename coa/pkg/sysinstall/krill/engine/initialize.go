@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 
+	"coa/pkg/distro"
 	"coa/pkg/utils"
 )
 
@@ -118,6 +119,9 @@ func checkInitializationDisk(d initializationDisk, liveDevice string) error {
 // Discovery errors are fatal here; the more permissive TUI discovery is not a
 // sufficient authorization for a whole-disk wipe.
 func PreviewCoexistDisk(device, liveDevice string, rootBytes uint64) (CoexistDiskLayout, error) {
+	if err := ValidateCoexistFamily(distro.NewDistro().FamilyID); err != nil {
+		return CoexistDiskLayout{}, err
+	}
 	if !IsUEFI() {
 		return CoexistDiskLayout{}, fmt.Errorf("Coexist disk initialization requires UEFI")
 	}

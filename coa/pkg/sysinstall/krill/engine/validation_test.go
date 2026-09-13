@@ -23,8 +23,9 @@ func safeChecks() partitionChecks {
 			return filesystemInfo{Type: fs, UUID: "test-uuid"}, nil
 		},
 		inspectHome: func(string, string) error { return nil },
-		debianEFI:   func() bool { return true },
+		family:      func() string { return "debian" },
 		inspectEFI:  func(string, string) error { return nil },
+		identities:  func(*Plan) error { return nil },
 	}
 }
 
@@ -126,6 +127,7 @@ func TestCoexistRootLabelAtInstallationIDLimit(t *testing.T) {
 	p, checks := coexistPlan(), safeChecks()
 	p.FsType = "btrfs"
 	p.EFIBootloaderID = strings.Repeat("a", 16)
+	p.HomeNamespace = p.EFIBootloaderID
 	var commands []string
 	c := &ctx{plan: p, checks: &checks, execute: func(_ string, name string, args ...string) error {
 		commands = append(commands, strings.Join(append([]string{name}, args...), " "))

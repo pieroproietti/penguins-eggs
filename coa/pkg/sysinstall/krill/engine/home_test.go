@@ -290,6 +290,32 @@ func TestCoexistCleansPreviousInstallationSlot(t *testing.T) {
 	}
 }
 
+func TestCoexistStopsOnCleanupFailure(t *testing.T) {
+	for _, kind := range []string{"HOME", "EFI"} {
+		t.Run(kind, func(t *testing.T) {
+			p := coexistPlan()
+			c, _ := testContext(t, p)
+			path := c.tpath("srv", "homes", p.HomeNamespace)
+			if kind == "EFI" {
+				path = c.tpath("boot", "efi", "EFI", p.EFIBootloaderID)
+			}
+			if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(path, []byte("preserve unsafe destination"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			err := runCoexistMount(c)
+			if err == nil || !strings.Contains(err.Error(), "clean Coexist "+kind) {
+				t.Fatalf("cleanup failure ignored: %v", err)
+			}
+			if data, err := os.ReadFile(path); err != nil || string(data) != "preserve unsafe destination" {
+				t.Fatalf("unsafe destination changed: %q, %v", data, err)
+			}
+		})
+	}
+}
+
 func TestCoexistFstabProbeFailure(t *testing.T) {
 	for _, device := range []string{"/dev/test5", "/dev/test1", "/dev/test2"} {
 		t.Run(device, func(t *testing.T) {

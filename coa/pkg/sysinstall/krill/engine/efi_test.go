@@ -73,10 +73,14 @@ func TestEFIValidationScope(t *testing.T) {
 		}
 	}
 	p, checks := coexistPlan(), safeChecks()
-	checks.debianEFI = func() bool { return false }
-	checks.inspectEFI = func(string, string) error { t.Fatal("inspected other family"); return nil }
+	checks.family = func() string { return "archlinux" }
+	inspected := false
+	checks.inspectEFI = func(string, string) error { inspected = true; return nil }
 	if err := validatePlan(p, checks); err != nil {
 		t.Fatal(err)
+	}
+	if !inspected {
+		t.Fatal("Arch ESP was not inspected")
 	}
 }
 

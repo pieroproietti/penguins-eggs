@@ -107,10 +107,9 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 			t.Fatalf("target selector missing %q: %s", text, view)
 		}
 	}
-	m.debianEFI = true
 	m.homeNamespace = "arch-colibri-4"
 	resources := m.coexistResources()
-	for _, text := range []string{"COEXIST", "Installation ID: arch-colibri-4", "REPLACE if present / CREATE if absent:", "EFI/arch-colibri-4", "Root: /dev/sda5 [arch-colibri-4]"} {
+	for _, text := range []string{"COEXIST", "Installation ID: arch-colibri-4", "DELETE CONTENTS if present / CREATE if absent:", "EFI/arch-colibri-4", "Root: /dev/sda5 [arch-colibri-4]"} {
 		if !strings.Contains(resources, text) {
 			t.Fatalf("summary missing %q: %s", text, resources)
 		}

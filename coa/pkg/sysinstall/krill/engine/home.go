@@ -17,6 +17,9 @@ func ValidateHomeNamespace(namespace string) error {
 	if namespace == "common" {
 		return fmt.Errorf("Installation ID cannot be common (reserved shared HOME namespace)")
 	}
+	if IsGenericRootLabel(namespace) {
+		return fmt.Errorf("Installation ID cannot be root or rootN (reserved empty-slot labels)")
+	}
 	return nil
 }
 
@@ -173,7 +176,9 @@ func runCoexistMount(c *ctx) error {
 		if id == p.PreviousID && id != p.HomeNamespace {
 			c.logf("coexist: cleaning previous installation %q from shared HOME", id)
 		}
-		_ = CleanCoexistHomeMount(storage, id)
+		if err := CleanCoexistHomeMount(storage, id); err != nil {
+			return fmt.Errorf("clean Coexist HOME %q: %w", id, err)
+		}
 	}
 
 	namespace := filepath.Join(storage, p.HomeNamespace)
@@ -199,8 +204,12 @@ func runCoexistMount(c *ctx) error {
 		if id == p.PreviousID && id != p.HomeNamespace {
 			c.logf("coexist: cleaning previous installation %q from ESP and NVRAM", id)
 		}
-		_ = CleanCoexistESPMount(esp, id)
-		_ = CleanCoexistNVRAM(id)
+		if err := CleanCoexistESPMount(esp, id); err != nil {
+			return fmt.Errorf("clean Coexist EFI %q: %w", id, err)
+		}
+		if err := CleanCoexistNVRAM(id); err != nil {
+			return fmt.Errorf("clean Coexist NVRAM %q: %w", id, err)
+		}
 	}
 	return nil
 }

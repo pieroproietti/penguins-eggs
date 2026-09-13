@@ -28,8 +28,10 @@ func ParseEFIBootEntries(output, id string) []string {
 		if len(matches) == 3 {
 			num := matches[1]
 			desc := strings.ToLower(matches[2])
-			// Match label exactly or as prefix, or path containing \efi\<id>\ or /efi/<id>/
-			if desc == idLower || strings.HasPrefix(desc, idLower+" ") || strings.HasPrefix(desc, idLower+"\t") ||
+			// Match an exact label (the device path follows a tab), never a
+			// description prefix such as "arch backup" belonging to another OS.
+			label, _, _ := strings.Cut(desc, "\t")
+			if strings.TrimSpace(label) == idLower ||
 				strings.Contains(desc, `\efi\`+idLower+`\`) || strings.Contains(desc, `/efi/`+idLower+`/`) {
 				toDelete = append(toDelete, num)
 			}
