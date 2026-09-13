@@ -11,7 +11,7 @@ import (
 
 func identityModel() model {
 	m := model{
-		state: StateDisk, diskModeIdx: 2,
+		state: StateDisk, diskModeIdx: 2, coexistStage: coexistInstall,
 		diskModes: []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
 		cfg:       &InstallerConfig{},
 		disks:     []DiskInfo{{Path: "/dev/test"}}, fsTypes: []string{"ext4"},

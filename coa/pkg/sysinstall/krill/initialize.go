@@ -39,7 +39,7 @@ func PreviewCoexistInitialization(device string, rootBytes uint64) (engine.Coexi
 }
 
 func (m model) startCoexistPreview(preview func(string, uint64) (engine.CoexistDiskLayout, error)) (tea.Model, tea.Cmd) {
-	if m.diskModeIdx != 2 || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
+	if m.diskModeIdx != 2 || m.coexistStage != coexistPrepare || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
 		return m, nil
 	}
 	device := m.disks[m.diskIdx].Path
@@ -139,7 +139,7 @@ func (m model) updateCoexistInitialization(msg tea.KeyMsg) (tea.Model, tea.Cmd) 
 
 func (m model) confirmCoexistInitialization(initialize func(engine.CoexistDiskLayout, string) error, discover func(engine.CoexistDiskLayout) ([]PartitionInfo, error)) (tea.Model, tea.Cmd) {
 	i := m.initialization
-	if i == nil || i.busy || i.editingSize || i.sizeError != "" || !i.reviewed || i.confirmation != i.layout.Device {
+	if m.diskModeIdx != 2 || m.coexistStage != coexistPrepare || i == nil || i.busy || i.editingSize || i.sizeError != "" || !i.reviewed || i.confirmation != i.layout.Device {
 		return m, nil
 	}
 	layout, confirmation := i.layout, i.confirmation
@@ -161,6 +161,7 @@ func (m model) confirmCoexistInitialization(initialize func(engine.CoexistDiskLa
 func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Model, tea.Cmd) {
 	m.initialization = nil
 	m.state = StateDisk
+	m.coexistStage = coexistPrepare
 	m.diskField = 0
 	if msg.err != nil {
 		m.diskError = "Initialization stopped; no layout selected: " + msg.err.Error()
@@ -191,6 +192,8 @@ func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Mode
 		}
 	}
 	m.diskError = ""
+	m.coexistStage = coexistReady
+	m.coexistReadyChoice = 1
 	return m, nil
 }
 
@@ -200,7 +203,7 @@ func (m model) viewCoexistInitialization() string {
 		return "Checking/preparing Coexist disk. Please wait; do not power off."
 	}
 	if i.editingSize {
-		return "Root partition size (GiB): [" + i.rootSize + "]\n\n" +
+		return "Coexist — Disk preparation\n\nRoot partition size (GiB): [" + i.rootSize + "]\n\n" +
 			"Enter: preview layout | Esc: cancel\n" + i.sizeError
 	}
 	confirmation := "Scroll through the full layout before confirming."
@@ -208,7 +211,7 @@ func (m model) viewCoexistInitialization() string {
 		confirmation = "Type " + i.layout.Device + " and press Enter to ERASE it: " + i.confirmation
 	}
 	layoutView := i.view.View()
-	return redBgWhiteText.Render("Initialize disk for Coexist: ALL DATA ON "+i.layout.Device+" WILL BE ERASED") +
+	return redBgWhiteText.Render("Prepare disk for Coexist: ALL DATA ON "+i.layout.Device+" WILL BE ERASED") +
 		"\nGPT / UEFI | ESP 512 MiB | HOME at least 16 GiB" +
 		"\nRoot slot size (GiB, minimum 4): " + i.rootSize + "\n\n" +
 		layoutView + "\n\n↑/↓ or PgUp/PgDown: review layout | Tab: edit root size | Esc: cancel\n" + confirmation

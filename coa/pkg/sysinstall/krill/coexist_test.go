@@ -3,6 +3,7 @@ package krill
 import (
 	"encoding/json"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -35,7 +36,7 @@ func TestCoexistESPDiscoveryMatchesPreflight(t *testing.T) {
 
 func TestCoexistDiskSelections(t *testing.T) {
 	m := model{
-		diskModeIdx: 2, diskModes: []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
+		diskModeIdx: 2, coexistStage: coexistInstall, diskModes: []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
 		disks:          []DiskInfo{{Path: "/dev/test"}},
 		candidateParts: []PartitionInfo{{Path: "/dev/test5"}},
 		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},
@@ -43,7 +44,7 @@ func TestCoexistDiskSelections(t *testing.T) {
 		homeIdx:        -1,
 		partIdx:        -1, efiIdx: -1, fsTypes: []string{"ext4"},
 	}
-	wantFields := []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldTargetPart, diskFieldEfi, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap, diskFieldInitialize}
+	wantFields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldEfi, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
 	if !reflect.DeepEqual(m.activeDiskFields(), wantFields) {
 		t.Fatal("Coexist must show an explicit ESP selector even with one ESP")
 	}
@@ -53,13 +54,13 @@ func TestCoexistDiskSelections(t *testing.T) {
 	if view := m.viewDisk(); !strings.Contains(view, "SELECT ROOT") || !strings.Contains(view, "SELECT ESP") {
 		t.Fatal("missing explicit-selection prompts")
 	}
-	m.diskField = 2
+	m.diskField = slices.Index(m.activeDiskFields(), diskFieldTargetPart)
 	next, _ := m.updateDisk("right")
 	m = next.(model)
 	if m.partIdx != 0 || m.efiIdx != -1 {
 		t.Fatal("root selection also selected ESP")
 	}
-	m.diskField = 3
+	m.diskField = slices.Index(m.activeDiskFields(), diskFieldEfi)
 	next, _ = m.updateDisk("right")
 	m = next.(model)
 	if m.efiIdx != 0 {
@@ -68,13 +69,13 @@ func TestCoexistDiskSelections(t *testing.T) {
 	if m.homeIdx != -1 {
 		t.Fatal("HOME was selected implicitly")
 	}
-	m.diskField = 4
+	m.diskField = slices.Index(m.activeDiskFields(), diskFieldHome)
 	next, _ = m.updateDisk("right")
 	m = next.(model)
 	if m.homeIdx != 0 {
 		t.Fatal("HOME selection failed")
 	}
-	m.diskField = 5
+	m.diskField = slices.Index(m.activeDiskFields(), diskFieldNamespace)
 	for _, key := range []string{"d", "e", "b", "i", "a", "n", "-", "s", "i", "d", "x", "backspace"} {
 		next, _ = m.updateDisk(key)
 		m = next.(model)
@@ -93,6 +94,7 @@ func TestCoexistDiskSelections(t *testing.T) {
 func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 	m := model{
 		diskModeIdx:    2,
+		coexistStage:   coexistInstall,
 		diskModes:      []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
 		disks:          []DiskInfo{{Path: "/dev/test"}},
 		candidateParts: []PartitionInfo{{Path: "/dev/sda5", Size: "8G", FsType: "ext4", Label: "arch-colibri-4"}},

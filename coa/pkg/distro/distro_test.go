@@ -1,7 +1,6 @@
 package distro
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -68,6 +67,31 @@ func TestDistroDetectionCases(t *testing.T) {
 			wantFamily: "manjaro",
 		},
 		{
+			name:       "Manjaro derivative via ID_LIKE",
+			osRelease:  map[string]string{"ID": "custom-manjaro", "ID_LIKE": "manjaro arch"},
+			wantFamily: "manjaro",
+		},
+		{
+			name:       "Manjaro derivative via LIKE_ID fallback",
+			osRelease:  map[string]string{"ID": "custom-manjaro", "LIKE_ID": "manjaro arch"},
+			wantFamily: "manjaro",
+		},
+		{
+			name:       "BigLinux matches the brain module even with Arch ancestry",
+			osRelease:  map[string]string{"ID": "biglinux", "ID_LIKE": "arch"},
+			wantFamily: "manjaro",
+		},
+		{
+			name:       "BigCommunity without ID_LIKE",
+			osRelease:  map[string]string{"ID": "bigcommunity"},
+			wantFamily: "manjaro",
+		},
+		{
+			name:       "BigLinux derivative",
+			osRelease:  map[string]string{"ID": "custom-biglinux", "ID_LIKE": "biglinux manjaro arch"},
+			wantFamily: "manjaro",
+		},
+		{
 			name: "Garuda explicit detection",
 			osRelease: map[string]string{
 				"ID":      "garuda",
@@ -86,34 +110,7 @@ func TestDistroDetectionCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rawID := strings.ToLower(tt.osRelease["ID"])
-			rawLike := strings.ToLower(tt.osRelease["ID_LIKE"])
-			if rawLike == "" {
-				rawLike = strings.ToLower(tt.osRelease["LIKE_ID"])
-			}
-			likes := strings.Fields(rawLike)
-			candidates := append([]string{rawID}, likes...)
-
-			family := "generic"
-			for _, c := range candidates {
-				switch c {
-				case "debian", "ubuntu":
-					family = "debian"
-				case "alpine":
-					family = "alpine"
-				case "manjaro":
-					family = "manjaro"
-				case "arch", "archlinux", "garuda", "endeavouros", "cachyos", "archcraft", "rebornos":
-					family = "archlinux"
-				case "fedora", "rhel":
-					family = "fedora"
-				case "opensuse", "suse":
-					family = "opensuse"
-				}
-				if family != "generic" {
-					break
-				}
-			}
+			family := fromOSRelease(tt.osRelease).FamilyID
 
 			if family != tt.wantFamily {
 				t.Errorf("got family %s, want %s", family, tt.wantFamily)

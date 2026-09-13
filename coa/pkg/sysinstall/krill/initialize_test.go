@@ -70,7 +70,7 @@ func TestInitializedDiscovery(t *testing.T) {
 
 func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	l, tree := initializedFixture(t, engine.CoexistRootBytes)
-	m := model{state: StateDisk, diskModeIdx: 2, disks: []DiskInfo{{Path: l.Device}}, homeNamespace: "untouched", termHeight: 18}
+	m := model{state: StateDisk, diskModeIdx: 2, coexistStage: coexistPrepare, disks: []DiskInfo{{Path: l.Device}}, homeNamespace: "untouched", termHeight: 18}
 	if !slices.Contains(m.activeDiskFields(), diskFieldInitialize) {
 		t.Fatal("missing initialization action")
 	}
@@ -133,7 +133,7 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	}
 	next, _ = m.Update(cmd())
 	m = next.(model)
-	if !slices.Equal(events, []string{"initialize", "rediscover"}) || m.initialization != nil || m.state != StateDisk || m.diskError != "" {
+	if !slices.Equal(events, []string{"initialize", "rediscover"}) || m.initialization != nil || m.state != StateDisk || m.coexistStage != coexistReady || m.diskError != "" {
 		t.Fatalf("wrong completion: %v %s", events, m.diskError)
 	}
 	if m.candidateParts[m.partIdx].Path != l.Partitions[1].Device || m.efiParts[m.efiIdx].Path != l.Partitions[0].Device || m.homeParts[m.homeIdx].Path != l.Partitions[len(l.Partitions)-1].Device {
@@ -141,6 +141,17 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	}
 	if m.homeNamespace != "untouched" || m.installCh != nil {
 		t.Fatal("initialization changed namespaces or started install")
+	}
+	// Continuing requires a separate choice and opens settings, not installation.
+	next, cmd = m.Update(tea.KeyMsg{Type: tea.KeyUp})
+	m = next.(model)
+	if cmd != nil || m.coexistReadyChoice != 0 || m.coexistStage != coexistReady {
+		t.Fatal("selecting install now left the completion screen before confirmation")
+	}
+	next, cmd = m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	m = next.(model)
+	if cmd != nil || m.coexistStage != coexistInstall || m.installCh != nil {
+		t.Fatal("continue did not open installation settings")
 	}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldTargetPart)
 	next, _ = m.updateDisk("right")
@@ -152,7 +163,7 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 func TestInitializationFailureAndCancel(t *testing.T) {
 	for _, failure := range []string{"initialize", "rediscover"} {
 		l, _ := initializedFixture(t, engine.CoexistRootBytes)
-		m := model{state: StateDisk, diskModeIdx: 2, initialization: &coexistInitialization{layout: l, confirmation: l.Device, reviewed: true}}
+		m := model{state: StateDisk, diskModeIdx: 2, coexistStage: coexistPrepare, initialization: &coexistInitialization{layout: l, confirmation: l.Device, reviewed: true}}
 		next, cmd := m.confirmCoexistInitialization(func(engine.CoexistDiskLayout, string) error {
 			if failure == "initialize" {
 				return errors.New("mkfs failed")
@@ -167,11 +178,11 @@ func TestInitializationFailureAndCancel(t *testing.T) {
 		m = next.(model)
 		next, _ = m.Update(cmd())
 		m = next.(model)
-		if m.state != StateDisk || m.diskError == "" || m.partIdx != -1 || m.efiIdx != -1 || m.homeIdx != -1 || len(m.candidateParts) != 0 {
+		if m.state != StateDisk || m.coexistStage != coexistPrepare || m.diskError == "" || m.partIdx != -1 || m.efiIdx != -1 || m.homeIdx != -1 || len(m.candidateParts) != 0 {
 			t.Fatal("failure accepted a layout or started installation")
 		}
 	}
-	m := model{state: StateDisk, diskModeIdx: 2, partIdx: 3, initialization: &coexistInitialization{}}
+	m := model{state: StateDisk, diskModeIdx: 2, coexistStage: coexistPrepare, partIdx: 3, initialization: &coexistInitialization{}}
 	next, cmd := m.updateCoexistInitialization(tea.KeyMsg{Type: tea.KeyEsc})
 	if cmd != nil || next.(model).initialization != nil || next.(model).partIdx != 3 {
 		t.Fatal("cancel changed existing layout")
@@ -186,7 +197,7 @@ func TestInitializationFailureAndCancel(t *testing.T) {
 
 func TestInitializationRootSizeEditing(t *testing.T) {
 	l, _ := initializedFixture(t, engine.CoexistRootBytes)
-	m := model{state: StateDisk, diskModeIdx: 2, disks: []DiskInfo{{Path: l.Device}}, termHeight: 18}
+	m := model{state: StateDisk, diskModeIdx: 2, coexistStage: coexistPrepare, disks: []DiskInfo{{Path: l.Device}}, termHeight: 18}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldInitialize)
 	next, cmd := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
 	m = next.(model)
@@ -256,7 +267,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 
 func TestInitializationRootSizeReeditingClearsConfirmation(t *testing.T) {
 	l, _ := initializedFixture(t, engine.CoexistRootBytes)
-	m := model{state: StateDisk, diskModeIdx: 2}
+	m := model{state: StateDisk, diskModeIdx: 2, coexistStage: coexistPrepare}
 	next, _ := m.receiveCoexistPreview(coexistPreviewMsg{layout: l})
 	m = next.(model)
 	m.initialization.reviewed, m.initialization.confirmation = true, l.Device
@@ -274,7 +285,7 @@ func TestInitializationInvalidRootSize(t *testing.T) {
 	for _, size := range []string{"", "0", "-1", "1", "3", "1.5", "abc", "16GiB", "é", "18446744073709551616", "18446744073709551615", "17179869184"} {
 		t.Run(size, func(t *testing.T) {
 			l, _ := initializedFixture(t, engine.CoexistRootBytes)
-			m := model{diskModeIdx: 2, disks: []DiskInfo{{Path: l.Device}}, initialization: &coexistInitialization{layout: l, rootSize: size, editingSize: true}}
+			m := model{diskModeIdx: 2, coexistStage: coexistPrepare, disks: []DiskInfo{{Path: l.Device}}, initialization: &coexistInitialization{layout: l, rootSize: size, editingSize: true}}
 			next, cmd := m.startCoexistPreview(func(string, uint64) (engine.CoexistDiskLayout, error) {
 				t.Fatal("invalid size reached disk probing")
 				return l, nil
@@ -299,7 +310,7 @@ func TestInitializationInsufficientSpaceCanBeCorrected(t *testing.T) {
 		if err == nil {
 			t.Fatal("oversized roots accepted")
 		}
-		m := model{diskModeIdx: 2, disks: []DiskInfo{{Path: l.Device}}}
+		m := model{diskModeIdx: 2, coexistStage: coexistPrepare, disks: []DiskInfo{{Path: l.Device}}}
 		next, _ := m.receiveCoexistPreview(coexistPreviewMsg{layout: l, err: err})
 		m = next.(model)
 		if m.initialization == nil || !m.initialization.editingSize || m.initialization.reviewed || !strings.Contains(m.viewCoexistInitialization(), err.Error()) {

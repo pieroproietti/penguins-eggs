@@ -139,6 +139,10 @@ type model struct {
 	diskField      int
 	initialization *coexistInitialization
 
+	// Coexist: separate preparation and installation paths.
+	coexistStage       coexistStage
+	coexistReadyChoice int // 0 = install now, 1 = exit
+
 	// Users: campi di testo editabili più il checkbox autologin
 	userInputs []textinput.Model
 	userFocus  int
@@ -211,7 +215,7 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 		swapTypes = []string{"none", "small", "suspend", "file"}
 	}
 
-	diskModes := []string{"Erase disk", "Replace a partition", "Coexist with existing installations"}
+	diskModes := []string{"Erase disk", "Replace a partition", "Coexist"}
 	diskModeIdx := 0
 
 	var candidateParts []PartitionInfo
@@ -565,23 +569,31 @@ const (
 	diskFieldFs
 	diskFieldSwap
 	diskFieldInitialize
+	diskFieldPrepare
+	diskFieldInstall
 )
 
 func (m *model) activeDiskFields() []diskFieldKind {
+	if m.diskModeIdx == 2 {
+		switch m.coexistStage {
+		case coexistChoose:
+			return []diskFieldKind{diskFieldMode, diskFieldPrepare, diskFieldInstall}
+		case coexistPrepare:
+			return []diskFieldKind{diskFieldDevice, diskFieldInitialize}
+		case coexistInstall:
+			return []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldEfi, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
+		case coexistReady:
+			return nil
+		}
+	}
 	if m.diskModeIdx == 0 {
 		return []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldFs, diskFieldSwap}
 	}
 	fields := []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldTargetPart}
-	if m.diskModeIdx == 2 || (m.diskBios == "UEFI" && len(m.efiParts) > 1) {
+	if m.diskBios == "UEFI" && len(m.efiParts) > 1 {
 		fields = append(fields, diskFieldEfi)
 	}
-	if m.diskModeIdx == 2 {
-		fields = append(fields, diskFieldHome, diskFieldNamespace)
-	}
 	fields = append(fields, diskFieldFs, diskFieldSwap)
-	if m.diskModeIdx == 2 {
-		fields = append(fields, diskFieldInitialize)
-	}
 	return fields
 }
 
@@ -594,12 +606,43 @@ func (m *model) availableSwapTypes() []string {
 
 // updateDisk naviga i selettori della schermata Disk.
 func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
+	if m.diskModeIdx == 2 {
+		if m.coexistStage == coexistReady {
+			return m.updateCoexistReady(key)
+		}
+		if key == "esc" && m.coexistStage != coexistChoose {
+			m.diskField = 1
+			if m.coexistStage == coexistInstall {
+				m.diskField = 2
+			}
+			m.coexistStage, m.diskError = coexistChoose, ""
+			return m, nil
+		}
+	}
 	activeFields := m.activeDiskFields()
 	if m.diskField >= len(activeFields) {
 		m.diskField = len(activeFields) - 1
 	}
 	if activeFields[m.diskField] == diskFieldInitialize && key == "enter" {
 		return m.startCoexistPreview(PreviewCoexistInitialization)
+	}
+	if m.diskModeIdx == 2 && key == "enter" {
+		switch m.coexistStage {
+		case coexistChoose:
+			switch activeFields[m.diskField] {
+			case diskFieldPrepare:
+				m.coexistStage, m.diskField = coexistPrepare, 0
+			case diskFieldInstall:
+				m.coexistStage, m.diskField = coexistInstall, 0
+			default:
+				m.diskField = 1
+			}
+			m.diskError = ""
+			return m, nil
+		case coexistPrepare:
+			m.diskField = 1
+			return m, nil
+		}
 	}
 
 	if activeFields[m.diskField] == diskFieldNamespace {
@@ -647,6 +690,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		switch currentKind {
 		case diskFieldMode:
 			m.diskModeIdx = cycle(m.diskModeIdx, delta, len(m.diskModes))
+			m.coexistStage, m.diskError = coexistChoose, ""
 			m.refreshPartitions()
 			if m.diskField >= len(m.activeDiskFields()) {
 				m.diskField = 0
@@ -836,6 +880,13 @@ func (m model) View() string {
 	footer := "\nPress Ctrl+C to quit."
 	if m.initialization != nil {
 		footer = "\nDisk preparation only; installation will not start automatically."
+	} else if m.state == StateDisk && m.diskModeIdx == 2 {
+		footer = "\n↑/↓ select | Enter: open selected action | Ctrl+C: quit"
+		if m.coexistStage == coexistPrepare || m.coexistStage == coexistInstall {
+			footer = "\nEnter: continue | Esc: Coexist menu | Ctrl+C: quit"
+		} else if m.coexistStage == coexistReady {
+			footer = "\n↑/↓ select | Enter: confirm | Esc: exit"
+		}
 	} else if m.state == StateSummary {
 		footer = "\n←/→ select option | Press 'Enter' to confirm."
 	} else if m.state != StateInstall {
@@ -954,6 +1005,16 @@ func (m model) viewDisk() string {
 	if m.initialization != nil {
 		return m.viewCoexistInitialization()
 	}
+	if m.diskModeIdx == 2 {
+		switch m.coexistStage {
+		case coexistChoose:
+			return m.viewCoexistChoice()
+		case coexistPrepare:
+			return m.viewCoexistPreparation()
+		case coexistReady:
+			return m.viewCoexistReady()
+		}
+	}
 	stepsView := renderSteps(4)
 
 	activeFields := m.activeDiskFields()
@@ -969,6 +1030,9 @@ func (m model) viewDisk() string {
 	rowFirmware := fmt.Sprintf("Firmware: %s", cyanText.Render(firmware))
 
 	var rows []string
+	if m.diskModeIdx == 2 {
+		rows = append(rows, cyanText.Render("Coexist — Install a distribution"))
+	}
 	rows = append(rows, rowFirmware, "")
 
 	for idx, kind := range activeFields {
@@ -978,8 +1042,6 @@ func (m model) viewDisk() string {
 			rows = append(rows, m.selectorRow(isActive, "Installation mode", m.diskModes[m.diskModeIdx]))
 		case diskFieldDevice:
 			rows = append(rows, m.selectorRow(isActive, "Installation device", fmt.Sprintf("%s (%s)", device.Path, device.Size)))
-		case diskFieldInitialize:
-			rows = append(rows, m.selectorRow(isActive, "Initialize disk for Coexist", "Enter to review destructive preparation"))
 		case diskFieldTargetPart:
 			partStr := "none available"
 			if len(m.candidateParts) > 0 && m.partIdx >= 0 {

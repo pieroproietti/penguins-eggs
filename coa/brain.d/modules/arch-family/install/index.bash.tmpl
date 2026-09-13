@@ -9,7 +9,12 @@
 {{ define "install_distro_bootloader" }}
 echo "-> Evidence-based bootloader detection and dispatch..."
 
-if [ -d /sys/firmware/efi ]; then
+if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+    # Only GRUB currently isolates each Coexist installation on the shared ESP.
+    # Existing Limine/systemd-boot configuration must not override this choice.
+    echo "-> Coexist: installing GRUB with the selected installation identity."
+    {{ include "install_distro_grub" . }}
+elif [ -d /sys/firmware/efi ]; then
     echo "-> UEFI environment detected."
     # 1. Configs over Binaries
     if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /boot/efi/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then

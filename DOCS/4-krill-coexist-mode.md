@@ -2,6 +2,34 @@
 
 La modalità `coexist` funziona nel modo seguente. Per ora l'ho provata soltanto su una macchina virtuale e con un unico disco, quindi dobbiamo ancora considerarla sperimentale.
 
+### Due percorsi nell'interfaccia
+
+In `eggs sysinstall krill`, scegliendo **Coexist** nella pagina Disk si apre
+un menu con due operazioni distinte:
+
+- **Prepare a disk for multiple distributions**: scelta del disco,
+  dimensionamento degli slot ROOT e anteprima delle partizioni ESP, ROOT e HOME.
+  Questa operazione cancella l'intero disco; richiede la lettura del layout e
+  la digitazione del device prima di procedere. Al termine compare **Disk ready**:
+  si può scegliere di installare subito la distribuzione live corrente oppure
+  uscire (scelta predefinita). L'installazione non parte automaticamente.
+- **Install a distribution on a prepared disk**: scelta della ROOT da
+  formattare, di ESP e HOME da riutilizzare e dell'identificativo dell'installazione.
+  Questo percorso non contiene l'azione di preparazione dell'intero disco.
+  Prosegue con utenti e riepilogo, compresa la conferma delle eventuali
+  cancellazioni dei contenuti HOME/EFI dell'installazione sostituita.
+
+In entrambi i percorsi, **Esc** torna al menu Coexist. Durante il dimensionamento
+o l'anteprima, Esc annulla prima la preparazione e torna alla scelta del disco.
+Dalla schermata **Disk ready**, Esc esce senza installare o riavviare.
+Per aggiungere la seconda distribuzione e le successive si sceglie direttamente
+il percorso di installazione, senza preparare nuovamente il disco.
+
+La separazione riguarda l'interfaccia: schema di partizionamento, controlli e
+motore d'installazione Coexist restano condivisi con la procedura esistente.
+
+### Schema di partizionamento
+
 Per l'inizializzazione mi sono inventato un mio schema di partizionamento.
 
 Viene creata una partizione ESP per l'avvio UEFI, poi diverse partizioni destinate ai sistemi:
@@ -41,12 +69,21 @@ La partizione HOME è condivisa tra le diverse installazioni, mentre ogni distri
 Attualmente `coexist` funziona **soltanto su sistemi UEFI** e utilizza **esclusivamente GRUB** come bootloader.
 
 Il preflight permette attualmente l'installazione e l'inizializzazione Coexist
-solo sulle famiglie **Debian e Arch Linux**. I template di Fedora e Alpine
+solo sulle famiglie **Debian, Arch Linux e Manjaro**, comprese le derivate
+riconosciute. **BigLinux** e **BigCommunity** sono riconosciute esplicitamente
+come famiglia Manjaro; le altre derivate possono essere riconosciute tramite
+`ID_LIKE` in `/etc/os-release` (con fallback al precedente `LIKE_ID`).
+I template di Fedora e Alpine
 usano ancora l'identità della distribuzione e scrivono nel fallback `EFI/BOOT`:
 finché non applicano l'isolamento Coexist, il controllo blocca queste famiglie
 prima della formattazione. Questa limitazione riguarda Coexist.
 
 Non è previsto il supporto per BIOS/Legacy né, al momento, per altri bootloader.
+
+Nel modulo condiviso Arch/Manjaro, Coexist seleziona esplicitamente GRUB anche
+se trova configurazioni Limine o systemd-boot. L'installazione del bootloader
+si interrompe se mancano UEFI, la ESP montata o l'identificativo Coexist.
+Le modalità Erase e Replace mantengono la selezione del bootloader esistente.
 
 Le diverse distribuzioni condividono la stessa ESP e le voci di GRUB permettono di scegliere quale sistema avviare.
 
@@ -87,14 +124,14 @@ fstab, creazione utenti, script di installazione e smontaggio.
 
 | Fase | Comportamento e osservazioni |
 | --- | --- |
-| Preparazione facoltativa | `Initialize disk for Coexist` cancella **l'intero disco**. Richiede anteprima, lettura del layout e digitazione del device; ricontrolla geometria e identità prima di scrivere. Non va usato per aggiungere una distribuzione a un disco già preparato. |
+| Preparazione facoltativa | Il percorso `Prepare a disk for multiple distributions` cancella **l'intero disco**. Richiede anteprima, lettura del layout e digitazione del device; ricontrolla geometria e identità prima di scrivere. Termina con `Disk ready` e la scelta tra installare e uscire. Non va usato per aggiungere una distribuzione a un disco già preparato. |
 | Dimensionamento | ESP da 512 MiB, almeno due ROOT, HOME residua di almeno 16 GiB. La ROOT predefinita è 8 GiB, configurabile da 4 GiB. Il minimo geometrico non garantisce che l'immagine estratta trovi spazio. |
 | Selezione | ROOT da formattare, ESP e HOME ext4 da riutilizzare sono esplicite. HOME può essere su un altro disco. La ricerca ESP privilegia il disco scelto e cerca altrove soltanto in assenza di ESP locale. |
 | Preflight | UEFI, famiglia supportata, device distinti, filesystem/UUID, destinazioni HOME/EFI e collisioni delle label. La validazione viene ripetuta nel modulo partition. |
 | Copia | Si formatta soltanto la ROOT. HOME ed ESP condivise sono montate dopo unpackfs e removeuser, così queste operazioni non raggiungono i dati condivisi. |
 | Utenti e HOME | `/srv/homes/<id>` viene montata con bind su `/home`. Le altre directory e `common` restano separate. La reinstallazione attuale ricrea la HOME dell'identificativo selezionato. |
 | Fstab | Usa UUID, con una sola voce `/home`; in Coexist Btrfs non crea il subvolume `@home` concorrente. |
-| Bootloader | Debian e Arch installano GRUB in `EFI/<id>` senza sostituire `EFI/BOOT`. Debian conserva l'identità anche nella configurazione GRUB per gli aggiornamenti. |
+| Bootloader | Debian, Arch e Manjaro installano GRUB in `EFI/<id>` senza sostituire `EFI/BOOT`. Debian conserva l'identità anche nella configurazione GRUB per gli aggiornamenti. |
 | Errori | La pulizia non ignora più gli errori restituiti dalle operazioni. Non esiste però un rollback di ROOT, HOME o EFI già cancellate. Lo smontaggio finale richiede ancora una gestione più rigorosa degli errori. |
 
 ### Miglioramenti successivi, in ordine di priorità
@@ -130,7 +167,12 @@ fstab, creazione utenti, script di installazione e smontaggio.
 
 I test Go di Krill e setup coprono simulazioni dei dispositivi, conferme TUI,
 layout, collisioni su dischi distinti, errori di pulizia, fstab ext4/Btrfs e
-template GRUB Debian/Arch. Non costituiscono una prova di avvio su firmware reale.
+template GRUB Debian/Arch/Manjaro. I test del modulo Arch/Manjaro eseguono
+il selettore del bootloader e il template GRUB in directory temporanee, con
+GRUB simulato, includendo BigLinux, BigCommunity e una derivata personalizzata.
+Verificano identità EFI, conservazione degli altri slot e del fallback
+`EFI/BOOT`, scelta GRUB in Coexist e arresto quando mancano UEFI o ESP montata.
+Non costituiscono una prova di avvio su firmware reale.
 
 Il progetto dispone già di **The Furnace**, con compilazione e packaging
 automatici e voli di remastering su VM Proxmox gestite tramite snapshot, attraverso

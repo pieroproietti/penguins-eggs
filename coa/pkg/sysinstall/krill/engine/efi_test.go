@@ -72,15 +72,36 @@ func TestEFIValidationScope(t *testing.T) {
 			t.Fatalf("mode %s: %v", mode, err)
 		}
 	}
-	p, checks := coexistPlan(), safeChecks()
-	checks.family = func() string { return "archlinux" }
-	inspected := false
-	checks.inspectEFI = func(string, string) error { inspected = true; return nil }
-	if err := validatePlan(p, checks); err != nil {
-		t.Fatal(err)
+	for _, family := range []string{"debian", "archlinux", "manjaro"} {
+		t.Run(family, func(t *testing.T) {
+			p, checks := coexistPlan(), safeChecks()
+			checks.family = func() string { return family }
+			inspected := false
+			checks.inspectEFI = func(string, string) error { inspected = true; return nil }
+			if err := validatePlan(p, checks); err != nil {
+				t.Fatal(err)
+			}
+			if !inspected {
+				t.Fatal("shared ESP was not inspected")
+			}
+		})
 	}
-	if !inspected {
-		t.Fatal("Arch ESP was not inspected")
+}
+
+func TestUnsupportedCoexistFamiliesStopBeforeFormatting(t *testing.T) {
+	for _, family := range []string{"fedora", "alpine", "opensuse", "generic", ""} {
+		t.Run(family, func(t *testing.T) {
+			p, checks := coexistPlan(), safeChecks()
+			checks.family = func() string { return family }
+			c, commands := testContext(t, p)
+			c.checks = &checks
+			if err := runPartition(c); err == nil || !strings.Contains(err.Error(), "bootloader isolation") {
+				t.Fatalf("unsupported family accepted: %v", err)
+			}
+			if len(*commands) != 0 {
+				t.Fatal("commands executed for an unsupported family")
+			}
+		})
 	}
 }
 

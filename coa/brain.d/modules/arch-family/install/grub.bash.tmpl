@@ -5,6 +5,14 @@
 {{ define "install_distro_grub" }}
 echo "-> Installing GRUB (Preserving Original DNA)..."
 
+if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+    if [ ! -d /sys/firmware/efi ] || ! grep -q "/boot/efi" /proc/mounts; then
+        echo "[FATAL ERROR] Coexist requires UEFI and a mounted EFI System Partition."
+        exit 1
+    fi
+    : "${KRILL_EFI_BOOTLOADER_ID:?Missing Coexist EFI bootloader ID}"
+fi
+
 if ! command -v grub-install &> /dev/null; then
     echo "-> grub package is missing. Installing it on the fly..."
     pacman -Sy --noconfirm grub || { echo "[WARNING] Failed to install grub"; }
