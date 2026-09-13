@@ -52,6 +52,7 @@ var (
 )
 
 var cfgAlgorithms = []string{"zstd", "xz", "lz4", "gzip"}
+var cfgInstallers = []string{"krill", "calamares"}
 
 type editorDoneMsg struct{}
 
@@ -59,10 +60,11 @@ type configModel struct {
 	tab       int
 	termWidth int
 
-	focus   int
-	inputs  []textinput.Model
-	algoIdx    int
-	ramModeIdx int // 0 for enabled, 1 for disabled
+	focus        int
+	inputs       []textinput.Model
+	algoIdx      int
+	ramModeIdx   int // 0 for enabled, 1 for disabled
+	installerIdx int // 0 for krill, 1 for calamares
 
 	saveFocus int
 	saveErr   string
@@ -84,6 +86,14 @@ type configState struct {
 func hasCalamares() bool {
 	_, err := exec.LookPath("calamares")
 	return err == nil
+}
+
+func installCalamares() error {
+	cmd := exec.Command("apt-get", "install", "-y", "calamares")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	return cmd.Run()
 }
 
 func loadConfigState() configState {
@@ -117,11 +127,9 @@ func loadConfigState() configState {
 	}
 	state.ISOPrefix = settings.Remaster.ISOPrefix
 	if settings.Remaster.Installer != "" {
-		if settings.Remaster.Installer == "calamares" && !hasCalamares() {
-			state.Installer = "krill"
-		} else {
-			state.Installer = settings.Remaster.Installer
-		}
+		// Respect configured installer even if calamares is not currently installed.
+		// The Save action can install it automatically if the user keeps/selects it.
+		state.Installer = settings.Remaster.Installer
 	}
 	if settings.Remaster.RamMode != nil {
 		state.RamMode = *settings.Remaster.RamMode
@@ -172,10 +180,19 @@ func newConfigModel() configModel {
 		ramModeIdx = 1
 	}
 
+	installerIdx := 0
+	for i, inst := range cfgInstallers {
+		if inst == state.Installer {
+			installerIdx = i
+			break
+		}
+	}
+
 	return configModel{
-		inputs:     inputs,
-		algoIdx:    algoIdx,
-		ramModeIdx: ramModeIdx,
+		inputs:       inputs,
+		algoIdx:      algoIdx,
+		ramModeIdx:   ramModeIdx,
+		installerIdx: installerIdx,
 	}
 }
 
@@ -241,10 +258,6 @@ func (m *configModel) focusField(idx int, direction int) tea.Cmd {
 			m.focus = (m.focus + direction + cfgFieldCount) % cfgFieldCount
 			continue
 		}
-		if m.focus == cfgInstaller {
-			m.focus = (m.focus + direction + cfgFieldCount) % cfgFieldCount
-			continue
-		}
 		break
 	}
 
@@ -265,16 +278,21 @@ func (m configModel) updateSettings(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "down":
 		return m, m.focusField(m.focus+1, 1)
 	case "left", "right":
+		delta := 1
+		if key == "left" {
+			delta = -1
+		}
+
 		if m.focus == cfgAlgorithm {
-			delta := 1
-			if key == "left" {
-				delta = -1
-			}
 			m.algoIdx = (m.algoIdx + delta + len(cfgAlgorithms)) % len(cfgAlgorithms)
 			return m, nil
 		}
 		if m.focus == cfgRamMode {
 			m.ramModeIdx = 1 - m.ramModeIdx
+			return m, nil
+		}
+		if m.focus == cfgInstaller {
+			m.installerIdx = (m.installerIdx + delta + len(cfgInstallers)) % len(cfgInstallers)
 			return m, nil
 		}
 	}
@@ -309,6 +327,15 @@ func (m configModel) updateSave(key string) (tea.Model, tea.Cmd) {
 	case "enter":
 		if m.saveFocus == 0 {
 			state := m.buildState()
+
+			if state.Installer == "calamares" && !hasCalamares() {
+				fmt.Println("Calamares selected but not installed. Installing calamares...")
+				if err := installCalamares(); err != nil {
+					m.saveErr = fmt.Sprintf("Failed to install calamares: %v", err)
+					return m, nil
+				}
+			}
+
 			if err := saveConfigState(state); err != nil {
 				m.saveErr = fmt.Sprintf("Save failed: %v", err)
 				return m, nil
@@ -329,10 +356,7 @@ func (m configModel) buildState() configState {
 			level = 3
 		}
 	}
-	installer := "krill"
-	if hasCalamares() {
-		installer = "calamares"
-	}
+	installer := cfgInstallers[m.installerIdx]
 	user := strings.TrimSpace(m.inputs[0].Value())
 	if user == "" {
 		user = "live"
@@ -438,11 +462,11 @@ func (m configModel) viewSettings() string {
 				val = m.inputs[3].View()
 			}
 		case cfgInstaller:
-			if hasCalamares() {
-				val = cfgDim.Render("calamares (auto-detected)")
-			} else {
-				val = cfgDim.Render("krill (default)")
+			label := cfgInstallers[m.installerIdx]
+			if label == "calamares" && !hasCalamares() {
+				label = "calamares (install on save)"
 			}
+			val = cfgCyan.Render("‹ " + label + " ›")
 		case cfgRamMode:
 			ramModeLabels := []string{"enabled", "disabled"}
 			val = cfgCyan.Render("‹ " + ramModeLabels[m.ramModeIdx] + " ›")
