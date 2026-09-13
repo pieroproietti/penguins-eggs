@@ -2,6 +2,22 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.13 - 2026-09-13
+This release introduces the experimental **Coexist** multi-boot installation mode in Krill (the native TUI installer), allowing multiple Linux distributions to share a disk and common `/home` namespace with isolated UEFI GRUB configurations. In addition, `eggs config` now features interactive installer selection with automatic Calamares dependency installation on save.
+
+### 🦐 Krill: Experimental "Coexist" Multi-Boot Mode
+* **Multi-Distribution Layout Architecture**: Added Coexist partitioning and installation support allowing several Linux distributions to reside on independent root slots (`ROOT1`, `ROOT2`, `ROOT3`, etc.) while sharing a unified `/home` partition (`/srv/homes/<id>`) on UEFI systems.
+* **Coherent Identity Mapping**: Enforces a clean 1-to-1 convention: `Installation ID = ROOT filesystem label = EFI directory (EFI/<id>) = HOME namespace (/srv/homes/<id>)`, ensuring each distribution maintains an isolated UEFI bootloader and clean per-system home storage.
+* **Disk Initialization Wizard**: Integrated an interactive `Initialize disk for Coexist` workflow in Krill to prepare an ESP (512 MiB), multiple root slots (customizable from 4 GiB upwards, default 8 GiB), and dedicate the remaining disk space (>16 GiB) for shared `/home`.
+* **Safe Slot Reinstallation & Previous Cleanup**: When replacing or reinstalling an occupied slot, Krill detects previous Coexist labels and purges the old installation's EFI directory, NVRAM boot entries via `efibootmgr`, and `/srv/homes/<old_id>`, displaying a clear `PURGE PREVIOUS` warning in the confirmation summary.
+* **Rigorous Preflight Validations**: Performs extensive preflight checks for UEFI firmware, supported distribution families (Debian and Arch families), storage layout geometry, block device collision detection across all attached disks, and mount safety before any writes occur.
+* **Documentation**: Added comprehensive technical documentation and review in `DOCS/4-krill-coexist-mode.md`.
+
+### ⚙️ Configuration TUI: Selectable Installer & Calamares Auto-Install
+* **Interactive Installer Selection**: Made the `Installer` field navigable and selectable in `eggs config` TUI, allowing users to toggle between `‹ krill ›` and `‹ calamares ›`.
+* **Automated Calamares Installation**: If `calamares` is selected on Debian-based hosts but not currently present, the TUI displays a `(install on save)` indicator and automatically installs it via `apt-get` upon saving.
+* **Persistent Preference**: Preserves the configured installer setting in `/etc/penguins-eggs.d/custom.yaml` regardless of whether the binary is pre-installed at configuration load time.
+
 ## Release Notes: penguins-eggs v26.9.11 - 2026-09-11
 This release refines console output during the bootloader verification stage of remastering by eliminating redundant log messages, and updates configuration header comments in `custom.exclude.list` to clarify include/exclude semantics for live ISO filesystem generation.
 
