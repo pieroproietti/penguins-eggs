@@ -33,11 +33,16 @@ func findSquashfsPath() string {
 		"/run/initramfs/live/live/filesystem.squashfs",
 		"/run/initramfs/live/LiveOS/squashfs.img",
 		"/live/filesystem.squashfs",
+		"/home/eggs/isodir/live/filesystem.squashfs",
+		"/home/eggs/live/filesystem.squashfs",
 	}
 	for _, p := range possiblePaths {
 		if _, err := os.Stat(p); err == nil {
 			return p
 		}
+	}
+	if matches, err := filepath.Glob("/home/eggs/**/filesystem.squashfs"); err == nil && len(matches) > 0 {
+		return matches[0]
 	}
 	return "/ERRORE_SQUASHFS_NON_TROVATO/filesystem.squashfs"
 }

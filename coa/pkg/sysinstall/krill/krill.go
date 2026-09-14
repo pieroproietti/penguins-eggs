@@ -11,6 +11,7 @@ import (
 
 	"coa/pkg/distro"
 	"coa/pkg/sysinstall/krill/engine"
+	"coa/pkg/utils"
 
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -177,9 +178,33 @@ type model struct {
 	restartCommand string
 }
 
+func shellQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'"
+}
+
+func findHostRootDisk() string {
+	out, err := utils.ExecCapture("findmnt -n -o SOURCE /")
+	if err != nil {
+		return ""
+	}
+	dev := strings.TrimSpace(out)
+	if dev == "" {
+		return ""
+	}
+	pk, err := utils.ExecCapture("lsblk -dno PKNAME " + shellQuote(dev))
+	if err == nil && strings.TrimSpace(pk) != "" {
+		return "/dev/" + strings.TrimSpace(pk)
+	}
+	return ""
+}
+
 // initialModel costruisce il modello a partire dalla configurazione
 // generata dalla pipeline (la stessa di Calamares) e dal sistema live.
 func initialModel(cfg *InstallerConfig, fstype string) model {
+	return initialModelWithOptions(cfg, fstype, false)
+}
+
+func initialModelWithOptions(cfg *InstallerConfig, fstype string, coexist bool) model {
 	s := spinner.New()
 	if isBasicTTY() {
 		s.Spinner = spinner.Line
@@ -221,11 +246,25 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 
 	diskModes := []string{"Erase disk", "Replace a partition", "Coexist"}
 	diskModeIdx := 0
+	diskIdx := 0
+
+	if coexist || (!utils.IsLive() && len(disks) > 0) {
+		diskModeIdx = 2 // Coexist mode
+		hostDisk := findHostRootDisk()
+		if hostDisk != "" && len(disks) > 1 {
+			for i, d := range disks {
+				if d.Path != hostDisk {
+					diskIdx = i
+					break
+				}
+			}
+		}
+	}
 
 	var candidateParts []PartitionInfo
 	var efiParts []PartitionInfo
 	if len(disks) > 0 {
-		allParts := DetectPartitions(disks[0].Path)
+		allParts := DetectPartitions(disks[diskIdx].Path)
 		candidateParts = GetCandidatePartitions(allParts, DetectLiveDisk())
 		efiParts = GetEfiPartitions(allParts)
 		if len(efiParts) == 0 && cfg.FirmwareLabel() == "UEFI" {
@@ -283,7 +322,7 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 		diskModes:      diskModes,
 		diskModeIdx:    diskModeIdx,
 		disks:          disks,
-		diskIdx:        0,
+		diskIdx:        diskIdx,
 		candidateParts: candidateParts,
 		partIdx:        0,
 		efiParts:       efiParts,
@@ -311,6 +350,27 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 		restartCommand: orDefault(cfg.Finished.RestartNowCommand, "reboot"),
 	}
 	m.refreshPartitions()
+	if diskModeIdx == 2 {
+		m.coexistStage = coexistInstall
+		if len(m.candidateParts) > 0 {
+			m.partIdx = 0
+		}
+		if len(m.efiParts) > 0 {
+			m.efiIdx = 0
+		}
+		if len(m.homeParts) == 1 {
+			m.homeIdx = 0
+		}
+		if len(m.candidateParts) > 0 && m.partIdx >= 0 {
+			slotLabel := m.candidateParts[m.partIdx].Label
+			if strings.HasPrefix(slotLabel, "root") {
+				m.homeNamespace = "coe-" + strings.TrimPrefix(slotLabel, "root")
+			} else {
+				m.homeNamespace = "coe-2"
+			}
+			m.userInputs[fieldHostname].SetValue(m.homeNamespace)
+		}
+	}
 	return m
 }
 
@@ -525,6 +585,23 @@ func (m *model) focusNet(idx int) tea.Cmd {
 
 func (m *model) refreshPartitions() {
 	m.refreshPartitionsWith(DetectPartitionInventory, DetectLiveDisk())
+	if paths, err := engine.DetectAllSharedHomePaths(); err == nil {
+		for _, path := range paths {
+			found := false
+			for _, hp := range m.homeParts {
+				if hp.Path == path {
+					found = true
+					break
+				}
+			}
+			if !found {
+				m.homeParts = append(m.homeParts, PartitionInfo{
+					Path:  path,
+					Label: engine.SharedHomeLabel,
+				})
+			}
+		}
+	}
 }
 
 func (m *model) refreshPartitionsWith(detect func() ([]PartitionInfo, error), liveDisk string) {
@@ -548,23 +625,6 @@ func (m *model) refreshPartitionsWith(detect func() ([]PartitionInfo, error), li
 		}
 		if engine.IsSharedHomeLabel(part.Label) || engine.IsSharedHomeLabel(part.PartLabel) {
 			m.homeParts = append(m.homeParts, part)
-		}
-	}
-	if paths, err := engine.DetectAllSharedHomePaths(); err == nil {
-		for _, path := range paths {
-			found := false
-			for _, hp := range m.homeParts {
-				if hp.Path == path {
-					found = true
-					break
-				}
-			}
-			if !found {
-				m.homeParts = append(m.homeParts, PartitionInfo{
-					Path:  path,
-					Label: engine.SharedHomeLabel,
-				})
-			}
 		}
 	}
 	m.candidateParts = GetCandidatePartitions(parts, liveDisk)
@@ -1521,6 +1581,10 @@ func insertAfter(seq []string, after, module string) []string {
 // Run è l'entry point pubblico per invocare l'installer da linea di comando.
 // Legge la configurazione generata dalla pipeline e avvia l'interfaccia TUI.
 func Run(fstype string) error {
+	return RunWithOptions(fstype, false)
+}
+
+func RunWithOptions(fstype string, coexist bool) error {
 	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
 	if err != nil {
 		return fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
@@ -1529,7 +1593,7 @@ func Run(fstype string) error {
 		fmt.Fprintf(os.Stderr, "[krill] warning: %s\n", w)
 	}
 
-	m := initialModel(cfg, fstype)
+	m := initialModelWithOptions(cfg, fstype, coexist)
 
 	// Inizializziamo il programma usando l'AltScreen per non sporcare la history del terminale
 	p := tea.NewProgram(m, tea.WithAltScreen())

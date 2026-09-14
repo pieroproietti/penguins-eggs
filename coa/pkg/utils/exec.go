@@ -8,19 +8,20 @@ import (
 )
 
 func ensureRootPath() {
-	const rootPath = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+	const defaultPath = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-	if os.Geteuid() == 0 {
-		if os.Getenv("PATH") != rootPath {
-			os.Setenv("PATH", rootPath)
-		}
+	current := os.Getenv("PATH")
+	if current == "" {
+		os.Setenv("PATH", defaultPath)
 		return
 	}
 
-	current := os.Getenv("PATH")
-	if !strings.Contains(current, "/sbin") {
-		os.Setenv("PATH", current+":"+rootPath)
+	for _, dir := range []string{"/usr/sbin", "/sbin", "/usr/local/sbin"} {
+		if !strings.Contains(current, dir) {
+			current += ":" + dir
+		}
 	}
+	os.Setenv("PATH", current)
 }
 
 // Exec esegue un comando sh e mostra l'output in tempo reale sul terminale.

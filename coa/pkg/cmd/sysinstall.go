@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var sysinstallCoexist bool
+
 var sysinstallCmd = &cobra.Command{
 	Use:   "sysinstall",
 	Short: "Launch the system installer (GUI or TUI)",
@@ -19,11 +21,18 @@ or falls back to Krill TUI installer.
 Examples:
   sudo eggs sysinstall
   sudo eggs sysinstall calamares
-  sudo eggs sysinstall krill`,
+  sudo eggs sysinstall krill
+  sudo eggs sysinstall krill --coexist`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements("sysinstall", true)
-		if !utils.IsLive() {
+		if !utils.IsLive() && !sysinstallCoexist {
 			utils.Fatal("sysinstall can only be run on a live system.")
+		}
+
+		if sysinstallCoexist {
+			utils.LogNormal("Launching Krill installer in Coexist mode...")
+			krillSubCmd.Run(cmd, args)
+			return
 		}
 
 		if isCalamaresAvailable() {

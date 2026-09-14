@@ -59,6 +59,9 @@ func CleanCoexistNVRAM(espDevice, id string) error {
 	}
 	espUUID, err := utils.ExecCapture("lsblk -dnro PARTUUID " + shellQuote(espDevice))
 	if err != nil {
+		if _, statErr := os.Stat(espDevice); os.IsNotExist(statErr) {
+			return nil
+		}
 		return fmt.Errorf("read Coexist ESP PARTUUID: %w", err)
 	}
 	espUUID = strings.TrimSpace(espUUID)
