@@ -27,7 +27,7 @@ func TestCoexistInstallFitsStandardTerminal(t *testing.T) {
 		// The terminal wraps long validation messages; all words must survive.
 		text := strings.Join(strings.Fields(view), " ")
 		text = strings.ReplaceAll(text, " │ │ ", " ")
-		for _, label := range []string{"Installation device", "Target partition", "EFI System Partition", "Shared HOME", "Installation ID", "type an ID", "Enter: continue"} {
+		for _, label := range []string{"Installation device", "Target partition", "EFI System Partition", "Home: /home on ROOT", "Installation ID", "type an ID", "Enter: continue"} {
 			if !strings.Contains(view, label) {
 				t.Fatalf("installation form missing %q", label)
 			}
@@ -59,7 +59,7 @@ func TestCoexistPaths(t *testing.T) {
 			t.Fatal("choosing a path dispatched disk operations")
 		}
 		if action == diskFieldPrepare {
-			if m.coexistStage != coexistHomeLocation || !strings.Contains(m.View(), "Shared Home Location") {
+			if m.coexistStage != coexistHomeLocation || !strings.Contains(m.View(), "Home location for disk preparation") {
 				t.Fatal("preparation did not start with HOME location")
 			}
 			next, cmd = m.Update(tea.KeyMsg{Type: tea.KeyEnter})

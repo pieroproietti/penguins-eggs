@@ -28,6 +28,7 @@ type CoexistDiskLayout struct {
 	DiskBytes, SectorSize uint64
 	RootBytes             uint64 // transient initializer parameter
 	ExternalHome          SharedHomePartition
+	HomeOnRoot            bool
 	TableEntries          int
 	Partitions            []CoexistDiskPartition
 	liveDevice, identity  string
@@ -44,9 +45,17 @@ func CalculateCoexistLayout(device string, bytes, sector, rootBytes uint64) (Coe
 
 // External HOME leaves only ESP and fixed-size ROOT slots on the prepared disk.
 func CalculateCoexistLayoutWithHome(device string, bytes, sector, rootBytes uint64, external SharedHomePartition) (CoexistDiskLayout, error) {
-	l := CoexistDiskLayout{Device: device, DiskBytes: bytes, SectorSize: sector, RootBytes: rootBytes, ExternalHome: external}
+	return calculateCoexistLayout(device, bytes, sector, rootBytes, external, false)
+}
+
+func CalculateCoexistLayoutWithoutHome(device string, bytes, sector, rootBytes uint64) (CoexistDiskLayout, error) {
+	return calculateCoexistLayout(device, bytes, sector, rootBytes, SharedHomePartition{}, true)
+}
+
+func calculateCoexistLayout(device string, bytes, sector, rootBytes uint64, external SharedHomePartition, homeOnRoot bool) (CoexistDiskLayout, error) {
+	l := CoexistDiskLayout{Device: device, DiskBytes: bytes, SectorSize: sector, RootBytes: rootBytes, ExternalHome: external, HomeOnRoot: homeOnRoot}
 	minHome, extraParts := CoexistMinHomeBytes, uint64(2)
-	if external.Partition != "" {
+	if external.Partition != "" || homeOnRoot {
 		minHome, extraParts = 0, 1
 	}
 	if device == "" || (sector != 512 && sector != 4096) || bytes%sector != 0 || bytes < CoexistESPBytes+minHome {
@@ -72,7 +81,7 @@ func CalculateCoexistLayoutWithHome(device string, bytes, sector, rootBytes uint
 			if n == 0 {
 				p.Label, p.Filesystem, p.Type, p.Sectors = "ESP", "vfat", espGUID, CoexistESPBytes/sector
 			} else if n == slots+1 {
-				p.Label, p.Sectors = "SHARED_HOMES", end-start
+				p.Label, p.Sectors = SharedHomeLabel, end-start
 			}
 			l.Partitions = append(l.Partitions, p)
 			start += p.Sectors
@@ -133,13 +142,28 @@ func PreviewCoexistDisk(device, liveDevice string, rootBytes uint64) (CoexistDis
 }
 
 func PreviewCoexistDiskWithHome(device, liveDevice string, rootBytes uint64, destination string) (CoexistDiskLayout, error) {
+	return previewCoexistDisk(device, liveDevice, rootBytes, destination, false)
+}
+
+func PreviewCoexistDiskWithoutHome(device, liveDevice string, rootBytes uint64) (CoexistDiskLayout, error) {
+	return previewCoexistDisk(device, liveDevice, rootBytes, "", true)
+}
+
+func previewCoexistDisk(device, liveDevice string, rootBytes uint64, destination string, homeOnRoot bool) (CoexistDiskLayout, error) {
+	shared, err := DetectSharedHome()
+	if err != nil {
+		return CoexistDiskLayout{}, err
+	}
+	if !homeOnRoot && destination == "" && shared != "" {
+		return CoexistDiskLayout{}, fmt.Errorf("%s already exists on %s; choose HOME on ROOT or reuse the existing shared partition", SharedHomeLabel, shared)
+	}
 	if err := ValidateCoexistFamily(distro.NewDistro().FamilyID); err != nil {
 		return CoexistDiskLayout{}, err
 	}
 	if !IsUEFI() {
 		return CoexistDiskLayout{}, fmt.Errorf("Coexist disk initialization requires UEFI")
 	}
-	device, err := filepath.EvalSymlinks(device)
+	device, err = filepath.EvalSymlinks(device)
 	if err != nil {
 		return CoexistDiskLayout{}, err
 	}
@@ -192,7 +216,10 @@ func PreviewCoexistDiskWithHome(device, liveDevice string, rootBytes uint64, des
 			return CoexistDiskLayout{}, err
 		}
 	}
-	l, err := CalculateCoexistLayoutWithHome(device, d.Size, d.Sector, rootBytes, external)
+	if destination != "" && external.Partition != shared {
+		return CoexistDiskLayout{}, fmt.Errorf("external HOME must be the unique %s partition", SharedHomeLabel)
+	}
+	l, err := calculateCoexistLayout(device, d.Size, d.Sector, rootBytes, external, homeOnRoot)
 	l.liveDevice, l.identity = liveDevice, d.ID+"/"+d.Serial+"/"+d.WWN
 	return l, err
 }
@@ -205,7 +232,7 @@ func InitializeCoexistDisk(proposed CoexistDiskLayout, confirmation string) erro
 	defer log.Close()
 	c := &ctx{plan: &Plan{Device: proposed.Device, Mode: "erase", TableType: "gpt"}, log: log}
 	return initializeCoexistDisk(c, proposed, confirmation, func(device, liveDevice string, rootBytes uint64) (CoexistDiskLayout, error) {
-		return PreviewCoexistDiskWithHome(device, liveDevice, rootBytes, proposed.ExternalHome.Partition)
+		return previewCoexistDisk(device, liveDevice, rootBytes, proposed.ExternalHome.Partition, proposed.HomeOnRoot)
 	})
 }
 

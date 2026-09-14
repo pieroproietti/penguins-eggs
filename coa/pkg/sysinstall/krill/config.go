@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"coa/pkg/sysinstall/krill/engine"
 	"coa/pkg/utils"
 
 	"gopkg.in/yaml.v3"
@@ -213,6 +214,9 @@ type DiskInfo struct {
 
 // PartitionInfo descrive una partizione presente sul disco.
 type PartitionInfo struct {
+	Disk       string // physical parent disk
+	ReadOnly   bool
+	InUse      bool   // active child mappings or mounts
 	Path       string // es. /dev/sda2
 	Name       string // es. sda2
 	Size       string // es. 50.0G
@@ -246,6 +250,7 @@ type lsblkRoot struct {
 }
 
 type lsblkItem struct {
+	ReadOnly    bool            `json:"ro"`
 	TableType   string          `json:"pttype"`
 	Start       uint64          `json:"start"`
 	Path        string          `json:"path"`
@@ -301,8 +306,17 @@ func isEfiPartition(fsType, label, partType string, mountPoints []string) bool {
 }
 
 func collectPartitions(items []lsblkItem) []PartitionInfo {
+	return collectPartitionsOnDisk(items, "", false, false)
+}
+
+func collectPartitionsOnDisk(items []lsblkItem, disk string, readOnly, live bool) []PartitionInfo {
 	var parts []PartitionInfo
 	for _, item := range items {
+		parent, onLiveDisk := disk, live
+		if item.Type == "disk" {
+			parent = item.Path
+			onLiveDisk = onLiveDisk || containsLiveMedia(item)
+		}
 		if item.Type == "part" {
 			sizeBytes, humanSize := parseLsblkSize(item.Size)
 			fs := ""
@@ -318,12 +332,18 @@ func collectPartitions(items []lsblkItem) []PartitionInfo {
 				pt = *item.PartType
 			}
 			mp := ""
-			if len(item.MountPoints) > 0 {
-				mp = item.MountPoints[0]
+			for _, mount := range item.MountPoints {
+				if mount != "" {
+					mp = mount
+					break
+				}
 			}
 			isEfi := isEfiPartition(fs, label, pt, item.MountPoints)
 
 			parts = append(parts, PartitionInfo{
+				Disk:       parent,
+				ReadOnly:   readOnly || item.ReadOnly,
+				InUse:      len(item.Children) > 0 || mp != "" || onLiveDisk,
 				Path:       item.Path,
 				Name:       item.Name,
 				Size:       humanSize,
@@ -336,10 +356,24 @@ func collectPartitions(items []lsblkItem) []PartitionInfo {
 			})
 		}
 		if len(item.Children) > 0 {
-			parts = append(parts, collectPartitions(item.Children)...)
+			parts = append(parts, collectPartitionsOnDisk(item.Children, parent, readOnly || item.ReadOnly, onLiveDisk)...)
 		}
 	}
 	return parts
+}
+
+func containsLiveMedia(item lsblkItem) bool {
+	for _, mount := range item.MountPoints {
+		if engine.IsLiveMount(mount) {
+			return true
+		}
+	}
+	for _, child := range item.Children {
+		if containsLiveMedia(child) {
+			return true
+		}
+	}
+	return false
 }
 
 // DetectLiveDisk individua il device del supporto live per evitarne la scrittura accidentale.
@@ -385,29 +419,39 @@ func DetectAllEfiPartitions() []PartitionInfo {
 	return GetEfiPartitions(all)
 }
 
+// DetectPartitionInventory inspects all disks, including mounted or unsupported
+// partitions. Such partitions still count when checking duplicate HOME labels.
+func DetectPartitionInventory() ([]PartitionInfo, error) {
+	out, err := utils.ExecCapture("lsblk --bytes --json --tree --output PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,MOUNTPOINTS,RO")
+	if err != nil {
+		return nil, fmt.Errorf("storage discovery failed: %w", err)
+	}
+	return parsePartitionInventory(out)
+}
+
+func parsePartitionInventory(output string) ([]PartitionInfo, error) {
+	var tree lsblkRoot
+	if err := json.Unmarshal([]byte(output), &tree); err != nil {
+		return nil, fmt.Errorf("storage discovery failed: %w", err)
+	}
+	if len(tree.BlockDevices) == 0 {
+		return nil, fmt.Errorf("storage discovery returned no devices")
+	}
+	return collectPartitions(tree.BlockDevices), nil
+}
+
 // GetCandidatePartitions filtra le partizioni idonee ad essere sostituite.
 func GetCandidatePartitions(parts []PartitionInfo, liveDisk string) []PartitionInfo {
 	var candidates []PartitionInfo
 	for _, p := range parts {
-		if p.IsEfi {
+		if p.IsEfi || !engine.RootPartitionAllowed(p.Label, p.FsType, p.PartType, p.InUse || p.MountPoint != "", p.ReadOnly) {
 			continue
 		}
-		if liveDisk != "" && strings.HasPrefix(p.Path, liveDisk) {
+		if liveDisk != "" && (p.Disk == liveDisk || (p.Disk == "" && strings.HasPrefix(p.Path, liveDisk))) {
 			continue
-		}
-		if p.MountPoint != "" {
-			if strings.HasPrefix(p.MountPoint, "/run/live") ||
-				p.MountPoint == "/run" ||
-				p.MountPoint == "/rofs" ||
-				p.MountPoint == "/lib/live/mount" {
-				continue
-			}
 		}
 		// Dimensione minima di 4 GiB se la dimensione in byte è nota
 		if p.SizeBytes > 0 && p.SizeBytes < 4*1024*1024*1024 {
-			continue
-		}
-		if p.FsType == "swap" {
 			continue
 		}
 		candidates = append(candidates, p)

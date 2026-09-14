@@ -20,7 +20,7 @@ func initializedFixture(t *testing.T, rootBytes uint64) (engine.CoexistDiskLayou
 	}
 	d := lsblkItem{Path: l.Device, Type: "disk", Size: json.RawMessage(fmt.Sprint(l.DiskBytes)), TableType: "gpt"}
 	for _, p := range l.Partitions {
-		fs, partType, label := p.Filesystem, p.Type, "unrelated-label"
+		fs, partType, label := p.Filesystem, p.Type, p.Label
 		d.Children = append(d.Children, lsblkItem{Path: p.Device, Type: "part", Size: json.RawMessage(fmt.Sprint(p.Sectors * l.SectorSize)), Start: p.Start * l.SectorSize / 512, FsType: &fs, PartType: &partType, Label: &label})
 	}
 	return l, lsblkRoot{BlockDevices: []lsblkItem{d}}
@@ -136,7 +136,7 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	if !slices.Equal(events, []string{"initialize", "rediscover"}) || m.initialization != nil || m.state != StateDisk || m.coexistStage != coexistReady || m.diskError != "" {
 		t.Fatalf("wrong completion: %v %s", events, m.diskError)
 	}
-	if m.candidateParts[m.partIdx].Path != l.Partitions[1].Device || m.efiParts[m.efiIdx].Path != l.Partitions[0].Device || m.homeParts[m.homeIdx].Path != l.Partitions[len(l.Partitions)-1].Device {
+	if m.candidateParts[m.partIdx].Path != l.Partitions[1].Device || m.efiParts[m.efiIdx].Path != l.Partitions[0].Device || m.homeIdx != -1 || len(m.homeParts) != 1 || m.homeParts[0].Path != l.Partitions[len(l.Partitions)-1].Device {
 		t.Fatal("new partitions not selected")
 	}
 	if m.homeNamespace != "untouched" || m.installCh != nil {
@@ -262,7 +262,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 	}
 	next, _ = m.Update(cmd())
 	m = next.(model)
-	if m.initialization != nil || m.diskError != "" || len(m.candidateParts) != 4 {
+	if m.initialization != nil || m.diskError != "" || len(m.candidateParts) != 3 {
 		t.Fatal("custom layout rediscovery failed")
 	}
 }

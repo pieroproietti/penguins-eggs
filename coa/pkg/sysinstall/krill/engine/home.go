@@ -148,48 +148,57 @@ func runCoexistMount(c *ctx) error {
 	if err := ValidateHomeNamespace(p.HomeNamespace); err != nil {
 		return err
 	}
-	storage, err := c.targetDirectory("srv", "homes")
-	if err != nil {
-		return err
+	idsToClean := []string{p.HomeNamespace}
+	if p.PreviousID != "" && p.PreviousID != p.HomeNamespace {
+		idsToClean = append(idsToClean, p.PreviousID)
 	}
 	home, err := c.targetDirectory("home")
 	if err != nil {
 		return err
 	}
-	info, err := c.safetyChecks().filesystem(p.HomePartition)
-	if err != nil {
-		return err
-	}
-	if info.Type != "ext4" || info.UUID == "" {
-		return fmt.Errorf("shared HOME filesystem changed or UUID unavailable")
-	}
-	if err := c.mount("-t", info.Type, p.HomePartition, storage); err != nil {
-		return err
-	}
-
-	// Tabula rasa: clean pre-existing home for the ID and any previous installation on this slot
-	idsToClean := []string{p.HomeNamespace}
-	if p.PreviousID != "" && p.PreviousID != p.HomeNamespace {
-		idsToClean = append(idsToClean, p.PreviousID)
-	}
-	for _, id := range idsToClean {
-		if id == p.PreviousID && id != p.HomeNamespace {
-			c.logf("coexist: cleaning previous installation %q from shared HOME", id)
+	if p.HomePartition != "" {
+		shared, err := c.safetyChecks().sharedHome()
+		if err != nil {
+			return err
 		}
-		if err := CleanCoexistHomeMount(storage, id); err != nil {
-			return fmt.Errorf("clean Coexist HOME %q: %w", id, err)
+		if shared != p.HomePartition {
+			return fmt.Errorf("shared HOME selection changed before mounting")
 		}
-	}
+		storage, err := c.targetDirectory("srv", "homes")
+		if err != nil {
+			return err
+		}
+		info, err := c.safetyChecks().filesystem(p.HomePartition)
+		if err != nil {
+			return err
+		}
+		if ValidateSharedHomeFilesystem(info.Type, info.Label) != nil || info.UUID == "" {
+			return fmt.Errorf("shared HOME filesystem changed or UUID unavailable")
+		}
+		if err := c.mount("-t", info.Type, p.HomePartition, storage); err != nil {
+			return err
+		}
 
-	namespace := filepath.Join(storage, p.HomeNamespace)
-	if err := os.Mkdir(namespace, 0755); err != nil && !os.IsExist(err) {
-		return err
-	}
-	if err := validateHomeDestination(storage, p.HomeNamespace); err != nil {
-		return err
-	}
-	if err := c.mount("--bind", namespace, home); err != nil {
-		return err
+		// Tabula rasa: clean pre-existing home for the ID and any previous installation on this slot
+		for _, id := range idsToClean {
+			if id == p.PreviousID && id != p.HomeNamespace {
+				c.logf("coexist: cleaning previous installation %q from shared HOME", id)
+			}
+			if err := CleanCoexistHomeMount(storage, id); err != nil {
+				return fmt.Errorf("clean Coexist HOME %q: %w", id, err)
+			}
+		}
+
+		namespace := filepath.Join(storage, p.HomeNamespace)
+		if err := os.Mkdir(namespace, 0755); err != nil && !os.IsExist(err) {
+			return err
+		}
+		if err := validateHomeDestination(storage, p.HomeNamespace); err != nil {
+			return err
+		}
+		if err := c.mount("--bind", namespace, home); err != nil {
+			return err
+		}
 	}
 	esp, err := c.targetDirectory("boot", "efi")
 	if err != nil {

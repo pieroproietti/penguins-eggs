@@ -48,7 +48,11 @@ func runFstab(c *ctx) error {
 	uuids := map[string]string{}
 	var homeInfo filesystemInfo
 	if plan.Mode == "coexist" {
-		for _, device := range []string{l.Root, l.Esp, plan.HomePartition} {
+		devices := []string{l.Root, l.Esp}
+		if plan.HomePartition != "" {
+			devices = append(devices, plan.HomePartition)
+		}
+		for _, device := range devices {
 			info, err := c.safetyChecks().filesystem(device)
 			if err != nil {
 				return err
@@ -67,7 +71,7 @@ func runFstab(c *ctx) error {
 			}
 			uuids[device] = info.UUID
 		}
-		if homeInfo.Type != "ext4" {
+		if plan.HomePartition != "" && ValidateSharedHomeFilesystem(homeInfo.Type, homeInfo.Label) != nil {
 			return fmt.Errorf("unsupported shared HOME filesystem")
 		}
 		if err := ValidateHomeNamespace(plan.HomeNamespace); err != nil {
@@ -131,7 +135,7 @@ func runFstab(c *ctx) error {
 		lines = append(lines, fmt.Sprintf("UUID=%s none swap sw 0 0", uuidOf(l.Swap)))
 	}
 
-	if plan.Mode == "coexist" {
+	if plan.Mode == "coexist" && plan.HomePartition != "" {
 		lines = append(lines,
 			fmt.Sprintf("UUID=%s /srv/homes %s defaults,noatime 0 2", homeInfo.UUID, homeInfo.Type),
 			fmt.Sprintf("/srv/homes/%s /home none bind 0 0", plan.HomeNamespace))

@@ -6,6 +6,8 @@ package engine
 
 import (
 	"bufio"
+	"coa/pkg/utils"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -125,12 +127,8 @@ func runRootFormat(c *ctx) error {
 	if plan.TargetPartition == "" {
 		return fmt.Errorf("nessuna partizione target specificata per la modalità replace")
 	}
-	mounted, err := c.safetyChecks().inUse(plan.TargetPartition)
-	if err != nil && plan.Mode == "coexist" {
-		return fmt.Errorf("Coexist root safety check: %w", err)
-	}
-	if err == nil && mounted {
-		return fmt.Errorf("la partizione %s ha partizioni o filesystem montati: smontarla prima di procedere", plan.TargetPartition)
+	if err := validateRootSelection(plan.TargetPartition, c.safetyChecks()); err != nil {
+		return err
 	}
 	labelArgs, err := rootFilesystemLabelArgs(plan)
 	if err != nil {
@@ -372,11 +370,20 @@ start=532480, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="rootfs"
 
 // deviceInUse verifica se il device ha partizioni con mount point attivi.
 func deviceInUse(device string) (bool, error) {
-	out, err := exec.Command("lsblk", "-no", "MOUNTPOINTS", device).Output()
+	out, err := utils.ExecCapture("lsblk --json --tree --output PATH,TYPE,RO,MOUNTPOINTS " + shellQuote(device))
 	if err != nil {
 		return false, err
 	}
-	return strings.TrimSpace(string(out)) != "", nil
+	var tree struct {
+		Devices []initializationDisk `json:"blockdevices"`
+	}
+	if err := json.Unmarshal([]byte(out), &tree); err != nil {
+		return false, err
+	}
+	if len(tree.Devices) != 1 {
+		return false, fmt.Errorf("ambiguous device usage: %s", device)
+	}
+	return checkInitializationDisk(tree.Devices[0], "") != nil, nil
 }
 
 func mkfsCommand(fs string) string {

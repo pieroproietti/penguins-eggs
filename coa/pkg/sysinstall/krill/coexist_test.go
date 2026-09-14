@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"coa/pkg/sysinstall/krill/engine"
 	"github.com/charmbracelet/bubbles/textinput"
 )
 
@@ -40,11 +41,11 @@ func TestCoexistDiskSelections(t *testing.T) {
 		disks:          []DiskInfo{{Path: "/dev/test"}},
 		candidateParts: []PartitionInfo{{Path: "/dev/test5"}},
 		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},
-		homeParts:      []PartitionInfo{{Path: "/dev/test2", FsType: "ext4"}},
+		homeParts:      []PartitionInfo{{Path: "/dev/test2", FsType: "ext4", Label: engine.SharedHomeLabel}},
 		homeIdx:        -1,
 		partIdx:        -1, efiIdx: 0, fsTypes: []string{"ext4"},
 	}
-	wantFields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
+	wantFields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldFs, diskFieldNamespace, diskFieldSwap, diskFieldHome}
 	if !reflect.DeepEqual(m.activeDiskFields(), wantFields) {
 		t.Fatal("Coexist must not offer an ESP selector")
 	}
@@ -118,7 +119,7 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 	m.userInputs = make([]textinput.Model, 5)
 	m.locData = TimezoneData{Regions: []string{"Europe"}, Zones: map[string][]string{"Europe": {"Rome"}}}
 	resources = m.coexistResources()
-	for _, text := range []string{"PURGE PREVIOUS (arch-colibri-4):", "/srv/homes/arch-colibri-4", "EFI/arch-colibri-4"} {
+	for _, text := range []string{"PURGE PREVIOUS (arch-colibri-4):", "EFI/arch-colibri-4"} {
 		if !strings.Contains(resources, text) {
 			t.Fatalf("summary missing purge notice %q: %s", text, resources)
 		}
@@ -149,14 +150,22 @@ func TestCoexistDiscoveryStaysOnSelectedDiskExceptHome(t *testing.T) {
 		},
 		"/dev/sdb": {
 			{Path: "/dev/sdb1", FsType: "vfat", PartType: guid, IsEfi: true},
-			{Path: "/dev/sdb2", FsType: "ext4"},
+			{Path: "/dev/sdb2", FsType: "ext4", Label: engine.SharedHomeLabel},
 		},
 	}
 	m := model{diskModeIdx: 2, coexistStage: coexistInstall, diskBios: "UEFI",
 		disks: []DiskInfo{{Path: "/dev/nvme0n1"}, {Path: "/dev/sdb"}}}
-	detect := func(device string) []PartitionInfo { return parts[device] }
-	allEFI := func() []PartitionInfo { t.Fatal("searched for ESP on other disks"); return nil }
-	m.refreshPartitionsWith(detect, "", allEFI)
+	detect := func() ([]PartitionInfo, error) {
+		var inventory []PartitionInfo
+		for disk, entries := range parts {
+			for _, p := range entries {
+				p.Disk = disk
+				inventory = append(inventory, p)
+			}
+		}
+		return inventory, nil
+	}
+	m.refreshPartitionsWith(detect, "")
 	if m.efiIdx != 0 || len(m.efiParts) != 1 || m.efiParts[0].Path != "/dev/nvme0n1p1" {
 		t.Fatal("local ESP was not fixed automatically")
 	}
@@ -168,19 +177,19 @@ func TestCoexistDiscoveryStaysOnSelectedDiskExceptHome(t *testing.T) {
 	}
 	m.partIdx, m.homeIdx = 0, 1
 	m.diskIdx = 1
-	m.refreshPartitionsWith(detect, "", allEFI)
+	m.refreshPartitionsWith(detect, "")
 	if m.efiParts[m.efiIdx].Path != "/dev/sdb1" || m.partIdx != -1 || m.homeIdx != -1 {
 		t.Fatal("changing disk retained old selections")
 	}
 	parts["/dev/sdb"] = parts["/dev/sdb"][1:]
-	m.refreshPartitionsWith(detect, "", allEFI)
+	m.refreshPartitionsWith(detect, "")
 	if m.efiIdx != -1 || !strings.Contains(m.coexistESPError(), "No valid ESP") {
 		t.Fatal("missing local ESP did not block selection")
 	}
 	parts["/dev/sdb"] = append(parts["/dev/sdb"],
 		PartitionInfo{Path: "/dev/sdb1", FsType: "vfat", PartType: guid, IsEfi: true},
 		PartitionInfo{Path: "/dev/sdb3", FsType: "vfat", PartType: guid, IsEfi: true})
-	m.refreshPartitionsWith(detect, "", allEFI)
+	m.refreshPartitionsWith(detect, "")
 	if m.efiIdx != -1 || !strings.Contains(m.coexistESPError(), "Multiple valid ESPs") {
 		t.Fatal("ambiguous local ESP was selected arbitrarily")
 	}

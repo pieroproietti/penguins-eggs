@@ -123,6 +123,7 @@ type model struct {
 	homeIdx        int
 	homeNamespace  string
 	diskError      string
+	storageError   string
 	diskBios       string
 	diskModes      []string
 	diskModeIdx    int
@@ -142,7 +143,7 @@ type model struct {
 	// Coexist: separate preparation and installation paths.
 	homeExternal       bool // disk preparation only
 	prepareHome        PartitionInfo
-	externalHomeIdx    int
+	prepareRootHome    bool // disk preparation: no shared partition
 	coexistStage       coexistStage
 	coexistReadyChoice int // 0 = install now, 1 = exit
 
@@ -262,7 +263,7 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 	netInputs[2].SetValue(network.Gateway)
 	netInputs[3].SetValue(orDefault(network.Dns, "8.8.8.8"))
 
-	return model{
+	m := model{
 		state:       StateWelcome,
 		cfg:         cfg,
 		appName:     "krill",
@@ -309,6 +310,8 @@ func initialModel(cfg *InstallerConfig, fstype string) model {
 		restartChecked: cfg.Finished.RestartNowChecked,
 		restartCommand: orDefault(cfg.Finished.RestartNowCommand, "reboot"),
 	}
+	m.refreshPartitions()
+	return m
 }
 
 // orDefault restituisce fallback quando value è vuoto.
@@ -521,40 +524,43 @@ func (m *model) focusNet(idx int) tea.Cmd {
 }
 
 func (m *model) refreshPartitions() {
-	m.refreshPartitionsWith(DetectPartitions, DetectLiveDisk(), DetectAllEfiPartitions)
+	m.refreshPartitionsWith(DetectPartitionInventory, DetectLiveDisk())
 }
 
-func (m *model) refreshPartitionsWith(detect func(string) []PartitionInfo, liveDisk string, allEFI func() []PartitionInfo) {
-	if len(m.disks) == 0 || m.diskIdx >= len(m.disks) {
-		m.candidateParts = nil
-		m.efiParts = nil
-		m.homeParts = nil
-		m.homeIdx = -1
-		m.partIdx = 0
-		m.efiIdx = 0
+func (m *model) refreshPartitionsWith(detect func() ([]PartitionInfo, error), liveDisk string) {
+	m.candidateParts, m.efiParts, m.homeParts = nil, nil, nil
+	m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
+	m.storageError = ""
+	allParts, err := detect()
+	if err != nil {
+		m.storageError = err.Error()
 		return
 	}
-	allParts := detect(m.disks[m.diskIdx].Path)
-	m.candidateParts = GetCandidatePartitions(allParts, liveDisk)
-	m.efiParts = GetEfiPartitions(allParts)
-	if m.diskModeIdx != 2 && len(m.efiParts) == 0 && m.diskBios == "UEFI" {
-		m.efiParts = allEFI()
+	if len(m.disks) == 0 || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
+		m.storageError = "No installation disk available."
+		return
 	}
-	m.partIdx = 0
-	m.efiIdx = 0
+	device := m.disks[m.diskIdx].Path
+	var parts []PartitionInfo
+	for _, part := range allParts {
+		if part.Disk == device {
+			parts = append(parts, part)
+		}
+		if part.Label == engine.SharedHomeLabel {
+			m.homeParts = append(m.homeParts, part)
+		}
+	}
+	m.candidateParts = GetCandidatePartitions(parts, liveDisk)
+	m.efiParts = GetEfiPartitions(parts)
 	if m.diskModeIdx == 2 {
 		m.efiParts = coexistEfiPartitions(m.efiParts)
-		m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
 		if len(m.efiParts) == 1 {
 			m.efiIdx = 0
 		}
-		m.homeParts = nil
-		for _, disk := range m.disks {
-			for _, part := range detect(disk.Path) {
-				if part.FsType == "ext4" && !part.IsEfi {
-					m.homeParts = append(m.homeParts, part)
-				}
-			}
+	} else {
+		m.partIdx, m.efiIdx = 0, 0
+		if len(m.efiParts) == 0 && m.diskBios == "UEFI" {
+			m.efiParts = GetEfiPartitions(allParts)
 		}
 	}
 }
@@ -596,8 +602,12 @@ func (m *model) activeDiskFields() []diskFieldKind {
 			if len(m.efiParts) == 0 {
 				return []diskFieldKind{diskFieldDevice}
 			}
-			return []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldHome, diskFieldNamespace, diskFieldFs, diskFieldSwap}
-		case coexistReady, coexistHomeLocation, coexistHomePartition:
+			fields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldFs, diskFieldNamespace, diskFieldSwap}
+			if len(m.homeParts) == 1 {
+				fields = append(fields, diskFieldHome)
+			}
+			return fields
+		case coexistReady, coexistHomeLocation:
 			return nil
 		}
 	}
@@ -622,7 +632,11 @@ func (m *model) availableSwapTypes() []string {
 // updateDisk naviga i selettori della schermata Disk.
 func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 	if m.diskModeIdx == 2 {
-		if m.coexistStage == coexistHomeLocation || m.coexistStage == coexistHomePartition {
+		if key == "enter" && m.coexistStorageError() != "" {
+			m.diskError = m.coexistStorageError()
+			return m, nil
+		}
+		if m.coexistStage == coexistHomeLocation {
 			return m.updateSharedHome(key)
 		}
 		if m.coexistStage == coexistReady {
@@ -651,6 +665,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			case diskFieldPrepare:
 				m.refreshPartitions()
 				m.coexistStage, m.diskField = coexistHomeLocation, 0
+				m.prepareRootHome = true
 			case diskFieldInstall:
 				m.coexistStage, m.diskField = coexistInstall, 0
 			default:
@@ -727,8 +742,8 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 				m.efiIdx = cycle(m.efiIdx, delta, len(m.efiParts))
 			}
 		case diskFieldHome:
-			if len(m.homeParts) > 0 {
-				m.homeIdx = cycle(m.homeIdx, delta, len(m.homeParts))
+			if len(m.homeParts) == 1 {
+				m.homeIdx = -1 - m.homeIdx
 			}
 		case diskFieldFs:
 			m.fsIdx = cycle(m.fsIdx, delta, len(m.fsTypes))
@@ -738,6 +753,10 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		}
 	case "enter":
 		m.diskError = ""
+		if m.storageError != "" {
+			m.diskError = m.storageError
+			return m, nil
+		}
 		if m.diskModeIdx == 2 {
 			if !engine.IsUEFI() {
 				m.diskError = "Coexist requires the live system to be booted in UEFI mode."
@@ -745,8 +764,10 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 				m.diskError = err.Error()
 			} else if err := m.coexistESPError(); err != "" {
 				m.diskError = err
-			} else if m.partIdx < 0 || m.partIdx >= len(m.candidateParts) || m.homeIdx < 0 || m.homeIdx >= len(m.homeParts) {
-				m.diskError = "Select the root to FORMAT and existing shared HOME to PRESERVE."
+			} else if m.partIdx < 0 || m.partIdx >= len(m.candidateParts) {
+				m.diskError = "Select the root partition to FORMAT."
+			} else if m.homeIdx >= 0 {
+				m.diskError = m.selectedHomeError()
 			}
 			if err := engine.ValidateHomeNamespace(m.homeNamespace); err != nil && m.diskError == "" {
 				m.diskError = err.Error()
@@ -1027,6 +1048,9 @@ func (m model) viewNetwork() string {
 }
 
 func (m model) viewDisk() string {
+	if m.diskModeIdx == 2 && m.coexistStorageError() != "" {
+		return renderSteps(4) + "\n\nCoexist — Storage check failed\n\n" + redBgWhiteText.Render(m.coexistStorageError()) + "\n\nEsc: Coexist menu | Ctrl+C: quit"
+	}
 	if m.initialization != nil {
 		return m.viewCoexistInitialization()
 	}
@@ -1034,7 +1058,7 @@ func (m model) viewDisk() string {
 		switch m.coexistStage {
 		case coexistChoose:
 			return m.viewCoexistChoice()
-		case coexistHomeLocation, coexistHomePartition:
+		case coexistHomeLocation:
 			return m.viewSharedHome()
 		case coexistPrepare:
 			return m.viewCoexistPreparation()
@@ -1104,11 +1128,11 @@ func (m model) viewDisk() string {
 			}
 			rows = append(rows, m.selectorRow(isActive, "EFI System Partition", efiStr))
 		case diskFieldHome:
-			part := "SELECT SHARED HOME (ext4)"
+			part := "On system partition (/home)"
 			if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
-				part = m.homeParts[m.homeIdx].DisplayString()
+				part = "Shared home: " + m.homeParts[m.homeIdx].Path
 			}
-			rows = append(rows, m.selectorRow(isActive, "Shared HOME (preserve)", part))
+			rows = append(rows, m.selectorRow(isActive, "Home location", part))
 		case diskFieldNamespace:
 			rows = append(rows, m.selectorRow(isActive, "Installation ID", orDefault(m.homeNamespace, "type an ID, e.g. debian")))
 		case diskFieldFs:
@@ -1126,11 +1150,17 @@ func (m model) viewDisk() string {
 	if m.diskModeIdx == 2 {
 		// Keep the editable form and validation visible on an 80x24 console.
 		// The full list of affected namespaces is shown at final confirmation.
-		rows = append(rows,
-			"↑/↓ select | ←/→ change | Installation ID: type to edit",
-			redBgWhiteText.Render("FORMAT selected ROOT; preserve ESP and shared HOME partitions."),
-			redBgWhiteText.Render("Selected IDs' HOME/EFI contents are deleted. Review details in Summary."),
-		)
+		if len(m.homeParts) == 0 {
+			rows = append(rows, "Home: /home on ROOT. For shared home, label an ext4 partition",
+				engine.SharedHomeLabel+" and restart Krill.")
+		}
+		rows = append(rows, "↑/↓ select | ←/→ change | Installation ID: type to edit")
+		if m.homeIdx >= 0 {
+			rows = append(rows, redBgWhiteText.Render("FORMAT ROOT; preserve ESP and shared HOME partitions."),
+				redBgWhiteText.Render("Selected IDs' HOME/EFI contents are deleted. Review Summary."))
+		} else {
+			rows = append(rows, redBgWhiteText.Render("FORMAT ROOT including /home; clean selected EFI IDs. Review Summary."))
+		}
 		if m.diskError != "" {
 			rows = append(rows, redBgWhiteText.Render(m.diskError))
 		}
@@ -1483,7 +1513,7 @@ func Run(fstype string) error {
 
 // coexistResources separates formatting from preservation in both disk and summary views.
 func (m model) coexistResources() string {
-	root, esp, home := "SELECT ROOT", "SELECT ESP", "SELECT SHARED HOME"
+	root, esp, home := "SELECT ROOT", "SELECT ESP", ""
 	if m.homeIdx >= 0 && m.homeIdx < len(m.homeParts) {
 		home = m.homeParts[m.homeIdx].Path
 	}
@@ -1501,16 +1531,29 @@ func (m model) coexistResources() string {
 	if m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
 		esp = m.efiParts[m.efiIdx].Path
 	}
+	preserve := "PRESERVE (no formatting):\n  ESP: " + esp
+	cleanup := "DELETE CONTENTS if present / CREATE if absent:\n  EFI/" + m.homeNamespace + "\n  Matching UEFI NVRAM entries"
+	if home != "" {
+		preserve += "\n  Shared HOME: " + home + "\n  Other HOME namespaces and EFI/BOOT"
+		cleanup += "\n  HOME namespace: /srv/homes/" + m.homeNamespace
+	} else {
+		preserve += "\n  Shared HOME partitions and their contents remain untouched"
+	}
 	rows := []string{
 		cyanText.Render("COEXIST\n  Installation ID: " + m.homeNamespace),
 		redBgWhiteText.Render("FORMAT:\n  Root: " + root + "\n  New label: " + m.homeNamespace),
-		greenText.Render("PRESERVE (no formatting):\n  ESP: " + esp + "\n  Shared HOME: " + home +
-			"\n  Other HOME namespaces and EFI/BOOT"),
-		redBgWhiteText.Render("DELETE CONTENTS if present / CREATE if absent:\n  HOME namespace: /srv/homes/" + m.homeNamespace +
-			"\n  EFI/" + m.homeNamespace + "\n  Matching UEFI NVRAM entries"),
+		greenText.Render(preserve),
+		redBgWhiteText.Render(cleanup),
+	}
+	if home == "" {
+		rows = append(rows, redBgWhiteText.Render("HOME: /home on ROOT; formatting ROOT deletes its previous contents."))
 	}
 	if oldLabel != "" && oldLabel != m.homeNamespace {
-		rows = append(rows, redBgWhiteText.Render("PURGE PREVIOUS ("+oldLabel+"):\n  HOME: /srv/homes/"+oldLabel+"\n  EFI: EFI/"+oldLabel+"\n  Matching UEFI NVRAM entries"))
+		previous := "PURGE PREVIOUS (" + oldLabel + "):\n  EFI: EFI/" + oldLabel + "\n  Matching UEFI NVRAM entries"
+		if home != "" {
+			previous += "\n  HOME: /srv/homes/" + oldLabel
+		}
+		rows = append(rows, redBgWhiteText.Render(previous))
 	}
 	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }

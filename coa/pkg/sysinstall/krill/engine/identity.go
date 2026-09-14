@@ -17,17 +17,33 @@ type identityDevice struct {
 // Inspect every attached device: selecting a different disk must not allow an
 // installation to purge the HOME or EFI identity of another occupied slot.
 func inspectCoexistIdentities(plan *Plan) error {
+	devices, err := readIdentityDevices()
+	if err != nil {
+		return err
+	}
+	return validateCoexistIdentities(plan, devices)
+}
+
+func readIdentityDevices() ([]identityDevice, error) {
 	out, err := utils.ExecCapture("lsblk --json --list --output PATH,TYPE,LABEL")
 	if err != nil {
-		return fmt.Errorf("Coexist identity inventory: %w", err)
+		return nil, fmt.Errorf("Coexist identity inventory: %w", err)
 	}
 	var inventory struct {
 		Devices []identityDevice `json:"blockdevices"`
 	}
 	if err := json.Unmarshal([]byte(out), &inventory); err != nil {
-		return fmt.Errorf("Coexist identity inventory: %w", err)
+		return nil, fmt.Errorf("Coexist identity inventory: %w", err)
 	}
-	return validateCoexistIdentities(plan, inventory.Devices)
+	if len(inventory.Devices) == 0 {
+		return nil, fmt.Errorf("storage inventory is empty")
+	}
+	for _, device := range inventory.Devices {
+		if device.Path == "" || device.Type == "" {
+			return nil, fmt.Errorf("incomplete storage inventory")
+		}
+	}
+	return inventory.Devices, nil
 }
 
 func validateCoexistIdentities(plan *Plan, devices []identityDevice) error {

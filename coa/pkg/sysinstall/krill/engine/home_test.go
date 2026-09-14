@@ -14,7 +14,6 @@ func TestHomePreflight(t *testing.T) {
 		name   string
 		change func(*Plan, *partitionChecks)
 	}{
-		{"missing", func(p *Plan, _ *partitionChecks) { p.HomePartition = "" }},
 		{"root collision", func(p *Plan, _ *partitionChecks) { p.HomePartition = p.TargetPartition }},
 		{"ESP collision", func(p *Plan, _ *partitionChecks) { p.HomePartition = p.EspPartition }},
 		{"root alias", func(_ *Plan, c *partitionChecks) {
@@ -100,6 +99,7 @@ func testContext(t *testing.T, p *Plan) (*ctx, *[]string) {
 		}
 	})
 	checks := safeChecks()
+	checks.sharedHome = func() (string, error) { return p.HomePartition, nil }
 	checks.filesystem = func(device string) (filesystemInfo, error) {
 		fs := "ext4"
 		if device == p.TargetPartition {
@@ -108,7 +108,7 @@ func testContext(t *testing.T, p *Plan) (*ctx, *[]string) {
 		if device == p.EspPartition {
 			fs = "vfat"
 		}
-		return filesystemInfo{Type: fs, UUID: filepath.Base(device) + "-uuid"}, nil
+		return filesystemInfo{Type: fs, UUID: filepath.Base(device) + "-uuid", Label: SharedHomeLabel}, nil
 	}
 	commands := []string{}
 	c := &ctx{plan: p, checks: &checks, log: log, execute: func(_ string, name string, args ...string) error {

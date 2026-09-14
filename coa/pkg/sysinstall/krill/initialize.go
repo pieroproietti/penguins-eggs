@@ -39,6 +39,9 @@ func PreviewCoexistInitialization(device string, rootBytes uint64) (engine.Coexi
 }
 
 func (m model) previewCoexistInitialization(device string, rootBytes uint64) (engine.CoexistDiskLayout, error) {
+	if m.prepareRootHome {
+		return engine.PreviewCoexistDiskWithoutHome(device, DetectLiveDisk(), rootBytes)
+	}
 	if m.homeExternal {
 		return engine.PreviewCoexistDiskWithHome(device, DetectLiveDisk(), rootBytes, m.prepareHome.Path)
 	}
@@ -47,6 +50,10 @@ func (m model) previewCoexistInitialization(device string, rootBytes uint64) (en
 
 func (m model) startCoexistPreview(preview func(string, uint64) (engine.CoexistDiskLayout, error)) (tea.Model, tea.Cmd) {
 	if m.diskModeIdx != 2 || m.coexistStage != coexistPrepare || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
+		return m, nil
+	}
+	if err := m.coexistStorageError(); err != "" {
+		m.diskError = err
 		return m, nil
 	}
 	if m.homeExternal && m.prepareHome.Path == "" {
@@ -86,7 +93,7 @@ func (m model) receiveCoexistPreview(msg coexistPreviewMsg) (tea.Model, tea.Cmd)
 	for _, p := range msg.layout.Partitions {
 		rows = append(rows, fmt.Sprintf("%-20s %-13s %8.2f GiB  %s", p.Device, p.Label, float64(p.Sectors*msg.layout.SectorSize)/(1<<30), p.Filesystem))
 	}
-	if len(rows) > 0 && msg.layout.ExternalHome.Partition == "" {
+	if len(rows) > 0 && msg.layout.ExternalHome.Partition == "" && !msg.layout.HomeOnRoot {
 		rows[len(rows)-1] += " (remainder)"
 	}
 	v.SetContent(strings.Join(rows, "\n"))
@@ -182,8 +189,9 @@ func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Mode
 	l := msg.layout
 	m.candidateParts = GetCandidatePartitions(msg.parts, "")
 	m.efiParts = coexistEfiPartitions(msg.parts)
+	m.homeParts = nil
 	for _, p := range msg.parts {
-		if p.FsType == "ext4" {
+		if p.Label == engine.SharedHomeLabel {
 			m.homeParts = append(m.homeParts, p)
 		}
 	}
@@ -197,18 +205,12 @@ func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Mode
 			m.efiIdx = n
 		}
 	}
+	m.prepareRootHome = l.HomeOnRoot
 	m.homeExternal = l.ExternalHome.Partition != ""
-	m.prepareHome = PartitionInfo{Path: l.ExternalHome.Partition, FsType: "ext4", SizeBytes: int64(l.ExternalHome.SizeBytes)}
+	m.prepareHome = PartitionInfo{Path: l.ExternalHome.Partition, FsType: "ext4", Label: engine.SharedHomeLabel, SizeBytes: int64(l.ExternalHome.SizeBytes)}
 	m.homeIdx = -1
-	if m.homeExternal {
+	if m.homeExternal && len(m.homeParts) == 0 {
 		m.homeParts = append(m.homeParts, m.prepareHome)
-		m.homeIdx = len(m.homeParts) - 1
-	} else {
-		for n, p := range m.homeParts {
-			if p.Path == l.Partitions[len(l.Partitions)-1].Device {
-				m.homeIdx = n
-			}
-		}
 	}
 	m.diskError = ""
 	m.coexistStage = coexistReady
@@ -248,7 +250,27 @@ func rediscoverInitializedDisk(l engine.CoexistDiskLayout) ([]PartitionInfo, err
 	if err := json.Unmarshal([]byte(out), &tree); err != nil {
 		return nil, err
 	}
-	return validateInitializedDiscovery(l, tree)
+	parts, err := validateInitializedDiscovery(l, tree)
+	if err != nil {
+		return nil, err
+	}
+	inventory, err := DetectPartitionInventory()
+	if err != nil {
+		return nil, err
+	}
+	var paths []string
+	for _, p := range inventory {
+		if p.Label == engine.SharedHomeLabel {
+			paths = append(paths, p.Path)
+			if p.Disk != l.Device {
+				parts = append(parts, p)
+			}
+		}
+	}
+	if _, err := engine.UniqueSharedHome(paths); err != nil {
+		return nil, err
+	}
+	return parts, nil
 }
 
 func validateInitializedDiscovery(l engine.CoexistDiskLayout, tree lsblkRoot) ([]PartitionInfo, error) {

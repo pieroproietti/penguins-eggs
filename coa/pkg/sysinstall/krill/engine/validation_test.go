@@ -11,16 +11,18 @@ import (
 
 func safeChecks() partitionChecks {
 	return partitionChecks{
-		uefi:      func() bool { return true },
-		partition: func(s string) (string, error) { return s, nil },
-		esp:       func(string) (bool, error) { return true, nil },
-		inUse:     func(string) (bool, error) { return false, nil },
+		rootTarget: func(string) error { return nil },
+		sharedHome: func() (string, error) { return "/dev/test2", nil },
+		uefi:       func() bool { return true },
+		partition:  func(s string) (string, error) { return s, nil },
+		esp:        func(string) (bool, error) { return true, nil },
+		inUse:      func(string) (bool, error) { return false, nil },
 		filesystem: func(device string) (filesystemInfo, error) {
 			fs := "ext4"
 			if device == "/dev/test1" {
 				fs = "vfat"
 			}
-			return filesystemInfo{Type: fs, UUID: "test-uuid"}, nil
+			return filesystemInfo{Type: fs, UUID: "test-uuid", Label: SharedHomeLabel}, nil
 		},
 		inspectHome: func(string, string) error { return nil },
 		family:      func() string { return "debian" },
@@ -179,7 +181,7 @@ func TestCoexistLayoutAndFirmwareIndependentOfTable(t *testing.T) {
 
 func TestLegacyValidationUnchanged(t *testing.T) {
 	for _, mode := range []string{"erase", "replace"} {
-		if err := validatePlan(&Plan{Mode: mode}, partitionChecks{}); err != nil {
+		if err := validatePlan(&Plan{Mode: mode, TargetPartition: "/dev/test5"}, safeChecks()); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -264,6 +266,7 @@ func TestCoexistDiskBoundaryBeforeFormatting(t *testing.T) {
 			p, checks := coexistPlan(), safeChecks()
 			p.TargetPartition, p.EspPartition = tc.root, tc.esp
 			p.HomePartition = "/dev/external2"
+			checks.sharedHome = func() (string, error) { return p.HomePartition, nil }
 			checks.disk = func(device, root, esp string) error {
 				return validateCoexistDiskTree(device, root, esp, tc.tree)
 			}

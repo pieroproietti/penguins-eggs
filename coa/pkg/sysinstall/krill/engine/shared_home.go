@@ -55,8 +55,8 @@ func InspectExternalHomePartition(partition, excludedDisk string) (SharedHomePar
 	if err != nil {
 		return l, err
 	}
-	if fs.Type != "ext4" {
-		return l, fmt.Errorf("external HOME requires an existing ext4 filesystem")
+	if err := ValidateSharedHomeFilesystem(fs.Type, fs.Label); err != nil {
+		return l, err
 	}
 	l.UUID, l.SizeBytes = fs.UUID, tree.Devices[0].Size
 	return l, nil

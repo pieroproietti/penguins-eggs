@@ -192,6 +192,9 @@ func IsGenericRootLabel(label string) bool {
 
 // ResetCoexistSlot wipes filesystem signatures on the root partition and reformats it with a generic root label.
 func ResetCoexistSlot(rootDevice string) error {
+	if err := inspectRootTarget(rootDevice); err != nil {
+		return err
+	}
 	inUse, err := deviceInUse(rootDevice)
 	if err != nil {
 		return fmt.Errorf("check in use %s: %w", rootDevice, err)

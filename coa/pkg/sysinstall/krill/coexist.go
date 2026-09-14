@@ -15,7 +15,6 @@ const (
 	coexistInstall
 	coexistReady
 	coexistHomeLocation
-	coexistHomePartition
 )
 
 func (m model) coexistActionRow(active bool, label string) string {
@@ -32,7 +31,7 @@ func (m model) viewCoexistChoice() string {
 		m.coexistActionRow(m.diskField == 1, "Install a distribution on an existing disk"),
 		"    Existing ROOT and fixed ESP on that disk; HOME may be on another.", "",
 		m.coexistActionRow(m.diskField == 2, "Prepare a disk for multiple distributions"),
-		"    Create ESP and ROOT slots; choose local or external HOME.",
+		"    Create ESP and ROOT slots, with optional shared HOME.",
 		"    " + redBgWhiteText.Render("WARNING: Completely destructive. Erases ALL DATA on the selected disk."), "",
 		"↑/↓ select action | ←/→ change installation mode | Enter: open",
 	}, "\n")
