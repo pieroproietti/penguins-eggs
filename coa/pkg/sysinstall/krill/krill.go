@@ -1581,13 +1581,14 @@ func insertAfter(seq []string, after, module string) []string {
 // Run è l'entry point pubblico per invocare l'installer da linea di comando.
 // Legge la configurazione generata dalla pipeline e avvia l'interfaccia TUI.
 func Run(fstype string) error {
-	return RunWithOptions(fstype, false)
+	_, err := RunWithOptions(fstype, false)
+	return err
 }
 
-func RunWithOptions(fstype string, coexist bool) error {
+func RunWithOptions(fstype string, coexist bool) (bool, error) {
 	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
 	if err != nil {
-		return fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
+		return false, fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
 	}
 	for _, w := range cfg.Warnings {
 		fmt.Fprintf(os.Stderr, "[krill] warning: %s\n", w)
@@ -1598,11 +1599,17 @@ func RunWithOptions(fstype string, coexist bool) error {
 	// Inizializziamo il programma usando l'AltScreen per non sporcare la history del terminale
 	p := tea.NewProgram(m, tea.WithAltScreen())
 
-	if _, err := p.Run(); err != nil {
-		return fmt.Errorf("fatal error running krill: %w", err)
+	finalModel, err := p.Run()
+	if err != nil {
+		return false, fmt.Errorf("fatal error running krill: %w", err)
 	}
 
-	return nil
+	installed := false
+	if fm, ok := finalModel.(model); ok && fm.installDone && fm.installErr == nil {
+		installed = true
+	}
+
+	return installed, nil
 }
 
 // coexistResources separates formatting from preservation in both disk and summary views.

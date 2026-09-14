@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+	"os/exec"
+
 	"coa/pkg/sysinstall/krill"
 	"coa/pkg/sysinstall/setup"
 	"coa/pkg/utils"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -30,6 +33,34 @@ var krillSubCmd = &cobra.Command{
 	},
 }
 
+func updateHostBootloader() {
+	if utils.IsLive() {
+		return
+	}
+	utils.LogNormal("Updating host bootloader configuration...")
+	if _, err := exec.LookPath("update-grub"); err == nil {
+		if err := utils.Exec("update-grub"); err != nil {
+			utils.LogWarning("Failed to update host bootloader: %v", err)
+		}
+	} else if _, err := exec.LookPath("grub-mkconfig"); err == nil {
+		cfgPath := "/boot/grub/grub.cfg"
+		if _, err := os.Stat("/boot/grub2/grub.cfg"); err == nil {
+			cfgPath = "/boot/grub2/grub.cfg"
+		}
+		if err := utils.Exec(fmt.Sprintf("grub-mkconfig -o %s", cfgPath)); err != nil {
+			utils.LogWarning("Failed to update host bootloader: %v", err)
+		}
+	} else if _, err := exec.LookPath("grub2-mkconfig"); err == nil {
+		cfgPath := "/boot/grub2/grub.cfg"
+		if _, err := os.Stat("/boot/grub/grub.cfg"); err == nil {
+			cfgPath = "/boot/grub/grub.cfg"
+		}
+		if err := utils.Exec(fmt.Sprintf("grub2-mkconfig -o %s", cfgPath)); err != nil {
+			utils.LogWarning("Failed to update host bootloader: %v", err)
+		}
+	}
+}
+
 func runKrillInstaller(oaVersion string, unattended bool, fstype string, coexist bool, targetPart, homePart, installID string) {
 	if err := setup.BuildInstaller(oaVersion); err != nil {
 		utils.LogError("Installer environment setup error: %v", err)
@@ -50,6 +81,7 @@ func runKrillInstaller(oaVersion string, unattended bool, fstype string, coexist
 			os.Exit(1)
 		}
 		if coexist {
+			updateHostBootloader()
 			utils.LogSuccess("[Krill] Coexist unattended installation completed successfully!")
 			os.Exit(0)
 		}
@@ -63,9 +95,14 @@ func runKrillInstaller(oaVersion string, unattended bool, fstype string, coexist
 
 	utils.LogNormal("%s[Krill]%s Starting the TUI installer...", utils.ColorCyan, utils.ColorReset)
 
-	if err := krill.RunWithOptions(fstype, coexist); err != nil {
+	installed, err := krill.RunWithOptions(fstype, coexist)
+	if err != nil {
 		utils.LogNormal("%s[Krill Error]%s Installation was interrupted: %v", utils.ColorRed, utils.ColorReset, err)
 		os.Exit(1)
+	}
+
+	if installed && coexist {
+		updateHostBootloader()
 	}
 
 	utils.LogNormal("%s[Krill]%s Exiting installer.", utils.ColorGreen, utils.ColorReset)
