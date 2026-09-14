@@ -2,6 +2,32 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.14 - 2026-09-14
+This release consolidates and matures the **Coexist** multi-boot architecture in Krill, introducing host-to-disk installations directly from installed systems, automated UEFI NVRAM boot entry registration, host bootloader synchronization, unattended non-interactive deployment, and flexible shared or local `/home` storage configurations with robust device protections.
+
+### 🦐 Krill: Host-to-Disk Coexist Deployment & Unattended Automation
+* **Installed Host Deployment (`--coexist`)**: Extended `eggs sysinstall` and `eggs sysinstall krill` to allow installing a distribution directly from an already running, installed host system without requiring live boot media.
+* **Automatic Squashfs Discovery**: Automatically detects local remaster squashfs images located at `/home/eggs/isodir/live/filesystem.squashfs` when deploying from an installed host.
+* **Unattended Coexist Deployment**: Added `--unattended` support for non-interactive Coexist installations featuring automatic available root slot detection, poweroff suppression, and automated completion.
+* **CLI Parameterization for Automation**: Introduced `--target-part`, `--id`, and `--home-part` command-line flags to enable fully scripted, non-interactive deployments.
+
+### 🥾 UEFI Firmware NVRAM Registration & Bootloader Sync
+* **Automatic UEFI NVRAM Registration**: Integrated direct UEFI NVRAM boot entry registration (`efibootmgr`) via `RegisterCoexistNVRAM` before filesystem unmount, ensuring Coexist boot entries are registered into system firmware.
+* **Orphaned Slot Autodiscovery**: Automatically scans the ESP for existing unlisted Coexist installations and registers them into firmware NVRAM.
+* **Host Bootloader Synchronization**: Automatically invokes host bootloader reconfiguration (`update-grub`, `grub-mkconfig`, or `grub2-mkconfig`) upon completing a Coexist installation from an installed host.
+
+### 💾 Flexible Storage Architecture & ROOT Protections
+* **Optional Shared vs. Local `/home`**: Coexist now supports keeping `/home` directly on the root partition or mapping it to a shared `/home` partition (`/srv/homes/<id>`).
+* **`SHARED_HOMES` Autodiscovery**: Scans all connected disks and block devices for an ext4 `SHARED_HOMES` partition with `blkid` and `PARTLABEL` support, preventing duplicate filesystem labels.
+* **External HOME Partition Support**: Allows reusing a pre-existing ext4 partition on another disk as shared HOME without reformatting or resizing.
+* **Strict ROOT Protections**: Explicitly prevents selecting `SHARED_HOMES`, ESP, swap, live media devices, read-only partitions, or active/busy mounts as root target slots.
+* **Strict Disk & ESP Binding**: Binds Coexist ROOT and ESP strictly to the selected target disk, blocking cross-device partition mismatches.
+
+### 🖥️ Interface & Usability Refinements
+* **Separated Preparation & Installation Flows**: Distinct user paths for disk preparation (`Prepare a disk for multiple distributions`) and installation (`Install a distribution on an existing disk`).
+* **Console Viewport Optimization**: Fine-tuned layout and form rendering to guarantee complete visibility on standard 80×24 consoles without clipping.
+* **Increased Default Slot Sizing**: Raised default root slot allocation to 10 GiB (configurable from 4 GiB upwards).
+
 ## Release Notes: penguins-eggs v26.9.13 - 2026-09-13
 This release introduces the experimental **Coexist** multi-boot installation mode in Krill (the native TUI installer), allowing multiple Linux distributions to share a disk and common `/home` namespace with isolated UEFI GRUB configurations. In addition, `eggs config` now features interactive installer selection with automatic Calamares dependency installation on save.
 
