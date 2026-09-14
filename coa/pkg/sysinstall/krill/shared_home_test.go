@@ -156,3 +156,79 @@ func TestRootHomePreparationReady(t *testing.T) {
 		t.Fatal("ROOT-only preparation acquired shared HOME")
 	}
 }
+
+func TestSharedHomeMultipleDisks(t *testing.T) {
+	for _, tc := range []struct {
+		sdaLabel, sdaPartLabel string
+		sdbLabel, sdbPartLabel string
+	}{
+		{sdaLabel: "SHARED_HOMES", sdbLabel: "SHARED_HOMES"},
+		{sdaLabel: "SHARED_HOME", sdbLabel: "SHARED_HOMES"},
+		{sdaLabel: "SHARED_HOMES", sdbLabel: "SHARED_HOME"},
+		{sdaPartLabel: "SHARED_HOMES", sdbPartLabel: "SHARED_HOMES"},
+		{sdaLabel: "SHARED_HOMES", sdbPartLabel: "SHARED_HOMES"},
+		{sdaPartLabel: "SHARED_HOMES", sdbLabel: "SHARED_HOMES"},
+		{sdaPartLabel: "SHARED_HOME", sdbLabel: "SHARED_HOMES"},
+	} {
+		m := identityModel()
+		m.disks = []DiskInfo{{Path: "/dev/sda"}, {Path: "/dev/sdb"}}
+		parts := []PartitionInfo{
+			{Disk: "/dev/sda", Path: "/dev/sda1", FsType: "vfat", PartType: "c12a7328-f81f-11d2-ba4b-00a0c93ec93b", IsEfi: true},
+			{Disk: "/dev/sda", Path: "/dev/sda2", FsType: "ext4", Label: tc.sdaLabel, PartLabel: tc.sdaPartLabel},
+			{Disk: "/dev/sda", Path: "/dev/sda3", FsType: "ext4"},
+			{Disk: "/dev/sdb", Path: "/dev/sdb1", FsType: "ext4", Label: tc.sdbLabel, PartLabel: tc.sdbPartLabel},
+		}
+		m.refreshPartitionsWith(func() ([]PartitionInfo, error) { return parts, nil }, "")
+		if err := m.coexistStorageError(); err == "" || !strings.Contains(err, "/dev/sda2") || !strings.Contains(err, "/dev/sdb1") {
+			t.Fatalf("failed to detect duplicates across disks %+v: %s", tc, err)
+		}
+		if !strings.Contains(m.View(), "Storage check failed") {
+			t.Fatalf("multiple disks view did not block: %s", m.View())
+		}
+		next, cmd := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+		if cmd != nil || next.(model).state != StateDisk {
+			t.Fatal("duplicate labels allowed advancement")
+		}
+
+		// Verify that attempting to choose Install distribution is blocked
+		m.coexistStage = coexistChoose
+		m.diskField = 1 // diskFieldInstall
+		next, _ = m.updateDisk("enter")
+		if next.(model).coexistStage == coexistInstall {
+			t.Fatal("duplicate labels allowed entering coexistInstall")
+		}
+
+		// Verify that attempting to choose Prepare disk is blocked
+		m.diskField = 2 // diskFieldPrepare
+		next, _ = m.updateDisk("enter")
+		if next.(model).coexistStage == coexistHomeLocation || next.(model).coexistStage == coexistPrepare {
+			t.Fatal("duplicate labels allowed entering disk preparation")
+		}
+	}
+}
+
+func TestParseBlkidExport(t *testing.T) {
+	raw := `DEVNAME=/dev/sda1
+UUID=1234-ABCD
+TYPE=vfat
+PARTLABEL=EFI
+
+DEVNAME=/dev/sda2
+LABEL=SHARED_HOMES
+TYPE=ext4
+
+DEVNAME=/dev/sdb1
+PARTLABEL=SHARED_HOMES
+TYPE=ext4
+`
+	entries := engine.ParseBlkidExport(raw)
+	if len(entries) != 3 {
+		t.Fatalf("expected 3 entries, got %d", len(entries))
+	}
+	if entries[1].Path != "/dev/sda2" || entries[1].Label != "SHARED_HOMES" {
+		t.Fatalf("unexpected entry 1: %+v", entries[1])
+	}
+	if entries[2].Path != "/dev/sdb1" || entries[2].PartLabel != "SHARED_HOMES" {
+		t.Fatalf("unexpected entry 2: %+v", entries[2])
+	}
+}

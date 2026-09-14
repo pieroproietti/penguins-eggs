@@ -223,6 +223,7 @@ type PartitionInfo struct {
 	SizeBytes  int64  // dimensione in byte
 	FsType     string // es. ext4, ntfs, btrfs, vfat
 	Label      string // etichetta del filesystem (se presente)
+	PartLabel  string // etichetta/nome della partizione (se presente in GPT)
 	PartType   string // tipo o GUID della partizione
 	MountPoint string // eventuale punto di mount attivo
 	IsEfi      bool   // true se è una partizione EFI System
@@ -240,6 +241,8 @@ func (p PartitionInfo) DisplayString() string {
 	}
 	if p.Label != "" {
 		parts = append(parts, fmt.Sprintf("%q", p.Label))
+	} else if p.PartLabel != "" {
+		parts = append(parts, fmt.Sprintf("%q", p.PartLabel))
 	}
 	info := strings.Join(parts, " - ")
 	return fmt.Sprintf("%s (%s)", p.Path, info)
@@ -259,6 +262,7 @@ type lsblkItem struct {
 	Type        string          `json:"type"`
 	FsType      *string         `json:"fstype"`
 	Label       *string         `json:"label"`
+	PartLabel   *string         `json:"partlabel"`
 	PartType    *string         `json:"parttype"`
 	MountPoints []string        `json:"mountpoints"`
 	Children    []lsblkItem     `json:"children"`
@@ -316,6 +320,38 @@ func collectPartitionsOnDisk(items []lsblkItem, disk string, readOnly, live bool
 		if item.Type == "disk" {
 			parent = item.Path
 			onLiveDisk = onLiveDisk || containsLiveMedia(item)
+			if len(item.Children) == 0 && item.FsType != nil && *item.FsType != "" {
+				sizeBytes, humanSize := parseLsblkSize(item.Size)
+				fs := *item.FsType
+				label := ""
+				if item.Label != nil {
+					label = *item.Label
+				}
+				partLabel := ""
+				if item.PartLabel != nil {
+					partLabel = *item.PartLabel
+				}
+				mp := ""
+				for _, mount := range item.MountPoints {
+					if mount != "" {
+						mp = mount
+						break
+					}
+				}
+				parts = append(parts, PartitionInfo{
+					Disk:       parent,
+					ReadOnly:   readOnly || item.ReadOnly,
+					InUse:      mp != "" || onLiveDisk,
+					Path:       item.Path,
+					Name:       item.Name,
+					Size:       humanSize,
+					SizeBytes:  sizeBytes,
+					FsType:     fs,
+					Label:      label,
+					PartLabel:  partLabel,
+					MountPoint: mp,
+				})
+			}
 		}
 		if item.Type == "part" {
 			sizeBytes, humanSize := parseLsblkSize(item.Size)
@@ -326,6 +362,10 @@ func collectPartitionsOnDisk(items []lsblkItem, disk string, readOnly, live bool
 			label := ""
 			if item.Label != nil {
 				label = *item.Label
+			}
+			partLabel := ""
+			if item.PartLabel != nil {
+				partLabel = *item.PartLabel
 			}
 			pt := ""
 			if item.PartType != nil {
@@ -350,6 +390,7 @@ func collectPartitionsOnDisk(items []lsblkItem, disk string, readOnly, live bool
 				SizeBytes:  sizeBytes,
 				FsType:     fs,
 				Label:      label,
+				PartLabel:  partLabel,
 				PartType:   pt,
 				MountPoint: mp,
 				IsEfi:      isEfi,
@@ -394,7 +435,7 @@ func DetectLiveDisk() string {
 
 // DetectPartitions restituisce tutte le partizioni presenti su un disco fisico.
 func DetectPartitions(diskPath string) []PartitionInfo {
-	out, err := exec.Command("lsblk", "-J", "-b", "-o", "PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,MOUNTPOINTS", diskPath).Output()
+	out, err := exec.Command("lsblk", "-J", "-b", "-o", "PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTLABEL,PARTTYPE,MOUNTPOINTS", diskPath).Output()
 	if err != nil {
 		return nil
 	}
@@ -407,7 +448,7 @@ func DetectPartitions(diskPath string) []PartitionInfo {
 
 // DetectAllEfiPartitions cerca tutte le partizioni EFI presenti sui dischi di sistema.
 func DetectAllEfiPartitions() []PartitionInfo {
-	out, err := exec.Command("lsblk", "-J", "-b", "-o", "PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,MOUNTPOINTS").Output()
+	out, err := exec.Command("lsblk", "-J", "-b", "-o", "PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTLABEL,PARTTYPE,MOUNTPOINTS").Output()
 	if err != nil {
 		return nil
 	}
@@ -419,14 +460,56 @@ func DetectAllEfiPartitions() []PartitionInfo {
 	return GetEfiPartitions(all)
 }
 
+func enrichPartitionsWithBlkid(parts []PartitionInfo) []PartitionInfo {
+	raw := engine.ReadBlkidExport()
+	if raw == "" {
+		return parts
+	}
+	entries := engine.ParseBlkidExport(raw)
+	byPath := make(map[string]engine.BlkidEntry, len(entries))
+	for _, e := range entries {
+		byPath[e.Path] = e
+	}
+	seen := make(map[string]bool, len(parts))
+	for i := range parts {
+		seen[parts[i].Path] = true
+		if b, ok := byPath[parts[i].Path]; ok {
+			if parts[i].Label == "" && b.Label != "" {
+				parts[i].Label = b.Label
+			}
+			if parts[i].PartLabel == "" && b.PartLabel != "" {
+				parts[i].PartLabel = b.PartLabel
+			}
+			if parts[i].FsType == "" && b.Type != "" {
+				parts[i].FsType = b.Type
+			}
+		}
+	}
+	for _, b := range entries {
+		if !seen[b.Path] && b.Path != "" && (engine.IsSharedHomeLabel(b.Label) || engine.IsSharedHomeLabel(b.PartLabel)) {
+			parts = append(parts, PartitionInfo{
+				Path:      b.Path,
+				Label:     b.Label,
+				PartLabel: b.PartLabel,
+				FsType:    b.Type,
+			})
+		}
+	}
+	return parts
+}
+
 // DetectPartitionInventory inspects all disks, including mounted or unsupported
 // partitions. Such partitions still count when checking duplicate HOME labels.
 func DetectPartitionInventory() ([]PartitionInfo, error) {
-	out, err := utils.ExecCapture("lsblk --bytes --json --tree --output PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,MOUNTPOINTS,RO")
+	out, err := utils.ExecCapture("lsblk --bytes --json --tree --output PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTLABEL,PARTTYPE,MOUNTPOINTS,RO")
 	if err != nil {
 		return nil, fmt.Errorf("storage discovery failed: %w", err)
 	}
-	return parsePartitionInventory(out)
+	parts, err := parsePartitionInventory(out)
+	if err != nil {
+		return nil, err
+	}
+	return enrichPartitionsWithBlkid(parts), nil
 }
 
 func parsePartitionInventory(output string) ([]PartitionInfo, error) {
@@ -444,7 +527,7 @@ func parsePartitionInventory(output string) ([]PartitionInfo, error) {
 func GetCandidatePartitions(parts []PartitionInfo, liveDisk string) []PartitionInfo {
 	var candidates []PartitionInfo
 	for _, p := range parts {
-		if p.IsEfi || !engine.RootPartitionAllowed(p.Label, p.FsType, p.PartType, p.InUse || p.MountPoint != "", p.ReadOnly) {
+		if p.IsEfi || !engine.RootPartitionAllowedWithPartLabel(p.Label, p.PartLabel, p.FsType, p.PartType, p.InUse || p.MountPoint != "", p.ReadOnly) {
 			continue
 		}
 		if liveDisk != "" && (p.Disk == liveDisk || (p.Disk == "" && strings.HasPrefix(p.Path, liveDisk))) {

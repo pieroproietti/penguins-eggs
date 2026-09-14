@@ -191,7 +191,7 @@ func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Mode
 	m.efiParts = coexistEfiPartitions(msg.parts)
 	m.homeParts = nil
 	for _, p := range msg.parts {
-		if p.Label == engine.SharedHomeLabel {
+		if engine.IsSharedHomeLabel(p.Label) || engine.IsSharedHomeLabel(p.PartLabel) {
 			m.homeParts = append(m.homeParts, p)
 		}
 	}
@@ -260,7 +260,7 @@ func rediscoverInitializedDisk(l engine.CoexistDiskLayout) ([]PartitionInfo, err
 	}
 	var paths []string
 	for _, p := range inventory {
-		if p.Label == engine.SharedHomeLabel {
+		if engine.IsSharedHomeLabel(p.Label) || engine.IsSharedHomeLabel(p.PartLabel) {
 			paths = append(paths, p.Path)
 			if p.Disk != l.Device {
 				parts = append(parts, p)

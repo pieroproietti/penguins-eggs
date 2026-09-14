@@ -4,17 +4,22 @@ import (
 	"bytes"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func ensureRootPath() {
-	if os.Geteuid() != 0 {
+	const rootPath = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+	if os.Geteuid() == 0 {
+		if os.Getenv("PATH") != rootPath {
+			os.Setenv("PATH", rootPath)
+		}
 		return
 	}
 
-	const rootPath = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-	if os.Getenv("PATH") != rootPath {
-		os.Setenv("PATH", rootPath)
+	current := os.Getenv("PATH")
+	if !strings.Contains(current, "/sbin") {
+		os.Setenv("PATH", current+":"+rootPath)
 	}
 }
 

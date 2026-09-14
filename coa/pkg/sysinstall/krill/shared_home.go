@@ -14,7 +14,7 @@ func (m model) coexistStorageError() string {
 	}
 	var paths []string
 	for _, p := range m.homeParts {
-		if p.Label == engine.SharedHomeLabel {
+		if engine.IsSharedHomeLabel(p.Label) || engine.IsSharedHomeLabel(p.PartLabel) {
 			paths = append(paths, p.Path)
 		}
 	}

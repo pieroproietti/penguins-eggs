@@ -546,8 +546,25 @@ func (m *model) refreshPartitionsWith(detect func() ([]PartitionInfo, error), li
 		if part.Disk == device {
 			parts = append(parts, part)
 		}
-		if part.Label == engine.SharedHomeLabel {
+		if engine.IsSharedHomeLabel(part.Label) || engine.IsSharedHomeLabel(part.PartLabel) {
 			m.homeParts = append(m.homeParts, part)
+		}
+	}
+	if paths, err := engine.DetectAllSharedHomePaths(); err == nil {
+		for _, path := range paths {
+			found := false
+			for _, hp := range m.homeParts {
+				if hp.Path == path {
+					found = true
+					break
+				}
+			}
+			if !found {
+				m.homeParts = append(m.homeParts, PartitionInfo{
+					Path:  path,
+					Label: engine.SharedHomeLabel,
+				})
+			}
 		}
 	}
 	m.candidateParts = GetCandidatePartitions(parts, liveDisk)
@@ -664,9 +681,18 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			switch activeFields[m.diskField] {
 			case diskFieldPrepare:
 				m.refreshPartitions()
+				if err := m.coexistStorageError(); err != "" {
+					m.diskError = err
+					return m, nil
+				}
 				m.coexistStage, m.diskField = coexistHomeLocation, 0
 				m.prepareRootHome = true
 			case diskFieldInstall:
+				m.refreshPartitions()
+				if err := m.coexistStorageError(); err != "" {
+					m.diskError = err
+					return m, nil
+				}
 				m.coexistStage, m.diskField = coexistInstall, 0
 			default:
 				m.diskField = 1
@@ -758,6 +784,10 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		if m.diskModeIdx == 2 {
+			if err := m.coexistStorageError(); err != "" {
+				m.diskError = err
+				return m, nil
+			}
 			if !engine.IsUEFI() {
 				m.diskError = "Coexist requires the live system to be booted in UEFI mode."
 			} else if err := engine.ValidateCoexistFamily(distro.NewDistro().FamilyID); err != nil {
