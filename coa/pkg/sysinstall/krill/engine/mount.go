@@ -169,6 +169,12 @@ func (c *ctx) ensureChrootMounts() error {
 // runUmount smonta tutto in ordine inverso. Gli errori vengono solo
 // loggati: a fine installazione meglio un umount pigro che un blocco.
 func runUmount(c *ctx) error {
+	if c.plan.Mode == "coexist" && c.plan.EspPartition != "" && c.plan.EFIBootloaderID != "" {
+		espMount := c.tpath("boot", "efi")
+		if err := RegisterCoexistNVRAM(espMount, c.plan.EspPartition, c.plan.EFIBootloaderID); err != nil {
+			c.logf("coexist: register NVRAM: %v", err)
+		}
+	}
 	for i := len(c.mounts) - 1; i >= 0; i-- {
 		if err := c.run("umount", c.mounts[i]); err != nil {
 			c.logf("umount %s failed, retrying lazy", c.mounts[i])
