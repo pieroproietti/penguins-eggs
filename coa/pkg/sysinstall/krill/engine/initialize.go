@@ -26,14 +26,15 @@ type CoexistDiskLayout struct {
 	Device                string
 	DiskBytes, SectorSize uint64
 	RootBytes             uint64 // transient initializer parameter
+	FsType                string
 	TableEntries          int
 	Partitions            []CoexistDiskPartition
 	liveDevice, identity  string
 }
 
 type CoexistDiskPartition struct {
-	Device, Label, Filesystem, Type string
-	Start, Sectors                  uint64
+	Device, Label, PartLabel, Filesystem, Type string
+	Start, Sectors                             uint64
 }
 
 func CalculateCoexistLayout(device string, bytes, sector, rootBytes uint64) (CoexistDiskLayout, error) {
@@ -59,9 +60,17 @@ func CalculateCoexistLayout(device string, bytes, sector, rootBytes uint64) (Coe
 		}
 		l.TableEntries = int(entries)
 		for n := uint64(0); n < slots+1; n++ {
-			p := CoexistDiskPartition{Device: devPart(device, int(n+1)), Label: fmt.Sprintf("root%d", n), Filesystem: "ext4", Type: linuxGUID, Start: start, Sectors: rootBytes / sector}
+			p := CoexistDiskPartition{
+				Device:     devPart(device, int(n+1)),
+				Label:      fmt.Sprintf("root%d", n),
+				PartLabel:  fmt.Sprintf("coexist-%d", n),
+				Filesystem: "ext4",
+				Type:       linuxGUID,
+				Start:      start,
+				Sectors:    rootBytes / sector,
+			}
 			if n == 0 {
-				p.Label, p.Filesystem, p.Type, p.Sectors = "ESP", "vfat", espGUID, CoexistESPBytes/sector
+				p.Label, p.PartLabel, p.Filesystem, p.Type, p.Sectors = "ESP", "ESP", "vfat", espGUID, CoexistESPBytes/sector
 			}
 			l.Partitions = append(l.Partitions, p)
 			start += p.Sectors
@@ -74,7 +83,11 @@ func CalculateCoexistLayout(device string, bytes, sector, rootBytes uint64) (Coe
 func (l CoexistDiskLayout) partitionScript() string {
 	lines := []string{"label: gpt", "unit: sectors", fmt.Sprintf("table-length: %d", l.TableEntries)}
 	for _, p := range l.Partitions {
-		lines = append(lines, fmt.Sprintf("start=%d, size=%d, type=%s", p.Start, p.Sectors, p.Type))
+		partName := p.PartLabel
+		if partName == "" {
+			partName = p.Label
+		}
+		lines = append(lines, fmt.Sprintf("start=%d, size=%d, type=%s, name=%q", p.Start, p.Sectors, p.Type, partName))
 	}
 	return strings.Join(lines, "\n") + "\n"
 }
@@ -192,6 +205,14 @@ func initializeCoexistDisk(c *ctx, proposed CoexistDiskLayout, confirmation stri
 	fresh, err := preview(proposed.Device, proposed.liveDevice, proposed.RootBytes)
 	if err != nil {
 		return err
+	}
+	fresh.FsType = proposed.FsType
+	if proposed.FsType != "" {
+		for i := range fresh.Partitions {
+			if fresh.Partitions[i].Filesystem != "vfat" {
+				fresh.Partitions[i].Filesystem = proposed.FsType
+			}
+		}
 	}
 	if !reflect.DeepEqual(proposed, fresh) || c.plan.Device != proposed.Device {
 		return fmt.Errorf("disk or proposed layout changed; review a new preview")

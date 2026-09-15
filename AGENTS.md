@@ -91,9 +91,15 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
   - **Rules**: Requires root privileges (`sudo`).
   - **Subcommands**:
     - `eggs sysinstall calamares`: Launches the standard advanced graphical user interface installer (GUI).
-    - `eggs sysinstall krill`: Launches the custom native text user interface terminal installer (TUI).
-      - `--coexist`: Run in Coexist multi-boot mode (install to a slot alongside other OSes).
+    - `eggs sysinstall krill`: Launches the custom native text user interface terminal installer (TUI). Automatically enables Coexist mode if any Coexist disk is present.
   - **Intents**: "install to disk", "run installer", "start GUI installation", "text-mode setup".
+* #### `eggs coexist`
+  - **Purpose**: Manages Coexist multi-boot disks and slot installations.
+  - **Subcommands**:
+    - `eggs coexist init <device>`: Initializes a physical disk for Coexist with UEFI GPT layout (512 MiB ESP and uniform ROOT slots with GPT PARTLABEL `coexist-N` and filesystem label `rootN`). Requires root privileges (`sudo`). Flags: `--size` (GiB, default 10), `--fstype` (ext4/btrfs), `-y`/`--yes`.
+    - `eggs coexist info [device]`: Inspects and displays detected Coexist disks, ESP details, slots, filesystems, labels, and availability status.
+    - `eggs coexist install [slot]`: Directly launches Krill in Coexist mode to install the current system into a slot (with automatic `<part>-<distro>` naming). Requires root privileges (`sudo`).
+  - **Intents**: "coexist multi-boot", "initialize coexist disk", "check coexist disks", "coexist info", "coexist install".
 
 ### 3. AI Agent & MCP Integration
 * #### `eggs mcp`

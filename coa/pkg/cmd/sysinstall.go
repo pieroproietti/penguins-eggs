@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/exec"
 
+	"coa/pkg/sysinstall/krill/engine"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -21,15 +22,15 @@ or falls back to Krill TUI installer.
 Examples:
   sudo eggs sysinstall
   sudo eggs sysinstall calamares
-  sudo eggs sysinstall krill
-  sudo eggs sysinstall krill --coexist`,
+  sudo eggs sysinstall krill`,
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements("sysinstall", true)
-		if !utils.IsLive() && !sysinstallCoexist {
-			utils.Fatal("sysinstall can only be run on a live system.")
+		hasCoexist := len(engine.DetectCoexistDisks()) > 0
+		if !utils.IsLive() && !sysinstallCoexist && !hasCoexist {
+			utils.Fatal("sysinstall can only be run on a live system, unless a Coexist disk is present.")
 		}
 
-		if sysinstallCoexist {
+		if sysinstallCoexist || (!utils.IsLive() && hasCoexist) {
 			utils.LogNormal("Launching Krill installer in Coexist mode...")
 			krillSubCmd.Run(cmd, args)
 			return

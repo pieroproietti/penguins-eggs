@@ -121,6 +121,7 @@ type model struct {
 
 	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
 	systemID       string
+	systemIDCustom bool
 	diskError      string
 	storageError   string
 	diskBios       string
@@ -196,10 +197,10 @@ func findHostRootDisk() string {
 // initialModel costruisce il modello a partire dalla configurazione
 // generata dalla pipeline (la stessa di Calamares) e dal sistema live.
 func initialModel(cfg *InstallerConfig, fstype string) model {
-	return initialModelWithOptions(cfg, fstype, false)
+	return initialModelWithOptions(cfg, fstype, false, "")
 }
 
-func initialModelWithOptions(cfg *InstallerConfig, fstype string, coexist bool) model {
+func initialModelWithOptions(cfg *InstallerConfig, fstype string, coexist bool, targetSlot string) model {
 	s := spinner.New()
 	if isBasicTTY() {
 		s.Spinner = spinner.Line
@@ -239,16 +240,47 @@ func initialModelWithOptions(cfg *InstallerConfig, fstype string, coexist bool) 
 		swapTypes = []string{"none", "small", "suspend", "file"}
 	}
 
-	diskModes := []string{"Erase disk", "Replace a partition", "Coexist"}
+	coexistDisks := engine.DetectCoexistDisks()
+	hasCoexist := len(coexistDisks) > 0
+
+	diskModes := []string{"Erase disk", "Replace a partition"}
+	if hasCoexist || coexist {
+		diskModes = append(diskModes, "Coexist")
+	}
 	diskModeIdx := 0
 	diskIdx := 0
 
-	if coexist || (!utils.IsLive() && len(disks) > 0) {
-		diskModeIdx = 2 // Coexist mode
-		hostDisk := findHostRootDisk()
-		if hostDisk != "" && len(disks) > 1 {
+	if coexist || (!utils.IsLive() && hasCoexist) {
+		for i, dm := range diskModes {
+			if strings.HasPrefix(dm, "Coexist") {
+				diskModeIdx = i
+				break
+			}
+		}
+		if hasCoexist {
+			targetDisk := coexistDisks[0].Device
+			if targetSlot != "" {
+				for _, cd := range coexistDisks {
+					for _, s := range cd.Slots {
+						if s.Device == targetSlot {
+							targetDisk = cd.Device
+							break
+						}
+					}
+				}
+			} else {
+				hostDisk := findHostRootDisk()
+				if hostDisk != "" && len(coexistDisks) > 0 {
+					for _, cd := range coexistDisks {
+						if cd.Device != hostDisk {
+							targetDisk = cd.Device
+							break
+						}
+					}
+				}
+			}
 			for i, d := range disks {
-				if d.Path != hostDisk {
+				if d.Path == targetDisk {
 					diskIdx = i
 					break
 				}
@@ -274,7 +306,7 @@ func initialModelWithOptions(cfg *InstallerConfig, fstype string, coexist bool) 
 		inputs[i].CharLimit = 64
 		inputs[i].Width = 30
 	}
-const DefaultPassword = "evolution"
+	const DefaultPassword = "evolution"
 
 	// "artisan"/"evolution" è l'utente proposto di default: quello del
 	// sistema live (es. "live") non ha senso come account permanente.
@@ -347,25 +379,38 @@ const DefaultPassword = "evolution"
 		restartCommand: orDefault(cfg.Finished.RestartNowCommand, "reboot"),
 	}
 	m.refreshPartitions()
-	if diskModeIdx == 2 {
+	if m.isCoexist() {
 		m.coexistStage = coexistInstall
 		if len(m.candidateParts) > 0 {
 			m.partIdx = 0
+			if targetSlot != "" {
+				for i, p := range m.candidateParts {
+					if p.Path == targetSlot {
+						m.partIdx = i
+						break
+					}
+				}
+			}
 		}
 		if len(m.efiParts) > 0 {
 			m.efiIdx = 0
 		}
 		if len(m.candidateParts) > 0 && m.partIdx >= 0 {
-			slotLabel := m.candidateParts[m.partIdx].Label
-			if strings.HasPrefix(slotLabel, "root") {
-				m.systemID = "coe-" + strings.TrimPrefix(slotLabel, "root")
-			} else {
-				m.systemID = "coe-2"
-			}
+			m.systemID = engine.GenerateSlotSystemID(m.candidateParts[m.partIdx].Path, distro.NewDistro().DistroID)
 			m.userInputs[fieldHostname].SetValue(m.systemID)
 		}
 	}
 	return m
+}
+
+func (m model) isCoexist() bool {
+	if m.diskModeIdx == 2 && len(m.diskModes) == 0 {
+		return true
+	}
+	if m.diskModeIdx >= 0 && m.diskModeIdx < len(m.diskModes) {
+		return strings.HasPrefix(m.diskModes[m.diskModeIdx], "Coexist")
+	}
+	return false
 }
 
 // orDefault restituisce fallback quando value è vuoto.
@@ -642,7 +687,7 @@ const (
 )
 
 func (m *model) activeDiskFields() []diskFieldKind {
-	if m.diskModeIdx == 2 {
+	if m.isCoexist() {
 		switch m.coexistStage {
 		case coexistChoose:
 			return []diskFieldKind{diskFieldMode, diskFieldInstall, diskFieldPrepare}
@@ -669,7 +714,7 @@ func (m *model) activeDiskFields() []diskFieldKind {
 }
 
 func (m *model) availableSwapTypes() []string {
-	if m.diskModeIdx == 1 || m.diskModeIdx == 2 {
+	if m.diskModeIdx == 1 || m.isCoexist() {
 		return []string{"none", "file"}
 	}
 	return m.swapTypes
@@ -677,7 +722,7 @@ func (m *model) availableSwapTypes() []string {
 
 // updateDisk naviga i selettori della schermata Disk.
 func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
-	if m.diskModeIdx == 2 {
+	if m.isCoexist() {
 		if m.coexistStage == coexistReady {
 			return m.updateCoexistReady(key)
 		}
@@ -690,6 +735,10 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 	}
+	if key == "esc" {
+		m.state = StateWelcome
+		return m, nil
+	}
 	activeFields := m.activeDiskFields()
 	if m.diskField >= len(activeFields) {
 		m.diskField = len(activeFields) - 1
@@ -697,7 +746,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 	if activeFields[m.diskField] == diskFieldInitialize && key == "enter" {
 		return m.startCoexistPreview(m.previewCoexistInitialization)
 	}
-	if m.diskModeIdx == 2 && key == "enter" {
+	if m.isCoexist() && key == "enter" {
 		switch m.coexistStage {
 		case coexistChoose:
 			switch activeFields[m.diskField] {
@@ -719,6 +768,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		edited := false
 		switch key {
 		case "backspace", "ctrl+h":
+			m.systemIDCustom = true
 			if len(m.systemID) > 0 {
 				_, size := utf8.DecodeLastRuneInString(m.systemID)
 				m.systemID = m.systemID[:len(m.systemID)-size]
@@ -729,7 +779,12 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			// Retain invalid input, including pasted Unicode and overlong IDs,
 			// so validation rejects it visibly instead of silently sanitizing it.
 			if utf8.RuneCountInString(key) == 1 {
-				m.systemID += key
+				if !m.systemIDCustom {
+					m.systemID = key
+					m.systemIDCustom = true
+				} else {
+					m.systemID += key
+				}
 				edited = true
 			}
 		}
@@ -758,18 +813,38 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		switch currentKind {
 		case diskFieldMode:
 			m.diskModeIdx = cycle(m.diskModeIdx, delta, len(m.diskModes))
-			m.coexistStage, m.diskError = coexistChoose, ""
+			m.coexistStage, m.diskError = coexistInstall, ""
 			m.refreshPartitions()
 			if m.diskField >= len(m.activeDiskFields()) {
 				m.diskField = 0
+			}
+			if m.isCoexist() && len(m.candidateParts) > 0 {
+				m.partIdx = 0
+				m.systemID = engine.GenerateSlotSystemID(m.candidateParts[0].Path, distro.NewDistro().DistroID)
+				if len(m.userInputs) > fieldHostname {
+					m.userInputs[fieldHostname].SetValue(m.systemID)
+				}
 			}
 		case diskFieldDevice:
 			m.diskIdx = cycle(m.diskIdx, delta, len(m.disks))
 			m.refreshPartitions()
 			m.diskError = ""
+			if m.isCoexist() && len(m.candidateParts) > 0 {
+				m.partIdx = 0
+				m.systemID = engine.GenerateSlotSystemID(m.candidateParts[0].Path, distro.NewDistro().DistroID)
+				if len(m.userInputs) > fieldHostname {
+					m.userInputs[fieldHostname].SetValue(m.systemID)
+				}
+			}
 		case diskFieldTargetPart:
 			if len(m.candidateParts) > 0 {
 				m.partIdx = cycle(m.partIdx, delta, len(m.candidateParts))
+				if m.isCoexist() && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) && !m.systemIDCustom {
+					m.systemID = engine.GenerateSlotSystemID(m.candidateParts[m.partIdx].Path, distro.NewDistro().DistroID)
+					if len(m.userInputs) > fieldHostname {
+						m.userInputs[fieldHostname].SetValue(m.systemID)
+					}
+				}
 			}
 		case diskFieldEfi:
 			if len(m.efiParts) > 0 {
@@ -790,18 +865,38 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		switch currentKind {
 		case diskFieldMode:
 			m.diskModeIdx = cycle(m.diskModeIdx, delta, len(m.diskModes))
-			m.coexistStage, m.diskError = coexistChoose, ""
+			m.coexistStage, m.diskError = coexistInstall, ""
 			m.refreshPartitions()
 			if m.diskField >= len(m.activeDiskFields()) {
 				m.diskField = 0
+			}
+			if m.isCoexist() && len(m.candidateParts) > 0 {
+				m.partIdx = 0
+				m.systemID = engine.GenerateSlotSystemID(m.candidateParts[0].Path, distro.NewDistro().DistroID)
+				if len(m.userInputs) > fieldHostname {
+					m.userInputs[fieldHostname].SetValue(m.systemID)
+				}
 			}
 		case diskFieldDevice:
 			m.diskIdx = cycle(m.diskIdx, delta, len(m.disks))
 			m.refreshPartitions()
 			m.diskError = ""
+			if m.isCoexist() && len(m.candidateParts) > 0 {
+				m.partIdx = 0
+				m.systemID = engine.GenerateSlotSystemID(m.candidateParts[0].Path, distro.NewDistro().DistroID)
+				if len(m.userInputs) > fieldHostname {
+					m.userInputs[fieldHostname].SetValue(m.systemID)
+				}
+			}
 		case diskFieldTargetPart:
 			if len(m.candidateParts) > 0 {
 				m.partIdx = cycle(m.partIdx, delta, len(m.candidateParts))
+				if m.isCoexist() && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) && !m.systemIDCustom {
+					m.systemID = engine.GenerateSlotSystemID(m.candidateParts[m.partIdx].Path, distro.NewDistro().DistroID)
+					if len(m.userInputs) > fieldHostname {
+						m.userInputs[fieldHostname].SetValue(m.systemID)
+					}
+				}
 			}
 		case diskFieldEfi:
 			if len(m.efiParts) > 0 {
@@ -819,7 +914,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			m.diskError = m.storageError
 			return m, nil
 		}
-		if m.diskModeIdx == 2 {
+		if m.isCoexist() {
 			if !engine.IsUEFI() {
 				m.diskError = "Coexist requires the live system to be booted in UEFI mode."
 			} else if err := engine.ValidateCoexistFamily(distro.NewDistro().FamilyID); err != nil {
@@ -977,15 +1072,10 @@ func (m model) View() string {
 	footer := "\nPress Ctrl+C to quit."
 	if m.initialization != nil {
 		footer = "\nDisk preparation only; installation will not start automatically."
-	} else if m.state == StateDisk && m.diskModeIdx == 2 {
-		footer = "\n↑/↓ select | Enter: open selected action | Ctrl+C: quit"
-		if m.coexistStage == coexistPrepare || m.coexistStage == coexistInstall {
-			footer = "\nEnter: continue | Esc: Coexist menu | Ctrl+C: quit"
-			if m.coexistStage == coexistInstall && len(m.efiParts) == 0 {
-				footer = "\n←/→ choose another disk | Esc: Coexist menu | Ctrl+C: quit"
-			}
-		} else if m.coexistStage == coexistReady {
-			footer = "\n↑/↓ select | Enter: confirm | Esc: exit"
+	} else if m.state == StateDisk && m.isCoexist() {
+		footer = "\n↑/↓ select | Enter: continue to Users | Ctrl+C: quit"
+		if len(m.efiParts) == 0 {
+			footer = "\n←/→ choose another disk | Esc: cancel | Ctrl+C: quit"
 		}
 	} else if m.state == StateSummary {
 		footer = "\n←/→ select option | Press 'Enter' to confirm."
@@ -1105,7 +1195,7 @@ func (m model) viewDisk() string {
 	if m.initialization != nil {
 		return m.viewCoexistInitialization()
 	}
-	if m.diskModeIdx == 2 {
+	if m.isCoexist() {
 		switch m.coexistStage {
 		case coexistChoose:
 			return m.viewCoexistChoice()
@@ -1125,7 +1215,7 @@ func (m model) viewDisk() string {
 	device := m.disks[m.diskIdx]
 
 	firmware := m.diskBios
-	if m.diskModeIdx == 2 {
+	if m.isCoexist() {
 		firmware = "BIOS"
 		if engine.IsUEFI() {
 			firmware = "UEFI"
@@ -1134,7 +1224,7 @@ func (m model) viewDisk() string {
 	rowFirmware := fmt.Sprintf("Firmware: %s", cyanText.Render(firmware))
 
 	var rows []string
-	if m.diskModeIdx == 2 {
+	if m.isCoexist() {
 		rows = append(rows, cyanText.Render("Coexist — Install a distribution")+" | "+rowFirmware)
 	} else {
 		rows = append(rows, rowFirmware, "")
@@ -1144,19 +1234,23 @@ func (m model) viewDisk() string {
 		isActive := (idx == m.diskField)
 		switch kind {
 		case diskFieldMode:
-			rows = append(rows, m.selectorRow(isActive, "Installation mode", m.diskModes[m.diskModeIdx]))
+			modeStr := "Coexist"
+			if m.diskModeIdx >= 0 && m.diskModeIdx < len(m.diskModes) {
+				modeStr = m.diskModes[m.diskModeIdx]
+			}
+			rows = append(rows, m.selectorRow(isActive, "Installation mode", modeStr))
 		case diskFieldDevice:
 			rows = append(rows, m.selectorRow(isActive, "Installation device", fmt.Sprintf("%s (%s)", device.Path, device.Size)))
 		case diskFieldTargetPart:
 			partStr := "none available"
-			if m.diskModeIdx == 2 && len(m.candidateParts) > 0 {
+			if m.isCoexist() && len(m.candidateParts) > 0 {
 				partStr = "SELECT ROOT"
 			}
 			if len(m.candidateParts) > 0 && m.partIdx >= 0 {
 				partStr = m.candidateParts[m.partIdx].DisplayString()
 			}
 			rows = append(rows, m.selectorRow(isActive, "Target partition", partStr))
-			if m.diskModeIdx == 2 {
+			if m.isCoexist() {
 				esp := m.coexistESPError()
 				if esp == "" {
 					esp = m.efiParts[0].Path + " [fixed, preserved]"
@@ -1166,7 +1260,7 @@ func (m model) viewDisk() string {
 				rows = append(rows, fmt.Sprintf("  %-20s: %s %s", "EFI System Partition",
 					greenText.Render(m.efiParts[0].Path+" ("+m.efiParts[0].Size+")"),
 					dimText.Render("[auto-detected, preserved]")))
-			} else if m.diskModeIdx != 2 && m.diskBios == "UEFI" && len(m.efiParts) == 0 {
+			} else if !m.isCoexist() && m.diskBios == "UEFI" && len(m.efiParts) == 0 {
 				rows = append(rows, fmt.Sprintf("  %-20s: %s", "EFI System Partition",
 					redBgWhiteText.Render(" none detected ")))
 			}
@@ -1190,7 +1284,7 @@ func (m model) viewDisk() string {
 		}
 	}
 
-	if m.diskModeIdx == 2 {
+	if m.isCoexist() {
 		rows = append(rows, "↑/↓ select | ←/→ change | System Name (ID): type to edit")
 		rows = append(rows, redBgWhiteText.Render("FORMAT target ROOT slot; preserve ESP and other slots."))
 		if m.diskError != "" {
@@ -1292,7 +1386,7 @@ func (m model) viewSummary() string {
 	var warnBox string
 	noOpt := "  [ No, cancel and go back ]"
 	yesOptText := "  [ YES, erase disk and install ]"
-	if m.diskModeIdx == 1 || m.diskModeIdx == 2 {
+	if m.diskModeIdx == 1 || m.isCoexist() {
 		yesOptText = "  [ YES, replace partition and install ]"
 	}
 
@@ -1306,7 +1400,7 @@ func (m model) viewSummary() string {
 		warnBox = redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: PARTITION %s WILL BE FORMATTED! OTHER PARTITIONS PRESERVED. ", targetPart))
 	}
 
-	if m.diskModeIdx == 2 {
+	if m.isCoexist() {
 		yesOptText = "  [ YES, format selected root and install Coexist ]"
 		warnBox = m.coexistResources()
 	}
@@ -1429,9 +1523,9 @@ func (m *model) buildPlan() *engine.Plan {
 	espPart := ""
 	tableType := orDefault(cfg.Partition.DefaultPartitionTableType, "msdos")
 
-	if m.diskModeIdx == 1 || m.diskModeIdx == 2 {
+	if m.diskModeIdx == 1 || m.isCoexist() {
 		mode = "replace"
-		if m.diskModeIdx == 2 {
+		if m.isCoexist() {
 			mode = "coexist"
 		}
 		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
@@ -1518,11 +1612,15 @@ func insertAfter(seq []string, after, module string) []string {
 // Run è l'entry point pubblico per invocare l'installer da linea di comando.
 // Legge la configurazione generata dalla pipeline e avvia l'interfaccia TUI.
 func Run(fstype string) error {
-	_, err := RunWithOptions(fstype, false)
+	_, err := RunWithSlot(fstype, false, "")
 	return err
 }
 
 func RunWithOptions(fstype string, coexist bool) (bool, error) {
+	return RunWithSlot(fstype, coexist, "")
+}
+
+func RunWithSlot(fstype string, coexist bool, targetSlot string) (bool, error) {
 	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
 	if err != nil {
 		return false, fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
@@ -1531,7 +1629,7 @@ func RunWithOptions(fstype string, coexist bool) (bool, error) {
 		fmt.Fprintf(os.Stderr, "[krill] warning: %s\n", w)
 	}
 
-	m := initialModelWithOptions(cfg, fstype, coexist)
+	m := initialModelWithOptions(cfg, fstype, coexist, targetSlot)
 
 	// Inizializziamo il programma usando l'AltScreen per non sporcare la history del terminale
 	p := tea.NewProgram(m, tea.WithAltScreen())

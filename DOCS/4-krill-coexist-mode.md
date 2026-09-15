@@ -1,40 +1,20 @@
-# krill - coexist mode
+# Krill — Coexist Mode & `eggs coexist`
 
-La modalità `coexist` funziona nel modo seguente. Per ora l'ho provata soltanto su una macchina virtuale e con un unico disco, quindi dobbiamo ancora considerarla sperimentale.
+La modalità `coexist` permette la coesistenza pulita di più distribuzioni Linux su uno o più dischi dedicati, gestite nativamente con UEFI e GRUB.
 
-### Due percorsi nell'interfaccia
+### Architettura e separazione delle responsabilità
 
-In `eggs sysinstall krill`, scegliendo **Coexist** nella pagina Disk si apre
-un menu con due operazioni distinte:
+1. **Amministrazione e preparazione del disco (`eggs coexist`)**:
+   - `sudo eggs coexist init <device>`: Prepara l'intero disco fisico selezionato (GPT, ESP FAT32 da 512 MiB, N slot ROOT di dimensione uniforme, PARTLABEL GPT `coexist-N` e label filesystem `rootN`).
+   - `eggs coexist info [device]`: Mostra la panoramica dei dischi Coexist rilevati, dell'ESP e lo stato di ogni slot (Disponibile vs Installato con identificatore di sistema).
+   - `sudo eggs coexist install [slot]`: Lancia direttamente l'installer Krill in modalità Coexist, pre-selezionando opzionalmente lo slot target.
 
-- **Install to a Coexist slot**: scelta del disco, dello slot ROOT esistente
-  da formattare (libero o da reinstallare) e del **System Name (ID)**
-  dell'installazione (es. `debian`, `arch`). La ESP è rilevata automaticamente
-  sul disco selezionato e resta fissa, visibile ma non selezionabile.
-  Questo percorso non contiene l'azione di preparazione dell'intero disco.
-  Prosegue con utenti e riepilogo, compresa la conferma dell'eventuale
-  cancellazione dei contenuti EFI dell'installazione precedente dello slot.
-- **Initialize disk for Coexist**: scelta del disco da preparare,
-  dimensionamento degli slot ROOT (default 10 GiB) e anteprima delle
-  partizioni (1 ESP e N slot ROOT).
-  Questa operazione è **completamente distruttiva: cancella tutti i dati sul disco
-  selezionato**, come evidenziato già nel menu. Richiede la lettura del layout e
-  la digitazione del device prima di procedere. Al termine compare **Disk ready**:
-  si può scegliere di installare subito la distribuzione live corrente oppure
-  uscire (scelta predefinita). L'installazione non parte automaticamente.
-
-Dalla scelta del disco nei due percorsi, **Esc** torna al menu Coexist.
-Durante il dimensionamento o l'anteprima, Esc annulla la preparazione e torna
-alla scelta del disco. Dalla schermata **Disk ready**, Esc esce senza installare
-o riavviare. Per aggiungere la seconda distribuzione e le successive si sceglie
-direttamente il percorso di installazione, senza inizializzare nuovamente il disco.
-
-Nel percorso di installazione, **↑/↓** o **Tab** selezionano il campo,
-**←/→** scelgono disco e slot ROOT; il **System Name (ID)** va digitato
-(per esempio `debian`). **Invio** passa a Users quando tutte le selezioni
-obbligatorie sono valide. Il modulo mantiene visibili campi ed errori su una
-console 80×24; il dettaglio della directory EFI da cancellare compare
-nel riepilogo finale, prima della conferma.
+2. **Installazione (`eggs sysinstall krill` o `eggs coexist install`)**:
+   - Krill rileva automaticamente se nel sistema sono presenti dischi formattati per Coexist.
+   - La modalità Coexist compare dinamicamente tra le scelte di partizionamento **solo** se è presente almeno un disco Coexist.
+   - Non è più necessario passare il flag `--coexist`: Krill permette l'avvio anche da sistema installato se rileva un disco Coexist disponibile.
+   - Il flusso di installazione è diretto e lineare: selezione del disco Coexist, scelta dello slot ROOT, e assegnazione automatica del **System Name (ID)** nel formato `<part>-<distro>` (es. `sda2-debian`, `sdb3-arch`).
+   - La ESP viene rilevata automaticamente sul disco selezionato e resta preservata. Non viene toccata nessuna altra partizione.
 
 ### Dischi preesistenti e ESP fissa
 
@@ -89,15 +69,13 @@ Per l'inizializzazione del disco viene adottato lo schema a "Pure Slots", radica
 
 Ogni slot ROOT ha dimensione predefinita di **10 GiB** (personalizzabile a partire da 4 GiB). Tutto lo spazio restante del disco viene suddiviso in slot interi di uguale dimensione.
 
-Con questa architettura a slot puri:
-- **Nessuna partizione SHARED_HOMES**: ogni distribuzione ha la propria directory `/home` nativa all'interno del proprio slot root, eliminando conflitti di permessi UID/GID, complessità di bind-mount `/srv/homes` e dipendenze tra dischi.
-- È possibile avere quanti dischi Coexist si desidera nel sistema, poiché ciascun disco è completamente auto-consistente.
+È possibile avere quanti dischi Coexist si desidera nel sistema, poiché ciascun disco è completamente auto-consistente.
 
 ### Installazione e identità dello slot
 
 Quando si installa una distribuzione in uno slot Coexist:
 1. Si seleziona il disco e lo slot ROOT desiderato (libero con etichetta generica come `root1`, `root2` oppure già occupato per reinstallazione).
-2. Si assegna un **System Name (ID)**, ad esempio `debian`, `arch`, `manjaro` (max 16 caratteri alfanumerici minuscoli o trattini).
+2. Krill propone automaticamente un **System Name (ID)** strutturato come `<partizione>-<distro>`, ad esempio `sda2-debian`, `sdb3-arch`, `nvme0n1p2-debian` (personalizzabile, fino a 16 caratteri per piena conformità ext4).
 3. La partizione ROOT selezionata viene formattata e riceve come LABEL il System Name scelto.
 4. L'avvio UEFI scrive la directory dedicata in `EFI/<System_Name>` e registra la voce nella NVRAM.
 5. La partizione ESP e tutti gli altri slot ROOT del disco rimangono completamente intoccati e preservati.

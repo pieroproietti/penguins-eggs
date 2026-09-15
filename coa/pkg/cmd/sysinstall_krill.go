@@ -6,6 +6,7 @@ import (
 	"os/exec"
 
 	"coa/pkg/sysinstall/krill"
+	"coa/pkg/sysinstall/krill/engine"
 	"coa/pkg/sysinstall/setup"
 	"coa/pkg/utils"
 
@@ -19,13 +20,14 @@ var krillSubCmd = &cobra.Command{
 	Short: "Launch the Krill text installer (TUI)",
 	Run: func(cmd *cobra.Command, args []string) {
 		CheckSudoRequirements("sysinstall krill", true)
-		if !utils.IsLive() && !sysinstallCoexist {
-			utils.Fatal("sysinstall krill can only be run on a live system.")
+		hasCoexist := len(engine.DetectCoexistDisks()) > 0
+		if !utils.IsLive() && !sysinstallCoexist && !hasCoexist {
+			utils.Fatal("sysinstall krill can only be run on a live system, unless a Coexist disk is present.")
 		}
 		if krillFstype != "" && krillFstype != "ext4" && krillFstype != "btrfs" {
 			utils.Fatal("Invalid fstype: %s. Supported values: ext4, btrfs", krillFstype)
 		}
-		runKrillInstaller(AppVersion, krillFstype, sysinstallCoexist)
+		runKrillInstallerWithSlot(AppVersion, krillFstype, sysinstallCoexist || (!utils.IsLive() && hasCoexist), "")
 	},
 }
 
@@ -58,6 +60,10 @@ func updateHostBootloader() {
 }
 
 func runKrillInstaller(oaVersion string, fstype string, coexist bool) {
+	runKrillInstallerWithSlot(oaVersion, fstype, coexist, "")
+}
+
+func runKrillInstallerWithSlot(oaVersion string, fstype string, coexist bool, targetSlot string) {
 	if err := setup.BuildInstaller(oaVersion); err != nil {
 		utils.LogError("Installer environment setup error: %v", err)
 		os.Exit(1)
@@ -65,7 +71,7 @@ func runKrillInstaller(oaVersion string, fstype string, coexist bool) {
 
 	utils.LogNormal("%s[Krill]%s Starting the TUI installer...", utils.ColorCyan, utils.ColorReset)
 
-	installed, err := krill.RunWithOptions(fstype, coexist)
+	installed, err := krill.RunWithSlot(fstype, coexist, targetSlot)
 	if err != nil {
 		utils.LogNormal("%s[Krill Error]%s Installation was interrupted: %v", utils.ColorRed, utils.ColorReset, err)
 		os.Exit(1)
