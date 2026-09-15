@@ -3,14 +3,22 @@ See AI context: https://penguins-eggs.net/llms.txt
 # Changelog
 
 ## Release Notes: penguins-eggs v26.9.15 - 2026-09-15
-This release radically simplifies Krill's **Coexist** multi-boot architecture based on multi-disk real-world testing. The complex `SHARED_HOMES` and `/srv/homes/<id>` bind-mount architecture has been completely replaced by a **"Pure Slots"** design, and the experimental `--unattended` non-interactive flags have been removed in favor of a lean, reliable interactive workflow.
+This release radically simplifies Krill's **Coexist** multi-boot architecture based on multi-disk real-world testing. The complex `SHARED_HOMES` and bind-mount architecture has been completely replaced by a **"Pure Slots"** design, accompanied by the new dedicated **`eggs coexist`** CLI command suite and dynamic Coexist detection in Krill.
 
 ### 🦐 Krill: Pure Slots Multi-Boot Architecture
-* **Pure Slots Layout**: A Coexist drive now consists solely of 1 ESP (512 MiB FAT32) + N ROOT slots (ext4 or btrfs).
+* **Pure Slots Layout**: A Coexist drive now consists solely of 1 ESP (512 MiB FAT32) + N ROOT slots (ext4 or btrfs) with uniform sizing (default 10 GiB), GPT PARTLABEL `coexist-N`, and filesystem labels `rootN`.
 * **Native, Independent `/home`**: Removed `SHARED_HOMES` and bind-mount mechanisms (`/srv/homes/<id>`). Each distribution maintains its own self-contained `/home` within its root filesystem, eliminating cross-distribution UID/GID permission collisions and artificial partition size constraints.
 * **Unlimited Coexist Disks**: Because disks are now completely self-contained with no global singleton `SHARED_HOMES` label, any number of Coexist disks can coexist in the same machine without label or dependency conflicts.
-* **Simplified Command Interface**: Removed `--unattended`, `--target-part`, `--home-part`, and `--id` flags. Coexist is now accessed interactively via `eggs sysinstall krill` (or `--coexist` on installed hosts).
-* **Standardized TUI Terminology**: Standardized names across the installer: "Slot 1, Slot 2...", "System Name (ID)", "Initialize disk for Coexist" (destructive layout creation), and "Install to a Coexist slot" (installation into an empty or pre-existing slot).
+* **Simplified Command Interface**: Removed obsolete `--unattended`, `--target-part`, `--home-part`, and `--id` flags in favor of interactive and structured slot management.
+
+### 🧭 New `eggs coexist` Command Suite
+* **`eggs coexist init <device>`**: Initializes a physical disk for Coexist with UEFI GPT layout (512 MiB ESP and uniform ROOT slots). Supports `--size` (GiB, default 10), `--fstype` (ext4/btrfs), and `-y`/`--yes` to bypass interactive confirmation. Includes strict safety guards against wiping live media or active host disks.
+* **`eggs coexist info [device]`**: Inspects connected block devices and displays a clean table of Coexist disks, ESP details, slots, filesystems, labels, and availability status (Available vs. Installed with System ID).
+* **`eggs coexist install [slot]`**: Launches the Krill installer directly in Coexist mode to install the current system into a Coexist slot. Can optionally target a specific slot (e.g., `/dev/sda2`).
+
+### ⚡ Krill: Dynamic Coexist Detection & Smart Slot Identity
+* **Dynamic Mode Detection**: Krill scans connected disks on startup; if any Coexist-formatted disk is detected, the "Coexist" partitioning mode is automatically made available and pre-selected, even when launched from an installed host without explicit flags.
+* **Automatic System Name (ID)**: Krill automatically proposes a standardized `<part>-<distro>` System Name (ID) (e.g. `sda2-debian`, `sdb3-arch`) adhering to ext4 16-character label limits, while still allowing full manual customization.
 
 ## Release Notes: penguins-eggs v26.9.14 - 2026-09-14
 This release consolidates and matures the **Coexist** multi-boot architecture in Krill, introducing host-to-disk installations directly from installed systems, automated UEFI NVRAM boot entry registration, host bootloader synchronization, unattended non-interactive deployment, and flexible shared or local `/home` storage configurations with robust device protections.
