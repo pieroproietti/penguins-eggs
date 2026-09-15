@@ -92,7 +92,7 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
   - **Subcommands**:
     - `eggs sysinstall calamares`: Launches the standard advanced graphical user interface installer (GUI).
     - `eggs sysinstall krill`: Launches the custom native text user interface terminal installer (TUI).
-      - `--unattended`: Non-interactive install with live-user defaults and 10-second abort countdown.
+      - `--coexist`: Run in Coexist multi-boot mode (install to a slot alongside other OSes).
   - **Intents**: "install to disk", "run installer", "start GUI installation", "text-mode setup".
 
 ### 3. AI Agent & MCP Integration

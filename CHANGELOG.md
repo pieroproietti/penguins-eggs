@@ -2,6 +2,16 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.15 - 2026-09-15
+This release radically simplifies Krill's **Coexist** multi-boot architecture based on multi-disk real-world testing. The complex `SHARED_HOMES` and `/srv/homes/<id>` bind-mount architecture has been completely replaced by a **"Pure Slots"** design, and the experimental `--unattended` non-interactive flags have been removed in favor of a lean, reliable interactive workflow.
+
+### 🦐 Krill: Pure Slots Multi-Boot Architecture
+* **Pure Slots Layout**: A Coexist drive now consists solely of 1 ESP (512 MiB FAT32) + N ROOT slots (ext4 or btrfs).
+* **Native, Independent `/home`**: Removed `SHARED_HOMES` and bind-mount mechanisms (`/srv/homes/<id>`). Each distribution maintains its own self-contained `/home` within its root filesystem, eliminating cross-distribution UID/GID permission collisions and artificial partition size constraints.
+* **Unlimited Coexist Disks**: Because disks are now completely self-contained with no global singleton `SHARED_HOMES` label, any number of Coexist disks can coexist in the same machine without label or dependency conflicts.
+* **Simplified Command Interface**: Removed `--unattended`, `--target-part`, `--home-part`, and `--id` flags. Coexist is now accessed interactively via `eggs sysinstall krill` (or `--coexist` on installed hosts).
+* **Standardized TUI Terminology**: Standardized names across the installer: "Slot 1, Slot 2...", "System Name (ID)", "Initialize disk for Coexist" (destructive layout creation), and "Install to a Coexist slot" (installation into an empty or pre-existing slot).
+
 ## Release Notes: penguins-eggs v26.9.14 - 2026-09-14
 This release consolidates and matures the **Coexist** multi-boot architecture in Krill, introducing host-to-disk installations directly from installed systems, automated UEFI NVRAM boot entry registration, host bootloader synchronization, unattended non-interactive deployment, and flexible shared or local `/home` storage configurations with robust device protections.
 

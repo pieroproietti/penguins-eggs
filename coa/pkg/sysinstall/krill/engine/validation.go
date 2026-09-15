@@ -19,18 +19,16 @@ func IsUEFI() bool {
 
 // partitionChecks keeps safety probes testable without accessing real disks.
 type partitionChecks struct {
-	rootTarget  func(string) error
-	sharedHome  func() (string, error)
-	uefi        func() bool
-	partition   func(string) (string, error)
-	esp         func(string) (bool, error)
-	inUse       func(string) (bool, error)
-	filesystem  func(string) (filesystemInfo, error)
-	inspectHome func(string, string) error
-	family      func() string
-	inspectEFI  func(string, string) error
-	identities  func(*Plan) error
-	disk        func(string, string, string) error
+	rootTarget func(string) error
+	uefi       func() bool
+	partition  func(string) (string, error)
+	esp        func(string) (bool, error)
+	inUse      func(string) (bool, error)
+	filesystem func(string) (filesystemInfo, error)
+	family     func() string
+	inspectEFI func(string, string) error
+	identities func(*Plan) error
+	disk       func(string, string, string) error
 }
 
 func (c *ctx) safetyChecks() partitionChecks {
@@ -42,18 +40,16 @@ func (c *ctx) safetyChecks() partitionChecks {
 
 func livePartitionChecks() partitionChecks {
 	return partitionChecks{
-		rootTarget:  inspectRootTarget,
-		sharedHome:  DetectSharedHome,
-		uefi:        IsUEFI,
-		partition:   canonicalPartition,
-		esp:         isESP,
-		inUse:       deviceInUse,
-		filesystem:  probeFilesystem,
-		inspectHome: inspectHomePartition,
-		family:      func() string { return distro.NewDistro().FamilyID },
-		inspectEFI:  inspectEFIPartition,
-		identities:  inspectCoexistIdentities,
-		disk:        inspectCoexistDisk,
+		rootTarget: inspectRootTarget,
+		uefi:       IsUEFI,
+		partition:  canonicalPartition,
+		esp:        isESP,
+		inUse:      deviceInUse,
+		filesystem: probeFilesystem,
+		family:     func() string { return distro.NewDistro().FamilyID },
+		inspectEFI: inspectEFIPartition,
+		identities: inspectCoexistIdentities,
+		disk:       inspectCoexistDisk,
 	}
 }
 
@@ -177,13 +173,6 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	default:
 		return fmt.Errorf("unknown installation mode %q", plan.Mode)
 	}
-	if checks.sharedHome == nil {
-		return fmt.Errorf("shared HOME inventory unavailable")
-	}
-	sharedHome, err := checks.sharedHome()
-	if err != nil {
-		return err
-	}
 	if err := validateRootSelection(plan.TargetPartition, checks); err != nil {
 		return err
 	}
@@ -242,16 +231,7 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 	if plan.Swap != "" && plan.Swap != "none" && plan.Swap != "file" {
 		return fmt.Errorf("Coexist supports only no swap or a root-local swap file")
 	}
-	if err := ValidateHomeNamespace(plan.HomeNamespace); err != nil {
-		return err
-	}
-	if plan.HomeNamespace != plan.EFIBootloaderID {
-		return fmt.Errorf("Coexist HOME namespace and EFI identity must match")
-	}
 	if plan.PreviousID != "" {
-		if err := ValidateHomeNamespace(plan.PreviousID); err != nil {
-			return err
-		}
 		if err := ValidateEFIBootloaderID(plan.PreviousID); err != nil {
 			return err
 		}
@@ -264,40 +244,6 @@ func validatePlan(plan *Plan, checks partitionChecks) error {
 		if err := checks.inspectEFI(esp, plan.PreviousID); err != nil {
 			return fmt.Errorf("Coexist previous EFI inspection: %w", err)
 		}
-	}
-	if plan.HomePartition != "" {
-		home, err := checks.partition(plan.HomePartition)
-		if err != nil {
-			return fmt.Errorf("Coexist HOME: %w", err)
-		}
-		if home != sharedHome || home == root || home == esp {
-			return fmt.Errorf("Coexist HOME must be the unique %s partition, separate from ROOT and ESP", SharedHomeLabel)
-		}
-		if used, err := checks.inUse(home); err != nil || used {
-			return fmt.Errorf("Coexist HOME must be unmounted and readable (in use: %t, probe error: %v)", used, err)
-		}
-		info, err := checks.filesystem(home)
-		if err != nil {
-			return fmt.Errorf("Coexist HOME filesystem: %w", err)
-		}
-		if err := ValidateSharedHomeFilesystem(info.Type, info.Label); err != nil {
-			return err
-		}
-		if info.UUID == "" {
-			return fmt.Errorf("Coexist shared HOME requires a readable UUID")
-		}
-		if checks.inspectHome == nil {
-			return fmt.Errorf("Coexist HOME inspection unavailable")
-		}
-		if err := checks.inspectHome(home, plan.HomeNamespace); err != nil {
-			return fmt.Errorf("Coexist HOME inspection: %w", err)
-		}
-		if plan.PreviousID != "" && plan.PreviousID != plan.HomeNamespace {
-			if err := checks.inspectHome(home, plan.PreviousID); err != nil {
-				return fmt.Errorf("Coexist previous HOME inspection: %w", err)
-			}
-		}
-		plan.HomePartition = home
 	}
 	// Use the verified canonical devices throughout the remaining modules.
 	plan.TargetPartition, plan.EspPartition = root, esp

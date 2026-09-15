@@ -117,8 +117,8 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	}
 	next, _ = m.updateCoexistInitialization(tea.KeyMsg{Type: tea.KeyEnd})
 	m = next.(model)
-	if !m.initialization.reviewed || !strings.Contains(m.viewDisk(), "SHARED_HOMES") {
-		t.Fatal("final HOME not shown")
+	if !m.initialization.reviewed {
+		t.Fatal("final layout not reviewed")
 	}
 	m.initialization.confirmation = "yes"
 	_, cmd = m.confirmCoexistInitialization(initialize, discover)
@@ -136,7 +136,7 @@ func TestInitializeCoexistConfirmationAndRediscovery(t *testing.T) {
 	if !slices.Equal(events, []string{"initialize", "rediscover"}) || m.initialization != nil || m.state != StateDisk || m.coexistStage != coexistReady || m.diskError != "" {
 		t.Fatalf("wrong completion: %v %s", events, m.diskError)
 	}
-	if m.candidateParts[m.partIdx].Path != l.Partitions[1].Device || m.efiParts[m.efiIdx].Path != l.Partitions[0].Device || m.homeIdx != -1 || len(m.homeParts) != 1 || m.homeParts[0].Path != l.Partitions[len(l.Partitions)-1].Device {
+	if m.candidateParts[m.partIdx].Path != l.Partitions[1].Device || m.efiParts[m.efiIdx].Path != l.Partitions[0].Device {
 		t.Fatal("new partitions not selected")
 	}
 	if m.homeNamespace != "untouched" || m.installCh != nil {
@@ -178,7 +178,7 @@ func TestInitializationFailureAndCancel(t *testing.T) {
 		m = next.(model)
 		next, _ = m.Update(cmd())
 		m = next.(model)
-		if m.state != StateDisk || m.coexistStage != coexistPrepare || m.diskError == "" || m.partIdx != -1 || m.efiIdx != -1 || m.homeIdx != -1 || len(m.candidateParts) != 0 {
+		if m.state != StateDisk || m.coexistStage != coexistPrepare || m.diskError == "" || m.partIdx != -1 || m.efiIdx != -1 || len(m.candidateParts) != 0 {
 			t.Fatal("failure accepted a layout or started installation")
 		}
 	}
@@ -240,7 +240,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 		t.Fatal("new preview retained stale size or confirmation")
 	}
 	view := m.viewCoexistInitialization()
-	if strings.Count(view, "16.00 GiB") != 3 || !strings.Contains(view, "SHARED_HOMES") || !strings.Contains(view, "15.50 GiB") || !strings.Contains(view, "0.50 GiB") {
+	if strings.Count(view, "16.00 GiB") != 3 || !strings.Contains(view, "0.50 GiB") {
 		t.Fatalf("new layout not shown before confirmation: %s", view)
 	}
 	_, cmd = m.confirmCoexistInitialization(nil, nil)
@@ -249,7 +249,7 @@ func TestInitializationRootSizeEditing(t *testing.T) {
 	}
 	m.initialization.confirmation = l.Device
 	next, cmd = m.confirmCoexistInitialization(func(got engine.CoexistDiskLayout, confirmation string) error {
-		if got.RootBytes != 16<<30 || len(got.Partitions) != 5 || confirmation != l.Device {
+		if got.RootBytes != 16<<30 || len(got.Partitions) != 4 || confirmation != l.Device {
 			t.Fatal("wrong layout passed to initialization")
 		}
 		return nil
@@ -307,7 +307,7 @@ func TestInitializationInvalidRootSize(t *testing.T) {
 func TestInitializationInsufficientSpaceCanBeCorrected(t *testing.T) {
 	for _, tc := range []struct {
 		diskGiB, badGiB, goodGiB uint64
-	}{{64, 27, 16}, {25, 8, 4}} {
+	}{{64, 33, 16}, {25, 13, 4}} {
 		l, err := engine.CalculateCoexistLayout("/dev/test", tc.diskGiB<<30, 512, tc.badGiB<<30)
 		if err == nil {
 			t.Fatal("oversized roots accepted")

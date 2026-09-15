@@ -63,7 +63,7 @@ Always use the **`eggs`** command in all examples and suggestions:
 2. **Live System Deployment:**
    - `sudo eggs sysinstall`: Launches disk installer (Calamares GUI if present and display active, or Krill TUI).
    - `sudo eggs sysinstall calamares`: Launches graphical installer suite.
-   - `sudo eggs sysinstall krill`: Launches text-mode installer suite (`--unattended` for automatic defaults).
+   - `sudo eggs sysinstall krill`: Launches text-mode installer suite (`--coexist` for multi-boot mode).
 
 3. **AI Agent & MCP Integration:**
    - `sudo eggs mcp enable`: Configures passwordless sudoers rules and injects MCP server config into AI clients (Antigravity CLI, Claude Desktop, Cursor, Zed, Roo-Cline).

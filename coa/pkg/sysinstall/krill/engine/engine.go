@@ -29,8 +29,6 @@ type Plan struct {
 	Mode            string // erase (default) | replace | coexist
 	TargetPartition string // es. /dev/sda2 (usato in modalità replace)
 	EspPartition    string // es. /dev/sda1 (partizione EFI usata in modalità replace)
-	HomePartition   string // existing shared storage (Coexist only)
-	HomeNamespace   string // directory on shared storage; defaults to Installation ID
 	EFIBootloaderID string // Coexist root label and EFI identity
 	PreviousID      string // Pre-existing Coexist identity on selected slot (if replacing)
 	TableType       string // gpt | msdos
@@ -82,7 +80,6 @@ type Event struct {
 var labels = map[string]string{
 	"partition":      "Partitioning disk",
 	"mount":          "Mounting filesystems",
-	"coexistmount":   "Mounting shared HOME and preserved EFI partition",
 	"unpackfs":       "Copying filesystem (this takes a while)",
 	"machineid":      "Resetting machine-id",
 	"fstab":          "Writing fstab",
@@ -121,7 +118,6 @@ func modules() map[string]moduleFunc {
 	return map[string]moduleFunc{
 		"partition":      runPartition,
 		"mount":          runMount,
-		"coexistmount":   runCoexistMount,
 		"unpackfs":       runUnpackfs,
 		"machineid":      runMachineid,
 		"fstab":          runFstab,
@@ -146,10 +142,7 @@ func Run(plan *Plan, progress func(Event)) error {
 		plan.Mode = "erase"
 	}
 
-	sequence, err := installationSequence(plan)
-	if err != nil {
-		return err
-	}
+	sequence := plan.Exec
 	if err := validatePlan(plan, livePartitionChecks()); err != nil {
 		return err
 	}

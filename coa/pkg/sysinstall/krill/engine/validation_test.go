@@ -3,6 +3,7 @@ package engine
 import (
 	"errors"
 	"os"
+	"path/filepath"
 	"reflect"
 	"runtime"
 	"strings"
@@ -12,7 +13,6 @@ import (
 func safeChecks() partitionChecks {
 	return partitionChecks{
 		rootTarget: func(string) error { return nil },
-		sharedHome: func() (string, error) { return "/dev/test2", nil },
 		uefi:       func() bool { return true },
 		partition:  func(s string) (string, error) { return s, nil },
 		esp:        func(string) (bool, error) { return true, nil },
@@ -22,18 +22,48 @@ func safeChecks() partitionChecks {
 			if device == "/dev/test1" {
 				fs = "vfat"
 			}
-			return filesystemInfo{Type: fs, UUID: "test-uuid", Label: SharedHomeLabel}, nil
+			return filesystemInfo{Type: fs, UUID: "test-uuid"}, nil
 		},
-		inspectHome: func(string, string) error { return nil },
-		family:      func() string { return "debian" },
-		inspectEFI:  func(string, string) error { return nil },
-		identities:  func(*Plan) error { return nil },
-		disk:        func(string, string, string) error { return nil },
+		family:     func() string { return "debian" },
+		inspectEFI: func(string, string) error { return nil },
+		identities: func(*Plan) error { return nil },
+		disk:       func(string, string, string) error { return nil },
 	}
 }
 
 func coexistPlan() *Plan {
-	return &Plan{Mode: "coexist", EFIBootloaderID: "colibri-1", HomePartition: "/dev/test2", HomeNamespace: "colibri-1", Device: "/dev/test", TargetPartition: "/dev/test5", EspPartition: "/dev/test1", FsType: "ext4", TableType: "gpt", Swap: "none"}
+	return &Plan{Mode: "coexist", EFIBootloaderID: "colibri-1", Device: "/dev/test", TargetPartition: "/dev/test5", EspPartition: "/dev/test1", FsType: "ext4", TableType: "gpt", Swap: "none"}
+}
+
+func testContext(t *testing.T, p *Plan) (*ctx, *[]string) {
+	t.Helper()
+	p.Target = t.TempDir()
+	log, err := os.CreateTemp(t.TempDir(), "log")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := log.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	checks := safeChecks()
+	checks.filesystem = func(device string) (filesystemInfo, error) {
+		fs := "ext4"
+		if device == p.TargetPartition {
+			fs = p.FsType
+		}
+		if device == p.EspPartition {
+			fs = "vfat"
+		}
+		return filesystemInfo{Type: fs, UUID: filepath.Base(device) + "-uuid"}, nil
+	}
+	commands := []string{}
+	c := &ctx{plan: p, checks: &checks, log: log, execute: func(_ string, name string, args ...string) error {
+		commands = append(commands, strings.Join(append([]string{name}, args...), " "))
+		return nil
+	}}
+	return c, &commands
 }
 
 func TestCoexistSafety(t *testing.T) {
@@ -135,7 +165,6 @@ func TestCoexistRootLabelAtInstallationIDLimit(t *testing.T) {
 	p, checks := coexistPlan(), safeChecks()
 	p.FsType = "btrfs"
 	p.EFIBootloaderID = strings.Repeat("a", 16)
-	p.HomeNamespace = p.EFIBootloaderID
 	var commands []string
 	c := &ctx{plan: p, checks: &checks, execute: func(_ string, name string, args ...string) error {
 		commands = append(commands, strings.Join(append([]string{name}, args...), " "))
@@ -265,8 +294,6 @@ func TestCoexistDiskBoundaryBeforeFormatting(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			p, checks := coexistPlan(), safeChecks()
 			p.TargetPartition, p.EspPartition = tc.root, tc.esp
-			p.HomePartition = "/dev/external2"
-			checks.sharedHome = func() (string, error) { return p.HomePartition, nil }
 			checks.disk = func(device, root, esp string) error {
 				return validateCoexistDiskTree(device, root, esp, tc.tree)
 			}

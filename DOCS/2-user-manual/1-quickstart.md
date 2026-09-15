@@ -83,8 +83,8 @@ sudo eggs sysinstall calamares
 # TUI (works on console, serial, ssh)
 sudo eggs sysinstall krill
 
-# Headless / unattended
-sudo eggs sysinstall krill --unattended
+# Coexist multi-boot mode
+sudo eggs sysinstall krill --coexist
 ```
 
 ### Debug a remaster problem

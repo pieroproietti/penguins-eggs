@@ -17,6 +17,9 @@ func ValidateInstallationID(id string) error {
 	if !installationIDPattern.MatchString(id) {
 		return fmt.Errorf("Installation ID must be 1–16 ASCII lowercase letters, digits or hyphens, and start and end with a letter or digit")
 	}
+	if IsGenericRootLabel(id) {
+		return fmt.Errorf("Installation ID cannot be root or rootN (reserved empty-slot labels)")
+	}
 	return nil
 }
 

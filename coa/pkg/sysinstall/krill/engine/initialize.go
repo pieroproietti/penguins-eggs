@@ -17,7 +17,6 @@ const (
 	CoexistESPBytes     = 512 * initMiB
 	CoexistRootBytes    = 10 * 1024 * initMiB
 	CoexistMinRootBytes = 4 * 1024 * initMiB
-	CoexistMinHomeBytes = 10 * 1024 * initMiB
 	espGUID             = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
 	linuxGUID           = "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
 )
@@ -27,8 +26,6 @@ type CoexistDiskLayout struct {
 	Device                string
 	DiskBytes, SectorSize uint64
 	RootBytes             uint64 // transient initializer parameter
-	ExternalHome          SharedHomePartition
-	HomeOnRoot            bool
 	TableEntries          int
 	Partitions            []CoexistDiskPartition
 	liveDevice, identity  string
@@ -40,62 +37,43 @@ type CoexistDiskPartition struct {
 }
 
 func CalculateCoexistLayout(device string, bytes, sector, rootBytes uint64) (CoexistDiskLayout, error) {
-	return CalculateCoexistLayoutWithHome(device, bytes, sector, rootBytes, SharedHomePartition{})
-}
-
-// External HOME leaves only ESP and fixed-size ROOT slots on the prepared disk.
-func CalculateCoexistLayoutWithHome(device string, bytes, sector, rootBytes uint64, external SharedHomePartition) (CoexistDiskLayout, error) {
-	return calculateCoexistLayout(device, bytes, sector, rootBytes, external, false)
-}
-
-func CalculateCoexistLayoutWithoutHome(device string, bytes, sector, rootBytes uint64) (CoexistDiskLayout, error) {
-	return calculateCoexistLayout(device, bytes, sector, rootBytes, SharedHomePartition{}, true)
-}
-
-func calculateCoexistLayout(device string, bytes, sector, rootBytes uint64, external SharedHomePartition, homeOnRoot bool) (CoexistDiskLayout, error) {
-	l := CoexistDiskLayout{Device: device, DiskBytes: bytes, SectorSize: sector, RootBytes: rootBytes, ExternalHome: external, HomeOnRoot: homeOnRoot}
-	minHome, extraParts := CoexistMinHomeBytes, uint64(2)
-	if external.Partition != "" || homeOnRoot {
-		minHome, extraParts = 0, 1
-	}
-	if device == "" || (sector != 512 && sector != 4096) || bytes%sector != 0 || bytes < CoexistESPBytes+minHome {
+	l := CoexistDiskLayout{Device: device, DiskBytes: bytes, SectorSize: sector, RootBytes: rootBytes}
+	if device == "" || (sector != 512 && sector != 4096) || bytes%sector != 0 || bytes < CoexistESPBytes+2*rootBytes {
 		return l, fmt.Errorf("invalid disk geometry for UEFI/GPT Coexist initialization")
 	}
 	if rootBytes < CoexistMinRootBytes || rootBytes%(1024*initMiB) != 0 {
 		return l, fmt.Errorf("root slot size must be a whole number of GiB, at least 4 GiB")
 	}
-	slots := (bytes - CoexistESPBytes - minHome) / rootBytes
+	slots := (bytes - CoexistESPBytes) / rootBytes
+	if slots < 2 {
+		return l, fmt.Errorf("disk too small: need a 512 MiB ESP and at least two %d GiB root slots", rootBytes/(1024*initMiB))
+	}
 	// GPT entry arrays grow for disks needing more than the usual 128 entries.
 	for ; slots >= 2; slots-- {
-		entries := ((slots + extraParts + 127) / 128) * 128
+		entries := ((slots + 1 + 127) / 128) * 128
 		arraySectors := (entries*128 + sector - 1) / sector
 		start := ((2+arraySectors)*sector + initMiB - 1) / initMiB * (initMiB / sector)
 		end := bytes/sector - arraySectors - 1 // exclusive; preserve backup GPT
-		homeStart := start + (CoexistESPBytes+slots*rootBytes)/sector
-		if homeStart > end || (end-homeStart)*sector < minHome {
+		if start+(CoexistESPBytes+slots*rootBytes)/sector > end {
 			continue
 		}
 		l.TableEntries = int(entries)
-		for n := uint64(0); n < slots+extraParts; n++ {
+		for n := uint64(0); n < slots+1; n++ {
 			p := CoexistDiskPartition{Device: devPart(device, int(n+1)), Label: fmt.Sprintf("root%d", n), Filesystem: "ext4", Type: linuxGUID, Start: start, Sectors: rootBytes / sector}
 			if n == 0 {
 				p.Label, p.Filesystem, p.Type, p.Sectors = "ESP", "vfat", espGUID, CoexistESPBytes/sector
-			} else if n == slots+1 {
-				p.Label, p.Sectors = SharedHomeLabel, end-start
 			}
 			l.Partitions = append(l.Partitions, p)
 			start += p.Sectors
 		}
 		return l, nil
 	}
-	return l, fmt.Errorf("disk too small: need a 512 MiB ESP, at least two %d GiB roots, %d GiB local HOME and GPT alignment space", rootBytes/(1024*initMiB), minHome/(1024*initMiB))
+	return l, fmt.Errorf("disk too small: need a 512 MiB ESP and at least two %d GiB root slots", rootBytes/(1024*initMiB))
 }
 
 func (l CoexistDiskLayout) partitionScript() string {
 	lines := []string{"label: gpt", "unit: sectors", fmt.Sprintf("table-length: %d", l.TableEntries)}
 	for _, p := range l.Partitions {
-		// Explicit HOME size is the calculated remainder. Omitting it makes
-		// sfdisk round down to MiB, potentially violating the minimum HOME size.
 		lines = append(lines, fmt.Sprintf("start=%d, size=%d, type=%s", p.Start, p.Sectors, p.Type))
 	}
 	return strings.Join(lines, "\n") + "\n"
@@ -138,32 +116,13 @@ func checkInitializationDisk(d initializationDisk, liveDevice string) error {
 // Discovery errors are fatal here; the more permissive TUI discovery is not a
 // sufficient authorization for a whole-disk wipe.
 func PreviewCoexistDisk(device, liveDevice string, rootBytes uint64) (CoexistDiskLayout, error) {
-	return PreviewCoexistDiskWithHome(device, liveDevice, rootBytes, "")
-}
-
-func PreviewCoexistDiskWithHome(device, liveDevice string, rootBytes uint64, destination string) (CoexistDiskLayout, error) {
-	return previewCoexistDisk(device, liveDevice, rootBytes, destination, false)
-}
-
-func PreviewCoexistDiskWithoutHome(device, liveDevice string, rootBytes uint64) (CoexistDiskLayout, error) {
-	return previewCoexistDisk(device, liveDevice, rootBytes, "", true)
-}
-
-func previewCoexistDisk(device, liveDevice string, rootBytes uint64, destination string, homeOnRoot bool) (CoexistDiskLayout, error) {
-	shared, err := DetectSharedHome()
-	if err != nil {
-		return CoexistDiskLayout{}, err
-	}
-	if !homeOnRoot && destination == "" && shared != "" {
-		return CoexistDiskLayout{}, fmt.Errorf("%s already exists on %s; choose HOME on ROOT or reuse the existing shared partition", SharedHomeLabel, shared)
-	}
 	if err := ValidateCoexistFamily(distro.NewDistro().FamilyID); err != nil {
 		return CoexistDiskLayout{}, err
 	}
 	if !IsUEFI() {
 		return CoexistDiskLayout{}, fmt.Errorf("Coexist disk initialization requires UEFI")
 	}
-	device, err = filepath.EvalSymlinks(device)
+	device, err := filepath.EvalSymlinks(device)
 	if err != nil {
 		return CoexistDiskLayout{}, err
 	}
@@ -209,17 +168,7 @@ func previewCoexistDisk(device, liveDevice string, rootBytes uint64, destination
 	if err := checkHolders(d); err != nil {
 		return CoexistDiskLayout{}, err
 	}
-	var external SharedHomePartition
-	if destination != "" {
-		external, err = InspectExternalHomePartition(destination, device)
-		if err != nil {
-			return CoexistDiskLayout{}, err
-		}
-	}
-	if destination != "" && external.Partition != shared {
-		return CoexistDiskLayout{}, fmt.Errorf("external HOME must be the unique %s partition", SharedHomeLabel)
-	}
-	l, err := calculateCoexistLayout(device, d.Size, d.Sector, rootBytes, external, homeOnRoot)
+	l, err := CalculateCoexistLayout(device, d.Size, d.Sector, rootBytes)
 	l.liveDevice, l.identity = liveDevice, d.ID+"/"+d.Serial+"/"+d.WWN
 	return l, err
 }
@@ -232,7 +181,7 @@ func InitializeCoexistDisk(proposed CoexistDiskLayout, confirmation string) erro
 	defer log.Close()
 	c := &ctx{plan: &Plan{Device: proposed.Device, Mode: "erase", TableType: "gpt"}, log: log}
 	return initializeCoexistDisk(c, proposed, confirmation, func(device, liveDevice string, rootBytes uint64) (CoexistDiskLayout, error) {
-		return previewCoexistDisk(device, liveDevice, rootBytes, proposed.ExternalHome.Partition, proposed.HomeOnRoot)
+		return PreviewCoexistDisk(device, liveDevice, rootBytes)
 	})
 }
 

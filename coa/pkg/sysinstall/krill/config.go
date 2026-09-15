@@ -485,16 +485,6 @@ func enrichPartitionsWithBlkid(parts []PartitionInfo) []PartitionInfo {
 			}
 		}
 	}
-	for _, b := range entries {
-		if !seen[b.Path] && b.Path != "" && (engine.IsSharedHomeLabel(b.Label) || engine.IsSharedHomeLabel(b.PartLabel)) {
-			parts = append(parts, PartitionInfo{
-				Path:      b.Path,
-				Label:     b.Label,
-				PartLabel: b.PartLabel,
-				FsType:    b.Type,
-			})
-		}
-	}
 	return parts
 }
 

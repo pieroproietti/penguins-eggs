@@ -3,69 +3,10 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
-	"slices"
 	"strings"
 
 	"coa/pkg/utils"
 )
-
-const SharedHomeLabel = "SHARED_HOMES"
-
-// IsSharedHomeLabel matches SHARED_HOMES (and SHARED_HOME) case-insensitively across disks.
-func IsSharedHomeLabel(label string) bool {
-	clean := strings.TrimSpace(label)
-	return strings.EqualFold(clean, SharedHomeLabel) || strings.EqualFold(clean, "SHARED_HOME")
-}
-
-// UniqueSharedHome counts labelled devices before checking their eligibility.
-// Repeated observations of the same device in a block-device tree count once.
-func UniqueSharedHome(paths []string) (string, error) {
-	unique := slices.Clone(paths)
-	slices.Sort(unique)
-	unique = slices.Compact(unique)
-	if len(unique) > 1 {
-		return "", fmt.Errorf("multiple %s partitions: %s; keep this label on only one partition, then restart Krill", SharedHomeLabel, strings.Join(unique, ", "))
-	}
-	if len(unique) == 1 {
-		return unique[0], nil
-	}
-	return "", nil
-}
-
-func DetectSharedHome() (string, error) {
-	paths, err := DetectAllSharedHomePaths()
-	if err != nil {
-		return "", err
-	}
-	return UniqueSharedHome(paths)
-}
-
-func DetectAllSharedHomePaths() ([]string, error) {
-	devices, err := readIdentityDevices()
-	if err != nil {
-		return nil, err
-	}
-	var paths []string
-	for _, device := range devices {
-		if device.Path == "" {
-			continue
-		}
-		if (device.Type == "part" || device.Type == "disk" || device.Type == "ext4" || device.Type == "") &&
-			(IsSharedHomeLabel(device.Label) || IsSharedHomeLabel(device.PartLabel)) {
-			paths = append(paths, device.Path)
-		}
-	}
-	unique := slices.Clone(paths)
-	slices.Sort(unique)
-	return slices.Compact(unique), nil
-}
-
-func ValidateSharedHomeFilesystem(fs, label string) error {
-	if fs != "ext4" || !IsSharedHomeLabel(label) {
-		return fmt.Errorf("shared HOME requires an ext4 partition labelled %s", SharedHomeLabel)
-	}
-	return nil
-}
 
 // RootPartitionAllowed is shared by discovery and the last check before wipefs.
 func RootPartitionAllowed(label, fs, partType string, busy, readOnly bool) bool {
@@ -73,7 +14,7 @@ func RootPartitionAllowed(label, fs, partType string, busy, readOnly bool) bool 
 }
 
 func RootPartitionAllowedWithPartLabel(label, partLabel, fs, partType string, busy, readOnly bool) bool {
-	return !IsSharedHomeLabel(label) && !IsSharedHomeLabel(partLabel) && fs != "swap" && !busy && !readOnly &&
+	return fs != "swap" && !busy && !readOnly &&
 		!strings.EqualFold(partType, espGUID) && !strings.EqualFold(partType, "0xef") && !strings.EqualFold(partType, "ef")
 }
 
@@ -139,7 +80,7 @@ func validateRootTarget(device, output string) error {
 				busy = busy || mount != ""
 			}
 			if p.Type != "part" || !RootPartitionAllowedWithPartLabel(p.Label, p.PartLabel, p.FsType, p.PartType, busy, readOnly) {
-				return fmt.Errorf("refusing root %s: %s, EFI, swap, live-media, read-only or occupied devices cannot be installation targets", device, SharedHomeLabel)
+				return fmt.Errorf("refusing root %s: EFI, swap, live-media, read-only or occupied devices cannot be installation targets", device)
 			}
 		}
 		for _, child := range p.Children {
@@ -158,4 +99,40 @@ func validateRootTarget(device, output string) error {
 		return fmt.Errorf("root partition missing from storage inventory: %s", device)
 	}
 	return nil
+}
+
+type filesystemInfo struct {
+	Type  string
+	UUID  string
+	Label string
+}
+
+func shellQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'"
+}
+
+func probeFilesystem(device string) (filesystemInfo, error) {
+	out, err := utils.ExecCapture("blkid -p -o export " + shellQuote(device))
+	if err != nil {
+		return filesystemInfo{}, err
+	}
+	var info filesystemInfo
+	for _, line := range strings.Split(out, "\n") {
+		key, value, ok := strings.Cut(line, "=")
+		if !ok {
+			continue
+		}
+		switch key {
+		case "TYPE":
+			info.Type = value
+		case "UUID":
+			info.UUID = value
+		case "LABEL":
+			info.Label = value
+		}
+	}
+	if info.Type == "" || info.UUID == "" || strings.ContainsAny(info.UUID, " \t\n\\") {
+		return info, fmt.Errorf("missing or invalid filesystem type/UUID on %s", device)
+	}
+	return info, nil
 }

@@ -136,43 +136,6 @@ func CleanCoexistESP(espDevice, id string) (result error) {
 	return CleanCoexistNVRAM(espDevice, id)
 }
 
-// CleanCoexistHomeMount removes /<id> from a mounted shared HOME directory, strictly preserving /common and siblings.
-func CleanCoexistHomeMount(homeMount, id string) error {
-	if err := ValidateHomeNamespace(id); err != nil {
-		return err
-	}
-	target := filepath.Join(homeMount, id)
-	info, err := os.Lstat(target)
-	if os.IsNotExist(err) {
-		return nil
-	}
-	if err != nil {
-		return err
-	}
-	if info.Mode()&os.ModeSymlink != 0 || !info.IsDir() {
-		return fmt.Errorf("unsafe HOME namespace %s", target)
-	}
-	return os.RemoveAll(target)
-}
-
-// CleanCoexistHome mounts the given shared HOME partition, removes /<id> and unmounts it.
-func CleanCoexistHome(homeDevice, id string) (result error) {
-	if err := ValidateHomeNamespace(id); err != nil {
-		return err
-	}
-	dir, err := os.MkdirTemp("", "krill-home-clean-")
-	if err != nil {
-		return err
-	}
-	defer func() { result = errors.Join(result, os.Remove(dir)) }()
-	if err := utils.ExecQuiet("mount -t ext4 " + shellQuote(homeDevice) + " " + shellQuote(dir)); err != nil {
-		return fmt.Errorf("mount SHARED_HOMES %s: %w", homeDevice, err)
-	}
-	defer func() { result = errors.Join(result, utils.ExecQuiet("umount "+shellQuote(dir))) }()
-
-	return CleanCoexistHomeMount(dir, id)
-}
-
 // SlotLabelForPartition calculates the default neutral label (e.g. root1, root2) from partition number.
 func SlotLabelForPartition(rootDevice string) string {
 	idx := len(rootDevice)
@@ -217,9 +180,8 @@ func ResetCoexistSlot(rootDevice string) error {
 
 // RemoveCoexistInstallation completely removes an installed distribution:
 // 1. Cleans EFI/<id> and deletes its NVRAM boot entries.
-// 2. Cleans /<id> on SHARED_HOMES.
-// 3. Wipes and reformats the root slot back to generic label rootN.
-func RemoveCoexistInstallation(espDevice, homeDevice, rootDevice, id string) error {
+// 2. Wipes and reformats the root slot back to generic label rootN.
+func RemoveCoexistInstallation(espDevice, rootDevice, id string) error {
 	if id == "" {
 		return fmt.Errorf("identity cannot be empty")
 	}
@@ -227,11 +189,6 @@ func RemoveCoexistInstallation(espDevice, homeDevice, rootDevice, id string) err
 	if espDevice != "" {
 		if err := CleanCoexistESP(espDevice, id); err != nil {
 			errs = append(errs, fmt.Errorf("clean ESP: %w", err))
-		}
-	}
-	if homeDevice != "" {
-		if err := CleanCoexistHome(homeDevice, id); err != nil {
-			errs = append(errs, fmt.Errorf("clean HOME: %w", err))
 		}
 	}
 	if rootDevice != "" {

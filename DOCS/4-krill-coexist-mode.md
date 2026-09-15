@@ -85,105 +85,43 @@ Per un disco MBR la conversione a GPT richiede una valutazione separata.
 La guida non avvia strumenti né ridimensionamenti automaticamente.
 Riferimento per le operazioni: [manuale GParted](https://gparted.org/display-doc.php?name=help-manual).
 
-### Schema di partizionamento
+### Schema di partizionamento (Pure Slots)
 
-Per l'inizializzazione mi sono inventato un mio schema di partizionamento.
+Per l'inizializzazione del disco viene adottato lo schema a "Pure Slots", radicalmente semplificato:
 
-Viene creata una partizione ESP per l'avvio UEFI, poi diverse partizioni destinate ai sistemi:
+1. Una partizione **ESP** (512 MiB, FAT32) per l'avvio UEFI.
+2. **N partizioni ROOT slot** (formato ext4 o btrfs), ciascuna con una propria `/home` standard e autonoma:
 
-`ROOT1`
-`ROOT2`
-`ROOT3`
+`root1`
+`root2`
+`root3`
 `...`
 
-Ogni ROOT ha dimensione predefinita di **10 GiB**, modificabile da 4 GiB.
-Con HOME sul disco coexist viene infine creata `SHARED_HOMES`, che occupa lo
-spazio rimanente con un minimo di **10 GiB**. Un disco da **32 GiB** contiene
-ESP da 512 MiB, due ROOT da 10 GiB e HOME di circa 11,5 GiB, al netto della GPT.
+Ogni slot ROOT ha dimensione predefinita di **10 GiB** (personalizzabile a partire da 4 GiB). Tutto lo spazio restante del disco viene suddiviso in slot interi di uguale dimensione.
 
-Con **External partition**, il disco coexist contiene soltanto ESP e almeno
-due ROOT; lo spazio residuo inferiore a uno slot resta non allocato. Con le
-ROOT predefinite è sufficiente un disco da **21 GiB**. La partizione HOME ext4
-preesistente su un altro disco viene riutilizzata senza formattazione e senza
-ridimensionamento. Il minimo di 10 GiB riguarda la HOME creata dall'inizializzatore.
+Con questa architettura a slot puri:
+- **Nessuna partizione SHARED_HOMES**: ogni distribuzione ha la propria directory `/home` nativa all'interno del proprio slot root, eliminando conflitti di permessi UID/GID, complessità di bind-mount `/srv/homes` e dipendenze tra dischi.
+- È possibile avere quanti dischi Coexist si desidera nel sistema, poiché ciascun disco è completamente auto-consistente.
 
-L'idea è quella di riservare fin dall'inizio diversi "slot" nei quali poter installare differenti distribuzioni Linux, mantenendo un'unica partizione HOME condivisa.
+### Installazione e identità dello slot
 
-Quando viene installata la prima distribuzione in modalità `coexist`, viene utilizzata una delle partizioni ROOT disponibili. Le installazioni successive utilizzano ROOT2, ROOT3, ecc., senza toccare le distribuzioni già installate.
-
-Quando si installa una distribuzione, lo slot ROOT utilizzato assume l'identità di quell'installazione.
-
-La corrispondenza applicata dall'installer è:
-
-`Installation ID = LABEL della ROOT = nome directory EFI = namespace HOME`
-
-Per esempio, scegliendo l'identificativo `arch`, la ROOT riceve la LABEL `arch`,
-GRUB viene installato in `EFI/arch` e la HOME risiede in `/srv/homes/arch`.
-L'identificativo imposta anche l'hostname, che però resta modificabile nella
-pagina Users. Non imposta direttamente il `menuentry --id` generato da GRUB.
-
-Se successivamente installo Manjaro con identificativo `manjaro`, avremo:
-
-`LABEL manjaro`, `EFI/manjaro` e `/srv/homes/manjaro`.
-
-In questo modo ogni sistema ha la propria partizione root e viene identificato in maniera semplice e coerente.
-
-La partizione HOME è condivisa tra le diverse installazioni, mentre ogni distribuzione mantiene il proprio sistema root indipendente.
-
-### Avvio
-
-Attualmente `coexist` funziona **soltanto su sistemi UEFI** e utilizza **esclusivamente GRUB** come bootloader.
-
-Il preflight permette attualmente l'installazione e l'inizializzazione Coexist
-solo sulle famiglie **Debian, Arch Linux e Manjaro**, comprese le derivate
-riconosciute. **BigLinux** e **BigCommunity** sono riconosciute esplicitamente
-come famiglia Manjaro; le altre derivate possono essere riconosciute tramite
-`ID_LIKE` in `/etc/os-release` (con fallback al precedente `LIKE_ID`).
-I template di Fedora e Alpine
-usano ancora l'identità della distribuzione e scrivono nel fallback `EFI/BOOT`:
-finché non applicano l'isolamento Coexist, il controllo blocca queste famiglie
-prima della formattazione. Questa limitazione riguarda Coexist.
-
-Non è previsto il supporto per BIOS/Legacy né, al momento, per altri bootloader.
-
-Nel modulo condiviso Arch/Manjaro, Coexist seleziona esplicitamente GRUB anche
-se trova configurazioni Limine o systemd-boot. L'installazione del bootloader
-si interrompe se mancano UEFI, la ESP montata o l'identificativo Coexist.
-Le modalità Erase e Replace mantengono la selezione del bootloader esistente.
-
-Le diverse distribuzioni condividono la stessa ESP e le voci di GRUB permettono di scegliere quale sistema avviare.
+Quando si installa una distribuzione in uno slot Coexist:
+1. Si seleziona il disco e lo slot ROOT desiderato (libero con etichetta generica come `root1`, `root2` oppure già occupato per reinstallazione).
+2. Si assegna un **System Name (ID)**, ad esempio `debian`, `arch`, `manjaro` (max 16 caratteri alfanumerici minuscoli o trattini).
+3. La partizione ROOT selezionata viene formattata e riceve come LABEL il System Name scelto.
+4. L'avvio UEFI scrive la directory dedicata in `EFI/<System_Name>` e registra la voce nella NVRAM.
+5. La partizione ESP e tutti gli altri slot ROOT del disco rimangono completamente intoccati e preservati.
 
 ### Sostituzione e pulizia di uno slot
 
 Quando si reinstalla o si sostituisce una distribuzione su uno slot già occupato:
 - `krill` legge la `LABEL` del filesystem presente sulla partizione selezionata.
 - Se la label corrisponde a un'installazione Coexist precedente (non generica come `root1`, `root2`), prima di procedere elimina automaticamente:
-  - la directory associata nella partizione condivisa `/srv/homes/<vecchia_label>`
-  - la directory dell'avvio UEFI `/boot/efi/EFI/<vecchia_label>`
-  - le voci di avvio associate nella NVRAM UEFI tramite `efibootmgr`, soltanto
-    se il percorso GPT identifica il PARTUUID della ESP utilizzata.
+  - la directory dell'avvio UEFI precedente `/boot/efi/EFI/<vecchia_label>`
+  - le voci di avvio associate nella NVRAM UEFI tramite `efibootmgr`, relative alla ESP utilizzata.
+- La partizione slot viene formattata ex novo (tabula rasa dello slot), preservando la ESP e gli altri slot.
 
 Nella schermata di riepilogo di `krill` viene segnalato chiaramente quali risorse della precedente installazione verranno rimosse (`PURGE PREVIOUS`).
-
-**Anche la HOME dell'identificativo nuovo viene eliminata, se esiste già**, insieme
-ai relativi file EFI e alle voci NVRAM corrispondenti. Questo vale anche per una
-reinstallazione con lo stesso identificativo. La partizione HOME non viene
-formattata, ma questo non significa che tutti i suoi dati vengano conservati.
-Il riepilogo distingue ora le partizioni preservate dai contenuti cancellati.
-
-Prima di formattare, Krill ricontrolla la label dello slot rispetto alla
-selezione confermata e cerca gli identificativi nuovo e precedente su tutti i
-dispositivi collegati. Una collisione con un altro dispositivo blocca
-l'installazione; `root` e `rootN` sono riservati agli slot liberi. HOME ed EFI
-devono utilizzare lo stesso identificativo. ESP e HOME devono essere smontate;
-le destinazioni nuove e precedenti vengono ispezionate prima della scrittura.
-Gli errori restituiti dalla pulizia HOME, EFI e NVRAM interrompono l'installazione.
-Resta tollerata, nella funzione NVRAM esistente, l'impossibilità di interrogare
-`efibootmgr`. Quando la lettura riesce, la pulizia usa l'output verbose
-e richiede un PARTUUID valido della ESP: voci omonime su altre ESP e voci
-senza un percorso GPT verificabile vengono conservate.
-
-Per il momento considero quindi `coexist` una modalità sperimentale: funziona nei miei test con una macchina virtuale, UEFI, GRUB e un unico disco. Ora dobbiamo provarla con più distribuzioni e in configurazioni reali differenti.
 
 ### Revisione della procedura — 13 settembre 2026
 
@@ -193,15 +131,15 @@ fstab, creazione utenti, script di installazione e smontaggio.
 
 | Fase | Comportamento e osservazioni |
 | --- | --- |
-| Preparazione facoltativa | Il percorso `Prepare a disk for multiple distributions` cancella **l'intero disco**. Richiede anteprima, lettura del layout e digitazione del device; ricontrolla geometria e identità prima di scrivere. Termina con `Disk ready` e la scelta tra installare e uscire. Non va usato per aggiungere una distribuzione a un disco già preparato. |
-| Dimensionamento | ESP da 512 MiB, almeno due ROOT, HOME locale residua di almeno 10 GiB, oppure partizione ext4 esterna preesistente. La ROOT predefinita è 10 GiB, configurabile da 4 GiB. Il minimo geometrico non garantisce che l'immagine estratta trovi spazio. |
-| Selezione | ROOT esistente sul disco scelto da formattare, ESP unica dello stesso disco fissa e preservata. ESP assente o ambigua blocca l’installazione. HOME ext4 da riutilizzare esplicita, anche su un altro disco. |
-| Preflight | UEFI, famiglia supportata, device distinti, filesystem/UUID, destinazioni HOME/EFI e collisioni delle label. La validazione viene ripetuta nel modulo partition. |
-| Copia | Si formatta soltanto la ROOT. HOME ed ESP condivise sono montate dopo unpackfs e removeuser, così queste operazioni non raggiungono i dati condivisi. |
-| Utenti e HOME | `/srv/homes/<id>` viene montata con bind su `/home`. Le altre directory e `common` restano separate. La reinstallazione attuale ricrea la HOME dell'identificativo selezionato. |
-| Fstab | Usa UUID, con una sola voce `/home`; in Coexist Btrfs non crea il subvolume `@home` concorrente. |
-| Bootloader | Debian, Arch e Manjaro installano GRUB in `EFI/<id>` senza sostituire `EFI/BOOT`. Debian conserva l'identità anche nella configurazione GRUB per gli aggiornamenti. |
-| Errori | La pulizia non ignora più gli errori restituiti dalle operazioni. Non esiste però un rollback di ROOT, HOME o EFI già cancellate. Lo smontaggio finale richiede ancora una gestione più rigorosa degli errori. |
+| Inizializzazione | Il percorso `Initialize disk for Coexist` formatta **l'intero disco** creando 1 ESP (512 MiB FAT32) e N slot ROOT (ext4 o btrfs). Richiede anteprima, lettura del layout e digitazione del device. Termina con `Disk ready` e la scelta tra installare subito o uscire. Non va usato per aggiungere una distribuzione a un disco già inizializzato. |
+| Dimensionamento | ESP da 512 MiB, almeno due slot ROOT. La ROOT predefinita è 10 GiB, configurabile da 4 GiB. Tutto lo spazio del disco viene suddiviso in slot interi. |
+| Selezione | ROOT slot esistente sul disco scelto da formattare; ESP unica dello stesso disco fissa e preservata. ESP assente o ambigua blocca l’installazione. |
+| Preflight | UEFI, famiglia supportata, device distinti, filesystem/UUID, directory EFI e collisioni delle label. |
+| Copia | Si formatta soltanto lo slot ROOT selezionato. La ESP è montata in `/boot/efi`. |
+| Utenti e HOME | `/home` risiede nativamente nel filesystem dello slot ROOT. Nessuna complicazione di bind-mount o permessi UID/GID condivisi tra distribuzioni. |
+| Fstab | Generazione standard tramite UUID per la partizione root e per `/boot/efi`. Nessuna voce speciale per `/home`. |
+| Bootloader | Debian, Arch e Manjaro installano GRUB in `EFI/<System_Name>` senza toccare `EFI/BOOT` o gli altri bootloader. |
+| Errori | La pulizia non ignora gli errori restituiti dalle operazioni. La reinstallazione esegue la pulizia di `EFI/<vecchio_id>` e delle voci NVRAM associate. |
 
 ### Miglioramenti successivi, in ordine di priorità
 

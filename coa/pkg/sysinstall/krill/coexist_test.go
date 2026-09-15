@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"coa/pkg/sysinstall/krill/engine"
 	"github.com/charmbracelet/bubbles/textinput"
 )
 
@@ -41,11 +40,9 @@ func TestCoexistDiskSelections(t *testing.T) {
 		disks:          []DiskInfo{{Path: "/dev/test"}},
 		candidateParts: []PartitionInfo{{Path: "/dev/test5"}},
 		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},
-		homeParts:      []PartitionInfo{{Path: "/dev/test2", FsType: "ext4", Label: engine.SharedHomeLabel}},
-		homeIdx:        -1,
 		partIdx:        -1, efiIdx: 0, fsTypes: []string{"ext4"},
 	}
-	wantFields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldFs, diskFieldNamespace, diskFieldSwap, diskFieldHome}
+	wantFields := []diskFieldKind{diskFieldDevice, diskFieldTargetPart, diskFieldFs, diskFieldNamespace, diskFieldSwap}
 	if !reflect.DeepEqual(m.activeDiskFields(), wantFields) {
 		t.Fatal("Coexist must not offer an ESP selector")
 	}
@@ -61,15 +58,6 @@ func TestCoexistDiskSelections(t *testing.T) {
 	if m.partIdx != 0 || m.efiIdx != 0 {
 		t.Fatal("root selection changed fixed ESP")
 	}
-	if m.homeIdx != -1 {
-		t.Fatal("HOME was selected implicitly")
-	}
-	m.diskField = slices.Index(m.activeDiskFields(), diskFieldHome)
-	next, _ = m.updateDisk("right")
-	m = next.(model)
-	if m.homeIdx != 0 {
-		t.Fatal("HOME selection failed")
-	}
 	m.diskField = slices.Index(m.activeDiskFields(), diskFieldNamespace)
 	for _, key := range []string{"d", "e", "b", "i", "a", "n", "-", "s", "i", "d", "x", "backspace"} {
 		next, _ = m.updateDisk(key)
@@ -79,7 +67,7 @@ func TestCoexistDiskSelections(t *testing.T) {
 		t.Fatalf("namespace: %q", m.homeNamespace)
 	}
 	view := m.coexistResources()
-	for _, text := range []string{"FORMAT:", "Root: /dev/test5", "PRESERVE (no formatting):", "ESP: /dev/test1", "Shared HOME: /dev/test2", "Installation ID: debian-sid", "HOME namespace: /srv/homes/debian-sid", "New label: debian-sid"} {
+	for _, text := range []string{"FORMAT:", "Slot (ROOT): /dev/test5", "PRESERVE (no formatting):", "ESP: /dev/test1", "System Name (ID): debian-sid", "New label: debian-sid"} {
 		if !strings.Contains(view, text) {
 			t.Fatalf("missing %q in resources", text)
 		}
@@ -107,7 +95,7 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 	}
 	m.homeNamespace = "arch-colibri-4"
 	resources := m.coexistResources()
-	for _, text := range []string{"COEXIST", "Installation ID: arch-colibri-4", "DELETE CONTENTS if present / CREATE if absent:", "EFI/arch-colibri-4", "Root: /dev/sda5 [arch-colibri-4]"} {
+	for _, text := range []string{"COEXIST", "System Name (ID): arch-colibri-4", "DELETE CONTENTS if present / CREATE if absent:", "EFI/arch-colibri-4", "Slot (ROOT): /dev/sda5 [arch-colibri-4]"} {
 		if !strings.Contains(resources, text) {
 			t.Fatalf("summary missing %q: %s", text, resources)
 		}
@@ -141,7 +129,7 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 	}
 }
 
-func TestCoexistDiscoveryStaysOnSelectedDiskExceptHome(t *testing.T) {
+func TestCoexistDiscoveryStaysOnSelectedDisk(t *testing.T) {
 	const guid = "c12a7328-f81f-11d2-ba4b-00a0c93ec93b"
 	parts := map[string][]PartitionInfo{
 		"/dev/nvme0n1": {
@@ -150,7 +138,7 @@ func TestCoexistDiscoveryStaysOnSelectedDiskExceptHome(t *testing.T) {
 		},
 		"/dev/sdb": {
 			{Path: "/dev/sdb1", FsType: "vfat", PartType: guid, IsEfi: true},
-			{Path: "/dev/sdb2", FsType: "ext4", Label: engine.SharedHomeLabel},
+			{Path: "/dev/sdb2", FsType: "ext4"},
 		},
 	}
 	m := model{diskModeIdx: 2, coexistStage: coexistInstall, diskBios: "UEFI",
@@ -172,13 +160,10 @@ func TestCoexistDiscoveryStaysOnSelectedDiskExceptHome(t *testing.T) {
 	if len(m.candidateParts) != 1 || m.candidateParts[0].Path != "/dev/nvme0n1p2" {
 		t.Fatal("ROOT candidates include another disk or ESP")
 	}
-	if !slices.ContainsFunc(m.homeParts, func(p PartitionInfo) bool { return p.Path == "/dev/sdb2" }) {
-		t.Fatal("external HOME is unavailable")
-	}
-	m.partIdx, m.homeIdx = 0, 1
+	m.partIdx = 0
 	m.diskIdx = 1
 	m.refreshPartitionsWith(detect, "")
-	if m.efiParts[m.efiIdx].Path != "/dev/sdb1" || m.partIdx != -1 || m.homeIdx != -1 {
+	if m.efiParts[m.efiIdx].Path != "/dev/sdb1" || m.partIdx != -1 {
 		t.Fatal("changing disk retained old selections")
 	}
 	parts["/dev/sdb"] = parts["/dev/sdb"][1:]

@@ -11,7 +11,7 @@ import (
 
 func identityModel() model {
 	m := model{
-		state: StateDisk, diskModeIdx: 2, coexistStage: coexistInstall, homeIdx: -1,
+		state: StateDisk, diskModeIdx: 2, coexistStage: coexistInstall,
 		diskModes: []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
 		cfg:       &InstallerConfig{},
 		disks:     []DiskInfo{{Path: "/dev/test"}}, fsTypes: []string{"ext4"},
@@ -29,16 +29,16 @@ func TestInstallationIDPropagation(t *testing.T) {
 		next, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("colibri-2"), Paste: true})
 		m = next.(model)
 		p := m.buildPlan()
-		if m.diskError != "" || p.EFIBootloaderID != "colibri-2" || p.HomeNamespace != "colibri-2" || p.Hostname != "colibri-2" {
+		if m.diskError != "" || p.EFIBootloaderID != "colibri-2" || p.Hostname != "colibri-2" {
 			t.Fatalf("Installation ID did not reach plan: %+v, error %q", p, m.diskError)
 		}
 		view := m.viewDisk()
-		if !strings.Contains(view, "Installation ID") || strings.Contains(view, "HOME namespace (type)") || strings.Contains(view, "EFI bootloader ID (type)") {
-			t.Fatal("expected one Installation ID input")
+		if !strings.Contains(view, "System Name (ID)") || strings.Contains(view, "HOME namespace (type)") || strings.Contains(view, "EFI bootloader ID (type)") {
+			t.Fatal("expected one System Name (ID) input")
 		}
 		m.diskModeIdx = mode
 		p = m.buildPlan()
-		if slices.Contains(m.activeDiskFields(), diskFieldNamespace) || p.EFIBootloaderID != "" || p.HomeNamespace != "" {
+		if slices.Contains(m.activeDiskFields(), diskFieldNamespace) || p.EFIBootloaderID != "" {
 			t.Fatal("normal install acquired a Coexist identity")
 		}
 	}

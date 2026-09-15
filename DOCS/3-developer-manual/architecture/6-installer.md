@@ -79,13 +79,12 @@ Everything the engine does is logged, command by command, to
 pkg/cmd/
 ├── sysinstall.go            # 'eggs sysinstall' (parent command)
 ├── sysinstall_calamares.go  # GUI face: calls setup.Run()
-└── sysinstall_krill.go      # TUI face (+ --unattended flag)
+└── sysinstall_krill.go      # TUI face (+ --coexist flag)
 
 pkg/sysinstall/
 ├── krill/
 │   ├── config.go            # reader of the finished configuration + live detection
-│   ├── krill.go             # Bubbletea wizard (7 steps)
-│   ├── unattended.go        # non-interactive install, same defaults as the TUI
+│   ├── krill.go             # Bubbletea wizard (7 steps + Coexist mode)
 │   └── engine/              # the executors (one Go module per logical step):
 │       ├── engine.go        #   orchestration
 │       ├── mount.go         #   mount/umount
@@ -142,9 +141,7 @@ install target).
 ```bash
 sudo eggs sysinstall calamares           # GUI
 sudo eggs sysinstall krill               # TUI wizard
-sudo eggs sysinstall krill --unattended  # no questions: live-user defaults,
-                                        # password 'evolution', first disk,
-                                        # 10-second abort countdown
+sudo eggs sysinstall krill --coexist     # Coexist multi-boot mode
 ```
 
 The automatic dispatcher (`eggs sysinstall` with no subcommand choosing the

@@ -46,12 +46,8 @@ func runFstab(c *ctx) error {
 
 	// Coexist must never emit empty UUIDs; probe all mounted filesystems first.
 	uuids := map[string]string{}
-	var homeInfo filesystemInfo
 	if plan.Mode == "coexist" {
 		devices := []string{l.Root, l.Esp}
-		if plan.HomePartition != "" {
-			devices = append(devices, plan.HomePartition)
-		}
 		for _, device := range devices {
 			info, err := c.safetyChecks().filesystem(device)
 			if err != nil {
@@ -66,16 +62,7 @@ func runFstab(c *ctx) error {
 			if device == l.Esp && info.Type != "vfat" {
 				return fmt.Errorf("ESP filesystem differs from plan")
 			}
-			if device == plan.HomePartition {
-				homeInfo = info
-			}
 			uuids[device] = info.UUID
-		}
-		if plan.HomePartition != "" && ValidateSharedHomeFilesystem(homeInfo.Type, homeInfo.Label) != nil {
-			return fmt.Errorf("unsupported shared HOME filesystem")
-		}
-		if err := ValidateHomeNamespace(plan.HomeNamespace); err != nil {
-			return err
 		}
 	}
 	uuidOf := func(device string) string {
@@ -98,9 +85,7 @@ func runFstab(c *ctx) error {
 		// root subvolume
 		lines = append(lines, fmt.Sprintf("UUID=%s / btrfs subvol=/@,%s 0 1", uuid, opts))
 		// subvolumes standard
-		if plan.Mode != "coexist" {
-			lines = append(lines, fmt.Sprintf("UUID=%s /home btrfs subvol=/@home,%s 0 2", uuid, opts))
-		}
+		lines = append(lines, fmt.Sprintf("UUID=%s /home btrfs subvol=/@home,%s 0 2", uuid, opts))
 		lines = append(lines, fmt.Sprintf("UUID=%s /var/cache btrfs subvol=/@cache,%s 0 2", uuid, opts))
 		lines = append(lines, fmt.Sprintf("UUID=%s /var/log btrfs subvol=/@log,%s 0 2", uuid, opts))
 		lines = append(lines, fmt.Sprintf("UUID=%s /.snapshots btrfs subvol=/@snapshots,%s 0 2", uuid, opts))
@@ -135,11 +120,6 @@ func runFstab(c *ctx) error {
 		lines = append(lines, fmt.Sprintf("UUID=%s none swap sw 0 0", uuidOf(l.Swap)))
 	}
 
-	if plan.Mode == "coexist" && plan.HomePartition != "" {
-		lines = append(lines,
-			fmt.Sprintf("UUID=%s /srv/homes %s defaults,noatime 0 2", homeInfo.UUID, homeInfo.Type),
-			fmt.Sprintf("/srv/homes/%s /home none bind 0 0", plan.HomeNamespace))
-	}
 	return os.WriteFile(c.tpath("etc", "fstab"), []byte(strings.Join(lines, "\n")+"\n"), 0644)
 }
 

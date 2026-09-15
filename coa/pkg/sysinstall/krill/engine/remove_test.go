@@ -109,7 +109,7 @@ func TestIsGenericRootLabel(t *testing.T) {
 	if !IsGenericRootLabel("root") || !IsGenericRootLabel("root1") || !IsGenericRootLabel("root42") {
 		t.Error("expected generic root labels to match")
 	}
-	if IsGenericRootLabel("arch") || IsGenericRootLabel("debian") || IsGenericRootLabel("SHARED_HOMES") {
+	if IsGenericRootLabel("arch") || IsGenericRootLabel("debian") {
 		t.Error("did not expect distro or system labels to match generic root")
 	}
 }
@@ -143,35 +143,5 @@ func TestCleanCoexistESPMount(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(efi, "debian", "grubx64.efi")); err != nil {
 		t.Error("debian sibling was modified or deleted")
-	}
-}
-
-func TestCleanCoexistHomeMount(t *testing.T) {
-	home := t.TempDir()
-	os.MkdirAll(filepath.Join(home, "arch", "user"), 0755)
-	os.WriteFile(filepath.Join(home, "arch", "user", "file.txt"), []byte("data"), 0644)
-	os.MkdirAll(filepath.Join(home, "common"), 0755)
-	os.WriteFile(filepath.Join(home, "common", "shared.txt"), []byte("shared"), 0644)
-	os.MkdirAll(filepath.Join(home, "debian", "user"), 0755)
-
-	// Try removing reserved namespace common (should error)
-	if err := CleanCoexistHomeMount(home, "common"); err == nil {
-		t.Error("expected error removing common")
-	}
-
-	// Remove arch
-	if err := CleanCoexistHomeMount(home, "arch"); err != nil {
-		t.Fatalf("CleanCoexistHomeMount failed: %v", err)
-	}
-
-	// Verify arch is gone, common and debian remain
-	if _, err := os.Stat(filepath.Join(home, "arch")); !os.IsNotExist(err) {
-		t.Error("arch home was not removed")
-	}
-	if _, err := os.Stat(filepath.Join(home, "common", "shared.txt")); err != nil {
-		t.Error("common namespace was modified or deleted")
-	}
-	if _, err := os.Stat(filepath.Join(home, "debian")); err != nil {
-		t.Error("debian sibling home was modified or deleted")
 	}
 }

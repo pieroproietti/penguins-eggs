@@ -17,41 +17,34 @@ func TestCalculateCoexistLayout(t *testing.T) {
 	for _, tc := range []struct {
 		gib, rootGiB uint64
 		slots        int
-	}{{32, 10, 2}, {40, 10, 2}, {64, 10, 5}, {128, 10, 11}, {256, 10, 24}, {2048, 10, 203},
-		{33, 8, 2}, {40, 8, 3}, {64, 8, 6}, {128, 8, 14}, {256, 8, 30}, {2048, 8, 254},
-		{64, 16, 3}, {128, 16, 7}, {256, 16, 15}, {2048, 16, 127}, {4096, 16, 255}, {25, 4, 3}, {64, 4, 13}} {
+	}{{32, 10, 3}, {40, 10, 3}, {64, 10, 6}, {128, 10, 12}, {256, 10, 25}, {2048, 10, 204},
+		{33, 8, 4}, {40, 8, 4}, {64, 8, 7}, {128, 8, 15}, {256, 8, 31}, {2048, 8, 255},
+		{64, 16, 3}, {128, 16, 7}, {256, 16, 15}, {2048, 16, 127}, {4096, 16, 255}, {25, 4, 6}, {64, 4, 15}} {
 		for _, sector := range []uint64{512, 4096} {
 			l, err := CalculateCoexistLayout("/dev/nvme0n1", tc.gib<<30, sector, tc.rootGiB<<30)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(l.Partitions) != tc.slots+2 || l.RootBytes != tc.rootGiB<<30 {
-				t.Fatalf("%d GiB: got %d root slots", tc.gib, len(l.Partitions)-2)
+			if len(l.Partitions) != tc.slots+1 || l.RootBytes != tc.rootGiB<<30 {
+				t.Fatalf("%d GiB: got %d partitions, want %d", tc.gib, len(l.Partitions), tc.slots+1)
 			}
-			esp, home := l.Partitions[0], l.Partitions[len(l.Partitions)-1]
+			esp := l.Partitions[0]
 			if esp.Device != "/dev/nvme0n1p1" || esp.Type != espGUID || esp.Sectors*sector != CoexistESPBytes || esp.Filesystem != "vfat" {
 				t.Fatalf("ESP: %+v", esp)
 			}
-			if home.Sectors*sector < CoexistMinHomeBytes || home.Sectors*sector >= CoexistMinHomeBytes+(tc.rootGiB<<30) {
-				t.Fatalf("HOME/minimum/maximum slots: %+v", home)
-			}
-			arraySectors := (uint64(l.TableEntries)*128 + sector - 1) / sector
-			if home.Start+home.Sectors != l.DiskBytes/sector-arraySectors-1 {
-				t.Fatal("HOME does not consume remainder")
-			}
-			for n, p := range l.Partitions[1 : len(l.Partitions)-1] {
-				if p.Sectors*sector != tc.rootGiB<<30 || p.Filesystem != "ext4" || p.Start != l.Partitions[n].Start+l.Partitions[n].Sectors || p.Start*sector%(1<<20) != 0 {
+			for n, p := range l.Partitions[1:] {
+				if p.Sectors*sector != tc.rootGiB<<30 || p.Filesystem != "ext4" || p.Type != linuxGUID || p.Label != fmt.Sprintf("root%d", n+1) {
 					t.Fatalf("root: %+v", p)
 				}
 			}
 			lines := strings.Split(strings.TrimSpace(l.partitionScript()), "\n")
-			if !strings.Contains(lines[len(lines)-1], fmt.Sprintf("size=%d", home.Sectors)) || !strings.Contains(l.partitionScript(), "type="+espGUID) {
-				t.Fatal("sfdisk does not preserve EFI type or remainder")
+			if !strings.Contains(lines[0], "label: gpt") || !strings.Contains(l.partitionScript(), "type="+espGUID) {
+				t.Fatal("sfdisk does not preserve EFI type")
 			}
 		}
 	}
-	minimum := CoexistESPBytes + 2*CoexistRootBytes + CoexistMinHomeBytes + initMiB + 33*512
-	for _, bytes := range []uint64{0, 16 << 30, 30 << 30, minimum - 512} {
+	minimum := CoexistESPBytes + 2*CoexistRootBytes + 2*initMiB
+	for _, bytes := range []uint64{0, 16 << 30, 20 << 30} {
 		if _, err := CalculateCoexistLayout("/dev/test", bytes, 512, CoexistRootBytes); err == nil {
 			t.Fatalf("accepted insufficient %d bytes", bytes)
 		}
@@ -100,7 +93,7 @@ func TestInitializationDispatchAndFailures(t *testing.T) {
 		t.Fatal(err)
 	}
 	var want []string
-	want = append(want, "wipefs -a /dev/test", "sfdisk --wipe always /dev/test", "udevadm settle", "wipefs -a /dev/test1", "mkfs.fat -F32 /dev/test1", "wipefs -a /dev/test2", "mkfs.ext4 -F -L root1 /dev/test2", "wipefs -a /dev/test3", "mkfs.ext4 -F -L root2 /dev/test3", "wipefs -a /dev/test4", "mkfs.ext4 -F -L SHARED_HOMES /dev/test4", "udevadm settle")
+	want = append(want, "wipefs -a /dev/test", "sfdisk --wipe always /dev/test", "udevadm settle", "wipefs -a /dev/test1", "mkfs.fat -F32 /dev/test1", "wipefs -a /dev/test2", "mkfs.ext4 -F -L root1 /dev/test2", "wipefs -a /dev/test3", "mkfs.ext4 -F -L root2 /dev/test3", "wipefs -a /dev/test4", "mkfs.ext4 -F -L root3 /dev/test4", "udevadm settle")
 	for failAt := -1; failAt < len(want); failAt++ {
 		c, _ := testContext(t, &Plan{Device: l.Device})
 		var commands []string
@@ -198,28 +191,24 @@ func TestCoexistSfdiskLayout(t *testing.T) {
 }
 
 func TestCoexistRootSizeBoundaries(t *testing.T) {
-	if CoexistRootBytes != 10<<30 || CoexistMinHomeBytes != 10<<30 {
+	if CoexistRootBytes != 10<<30 {
 		t.Fatal("default root size changed")
 	}
 	for _, rootBytes := range []uint64{4 << 30, 8 << 30, 16 << 30} {
 		for _, sector := range []uint64{512, 4096} {
-			backupBytes := (128*128/sector + 1) * sector
-			minimum := CoexistESPBytes + 2*rootBytes + CoexistMinHomeBytes + initMiB + backupBytes
-			if _, err := CalculateCoexistLayout("/dev/test", minimum-sector, sector, rootBytes); err == nil {
-				t.Fatalf("accepted disk one sector below minimum: root %d, sector %d", rootBytes, sector)
-			}
+			minimum := CoexistESPBytes + 2*rootBytes + 2*initMiB
 			l, err := CalculateCoexistLayout("/dev/test", minimum, sector, rootBytes)
-			if err != nil || len(l.Partitions) != 4 || l.Partitions[3].Sectors*sector != CoexistMinHomeBytes {
-				t.Fatalf("exact minimum: %+v, %v", l, err)
+			if err != nil || len(l.Partitions) != 3 {
+				t.Fatalf("minimum 2 slots: %+v, %v", l, err)
 			}
 		}
 	}
-	for _, rootBytes := range []uint64{0, 1, 3 << 30, (4 << 30) - 1, (4 << 30) + 512, 27 << 30, 64 << 30, 1 << 63, ^uint64(0)} {
+	for _, rootBytes := range []uint64{0, 1, 3 << 30, (4 << 30) - 1, (4 << 30) + 512, 33 << 30, 64 << 30, 1 << 63, ^uint64(0)} {
 		if _, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, rootBytes); err == nil {
 			t.Fatalf("accepted invalid or oversized root size: %d", rootBytes)
 		}
 	}
-	if l, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, 26<<30); err != nil || len(l.Partitions) != 4 {
+	if l, err := CalculateCoexistLayout("/dev/test", 64<<30, 512, 31<<30); err != nil || len(l.Partitions) != 3 {
 		t.Fatalf("largest whole-GiB roots on 64 GiB disk rejected: %+v, %v", l, err)
 	}
 }

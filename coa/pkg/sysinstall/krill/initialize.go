@@ -39,25 +39,11 @@ func PreviewCoexistInitialization(device string, rootBytes uint64) (engine.Coexi
 }
 
 func (m model) previewCoexistInitialization(device string, rootBytes uint64) (engine.CoexistDiskLayout, error) {
-	if m.prepareRootHome {
-		return engine.PreviewCoexistDiskWithoutHome(device, DetectLiveDisk(), rootBytes)
-	}
-	if m.homeExternal {
-		return engine.PreviewCoexistDiskWithHome(device, DetectLiveDisk(), rootBytes, m.prepareHome.Path)
-	}
 	return PreviewCoexistInitialization(device, rootBytes)
 }
 
 func (m model) startCoexistPreview(preview func(string, uint64) (engine.CoexistDiskLayout, error)) (tea.Model, tea.Cmd) {
 	if m.diskModeIdx != 2 || m.coexistStage != coexistPrepare || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
-		return m, nil
-	}
-	if err := m.coexistStorageError(); err != "" {
-		m.diskError = err
-		return m, nil
-	}
-	if m.homeExternal && m.prepareHome.Path == "" {
-		m.diskError = "Select an external HOME partition before configuring the disk."
 		return m, nil
 	}
 	device := m.disks[m.diskIdx].Path
@@ -93,9 +79,6 @@ func (m model) receiveCoexistPreview(msg coexistPreviewMsg) (tea.Model, tea.Cmd)
 	for _, p := range msg.layout.Partitions {
 		rows = append(rows, fmt.Sprintf("%-20s %-13s %8.2f GiB  %s", p.Device, p.Label, float64(p.Sectors*msg.layout.SectorSize)/(1<<30), p.Filesystem))
 	}
-	if len(rows) > 0 && msg.layout.ExternalHome.Partition == "" && !msg.layout.HomeOnRoot {
-		rows[len(rows)-1] += " (remainder)"
-	}
 	v.SetContent(strings.Join(rows, "\n"))
 	m.initialization = &coexistInitialization{layout: msg.layout, view: v, reviewed: v.AtBottom(), rootSize: strconv.FormatUint(msg.layout.RootBytes>>30, 10)}
 	if msg.err != nil {
@@ -107,43 +90,55 @@ func (m model) receiveCoexistPreview(msg coexistPreviewMsg) (tea.Model, tea.Cmd)
 
 func (m model) updateCoexistInitialization(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	i := m.initialization
-	if i.busy {
+	if i == nil || i.busy {
 		return m, nil
 	}
 	if i.editingSize {
 		switch msg.String() {
-		case "esc", "ctrl+c":
-			m.initialization = nil
-		case "backspace", "ctrl+h":
-			if len(i.rootSize) > 0 {
-				_, size := utf8.DecodeLastRuneInString(i.rootSize)
-				i.rootSize = i.rootSize[:len(i.rootSize)-size]
-			}
 		case "enter":
 			return m.startCoexistPreview(m.previewCoexistInitialization)
+		case "esc":
+			m.initialization, m.diskError = nil, ""
+			return m, nil
+		case "backspace":
+			if len(i.rootSize) > 0 {
+				i.rootSize = i.rootSize[:len(i.rootSize)-1]
+			}
 		default:
-			if msg.Type == tea.KeyRunes {
-				i.rootSize += string(msg.Runes)
+			for _, r := range msg.Runes {
+				if r >= '0' && r <= '9' && len(i.rootSize) < 4 {
+					i.rootSize += string(r)
+				}
 			}
 		}
 		return m, nil
 	}
 	switch msg.String() {
-	case "tab":
-		i.editingSize, i.reviewed, i.confirmation = true, false, ""
-	case "esc", "ctrl+c":
-		m.initialization = nil
 	case "home":
 		i.view.GotoTop()
-	case "end":
+	case "end", "G":
 		i.view.GotoBottom()
 		i.reviewed = true
-	case "up", "down", "pgup", "pgdown":
-		i.view, _ = i.view.Update(msg)
+	case "up", "k":
+		i.view.LineUp(1)
+	case "down", "j":
+		i.view.LineDown(1)
 		i.reviewed = i.reviewed || i.view.AtBottom()
-	case "backspace", "ctrl+h":
+	case "pgup":
+		i.view.HalfViewUp()
+	case "pgdown":
+		i.view.HalfViewDown()
+		i.reviewed = i.reviewed || i.view.AtBottom()
+	case "tab":
+		i.editingSize, i.reviewed, i.confirmation, i.sizeError = true, false, "", ""
+		return m, nil
+	case "esc":
+		m.initialization, m.diskError = nil, ""
+		return m, nil
+	case "backspace":
 		if len(i.confirmation) > 0 {
-			i.confirmation = i.confirmation[:len(i.confirmation)-1]
+			_, size := utf8.DecodeLastRuneInString(i.confirmation)
+			i.confirmation = i.confirmation[:len(i.confirmation)-size]
 		}
 	case "enter":
 		return m.confirmCoexistInitialization(engine.InitializeCoexistDisk, rediscoverInitializedDisk)
@@ -164,8 +159,8 @@ func (m model) confirmCoexistInitialization(initialize func(engine.CoexistDiskLa
 	i.busy = true
 	// Discard every old selection before any write; failed/partial preparation
 	// must never leave a previously selected root available for installation.
-	m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
-	m.candidateParts, m.efiParts, m.homeParts = nil, nil, nil
+	m.partIdx, m.efiIdx = -1, -1
+	m.candidateParts, m.efiParts = nil, nil
 	return m, func() tea.Msg {
 		err := initialize(layout, confirmation)
 		var parts []PartitionInfo
@@ -189,12 +184,6 @@ func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Mode
 	l := msg.layout
 	m.candidateParts = GetCandidatePartitions(msg.parts, "")
 	m.efiParts = coexistEfiPartitions(msg.parts)
-	m.homeParts = nil
-	for _, p := range msg.parts {
-		if engine.IsSharedHomeLabel(p.Label) || engine.IsSharedHomeLabel(p.PartLabel) {
-			m.homeParts = append(m.homeParts, p)
-		}
-	}
 	for n, p := range m.candidateParts {
 		if p.Path == l.Partitions[1].Device {
 			m.partIdx = n
@@ -204,13 +193,6 @@ func (m model) receiveCoexistInitialization(msg coexistInitializedMsg) (tea.Mode
 		if p.Path == l.Partitions[0].Device {
 			m.efiIdx = n
 		}
-	}
-	m.prepareRootHome = l.HomeOnRoot
-	m.homeExternal = l.ExternalHome.Partition != ""
-	m.prepareHome = PartitionInfo{Path: l.ExternalHome.Partition, FsType: "ext4", Label: engine.SharedHomeLabel, SizeBytes: int64(l.ExternalHome.SizeBytes)}
-	m.homeIdx = -1
-	if m.homeExternal && len(m.homeParts) == 0 {
-		m.homeParts = append(m.homeParts, m.prepareHome)
 	}
 	m.diskError = ""
 	m.coexistStage = coexistReady
@@ -233,14 +215,11 @@ func (m model) viewCoexistInitialization() string {
 	}
 	layoutView := i.view.View()
 	return redBgWhiteText.Render("Prepare disk for Coexist: ALL DATA ON "+i.layout.Device+" WILL BE ERASED") +
-		"\nGPT / UEFI | ESP 512 MiB | HOME: " + m.sharedHomeDescription() +
-		"\nRoot slot size (GiB, minimum 4): " + i.rootSize + "\n\n" +
+		"\nGPT / UEFI | ESP 512 MiB | Root slot size: " + i.rootSize + " GiB\n\n" +
 		layoutView + "\n\n↑/↓ or PgUp/PgDown: review layout | Tab: edit root size | Esc: cancel\n" + confirmation
 }
 
 func rediscoverInitializedDisk(l engine.CoexistDiskLayout) ([]PartitionInfo, error) {
-	// START is reported in kernel 512-byte sectors, SIZE in bytes. Explicit
-	// failures and exact geometry checks prevent accepting a stale/partial table.
 	quoted := "'" + strings.ReplaceAll(l.Device, "'", "'\"'\"'") + "'"
 	out, err := utils.ExecCapture("lsblk --bytes --json --output PATH,NAME,TYPE,SIZE,START,FSTYPE,LABEL,PARTTYPE,PTTYPE,MOUNTPOINTS " + quoted)
 	if err != nil {
@@ -250,27 +229,7 @@ func rediscoverInitializedDisk(l engine.CoexistDiskLayout) ([]PartitionInfo, err
 	if err := json.Unmarshal([]byte(out), &tree); err != nil {
 		return nil, err
 	}
-	parts, err := validateInitializedDiscovery(l, tree)
-	if err != nil {
-		return nil, err
-	}
-	inventory, err := DetectPartitionInventory()
-	if err != nil {
-		return nil, err
-	}
-	var paths []string
-	for _, p := range inventory {
-		if engine.IsSharedHomeLabel(p.Label) || engine.IsSharedHomeLabel(p.PartLabel) {
-			paths = append(paths, p.Path)
-			if p.Disk != l.Device {
-				parts = append(parts, p)
-			}
-		}
-	}
-	if _, err := engine.UniqueSharedHome(paths); err != nil {
-		return nil, err
-	}
-	return parts, nil
+	return validateInitializedDiscovery(l, tree)
 }
 
 func validateInitializedDiscovery(l engine.CoexistDiskLayout, tree lsblkRoot) ([]PartitionInfo, error) {

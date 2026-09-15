@@ -14,7 +14,6 @@ const (
 	coexistPrepare
 	coexistInstall
 	coexistReady
-	coexistHomeLocation
 )
 
 func (m model) coexistActionRow(active bool, label string) string {
@@ -28,10 +27,10 @@ func (m model) viewCoexistChoice() string {
 	return strings.Join([]string{
 		renderSteps(4), "",
 		m.selectorRow(m.diskField == 0, "Installation mode", "Coexist"), "",
-		m.coexistActionRow(m.diskField == 1, "Install a distribution on an existing disk"),
-		"    Existing ROOT and fixed ESP on that disk; HOME may be on another.", "",
-		m.coexistActionRow(m.diskField == 2, "Prepare a disk for multiple distributions"),
-		"    Create ESP and ROOT slots, with optional shared HOME.",
+		m.coexistActionRow(m.diskField == 1, "Install to a Coexist slot"),
+		"    Select a disk, available ROOT slot, and system name.", "",
+		m.coexistActionRow(m.diskField == 2, "Initialize disk for Coexist"),
+		"    Create ESP and customizable ROOT slots.",
 		"    " + redBgWhiteText.Render("WARNING: Completely destructive. Erases ALL DATA on the selected disk."), "",
 		"↑/↓ select action | ←/→ change installation mode | Enter: open",
 	}, "\n")
@@ -78,7 +77,6 @@ func (m model) viewCoexistPreparation() string {
 		m.selectorRow(m.diskField == 0, "Disk to prepare", device.Path+" ("+device.Size+")"),
 		m.coexistActionRow(m.diskField == 1, "Configure partitions and review layout"), "",
 		"ROOT slots default to 10 GiB; ESP is created automatically.",
-		"Shared HOME: " + m.sharedHomeDescription(),
 		redBgWhiteText.Render("Preparation erases ALL DATA on the selected disk."),
 		"To add a distribution to a prepared disk, use the installation path.",
 		m.diskError, "↑/↓ select | ←/→ change disk | Esc: Coexist menu",
@@ -89,7 +87,6 @@ func (m model) viewCoexistReady() string {
 	return strings.Join([]string{
 		greenText.Render("Coexist — Disk ready"), "",
 		m.disks[m.diskIdx].Path + " is prepared with ESP and ROOT slots.",
-		"Shared HOME: " + m.sharedHomeDescription(),
 		"No distribution has been installed yet.", "",
 		m.coexistActionRow(m.coexistReadyChoice == 0, "Install the current live distribution now"),
 		m.coexistActionRow(m.coexistReadyChoice == 1, "Exit"),

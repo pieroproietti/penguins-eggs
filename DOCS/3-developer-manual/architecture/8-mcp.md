@@ -60,7 +60,7 @@ The server exposes seven granular tools that mirror the CLI hierarchy:
 
 ```
 ├── eggs_remaster    -> Live ISO flight (clone, crypted, compression, stop_after, debug)
-├── eggs_sysinstall  -> System installer deployment (krill TUI, calamares GUI, unattended)
+├── eggs_sysinstall  -> System installer deployment (krill TUI, calamares GUI)
 ├── eggs_export      -> Remote artifact transfer to Proxmox (iso, pkg, log)
 ├── eggs_tools       -> Maintenance routines (clean, grub40, skel, build)
 ├── eggs_destroy     -> Workspace cleanup and lazy unmount

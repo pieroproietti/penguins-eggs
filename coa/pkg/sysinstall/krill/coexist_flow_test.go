@@ -13,11 +13,11 @@ import (
 func TestCoexistInstallFitsStandardTerminal(t *testing.T) {
 	m := identityModel()
 	m.termWidth, m.termHeight = 80, 24
-	m.partIdx, m.efiIdx, m.homeIdx = -1, -1, -1
+	m.partIdx, m.efiIdx = -1, -1
 	for _, message := range []string{
 		"",
-		"Select the root to FORMAT and existing shared HOME to PRESERVE.",
-		engine.ValidateHomeNamespace("").Error(),
+		"FORMAT target ROOT slot; preserve ESP and other slots.",
+		engine.ValidateInstallationID("").Error(),
 	} {
 		m.diskError = message
 		view := m.View()
@@ -27,7 +27,7 @@ func TestCoexistInstallFitsStandardTerminal(t *testing.T) {
 		// The terminal wraps long validation messages; all words must survive.
 		text := strings.Join(strings.Fields(view), " ")
 		text = strings.ReplaceAll(text, " │ │ ", " ")
-		for _, label := range []string{"Installation device", "Target partition", "EFI System Partition", "Home: /home on ROOT", "Installation ID", "type an ID", "Enter: continue"} {
+		for _, label := range []string{"Installation device", "Target partition", "EFI System Partition", "System Name (ID)", "type an ID", "Enter: continue"} {
 			if !strings.Contains(view, label) {
 				t.Fatalf("installation form missing %q", label)
 			}
@@ -41,7 +41,7 @@ func TestCoexistInstallFitsStandardTerminal(t *testing.T) {
 func TestCoexistPaths(t *testing.T) {
 	for _, action := range []diskFieldKind{diskFieldPrepare, diskFieldInstall} {
 		m := model{state: StateDisk, diskModeIdx: 2, disks: []DiskInfo{{Path: "/dev/test"}}, fsTypes: []string{"ext4"}}
-		for _, label := range []string{"Prepare a disk", "Install a distribution"} {
+		for _, label := range []string{"Initialize disk for Coexist", "Install to a Coexist slot"} {
 			if !strings.Contains(m.View(), label) {
 				t.Fatalf("Coexist menu missing %q", label)
 			}
@@ -59,15 +59,7 @@ func TestCoexistPaths(t *testing.T) {
 			t.Fatal("choosing a path dispatched disk operations")
 		}
 		if action == diskFieldPrepare {
-			if m.coexistStage != coexistHomeLocation || !strings.Contains(m.View(), "Home location for disk preparation") {
-				t.Fatal("preparation did not start with HOME location")
-			}
-			next, cmd = m.Update(tea.KeyMsg{Type: tea.KeyEnter})
-			m = next.(model)
-			if cmd != nil {
-				t.Fatal("HOME location dispatched disk operations")
-			}
-			if m.coexistStage != coexistPrepare || slices.Contains(m.activeDiskFields(), diskFieldTargetPart) || strings.Contains(m.View(), "Installation ID") {
+			if m.coexistStage != coexistPrepare || slices.Contains(m.activeDiskFields(), diskFieldTargetPart) || strings.Contains(m.View(), "System Name (ID)") {
 				t.Fatal("preparation includes installation settings")
 			}
 			if !strings.Contains(m.View(), "ALL DATA") || !strings.Contains(m.View(), "Configure partitions") {

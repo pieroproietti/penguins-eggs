@@ -101,16 +101,6 @@ func enrichIdentityWithBlkid(devices []identityDevice) []identityDevice {
 			}
 		}
 	}
-	for _, b := range entries {
-		if !seen[b.Path] && b.Path != "" && (IsSharedHomeLabel(b.Label) || IsSharedHomeLabel(b.PartLabel)) {
-			devices = append(devices, identityDevice{
-				Path:      b.Path,
-				Type:      b.Type,
-				Label:     b.Label,
-				PartLabel: b.PartLabel,
-			})
-		}
-	}
 	return devices
 }
 
@@ -157,7 +147,7 @@ func validateCoexistIdentities(plan *Plan, devices []identityDevice) error {
 			}
 			found = true
 			previous := ""
-			if device.Label != "" && !IsGenericRootLabel(device.Label) && ValidateHomeNamespace(device.Label) == nil {
+			if device.Label != "" && !IsGenericRootLabel(device.Label) && ValidateInstallationID(device.Label) == nil {
 				previous = device.Label
 			}
 			if previous != plan.PreviousID {

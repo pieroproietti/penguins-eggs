@@ -297,7 +297,7 @@ func TestDebianEFITemplateReplacesOnlyMatchingDirectory(t *testing.T) {
 
 func TestEFIPlanReachesShellprocess(t *testing.T) {
 	for _, mode := range []string{"coexist", "replace", "erase"} {
-		p := &Plan{Mode: mode, EFIBootloaderID: "colibri-2", HomeNamespace: "separate-home", ConfigRoot: t.TempDir()}
+		p := &Plan{Mode: mode, EFIBootloaderID: "colibri-2", ConfigRoot: t.TempDir()}
 		writeEFITestFile(t, filepath.Join(p.ConfigRoot, "modules", "shellprocess_runner.conf"),
 			"dontChroot: true\nscript: |\n  printf '%s/%s' \"$KRILL_INSTALL_MODE\" \"$KRILL_EFI_BOOTLOADER_ID\"\n", 0644)
 		called := false

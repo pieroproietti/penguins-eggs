@@ -31,9 +31,6 @@ func runMount(c *ctx) error {
 		}
 
 		for _, sv := range subvols {
-			if plan.Mode == "coexist" && sv == "@home" {
-				continue
-			}
 			svPath := filepath.Join(tmpMount, sv)
 			if !exists(svPath) {
 				if err := c.run("btrfs", "subvolume", "create", svPath); err != nil {
@@ -76,9 +73,6 @@ func runMount(c *ctx) error {
 		}
 
 		for _, m := range mounts {
-			if plan.Mode == "coexist" && m.subvol == "@home" {
-				continue
-			}
 			if err := os.MkdirAll(m.path, 0755); err != nil {
 				return err
 			}
@@ -102,7 +96,7 @@ func runMount(c *ctx) error {
 		}
 	}
 
-	if l.Esp != "" && plan.Mode != "coexist" {
+	if l.Esp != "" {
 		espDir := c.tpath("boot", "efi")
 		if err := os.MkdirAll(espDir, 0755); err != nil {
 			return err
@@ -111,6 +105,16 @@ func runMount(c *ctx) error {
 		// kernel tenti un mount squashfs andando in panic (exit status 32)
 		if err := c.mount("-t", "vfat", l.Esp, espDir); err != nil {
 			return err
+		}
+		if plan.Mode == "coexist" {
+			idsToClean := []string{plan.EFIBootloaderID}
+			if plan.PreviousID != "" && plan.PreviousID != plan.EFIBootloaderID {
+				idsToClean = append(idsToClean, plan.PreviousID)
+			}
+			for _, id := range idsToClean {
+				_ = CleanCoexistESPMount(espDir, id)
+				_ = CleanCoexistNVRAM(l.Esp, id)
+			}
 		}
 	}
 	return nil

@@ -53,10 +53,9 @@ func TestCoexistAdditionalPreflightGuards(t *testing.T) {
 		{"mounted ESP", func(p *Plan, c *partitionChecks) {
 			c.inUse = func(device string) (bool, error) { return device == p.EspPartition, nil }
 		}},
-		{"mismatched IDs", func(p *Plan, _ *partitionChecks) { p.HomeNamespace = "another" }},
 		{"reserved previous EFI", func(p *Plan, _ *partitionChecks) { p.PreviousID = "boot" }},
-		{"invalid previous HOME", func(p *Plan, _ *partitionChecks) { p.PreviousID = "../other" }},
-		{"generic installation ID", func(p *Plan, _ *partitionChecks) { p.HomeNamespace, p.EFIBootloaderID = "root3", "root3" }},
+		{"invalid previous ID", func(p *Plan, _ *partitionChecks) { p.PreviousID = "../other" }},
+		{"generic installation ID", func(p *Plan, _ *partitionChecks) { p.EFIBootloaderID = "root3" }},
 		{"inventory unavailable", func(_ *Plan, c *partitionChecks) { c.identities = nil }},
 		{"inventory failure", func(_ *Plan, c *partitionChecks) {
 			c.identities = func(*Plan) error { return errors.New("lsblk failed") }
@@ -78,33 +77,24 @@ func TestCoexistAdditionalPreflightGuards(t *testing.T) {
 
 func TestGenericIDsAreReserved(t *testing.T) {
 	for _, id := range []string{"root", "root1", "root123"} {
-		if err := ValidateHomeNamespace(id); err == nil || !strings.Contains(err.Error(), "reserved") {
+		if err := ValidateInstallationID(id); err == nil || !strings.Contains(err.Error(), "reserved") {
 			t.Fatalf("accepted ambiguous slot identity %q: %v", id, err)
 		}
 	}
 }
 
 func TestCoexistChecksPreviousDestinationsBeforeFormatting(t *testing.T) {
-	for _, kind := range []string{"HOME", "EFI"} {
-		t.Run(kind, func(t *testing.T) {
-			p := coexistPlan()
-			p.PreviousID = "arch"
-			c, commands := testContext(t, p)
-			inspect := func(_ string, id string) error {
-				if id == p.PreviousID {
-					return errors.New("unsafe previous destination")
-				}
-				return nil
-			}
-			if kind == "HOME" {
-				c.checks.inspectHome = inspect
-			} else {
-				c.checks.inspectEFI = inspect
-			}
-			err := runPartition(c)
-			if err == nil || !strings.Contains(err.Error(), "previous "+kind) || len(*commands) != 0 {
-				t.Fatalf("unsafe previous cleanup accepted: %v, commands %v", err, *commands)
-			}
-		})
+	p := coexistPlan()
+	p.PreviousID = "arch"
+	c, commands := testContext(t, p)
+	c.checks.inspectEFI = func(_ string, id string) error {
+		if id == p.PreviousID {
+			return errors.New("unsafe previous destination")
+		}
+		return nil
+	}
+	err := runPartition(c)
+	if err == nil || !strings.Contains(err.Error(), "previous EFI") || len(*commands) != 0 {
+		t.Fatalf("unsafe previous cleanup accepted: %v, commands %v", err, *commands)
 	}
 }

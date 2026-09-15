@@ -151,8 +151,7 @@ func (s *Server) handleToolsList(id interface{}) {
 			InputSchema: InputSchema{
 				Type: "object",
 				Properties: map[string]Property{
-					"installer":  {Type: "string", Description: "Installer interface: krill (TUI) or calamares (GUI)", Enum: []string{"krill", "calamares"}},
-					"unattended": {Type: "boolean", Description: "Run unattended non-interactive installation (krill only)"},
+					"installer": {Type: "string", Description: "Installer interface: krill (TUI) or calamares (GUI)", Enum: []string{"krill", "calamares"}},
 				},
 			},
 		},
@@ -255,12 +254,7 @@ func (s *Server) handleToolCall(id interface{}, rawParams json.RawMessage) {
 		if installer == "" {
 			installer = "krill"
 		}
-		unattended, _ := params.Arguments["unattended"].(bool)
-		if installer == "krill" && unattended {
-			cmdStr = fmt.Sprintf("sudo %s sysinstall krill --unattended", eggsBin)
-		} else {
-			cmdStr = fmt.Sprintf("sudo %s sysinstall %s", eggsBin, installer)
-		}
+		cmdStr = fmt.Sprintf("sudo %s sysinstall %s", eggsBin, installer)
 
 	case "eggs_export":
 		target, _ := params.Arguments["target"].(string)

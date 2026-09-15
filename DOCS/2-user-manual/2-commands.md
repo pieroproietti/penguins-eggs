@@ -72,7 +72,7 @@ The orchestrator for installing the operating system to disk. Acts as a router t
 *   **Engines:**
     *   `calamares`: launches the graphical installer (GUI).
     *   `krill`: launches the text installer (TUI).
-        *   `--unattended`: non-interactive install with live-user defaults, password `evolution`, first disk, 10-second abort countdown.
+        *   `--coexist`: opens directly in Coexist multi-boot mode to install alongside other OSes.
 
 ### `eggs destroy` (alias: `eggs kill`)
 The "safe destroyer". Tears down the remastering environment: it uses `MNT_DETACH` (lazy unmount) to free the virtual mount points (`/proc`, `/sys`, `/dev`) without kernel panics or host hangs, then deletes the working directory.
@@ -145,7 +145,7 @@ AI agents connected via MCP can invoke the following tools:
 | MCP Tool | Description | Parameters |
 |---|---|---|
 | `eggs_remaster` | Remasters the running system into a live bootable ISO. | `clone` (bool), `crypted` (bool), `compression` (string: `zstd`, `xz`, `lz4`, `gzip`), `path` (string), `stop_after` (string), `debug` (bool) |
-| `eggs_sysinstall` | Installs the live system environment permanently to local disk storage. | `installer` (`krill`, `calamares`), `unattended` (bool) |
+| `eggs_sysinstall` | Installs the live system environment permanently to local disk storage. | `installer` (`krill`, `calamares`) |
 | `eggs_export` | Exports artifacts (ISO, packages, logs) to remote Proxmox storage. | `target` (required: `iso`, `pkg`, `log`) |
 | `eggs_tools` | Executes system utilities and maintenance tasks. | `tool` (required: `clean`, `grub40`, `skel`, `build`), `args` (string) |
 | `eggs_destroy` | Cleans up the remaster workspace and unmounts temporary filesystems. | *(none)* |
