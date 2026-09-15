@@ -50,12 +50,12 @@ func TestInstallationIDInputRejectsWithoutSanitizing(t *testing.T) {
 			m := identityModel()
 			next, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune(id), Paste: true})
 			m = next.(model)
-			if m.homeNamespace != id || m.diskError == "" {
-				t.Fatalf("invalid input was altered or accepted: %q, error %q", m.homeNamespace, m.diskError)
+			if m.systemID != id || m.diskError == "" {
+				t.Fatalf("invalid input was altered or accepted: %q, error %q", m.systemID, m.diskError)
 			}
 			next, _ = m.updateDisk("enter")
 			m = next.(model)
-			if m.state != StateDisk || m.homeNamespace != id {
+			if m.state != StateDisk || m.systemID != id {
 				t.Fatal("invalid identity advanced or changed on submission")
 			}
 			for range []rune(id) {

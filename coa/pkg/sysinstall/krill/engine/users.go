@@ -194,7 +194,7 @@ func runRemoveuser(c *ctx) error {
 	}
 	if err := c.chroot("userdel", "-r", user); err != nil {
 		if c.plan.Mode == "coexist" {
-			return fmt.Errorf("remove live user before mounting shared HOME: %w", err)
+			return fmt.Errorf("remove live user %s: %w", user, err)
 		}
 		c.logf("userdel %s failed (non-fatal): %v", user, err)
 	}

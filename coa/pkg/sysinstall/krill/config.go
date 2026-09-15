@@ -489,7 +489,7 @@ func enrichPartitionsWithBlkid(parts []PartitionInfo) []PartitionInfo {
 }
 
 // DetectPartitionInventory inspects all disks, including mounted or unsupported
-// partitions. Such partitions still count when checking duplicate HOME labels.
+// partitions.
 func DetectPartitionInventory() ([]PartitionInfo, error) {
 	out, err := utils.ExecCapture("lsblk --bytes --json --tree --output PATH,NAME,SIZE,TYPE,FSTYPE,LABEL,PARTLABEL,PARTTYPE,MOUNTPOINTS,RO")
 	if err != nil {

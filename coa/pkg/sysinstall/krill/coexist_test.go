@@ -63,8 +63,8 @@ func TestCoexistDiskSelections(t *testing.T) {
 		next, _ = m.updateDisk(key)
 		m = next.(model)
 	}
-	if m.homeNamespace != "debian-sid" {
-		t.Fatalf("namespace: %q", m.homeNamespace)
+	if m.systemID != "debian-sid" {
+		t.Fatalf("namespace: %q", m.systemID)
 	}
 	view := m.coexistResources()
 	for _, text := range []string{"FORMAT:", "Slot (ROOT): /dev/test5", "PRESERVE (no formatting):", "ESP: /dev/test1", "System Name (ID): debian-sid", "New label: debian-sid"} {
@@ -93,7 +93,7 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 			t.Fatalf("target selector missing %q: %s", text, view)
 		}
 	}
-	m.homeNamespace = "arch-colibri-4"
+	m.systemID = "arch-colibri-4"
 	resources := m.coexistResources()
 	for _, text := range []string{"COEXIST", "System Name (ID): arch-colibri-4", "DELETE CONTENTS if present / CREATE if absent:", "EFI/arch-colibri-4", "Slot (ROOT): /dev/sda5 [arch-colibri-4]"} {
 		if !strings.Contains(resources, text) {
@@ -102,7 +102,7 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 	}
 
 	// When replacing with a different namespace, purge notice must be shown and PreviousID populated
-	m.homeNamespace = "debian"
+	m.systemID = "debian"
 	m.cfg = &InstallerConfig{}
 	m.userInputs = make([]textinput.Model, 5)
 	m.locData = TimezoneData{Regions: []string{"Europe"}, Zones: map[string][]string{"Europe": {"Rome"}}}

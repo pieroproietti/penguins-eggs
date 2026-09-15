@@ -120,7 +120,7 @@ type model struct {
 	netInputs []textinput.Model // address, netmask, gateway, dns
 
 	// Disk: selettori navigabili (↑/↓ campo, ←/→ valore)
-	homeNamespace  string
+	systemID       string
 	diskError      string
 	storageError   string
 	diskBios       string
@@ -358,11 +358,11 @@ const DefaultPassword = "evolution"
 		if len(m.candidateParts) > 0 && m.partIdx >= 0 {
 			slotLabel := m.candidateParts[m.partIdx].Label
 			if strings.HasPrefix(slotLabel, "root") {
-				m.homeNamespace = "coe-" + strings.TrimPrefix(slotLabel, "root")
+				m.systemID = "coe-" + strings.TrimPrefix(slotLabel, "root")
 			} else {
-				m.homeNamespace = "coe-2"
+				m.systemID = "coe-2"
 			}
-			m.userInputs[fieldHostname].SetValue(m.homeNamespace)
+			m.userInputs[fieldHostname].SetValue(m.systemID)
 		}
 	}
 	return m
@@ -719,9 +719,9 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		edited := false
 		switch key {
 		case "backspace", "ctrl+h":
-			if len(m.homeNamespace) > 0 {
-				_, size := utf8.DecodeLastRuneInString(m.homeNamespace)
-				m.homeNamespace = m.homeNamespace[:len(m.homeNamespace)-size]
+			if len(m.systemID) > 0 {
+				_, size := utf8.DecodeLastRuneInString(m.systemID)
+				m.systemID = m.systemID[:len(m.systemID)-size]
 			}
 			edited = true
 		case "up", "down", "tab", "shift+tab", "enter", "left", "right":
@@ -729,16 +729,16 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			// Retain invalid input, including pasted Unicode and overlong IDs,
 			// so validation rejects it visibly instead of silently sanitizing it.
 			if utf8.RuneCountInString(key) == 1 {
-				m.homeNamespace += key
+				m.systemID += key
 				edited = true
 			}
 		}
 		if edited {
 			m.diskError = ""
-			if err := engine.ValidateEFIBootloaderID(m.homeNamespace); err != nil {
+			if err := engine.ValidateEFIBootloaderID(m.systemID); err != nil {
 				m.diskError = err.Error()
 			} else if len(m.userInputs) > fieldHostname {
-				m.userInputs[fieldHostname].SetValue(m.homeNamespace)
+				m.userInputs[fieldHostname].SetValue(m.systemID)
 			}
 			return m, nil
 		}
@@ -828,7 +828,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 				m.diskError = err
 			} else if m.partIdx < 0 || m.partIdx >= len(m.candidateParts) {
 				m.diskError = "Select the root partition to FORMAT."
-			} else if err := engine.ValidateEFIBootloaderID(m.homeNamespace); err != nil {
+			} else if err := engine.ValidateEFIBootloaderID(m.systemID); err != nil {
 				m.diskError = err.Error()
 			}
 			if m.diskError != "" {
@@ -1177,7 +1177,7 @@ func (m model) viewDisk() string {
 			}
 			rows = append(rows, m.selectorRow(isActive, "EFI System Partition", efiStr))
 		case diskFieldNamespace:
-			rows = append(rows, m.selectorRow(isActive, "System Name (ID)", orDefault(m.homeNamespace, "type an ID, e.g. debian")))
+			rows = append(rows, m.selectorRow(isActive, "System Name (ID)", orDefault(m.systemID, "type an ID, e.g. debian")))
 		case diskFieldFs:
 			rows = append(rows, m.selectorRow(isActive, "Filesystem", m.fsTypes[m.fsIdx]))
 		case diskFieldSwap:
@@ -1453,7 +1453,7 @@ func (m *model) buildPlan() *engine.Plan {
 
 	efiID, previousID := "", ""
 	if mode == "coexist" {
-		efiID = m.homeNamespace
+		efiID = m.systemID
 		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
 			oldLabel := m.candidateParts[m.partIdx].Label
 			if oldLabel != "" && !engine.IsGenericRootLabel(oldLabel) && engine.ValidateInstallationID(oldLabel) == nil {
@@ -1567,14 +1567,14 @@ func (m model) coexistResources() string {
 		esp = m.efiParts[m.efiIdx].Path
 	}
 	preserve := "PRESERVE (no formatting):\n  ESP: " + esp + "\n  All other ROOT slots"
-	cleanup := "DELETE CONTENTS if present / CREATE if absent:\n  EFI/" + m.homeNamespace + "\n  Matching UEFI NVRAM entries"
+	cleanup := "DELETE CONTENTS if present / CREATE if absent:\n  EFI/" + m.systemID + "\n  Matching UEFI NVRAM entries"
 	rows := []string{
-		cyanText.Render("COEXIST\n  System Name (ID): " + m.homeNamespace),
-		redBgWhiteText.Render("FORMAT:\n  Slot (ROOT): " + root + "\n  New label: " + m.homeNamespace),
+		cyanText.Render("COEXIST\n  System Name (ID): " + m.systemID),
+		redBgWhiteText.Render("FORMAT:\n  Slot (ROOT): " + root + "\n  New label: " + m.systemID),
 		greenText.Render(preserve),
 		redBgWhiteText.Render(cleanup),
 	}
-	if oldLabel != "" && oldLabel != m.homeNamespace {
+	if oldLabel != "" && oldLabel != m.systemID {
 		previous := "PURGE PREVIOUS (" + oldLabel + "):\n  EFI: EFI/" + oldLabel + "\n  Matching UEFI NVRAM entries"
 		rows = append(rows, redBgWhiteText.Render(previous))
 	}

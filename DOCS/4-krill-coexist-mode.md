@@ -7,58 +7,48 @@ La modalità `coexist` funziona nel modo seguente. Per ora l'ho provata soltanto
 In `eggs sysinstall krill`, scegliendo **Coexist** nella pagina Disk si apre
 un menu con due operazioni distinte:
 
-- **Install a distribution on an existing disk**: scelta del disco, della ROOT
-  esistente da formattare, della HOME da riutilizzare e dell'identificativo
-  dell'installazione. La ESP è rilevata automaticamente sul disco selezionato
-  e resta fissa, visibile ma non selezionabile.
+- **Install to a Coexist slot**: scelta del disco, dello slot ROOT esistente
+  da formattare (libero o da reinstallare) e del **System Name (ID)**
+  dell'installazione (es. `debian`, `arch`). La ESP è rilevata automaticamente
+  sul disco selezionato e resta fissa, visibile ma non selezionabile.
   Questo percorso non contiene l'azione di preparazione dell'intero disco.
-  Prosegue con utenti e riepilogo, compresa la conferma delle eventuali
-  cancellazioni dei contenuti HOME/EFI dell'installazione sostituita.
-- **Prepare a disk for multiple distributions**: scelta iniziale **Shared Home
-  Location**, poi disco da preparare, dimensionamento degli slot ROOT e anteprima
-  delle partizioni. Le opzioni HOME sono **Coexist disk (requires 32 GiB total
-  space)**, predefinita, e **External partition**. La seconda apre un selettore
-  delle partizioni ext4 esistenti e smontate: deve essere scelta una partizione
-  su un altro disco. Non sono ammessi percorsi di directory.
-  Con HOME esterna vengono create soltanto ESP e ROOT; la partizione esterna
-  non viene formattata. Prima dell'anteprima e della scrittura vengono verificati
-  disco di appartenenza, filesystem, UUID, dimensione e stato della partizione.
-  Dopo la preparazione la HOME scelta è preselezionata per l'installazione.
+  Prosegue con utenti e riepilogo, compresa la conferma dell'eventuale
+  cancellazione dei contenuti EFI dell'installazione precedente dello slot.
+- **Initialize disk for Coexist**: scelta del disco da preparare,
+  dimensionamento degli slot ROOT (default 10 GiB) e anteprima delle
+  partizioni (1 ESP e N slot ROOT).
   Questa operazione è **completamente distruttiva: cancella tutti i dati sul disco
   selezionato**, come evidenziato già nel menu. Richiede la lettura del layout e
   la digitazione del device prima di procedere. Al termine compare **Disk ready**:
   si può scegliere di installare subito la distribuzione live corrente oppure
   uscire (scelta predefinita). L'installazione non parte automaticamente.
 
-Nella scelta della partizione esterna, **Esc** torna a Shared Home Location;
-qui Esc torna al menu Coexist. Dalla scelta del disco nei due percorsi,
-**Esc** torna al menu Coexist. Durante il dimensionamento
-o l'anteprima, Esc annulla prima la preparazione e torna alla scelta del disco.
-Dalla schermata **Disk ready**, Esc esce senza installare o riavviare.
-Per aggiungere la seconda distribuzione e le successive si sceglie direttamente
-il percorso di installazione, senza preparare nuovamente il disco.
+Dalla scelta del disco nei due percorsi, **Esc** torna al menu Coexist.
+Durante il dimensionamento o l'anteprima, Esc annulla la preparazione e torna
+alla scelta del disco. Dalla schermata **Disk ready**, Esc esce senza installare
+o riavviare. Per aggiungere la seconda distribuzione e le successive si sceglie
+direttamente il percorso di installazione, senza inizializzare nuovamente il disco.
 
 Nel percorso di installazione, **↑/↓** o **Tab** selezionano il campo,
-**←/→** scelgono disco, ROOT e HOME; l'**Installation ID** va digitato
+**←/→** scelgono disco e slot ROOT; il **System Name (ID)** va digitato
 (per esempio `debian`). **Invio** passa a Users quando tutte le selezioni
 obbligatorie sono valide. Il modulo mantiene visibili campi ed errori su una
-console 80×24; il dettaglio delle directory HOME/EFI da cancellare compare
+console 80×24; il dettaglio della directory EFI da cancellare compare
 nel riepilogo finale, prima della conferma.
 
 ### Dischi preesistenti e ESP fissa
 
-L'installazione usa esclusivamente una ROOT già esistente sul disco selezionato
-e la sua unica ESP valida (tipo GPT ESP, filesystem FAT). Se la ESP manca o ne
-esistono più di una valide, l'installazione viene bloccata: non viene cercata
-una ESP su altri dischi. Il vincolo viene verificato nel preflight e ripetuto
-prima della formattazione. Cambiare disco aggiorna la ESP fissa e azzera la
-scelta di ROOT e HOME.
+L'installazione usa esclusivamente uno slot ROOT già esistente sul disco
+selezionato e la sua unica ESP valida (tipo GPT ESP, filesystem FAT). Se la ESP
+manca o ne esistono più di una valide, l'installazione viene bloccata: non viene
+cercata una ESP su altri dischi. Il vincolo viene verificato nel preflight e
+ripetuto prima della formattazione. Cambiare disco aggiorna la ESP fissa e azzera
+la scelta dello slot ROOT.
 
 Non è necessario che il disco sia stato preparato da Krill o che le partizioni
-abbiano label ROOT1, ROOT2, ecc. La HOME condivisa deve essere una partizione
-ext4 preesistente e può stare anche su un altro disco. ESP e HOME non vengono
-formattate; resta applicata la pulizia dei contenuti dell'identificativo
-selezionato descritta sotto. Le label delle altre partizioni non vengono cambiate.
+abbiano label generica `root1`, `root2`, ecc. La ESP non viene formattata;
+resta applicata la pulizia dei contenuti EFI dell'identificativo selezionato
+descritta sotto. Le label delle altre partizioni non vengono cambiate.
 
 La preparazione distruttiva rimane un percorso separato e facoltativo.
 
@@ -126,8 +116,8 @@ Nella schermata di riepilogo di `krill` viene segnalato chiaramente quali risors
 ### Revisione della procedura — 13 settembre 2026
 
 Il percorso esaminato comprende TUI, inizializzazione, preflight, formattazione,
-montaggio, estrazione squashfs, rimozione dell'utente live, HOME condivisa,
-fstab, creazione utenti, script di installazione e smontaggio.
+montaggio, estrazione squashfs, rimozione dell'utente live, fstab, creazione utenti,
+script di installazione e smontaggio.
 
 | Fase | Comportamento e osservazioni |
 | --- | --- |
@@ -144,29 +134,26 @@ fstab, creazione utenti, script di installazione e smontaggio.
 ### Miglioramenti successivi, in ordine di priorità
 
 1. **Identità persistente degli slot.** Le label sono descrittive: l'inventario
-   aggiunto intercetta collisioni visibili, ma non dimostra la proprietà delle
-   directory HOME/EFI. Servirebbe un registro che associ ID, UUID ROOT, UUID HOME
+   aggiunto intercetta collisioni visibili, ma non dimostra la proprietà della
+   directory EFI. Servirebbe un registro che associ ID, UUID ROOT
    e PARTUUID ESP. La pulizia NVRAM è già circoscritta al PARTUUID della ESP
-   utilizzata; il registro servirebbe a dimostrare la proprietà delle directory.
+   utilizzata; il registro servirebbe a dimostrare la proprietà della directory.
    Un vecchio sistema senza label o su un disco scollegato non è identificabile
    con il controllo attuale.
-2. **Politica HOME esplicita.** Offrire conservazione o ricreazione, mostrando
-   separatamente l'effetto della sostituzione dello slot. La conservazione
-   richiede anche verifica UID/GID e proprietà della directory utente.
-3. **Preflight completo prima di wipefs.** Verificare sorgente squashfs,
+2. **Preflight completo prima di wipefs.** Verificare sorgente squashfs,
    strumenti, configurazioni shellprocess e spazio necessario all'estrazione.
    Oggi alcuni errori, come una sorgente mancante, emergono soltanto dopo la
    formattazione. Rafforzare inoltre il controllo dei dispositivi con holder
    attivi: il controllo ordinario usa i mountpoint, mentre l'inizializzatore
    controlla anche gli holder in sysfs.
-4. **Identità coerente nell'interfaccia.** La modifica dell'Installation ID
+3. **Identità coerente nell'interfaccia.** La modifica dell'Installation ID
    aggiorna l'hostname, ma la pagina Users permette poi di cambiarlo separatamente.
    L'eventuale uso dello stesso ID anche come `menuentry --id` di GRUB richiede
    una gestione esplicita nei template.
-5. **Bootloader delle altre famiglie.** Adeguare Fedora e Alpine prima di
+4. **Bootloader delle altre famiglie.** Adeguare Fedora e Alpine prima di
    rimuovere il blocco; provare anche persistenza dopo aggiornamenti GRUB e
    gestione degli errori NVRAM, mantenendo la ESP fissa sul disco selezionato.
-6. **Ripresa e conclusione affidabili.** Valutare rinomina/backup delle vecchie
+5. **Ripresa e conclusione affidabili.** Valutare rinomina/backup delle vecchie
    directory fino al completamento; riportare gli smontaggi falliti e impedire
    che un errore finale venga presentato come successo.
 
@@ -175,7 +162,7 @@ fstab, creazione utenti, script di installazione e smontaggio.
 I test Go di Krill e setup coprono simulazioni dei dispositivi, conferme TUI,
 layout, collisioni su dischi distinti, errori di pulizia, fstab ext4/Btrfs e
 template GRUB Debian/Arch/Manjaro. I test del vincolo sul disco verificano
-ESP fissa, HOME esterna, blocco di ROOT/ESP esterne prima della formattazione,
+ESP fissa, blocco di ROOT/ESP esterne prima della formattazione,
 ESP assenti o ambigue e conservazione delle voci NVRAM di altre ESP.
 I test del modulo Arch/Manjaro eseguono
 il selettore del bootloader e il template GRUB in directory temporanee, con
@@ -188,7 +175,7 @@ Il progetto dispone già di **The Furnace**, con compilazione e packaging
 automatici e voli di remastering su VM Proxmox gestite tramite snapshot, attraverso
 Alpine, Arch, Debian e Fedora. A questa infrastruttura va affiancata una prova
 specifica Coexist: prima installazione Debian, seconda Arch, reinstallazione con
-ID uguale e diverso, ROOT ed ESP sul disco scelto con HOME anche esterna,
+ID uguale e diverso, ROOT ed ESP sul disco scelto,
 blocco di ROOT/ESP esterne o ESP ambigue, riavvio di ogni slot e
 confronto dei dati degli slot preservati e di `EFI/BOOT`. Provare inoltre ESP
 piena, NVRAM indisponibile e interruzione durante copia/bootloader. In questa

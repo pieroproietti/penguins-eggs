@@ -105,7 +105,7 @@ func enrichIdentityWithBlkid(devices []identityDevice) []identityDevice {
 }
 
 // Inspect every attached device: selecting a different disk must not allow an
-// installation to purge the HOME or EFI identity of another occupied slot.
+// installation to purge the EFI identity of another occupied slot.
 func inspectCoexistIdentities(plan *Plan) error {
 	devices, err := readIdentityDevices()
 	if err != nil {

@@ -54,7 +54,7 @@ func livePartitionChecks() partitionChecks {
 }
 
 // Inspect only the selected disk. ROOT and the unique valid ESP must be direct
-// partitions of it; shared HOME is deliberately allowed on another disk.
+// partitions of it.
 func inspectCoexistDisk(device, root, esp string) error {
 	device, err := filepath.EvalSymlinks(device)
 	if err != nil {
