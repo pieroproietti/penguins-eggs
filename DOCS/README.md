@@ -18,6 +18,7 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 - [Command Reference](./2-user-manual/2-commands.md) — Complete reference for all `eggs` commands, flags, and usage examples.
 - [Chromebook Support](./2-user-manual/3-chromebook.md) — Chromebook hardware preparation (eMMC, ChromeOS EC) via initramfs modules.
 - [Proxmox VE on Phone](./2-user-manual/4-proxmox-ve-on-phone.md) — Guide to installing and running Proxmox VE on smartphones / ARM hardware.
+- [Coexist Multi-Boot Guide](./2-user-manual/5-coexist.md) — Step-by-step visual tutorial for installing multiple independent Linux distributions on a single UEFI drive with Krill Coexist.
 
 ---
 

@@ -2,6 +2,8 @@
 
 La modalità `coexist` permette la coesistenza pulita di più distribuzioni Linux su uno o più dischi dedicati, gestite nativamente con UEFI e GRUB.
 
+> **Guida pratica:** Per il tutorial passo-passo illustrato con screenshot reali (Arch, Devuan, Manjaro, Ubuntu, Debian), consultare la [Guida Pratica Multi-Boot Coexist](./2-user-manual/5-coexist.md).
+
 ### Architettura e separazione delle responsabilità
 
 1. **Amministrazione e preparazione del disco (`eggs coexist`)**:
