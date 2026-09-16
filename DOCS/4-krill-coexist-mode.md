@@ -91,7 +91,7 @@ Quando si reinstalla o si sostituisce una distribuzione su uno slot già occupat
   - le voci di avvio associate nella NVRAM UEFI tramite `efibootmgr`, relative alla ESP utilizzata.
 - La partizione slot viene formattata ex novo (tabula rasa dello slot), preservando la ESP e gli altri slot.
 
-Nella schermata di riepilogo di `krill` viene segnalato chiaramente quali risorse della precedente installazione verranno rimosse (`PURGE PREVIOUS`).
+Nella schermata di riepilogo di `krill` vengono visualizzati la directory EFI di destinazione (`EFI/<System_Name>`) e l'avviso di formattazione della sola partizione slot selezionata.
 
 ### Revisione della procedura — 13 settembre 2026
 

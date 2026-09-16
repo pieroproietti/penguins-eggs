@@ -66,10 +66,13 @@ func TestCoexistDiskSelections(t *testing.T) {
 	if m.systemID != "debian-sid" {
 		t.Fatalf("namespace: %q", m.systemID)
 	}
-	view := m.coexistResources()
-	for _, text := range []string{"FORMAT:", "Slot (ROOT): /dev/test5", "PRESERVE (no formatting):", "ESP: /dev/test1", "System Name (ID): debian-sid", "New label: debian-sid"} {
+	m.cfg = &InstallerConfig{}
+	m.userInputs = make([]textinput.Model, 5)
+	m.locData = TimezoneData{Regions: []string{"Europe"}, Zones: map[string][]string{"Europe": {"Rome"}}}
+	view := m.viewSummary()
+	for _, text := range []string{"EFI: EFI/debian-sid", "WARNING: PARTITION /dev/test5 WILL BE FORMATTED! OTHER PARTITIONS PRESERVED."} {
 		if !strings.Contains(view, text) {
-			t.Fatalf("missing %q in resources", text)
+			t.Fatalf("missing %q in summary: %s", text, view)
 		}
 	}
 }
@@ -94,35 +97,25 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 		}
 	}
 	m.systemID = "arch-colibri-4"
-	resources := m.coexistResources()
-	for _, text := range []string{"COEXIST", "System Name (ID): arch-colibri-4", "DELETE CONTENTS if present / CREATE if absent:", "EFI/arch-colibri-4", "Slot (ROOT): /dev/sda5 [arch-colibri-4]"} {
-		if !strings.Contains(resources, text) {
-			t.Fatalf("summary missing %q: %s", text, resources)
-		}
-	}
-
-	// When replacing with a different namespace, purge notice must be shown and PreviousID populated
-	m.systemID = "debian"
 	m.cfg = &InstallerConfig{}
 	m.userInputs = make([]textinput.Model, 5)
 	m.locData = TimezoneData{Regions: []string{"Europe"}, Zones: map[string][]string{"Europe": {"Rome"}}}
-	resources = m.coexistResources()
-	for _, text := range []string{"PURGE PREVIOUS (arch-colibri-4):", "EFI/arch-colibri-4"} {
-		if !strings.Contains(resources, text) {
-			t.Fatalf("summary missing purge notice %q: %s", text, resources)
+	view = m.viewSummary()
+	for _, text := range []string{"EFI: EFI/arch-colibri-4", "WARNING: PARTITION /dev/sda5 WILL BE FORMATTED! OTHER PARTITIONS PRESERVED."} {
+		if !strings.Contains(view, text) {
+			t.Fatalf("summary missing %q: %s", text, view)
 		}
 	}
+
+	// When replacing with a different namespace, PreviousID must be populated
+	m.systemID = "debian"
 	plan := m.buildPlan()
 	if plan.PreviousID != "arch-colibri-4" {
 		t.Fatalf("buildPlan() PreviousID = %q, want arch-colibri-4", plan.PreviousID)
 	}
 
-	// Generic slot labels like root2 should not trigger previous purge
+	// Generic slot labels like root2 should not populate PreviousID
 	m.candidateParts[0].Label = "root2"
-	resources = m.coexistResources()
-	if strings.Contains(resources, "PURGE PREVIOUS") {
-		t.Fatalf("unexpected purge notice for generic slot label: %s", resources)
-	}
 	plan = m.buildPlan()
 	if plan.PreviousID != "" {
 		t.Fatalf("buildPlan() PreviousID = %q, want empty for generic label", plan.PreviousID)

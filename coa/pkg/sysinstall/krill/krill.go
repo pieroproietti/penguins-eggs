@@ -1424,7 +1424,6 @@ func (m model) viewSummary() string {
 
 	if m.isCoexist() {
 		yesOptText = "  [ YES, format selected root and install Coexist ]"
-		warnBox = m.coexistResources()
 	}
 
 	yesOpt := dimText.Render(yesOptText)
@@ -1437,7 +1436,13 @@ func (m model) viewSummary() string {
 
 	optsRow := fmt.Sprintf("%s    %s", noOpt, yesOpt)
 
-	mainContent := lipgloss.JoinVertical(lipgloss.Left, row1, row2, row3, row4, row5, row6, rowMode, row7, row8, "", warnBox, "", optsRow)
+	summaryRows := []string{row1, row2, row3, row4, row5, row6, rowMode}
+	if m.isCoexist() {
+		summaryRows = append(summaryRows, fmt.Sprintf("EFI: %s", greenText.Render("EFI/"+m.systemID)))
+	}
+	summaryRows = append(summaryRows, row7, row8)
+
+	mainContent := lipgloss.JoinVertical(lipgloss.Left, append(summaryRows, "", warnBox, "", optsRow)...)
 	return lipgloss.JoinVertical(lipgloss.Left, stepsView, "", mainContent)
 }
 
@@ -1669,34 +1674,3 @@ func RunWithSlot(fstype string, coexist bool, targetSlot string) (bool, error) {
 	return installed, nil
 }
 
-// coexistResources separates formatting from preservation in both disk and summary views.
-func (m model) coexistResources() string {
-	root, esp := "SELECT ROOT", "SELECT ESP"
-	oldLabel := ""
-	if m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
-		part := m.candidateParts[m.partIdx]
-		root = part.Path
-		if part.Label != "" {
-			root += " [" + part.Label + "]"
-			if !engine.IsGenericRootLabel(part.Label) && engine.ValidateInstallationID(part.Label) == nil {
-				oldLabel = part.Label
-			}
-		}
-	}
-	if m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
-		esp = m.efiParts[m.efiIdx].Path
-	}
-	preserve := "PRESERVE (no formatting):\n  ESP: " + esp + "\n  All other ROOT slots"
-	cleanup := "DELETE CONTENTS if present / CREATE if absent:\n  EFI/" + m.systemID + "\n  Matching UEFI NVRAM entries"
-	rows := []string{
-		cyanText.Render("COEXIST\n  System Name (ID): " + m.systemID),
-		redBgWhiteText.Render("FORMAT:\n  Slot (ROOT): " + root + "\n  New label: " + m.systemID),
-		greenText.Render(preserve),
-		redBgWhiteText.Render(cleanup),
-	}
-	if oldLabel != "" && oldLabel != m.systemID {
-		previous := "PURGE PREVIOUS (" + oldLabel + "):\n  EFI: EFI/" + oldLabel + "\n  Matching UEFI NVRAM entries"
-		rows = append(rows, redBgWhiteText.Render(previous))
-	}
-	return lipgloss.JoinVertical(lipgloss.Left, rows...)
-}
