@@ -37,6 +37,7 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 ### ⚙️ Development Workflow & CI (`3-developer-manual/workflow/`)
 - [CI Architecture](./3-developer-manual/workflow/ci.md) — The three CI phases: Hammers (packaging), Furnace (remastering), and Incubator (installation).
 - [Proxmox Integration](./3-developer-manual/workflow/proxmox.md) — VirtFS configuration, Guest Agent, serial console, and export.
+- [Il viaggio: originale → clone → originale](./3-developer-manual/workflow/viaggio-coexist-2026-09-16.md) — Resoconto del 16 settembre 2026: remaster clone, correzione Krill, avvio Coexist e ripresa della sessione di sviluppo.
 
 ---
 
@@ -45,4 +46,3 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 - **Wardrobe Ateliers** — Configuration repositories containing costumes and accessories:
   - Main Atelier: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (by Piero Proietti)
   - Quirinux Atelier: [charliemartinez/penguins-wardrobe](https://github.com/charliemartinez/penguins-wardrobe) (by Charlie Martinez)
-

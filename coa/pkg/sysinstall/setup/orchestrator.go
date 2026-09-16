@@ -16,19 +16,14 @@ func BuildInstaller(oaVersion string) error {
 		return err
 	}
 
-	// 1.1. Inizializza il workspace
-	if err := initWorkspace(); err != nil {
+	// Resolve the source once for both identity and unpackfs configuration.
+	source := findSquashfsPath()
+	sibling, err := readSourceSibling(source)
+	if err != nil {
 		return err
 	}
-
-	// 1.2. Se il sistema è stato remasterizzato in clone/crypted, gli
-	// utenti sono già clonati da /home: togliamo "users" dalla sequence
-	// condivisa prima che Calamares o Krill la leggano.
-	if mode := readSibling().Mode; mode == "clone" || mode == "crypted" {
-		utils.LogNormal("[INSTALLER] Mode '%s': users already cloned, removing 'users' step from settings.conf.", mode)
-		if err := stripUsersModule(filepath.Join(InstallerDRoot, "settings.conf")); err != nil {
-			return err
-		}
+	if err := initWorkspace(); err != nil {
+		return err
 	}
 
 	utils.LogNormal("Generating modules and payload...")
@@ -48,10 +43,10 @@ func BuildInstaller(oaVersion string) error {
 		mountConf,
 		userConf,
 		removeuserConf,
-		unpackfsConf,
 		shellprocessOaChrootRunner,
 		machineIdConf,
 		calamaresModulesOverlay,
+		func() error { return unpackfsConf(source) },
 	}
 
 	for _, task := range tasks {
@@ -61,5 +56,5 @@ func BuildInstaller(oaVersion string) error {
 		}
 	}
 
-	return nil
+	return configureSourceUsers(filepath.Join(InstallerDRoot, "settings.conf"), sibling)
 }

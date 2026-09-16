@@ -934,10 +934,29 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 			// Non possiamo proseguire se non c'è una partizione valida da sostituire
 			return m, nil
 		}
-		m.state = StateUsers
-		return m, m.focusUser(fieldFullname)
+		return m.advanceToUsersOrSummary()
 	}
 	return m, nil
+}
+
+// Follow the generated module sequence, including clone account preservation.
+func (m model) createsUsers() bool {
+	for _, module := range m.cfg.Settings.Exec() {
+		if module == "users" {
+			return true
+		}
+	}
+	return false
+}
+
+func (m model) advanceToUsersOrSummary() (tea.Model, tea.Cmd) {
+	if !m.createsUsers() {
+		m.state = StateSummary
+		m.confirmChoice = 0
+		return m, nil
+	}
+	m.state = StateUsers
+	return m, m.focusUser(fieldFullname)
 }
 
 // updateUsers gestisce i campi di testo e il checkbox autologin.
@@ -975,7 +994,7 @@ func (m model) updateSummary(key string) (tea.Model, tea.Cmd) {
 		return m, nil
 	case "enter":
 		if m.confirmChoice == 1 {
-			if m.userInputs[fieldLogin].Value() == "" || m.userInputs[fieldUserPass].Value() == "" {
+			if m.createsUsers() && (m.userInputs[fieldLogin].Value() == "" || m.userInputs[fieldUserPass].Value() == "") {
 				m.state = StateUsers
 				return m, m.focusUser(fieldUserPass)
 			}
@@ -1375,6 +1394,9 @@ func (m model) viewSummary() string {
 		greenText.Render(maskPassword(m.userInputs[fieldUserPass].Value())),
 		greenText.Render(maskPassword(m.userInputs[fieldRootPass].Value())),
 		greenText.Render(hostname))
+	if !m.createsUsers() {
+		row2 = "Preserve cloned users, passwords, home directories and hostname"
+	}
 	row3 := fmt.Sprintf("Set timezone to %s/%s", greenText.Render(m.selectedRegion()), greenText.Render(m.selectedZone()))
 	row4 := fmt.Sprintf("The system language will be set to %s", greenText.Render(languages[m.langIdx]))
 	row5 := fmt.Sprintf("Numbers and date locale will be set to %s", greenText.Render(languages[m.langIdx]))

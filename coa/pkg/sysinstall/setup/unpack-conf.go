@@ -12,10 +12,10 @@ type UnpackfsConfig struct {
 }
 
 // PrepareUnpackfsConf genera il modulo unpackfs dinamico
-func unpackfsConf() error {
+func unpackfsConf(source string) error {
 	config := UnpackfsConfig{
 		Date:       time.Now().Format("2006-01-02"),
-		SquashPath: findSquashfsPath(),
+		SquashPath: source,
 	}
 
 	targetPath := filepath.Join(modulesDir, "unpackfs.conf")

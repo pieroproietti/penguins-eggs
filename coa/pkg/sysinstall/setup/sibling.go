@@ -1,56 +1,66 @@
 package setup
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
+	"coa/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
 
-// siblingPath è scritto dal remaster (bootstrap-liveroot.sh) e vive fuori
-// da InstallerDRoot, che BuildInstaller rigenera da zero ad ogni avvio
-// dell'installer: è l'unico stato che sopravvive a quel wipe.
-const siblingPath = "/etc/penguins-eggs.d/sibling.yaml"
+const siblingPath = "etc/penguins-eggs.d/sibling.yaml"
 
-// Sibling rispecchia sibling.yaml. Per ora registra solo il mode di
-// remaster (standard/clone/crypted); in futuro potrà crescere.
 type Sibling struct {
 	Mode string `yaml:"mode"`
 }
 
-// readSibling legge il marker; "standard" se assente (es. sistema non
-// remasterizzato, ambiente di sviluppo).
-func readSibling() Sibling {
-	data, err := os.ReadFile(siblingPath)
+// Read the marker from the exact image selected for installation. Never use
+// the running host's identity: an installed standard host can deploy a clone.
+// Fail before starting the installer if the image or marker cannot be read.
+func readSourceSibling(source string) (Sibling, error) {
+	quote := func(s string) string { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
+	data, err := utils.ExecCapture("unsquashfs -cat " + quote(source) + " " + quote(siblingPath))
 	if err != nil {
-		return Sibling{Mode: "standard"}
+		return Sibling{}, fmt.Errorf("read remaster mode from %s: %w", source, err)
 	}
-
-	var s Sibling
-	if err := yaml.Unmarshal(data, &s); err != nil || s.Mode == "" {
-		return Sibling{Mode: "standard"}
-	}
-	return s
+	return parseSibling([]byte(data))
 }
 
-// stripUsersModule rimuove lo step "users" dalla sequence di settings.conf:
-// in mode clone/crypted gli utenti arrivano già clonati da /home, e
-// Calamares/Krill (che condividono la stessa sequence) non devono più
-// chiederli. Modifica testuale per non perdere i commenti del file.
-func stripUsersModule(path string) error {
+func parseSibling(data []byte) (Sibling, error) {
+	var s Sibling
+	if err := yaml.Unmarshal(data, &s); err != nil {
+		return s, fmt.Errorf("invalid source sibling marker: %w", err)
+	}
+	switch s.Mode {
+	case "standard", "clone", "crypted":
+		return s, nil
+	default:
+		return s, fmt.Errorf("unsupported source remaster mode %q", s.Mode)
+	}
+}
+
+// Preserve cloned accounts, passwords, home directories and display-manager
+// settings in both Krill and Calamares. Apply after all module overlays.
+func configureSourceUsers(path string, sibling Sibling) error {
+	if sibling.Mode == "standard" {
+		return nil
+	}
+	if sibling.Mode != "clone" && sibling.Mode != "crypted" {
+		return fmt.Errorf("unsupported source remaster mode %q", sibling.Mode)
+	}
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
-
 	lines := strings.Split(string(data), "\n")
 	filtered := make([]string, 0, len(lines))
 	for _, line := range lines {
-		if strings.TrimSpace(line) == "- users" {
+		switch strings.TrimSpace(line) {
+		case "- users", "- removeuser", "- displaymanager":
 			continue
 		}
 		filtered = append(filtered, line)
 	}
-
 	return os.WriteFile(path, []byte(strings.Join(filtered, "\n")), 0644)
 }
