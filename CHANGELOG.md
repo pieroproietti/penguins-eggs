@@ -2,6 +2,23 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.16 - 2026-09-16
+This release brings full end-to-end support for installing system clones (`--clone`) into **Coexist** slots, eliminates machine-id duplication across virtual machines / hypervisors, and refines the Pure Slots user documentation with comprehensive visual diagrams.
+
+### 👥 Krill: Clone Mode Support for Coexist
+* **Dynamic Sibling Mode Discovery**: Krill now inspects `sibling.yaml` directly from the target squashfs image being installed instead of assuming the running host's mode.
+* **Preservation of Cloned Users & Display Manager**: When installing a clone image, Krill automatically bypasses the `users`, `removeuser`, and `displaymanager` modules. Cloned user accounts, passwords, home directories, and desktop session settings are completely preserved without prompting or risking unintended deletions.
+* **Strict Source Validation**: Rejects unreadable or corrupted squashfs markers upfront before launching the installer, preventing silent fallback to standard mode.
+
+### 🆔 Unique Machine-ID & Hypervisor Collision Prevention
+* **Cryptographic 128-bit Machine-ID**: Krill explicitly generates a random 128-bit hexadecimal machine-id at install time rather than leaving an empty file.
+* **Hypervisor Duplication Fix**: Prevents systemd from falling back to the hypervisor's DMI `product_uuid` under KVM/Proxmox, ensuring Coexist clones residing on the same virtual machine receive distinct machine IDs.
+* **D-Bus Integration & Entropy Isolation**: Automatically provisions the `/var/lib/dbus/machine-id` symlink and excludes `/var/lib/systemd/random-seed` from squashfs builds to ensure clean cryptographic seeding.
+
+### 📚 Documentation & Developer Workflows
+* **Pure Slots Visual Guide**: Added illustrated diagrams detailing disk layouts and partition schemes to the Coexist user manual (`DOCS/2-user-manual/5-coexist.md`).
+* **Real-World Journey Workflow**: Documented the complete end-to-end host-to-clone development and verification flight in `DOCS/3-developer-manual/workflow/viaggio-coexist-2026-09-16.md`.
+
 ## Release Notes: penguins-eggs v26.9.15 - 2026-09-15
 This release radically simplifies Krill's **Coexist** multi-boot architecture based on multi-disk real-world testing. The complex `SHARED_HOMES` and bind-mount architecture has been completely replaced by a **"Pure Slots"** design, accompanied by the new dedicated **`eggs coexist`** CLI command suite and dynamic Coexist detection in Krill.
 
