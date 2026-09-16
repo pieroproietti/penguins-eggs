@@ -24,6 +24,9 @@ var krillSubCmd = &cobra.Command{
 		if !utils.IsLive() && !sysinstallCoexist && !hasCoexist {
 			utils.Fatal("sysinstall krill can only be run on a live system, unless a Coexist disk is present.")
 		}
+		if !utils.IsLive() && setup.FindSquashfsPath() == setup.ErrorSquashfsNotFound {
+			utils.Fatal("No live squashfs image found (%s). On an installed system, run 'sudo eggs remaster' first to create the ISO image to install.", setup.ErrorSquashfsNotFound)
+		}
 		if krillFstype != "" && krillFstype != "ext4" && krillFstype != "btrfs" {
 			utils.Fatal("Invalid fstype: %s. Supported values: ext4, btrfs", krillFstype)
 		}

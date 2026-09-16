@@ -22,8 +22,10 @@ func unpackfsConf(source string) error {
 	return renderAndSaveEmbedded("unpackfs.conf.tmpl", targetPath, config, 0644)
 }
 
-// findSquashfsPath cerca il filesystem compresso (Logica intatta dal tuo run.go)
-func findSquashfsPath() string {
+const ErrorSquashfsNotFound = "/ERROR_SQUASHFS_NOT_FOUND/filesystem.squashfs"
+
+// FindSquashfsPath cerca il filesystem compresso
+func FindSquashfsPath() string {
 	possiblePaths := []string{
 		"/run/miso/bootmnt/manjaro/x86_64/livefs.sfs",
 		"/run/miso/bootmnt/manjaro/x86_64/rootfs.sfs",
@@ -41,8 +43,16 @@ func findSquashfsPath() string {
 			return p
 		}
 	}
-	if matches, err := filepath.Glob("/home/eggs/**/filesystem.squashfs"); err == nil && len(matches) > 0 {
-		return matches[0]
+	var found string
+	filepath.WalkDir("/home/eggs", func(path string, d os.DirEntry, err error) error {
+		if err == nil && !d.IsDir() && filepath.Base(path) == "filesystem.squashfs" {
+			found = path
+			return filepath.SkipAll
+		}
+		return nil
+	})
+	if found != "" {
+		return found
 	}
-	return "/ERRORE_SQUASHFS_NON_TROVATO/filesystem.squashfs"
+	return ErrorSquashfsNotFound
 }

@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"fmt"
 	"os/exec"
 	"path/filepath"
 
@@ -10,14 +11,21 @@ import (
 
 // buildInstaller coordina la costruzione della directory di Calamares
 func BuildInstaller(oaVersion string) error {
+	// Resolve the source once for both identity and unpackfs configuration.
+	source := FindSquashfsPath()
+	if source == ErrorSquashfsNotFound {
+		if !utils.IsLive() {
+			return fmt.Errorf("live squashfs image not found (%s). On an installed system, run 'sudo eggs remaster' first to create the ISO image to install", source)
+		}
+		return fmt.Errorf("live squashfs image not found: %s", source)
+	}
+
 	// 1. Carica il profilo dal planner (brain)
 	profile, err := parser.DetectAndLoad(false)
 	if err != nil {
 		return err
 	}
 
-	// Resolve the source once for both identity and unpackfs configuration.
-	source := findSquashfsPath()
 	sibling, err := readSourceSibling(source)
 	if err != nil {
 		return err

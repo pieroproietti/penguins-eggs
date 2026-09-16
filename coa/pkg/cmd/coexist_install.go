@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"coa/pkg/sysinstall/krill/engine"
+	"coa/pkg/sysinstall/setup"
 	"coa/pkg/utils"
 
 	"github.com/spf13/cobra"
@@ -29,6 +30,10 @@ Examples:
 		coexistDisks := engine.DetectCoexistDisks()
 		if len(coexistDisks) == 0 {
 			utils.Fatal("No Coexist disks detected. Initialize one first with: sudo eggs coexist init <device>")
+		}
+
+		if !utils.IsLive() && setup.FindSquashfsPath() == setup.ErrorSquashfsNotFound {
+			utils.Fatal("No live squashfs image found (%s). On an installed system, run 'sudo eggs remaster' first to create the ISO image to install.", setup.ErrorSquashfsNotFound)
 		}
 
 		targetSlot := ""
