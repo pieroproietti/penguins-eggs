@@ -14,6 +14,17 @@ dracut -f --regenerate-all
 # 1. SELinux autorelabel (Without this, Fedora dies post-installation)
 echo "-F" > /.autorelabel
 
+# Coexist mode validation
+if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+    if [ ! -d /sys/firmware/efi ]; then
+        echo "[FATAL ERROR] Coexist requires UEFI." >&2
+        exit 1
+    fi
+    EFI_ID="${KRILL_EFI_BOOTLOADER_ID:?Missing Coexist EFI bootloader ID}"
+else
+    EFI_ID="{{ .DistroID }}"
+fi
+
 # --- KAMIKAZE INJECTION (Phase 1) ---
 # Add enforcing=0 to allow a painless first boot and speed up technical reboots
 if ! grep -q "enforcing=0" /etc/default/grub; then
@@ -70,34 +81,42 @@ if [ -d /sys/firmware/efi ]; then
               ;;
       esac
 
-      # 3. THE FEDORA TRICK: Recover shim hidden under the mount point
-      if [ ! -f "/boot/efi/EFI/{{ .DistroID }}/$SHIM_BIN" ] && [ ! -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
-          echo "-> Recovering original Fedora EFI files..."
-          umount /boot/efi 2>/dev/null
-          cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
-          mount /boot/efi
-          if [ -d /tmp/efi-backup ]; then
-              mkdir -p /boot/efi/EFI
-              cp -r /tmp/efi-backup/* /boot/efi/EFI/ 2>/dev/null || true
+      if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+          # Install GRUB in isolated namespace without touching shared ESP fallback
+          grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="$EFI_ID" --recheck || exit 1
+          mkdir -p "/boot/efi/EFI/$EFI_ID"
+          grub2-mkconfig -o /boot/grub2/grub.cfg
+          grub2-mkconfig -o "/boot/efi/EFI/$EFI_ID/grub.cfg"
+      else
+          # 3. THE FEDORA TRICK: Recover shim hidden under the mount point
+          if [ ! -f "/boot/efi/EFI/$EFI_ID/$SHIM_BIN" ] && [ ! -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ]; then
+              echo "-> Recovering original Fedora EFI files..."
+              umount /boot/efi 2>/dev/null || true
+              cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
+              mount /boot/efi 2>/dev/null || true
+              if [ -d /tmp/efi-backup ]; then
+                  mkdir -p /boot/efi/EFI
+                  cp -r /tmp/efi-backup/* /boot/efi/EFI/ 2>/dev/null || true
+              fi
           fi
-      fi
 
-      # 4. Install GRUB
-      grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
-      mkdir -p "/boot/efi/EFI/{{ .DistroID }}"
-      
-      # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
-      mkdir -p /boot/efi/EFI/BOOT
-      if [ -f "/boot/efi/EFI/{{ .DistroID }}/$SHIM_BIN" ]; then
-          cp "/boot/efi/EFI/{{ .DistroID }}/$SHIM_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
-          [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] && cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$GRUB_BIN"
-      elif [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
-          cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
-      fi
+          # 4. Install GRUB
+          grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="$EFI_ID" --recheck --force
+          mkdir -p "/boot/efi/EFI/$EFI_ID"
+          
+          # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
+          mkdir -p /boot/efi/EFI/BOOT
+          if [ -f "/boot/efi/EFI/$EFI_ID/$SHIM_BIN" ]; then
+              cp "/boot/efi/EFI/$EFI_ID/$SHIM_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+              [ -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ] && cp "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" "/boot/efi/EFI/BOOT/$GRUB_BIN"
+          elif [ -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ]; then
+              cp "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+          fi
 
-      # 6. Generate configurations
-      grub2-mkconfig -o /boot/grub2/grub.cfg
-      grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
+          # 6. Generate configurations
+          grub2-mkconfig -o /boot/grub2/grub.cfg
+          grub2-mkconfig -o "/boot/efi/EFI/$EFI_ID/grub.cfg"
+      fi
 else
       # BIOS/Legacy
       TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
@@ -130,8 +149,9 @@ echo "[$(date)] /etc/default/grub updated. Executing grub2-mkconfig..."
 
 # 4. Safely update the bootloader (Force grub2-mkconfig since BLS is disabled)
 grub2-mkconfig -o /boot/grub2/grub.cfg
-if [ -d "/boot/efi/EFI/{{ .DistroID }}" ]; then
-    grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
+EFI_ID="@@EFI_ID@@"
+if [ -n "$EFI_ID" ] && [ -d "/boot/efi/EFI/$EFI_ID" ]; then
+    grub2-mkconfig -o "/boot/efi/EFI/$EFI_ID/grub.cfg"
 fi
 
 echo "[$(date)] GRUB successfully regenerated. Disabling service..."
@@ -147,6 +167,7 @@ sleep 2
 systemctl reboot
 EOF
 
+sed -i "s|@@EFI_ID@@|$EFI_ID|g" /usr/local/bin/krill-selinux-cleanup.sh
 chmod +x /usr/local/bin/krill-selinux-cleanup.sh
 
 # B. Create the systemd service

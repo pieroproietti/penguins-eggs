@@ -72,7 +72,7 @@ func TestEFIValidationScope(t *testing.T) {
 			t.Fatalf("mode %s: %v", mode, err)
 		}
 	}
-	for _, family := range []string{"debian", "archlinux", "manjaro"} {
+	for _, family := range []string{"debian", "archlinux", "manjaro", "fedora"} {
 		t.Run(family, func(t *testing.T) {
 			p, checks := coexistPlan(), safeChecks()
 			checks.family = func() string { return family }
@@ -89,7 +89,7 @@ func TestEFIValidationScope(t *testing.T) {
 }
 
 func TestUnsupportedCoexistFamiliesStopBeforeFormatting(t *testing.T) {
-	for _, family := range []string{"fedora", "alpine", "opensuse", "generic", ""} {
+	for _, family := range []string{"alpine", "opensuse", "generic", ""} {
 		t.Run(family, func(t *testing.T) {
 			p, checks := coexistPlan(), safeChecks()
 			checks.family = func() string { return family }

@@ -108,7 +108,7 @@ script di installazione e smontaggio.
 | Copia | Si formatta soltanto lo slot ROOT selezionato. La ESP è montata in `/boot/efi`. |
 | Utenti e HOME | `/home` risiede nativamente nel filesystem dello slot ROOT. Nessuna complicazione di bind-mount o permessi UID/GID condivisi tra distribuzioni. |
 | Fstab | Generazione standard tramite UUID per la partizione root e per `/boot/efi`. Nessuna voce speciale per `/home`. |
-| Bootloader | Debian, Arch e Manjaro installano GRUB in `EFI/<System_Name>` senza toccare `EFI/BOOT` o gli altri bootloader. |
+| Bootloader | Debian, Arch, Manjaro e Fedora installano GRUB in `EFI/<System_Name>` senza toccare `EFI/BOOT` o gli altri bootloader. |
 | Errori | La pulizia non ignora gli errori restituiti dalle operazioni. La reinstallazione esegue la pulizia di `EFI/<vecchio_id>` e delle voci NVRAM associate. |
 
 ### Miglioramenti successivi, in ordine di priorità
@@ -130,7 +130,7 @@ script di installazione e smontaggio.
    aggiorna l'hostname, ma la pagina Users permette poi di cambiarlo separatamente.
    L'eventuale uso dello stesso ID anche come `menuentry --id` di GRUB richiede
    una gestione esplicita nei template.
-4. **Bootloader delle altre famiglie.** Adeguare Fedora e Alpine prima di
+4. **Bootloader delle altre famiglie.** Adeguare Alpine prima di
    rimuovere il blocco; provare anche persistenza dopo aggiornamenti GRUB e
    gestione degli errori NVRAM, mantenendo la ESP fissa sul disco selezionato.
 5. **Ripresa e conclusione affidabili.** Valutare rinomina/backup delle vecchie
