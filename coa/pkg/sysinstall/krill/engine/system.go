@@ -3,6 +3,8 @@
 package engine
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"os/exec"
@@ -24,17 +26,44 @@ func runUnpackfs(c *ctx) error {
 	return c.run("unsquashfs", "-f", "-no-progress", "-d", c.plan.Target, src)
 }
 
+func generateMachineID() (string, error) {
+	var b [16]byte
+	for {
+		if _, err := rand.Read(b[:]); err != nil {
+			return "", fmt.Errorf("generate machine-id: %w", err)
+		}
+		var zero [16]byte
+		if b != zero {
+			break
+		}
+	}
+	return hex.EncodeToString(b[:]) + "\n", nil
+}
+
 func runMachineid(c *ctx) error {
-	// machine-id vuoto: systemd ne rigenera uno al primo avvio
-	if err := os.WriteFile(c.tpath("etc", "machine-id"), nil, 0644); err != nil {
+	id, err := generateMachineID()
+	if err != nil {
 		return err
 	}
+
+	etcDir := c.tpath("etc")
+	if err := os.MkdirAll(etcDir, 0755); err != nil {
+		return err
+	}
+
+	midPath := filepath.Join(etcDir, "machine-id")
+	if err := os.WriteFile(midPath, []byte(id), 0644); err != nil {
+		return err
+	}
+
 	// dbus deve puntare allo stesso id (symlink, come da machineid.conf)
-	dbusID := c.tpath("var", "lib", "dbus", "machine-id")
-	if exists(c.tpath("var", "lib", "dbus")) {
-		os.Remove(dbusID)
+	dbusDir := c.tpath("var", "lib", "dbus")
+	dbusID := filepath.Join(dbusDir, "machine-id")
+	if exists(dbusDir) {
+		_ = os.Remove(dbusID)
 		if err := os.Symlink("/etc/machine-id", dbusID); err != nil {
 			c.logf("dbus machine-id symlink not created: %v", err)
+			_ = os.WriteFile(dbusID, []byte(id), 0644)
 		}
 	}
 	return nil

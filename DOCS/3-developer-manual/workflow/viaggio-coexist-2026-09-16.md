@@ -242,14 +242,42 @@ Alpine, Arch, Debian e Fedora. Qui abbiamo osservato un percorso concreto
 Debian → clone → Krill Coexist → avvio → ritorno, senza estendere il
 risultato a tutte le distribuzioni o a tutte le modalità.
 
-Restano da approfondire l'identità macchina duplicata, la stima dello
-spazio prima della formattazione e la propagazione degli errori finali
-di NVRAM e smontaggio. La selezione e l'identificazione degli slot devono
-continuare a distinguere nomi temporanei dei device e identità persistenti.
+Restano da approfondire la stima dello spazio prima della formattazione
+e la propagazione degli errori finali di NVRAM e smontaggio. La selezione
+e l'identificazione degli slot devono continuare a distinguere nomi
+temporanei dei device e identità persistenti.
 
 Il risultato del viaggio è stato verificato da entrambe le sponde:
 **abbiamo lavorato nel clone del nostro sistema e siamo tornati
 all'originale con la conversazione del viaggio.**
+
+## Epilogo: il mistero di machine-id svelato
+
+Subito dopo il rientro sull'originale abbiamo approfondito il dettaglio rimasto aperto:
+perché `/etc/machine-id` conteneva lo stesso identificativo su originale e clone?
+
+L'indagine ha rivelato che non si trattava di un difetto di penguins-eggs né di una
+mancata esclusione: nello squashfs il file `/etc/machine-id` era regolarmente assente.
+In Krill il modulo `machineid` scriveva un file vuoto (`0` byte), confidando che
+systemd ne avrebbe rigenerato uno nuovo al primo avvio.
+
+Tuttavia, secondo la specifica di systemd (`man 5 machine-id`):
+> *«If this file is empty or missing, systemd will attempt to use [...] the KVM DMI
+> product_uuid or the devicetree vm,uuid (on KVM systems), the Xen hypervisor uuid,
+> and finally a randomly generated UUID.»*
+
+Essendo la prova eseguita su una macchina virtuale KVM/Proxmox, systemd al primo boot
+del clone non ha generato un UUID casuale: ha rilevato il `product_uuid` DMI dell'hypervisor.
+Avendo clonato e installato sulla **stessa macchina virtuale**, originale e clone
+condividevano lo stesso hardware virtuale e systemd ha riassegnato a entrambi lo stesso ID.
+
+La soluzione è stata implementata direttamente in Krill:
+- Krill ora genera esplicitamente un identificativo crittografico casuale a 128 bit
+  (32 caratteri esadecimali minuscoli) e lo scrive in `/etc/machine-id` al momento dell'installazione;
+- `var/lib/systemd/random-seed` è stato aggiunto all'elenco delle esclusioni per non
+  ereditare il seed di entropia dell'host;
+- systemd al primo boot trova un'identità già valida e non vuota, evitando il fallback
+  sul DMI della VM e garantendo identificativi univoci su qualsiasi hypervisor o slot Coexist.
 
 ## Riferimenti nel repository
 

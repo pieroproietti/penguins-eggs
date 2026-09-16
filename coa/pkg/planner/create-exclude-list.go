@@ -83,6 +83,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		// Identità macchina: devono essere rigenerati al primo boot
 		"etc/machine-id",
 		"var/lib/dbus/machine-id",
+		"var/lib/systemd/random-seed",
 
 		// Rete: rigenerato dal DHCP/systemd-resolved al boot
 		"etc/resolv.conf",
