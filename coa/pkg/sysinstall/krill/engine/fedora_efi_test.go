@@ -30,6 +30,7 @@ func fedoraEFIFixture(t *testing.T, distroID string) (root, script string) {
 		"/sys/firmware/efi", root+"/firmware",
 		"/usr/local/bin", root+"/bin",
 		"/etc/systemd/system", root+"/systemd",
+		"/tmp/efi-backup", root+"/efi-backup",
 	).Replace(rendered.String())
 
 	for _, dir := range []string{"esp", "firmware", "bin", "defaults", "boot/grub2", "systemd"} {
@@ -83,11 +84,7 @@ func TestFedoraEFITemplateModes(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				want := "--target=x86_64-efi --efi-directory=" + esp + " --bootloader-id=" + id + " --recheck"
-				if mode != "coexist" {
-					want += " --force"
-				}
-				want += "\n"
+				want := "--target=x86_64-efi --efi-directory=" + esp + " --bootloader-id=" + id + " --recheck --force\n"
 				if string(args) != want {
 					t.Fatalf("grub2-install args = %q, want %q", string(args), want)
 				}
@@ -121,5 +118,39 @@ func TestFedoraEFITemplateModes(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestFedoraEFICoexistShimRecovery(t *testing.T) {
+	distroID := "fedora"
+	root, script := fedoraEFIFixture(t, distroID)
+	esp := root + "/esp"
+
+	// Simulate that /tmp/efi-backup already has recovered fedora shim and grub files
+	backupDir := root + "/efi-backup/fedora"
+	if err := os.MkdirAll(backupDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	writeEFITestFile(t, backupDir+"/shimx64.efi", "signed-fedora-shim", 0644)
+	writeEFITestFile(t, backupDir+"/mmx64.efi", "signed-fedora-mok", 0644)
+
+	if out, err := runEFIScript(root, "coexist", "fedora2", script); err != nil {
+		t.Fatalf("%v: %s", err, out)
+	}
+
+	after := efiTree(t, esp)
+	if after[esp+"/EFI/fedora2/shimx64.efi"] != "signed-fedora-shim" {
+		t.Fatalf("Coexist mode did not recover shimx64.efi into isolated slot directory: got %q", after[esp+"/EFI/fedora2/shimx64.efi"])
+	}
+	if after[esp+"/EFI/fedora2/mmx64.efi"] != "signed-fedora-mok" {
+		t.Fatalf("Coexist mode did not recover mmx64.efi into isolated slot directory: got %q", after[esp+"/EFI/fedora2/mmx64.efi"])
+	}
+	// Shared fallback EFI/BOOT must remain untouched in coexist mode
+	if after[esp+"/EFI/BOOT/BOOTX64.EFI"] != "" {
+		t.Fatal("Coexist mode improperly modified EFI/BOOT fallback")
+	}
+	// Shared /EFI/fedora must not have been created on the ESP
+	if after[esp+"/EFI/fedora/shimx64.efi"] != "" {
+		t.Fatal("Coexist mode polluted shared /EFI/fedora on ESP")
 	}
 }

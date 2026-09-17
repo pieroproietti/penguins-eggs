@@ -81,29 +81,38 @@ if [ -d /sys/firmware/efi ]; then
               ;;
       esac
 
-      if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
-          # Install GRUB in isolated namespace without touching shared ESP fallback
-          grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="$EFI_ID" --recheck || exit 1
-          mkdir -p "/boot/efi/EFI/$EFI_ID"
-          grub2-mkconfig -o /boot/grub2/grub.cfg
-          grub2-mkconfig -o "/boot/efi/EFI/$EFI_ID/grub.cfg"
-      else
-          # 3. THE FEDORA TRICK: Recover shim hidden under the mount point
-          if [ ! -f "/boot/efi/EFI/$EFI_ID/$SHIM_BIN" ] && [ ! -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ]; then
-              echo "-> Recovering original Fedora EFI files..."
-              umount /boot/efi 2>/dev/null || true
-              cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
-              mount /boot/efi 2>/dev/null || true
-              if [ -d /tmp/efi-backup ]; then
-                  mkdir -p /boot/efi/EFI
+      # 3. THE FEDORA TRICK: Recover shim hidden under the mount point
+      if [ ! -f "/boot/efi/EFI/$EFI_ID/$SHIM_BIN" ] && [ ! -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ]; then
+          echo "-> Recovering original Fedora EFI files..."
+          umount /boot/efi 2>/dev/null || true
+          cp -r /boot/efi/EFI /tmp/efi-backup 2>/dev/null || true
+          mount /boot/efi 2>/dev/null || true
+          if [ -d /tmp/efi-backup ]; then
+              mkdir -p "/boot/efi/EFI/$EFI_ID"
+              if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+                  for src_id in "{{ .DistroID }}" fedora redhat; do
+                      if [ -d "/tmp/efi-backup/$src_id" ]; then
+                          cp -r "/tmp/efi-backup/$src_id/"* "/boot/efi/EFI/$EFI_ID/" 2>/dev/null || true
+                      fi
+                  done
+              else
                   cp -r /tmp/efi-backup/* /boot/efi/EFI/ 2>/dev/null || true
               fi
+              rm -rf /tmp/efi-backup
           fi
+      fi
 
-          # 4. Install GRUB
-          grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="$EFI_ID" --recheck --force
-          mkdir -p "/boot/efi/EFI/$EFI_ID"
-          
+      # 4. Install GRUB
+      if ! grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="$EFI_ID" --recheck --force; then
+          [ -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ] || [ -f "/boot/efi/EFI/$EFI_ID/$SHIM_BIN" ] || { echo "[FATAL ERROR] grub2-install failed and no EFI binary was written" >&2; exit 1; }
+          echo "-> WARNING: grub2-install failed (likely NVRAM-only); EFI binary is present."
+      fi
+      mkdir -p "/boot/efi/EFI/$EFI_ID"
+
+      if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+          # Coexist mode: preserve shared ESP fallback EFI/BOOT
+          :
+      else
           # 5. Absolute UEFI Fallback (Guarantees boot even if NVRAM acts up)
           mkdir -p /boot/efi/EFI/BOOT
           if [ -f "/boot/efi/EFI/$EFI_ID/$SHIM_BIN" ]; then
@@ -112,11 +121,11 @@ if [ -d /sys/firmware/efi ]; then
           elif [ -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ]; then
               cp "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
           fi
-
-          # 6. Generate configurations
-          grub2-mkconfig -o /boot/grub2/grub.cfg
-          grub2-mkconfig -o "/boot/efi/EFI/$EFI_ID/grub.cfg"
       fi
+
+      # 6. Generate configurations
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+      grub2-mkconfig -o "/boot/efi/EFI/$EFI_ID/grub.cfg"
 else
       # BIOS/Legacy
       TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
