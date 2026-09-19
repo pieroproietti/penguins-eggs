@@ -170,4 +170,7 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
      - `utils.ExecQuiet("command")`: For silent executions where output is hidden.
      - `utils.ExecCapture("command")`: To execute and return the output as a `string` for parsing (replaces `bytes.Buffer` boilerplate).
    * **Exception:** You may use raw `os/exec` ONLY if advanced, multi-stage stream manipulation (like chaining `StdinPipe` / `StdoutPipe` across multiple concurrent processes) is strictly required.
-   
+
+7. **CRITICAL: Conditional Log Inspection Protocol for AI Agents & MCP**
+    * **Success / Exit 0:** During standard interactions or whenever `penguins-eggs` commands succeed (`exit 0`), the AI agent MUST only report the positive outcome cleanly without inspecting, dumping, or discussing log files.
+    * **Failure / Exit != 0:** ONLY and EXCLUSIVELY when a command invoked via MCP fails, the agent has the explicit mandate to autonomously extract the last relevant lines of `/var/log/penguins-eggs.log`, diagnose the root cause of the error, and propose a concrete remediation/solution.
