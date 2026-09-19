@@ -1,0 +1,28 @@
+# /etc/penguins-eggs.d/custom.exclude.list
+# Custom exclusions for live ISO generation.
+# Paths listed below are excluded from filesystem.squashfs.
+# Comment the line (prepend '#') to include it on the live system.
+
+# ==========================================
+# DOCKER & CONTAINERD
+# ==========================================
+var/lib/docker/
+var/lib/containerd/
+home/*/.docker/
+
+# ==========================================
+# PODMAN & ALTRI GESTORI CONTAINER
+# (LXC, LXD, systemd-nspawn)
+# ==========================================
+var/lib/containers/
+home/*/.local/share/containers/
+var/lib/lxc/
+var/lib/lxd/
+var/lib/machines/
+
+# ==========================================
+# SNAPD (Pacchetti Snap)
+# ==========================================
+var/lib/snapd/
+var/snap/
+snap/

@@ -1,0 +1,178 @@
+#!/bin/bash
+set -e
+
+ISODIR="$1"
+# Estrae il PRETTY_NAME da /etc/os-release
+PRETTY_NAME=$(grep ^PRETTY_NAME= /etc/os-release | cut -d= -f2 | tr -d '"')
+BOOT_PARAMS="$2"
+BOOT_COMMON="audit=0 splash quiet loglevel=3 systemd.show_status=auto udev.log_priority=3"
+RAM_MODE_ENABLED="${3:-1}"
+
+echo "Generazione menu per: $PRETTY_NAME"
+
+if [ -z "$ISODIR" ] || [ -z "$PRETTY_NAME" ]; then
+    echo "Errore: Parametri ISODIR o PRETTY_NAME mancanti."
+    exit 1
+fi
+
+echo "Generazione menu GRUB e ISOLINUX in corso..."
+
+DEFAULT_BRANDING_DIR="/etc/penguins-eggs.d/branding.default/livecd"
+BRANDING_DIR="/etc/penguins-eggs.d/branding/livecd"
+
+if [ ! -d "$BRANDING_DIR" ]; then
+    BRANDING_DIR="$DEFAULT_BRANDING_DIR"
+fi
+
+# Render the Mustache-compatible templates installed by penguins-tailor.
+# Only the small, documented set of scalar placeholders is expanded here.
+render_branding_template() {
+    local source="$1"
+    local target="$2"
+    local content
+
+    content=$(cat "$source")
+    content=${content//\{\{\{fullname\}\}\}/$PRETTY_NAME}
+    content=${content//\{\{\{kernel\}\}\}/$(uname -r)}
+    content=${content//\{\{\{vmlinuz\}\}\}//live/vmlinuz}
+    content=${content//\{\{\{initrdImg\}\}\}//live/initrd.img}
+    content=${content//\{\{\{kernel_parameters\}\}\}/$BOOT_PARAMS}
+    content=${content//\{\{\{rmModules\}\}\}/}
+    printf '%s\n' "$content" > "$target"
+}
+
+if [ -f "$BRANDING_DIR/grub.main.cfg" ] && [ -f "$BRANDING_DIR/isolinux.main.cfg" ]; then
+    render_branding_template "$BRANDING_DIR/grub.main.cfg" "$ISODIR/boot/grub/grub.cfg"
+    render_branding_template "$BRANDING_DIR/isolinux.main.cfg" "$ISODIR/isolinux/isolinux.cfg"
+
+    cat <<EOF > "$ISODIR/EFI/BOOT/grub.cfg"
+search --set=root --label OA_LIVE
+set prefix=(\$root)/boot/grub
+configfile \$prefix/grub.cfg
+EOF
+    echo "Menu di branding generati con successo."
+    exit 0
+fi
+
+MENU_TITLE="penguins-eggs"
+START_LABEL="Chick of"
+RAM_LABEL="RAM mode"
+
+# Optional "RAM mode" entry: some vendors (systems typically installed
+# on low-RAM hardware) prefer to omit it to avoid confusion.
+# Controlled via 'eggs config' (custom.yaml: ram_mode).
+GRUB_RAM_ENTRY=""
+ISOLINUX_RAM_ENTRY=""
+if [ "$RAM_MODE_ENABLED" = "1" ]; then
+    GRUB_RAM_ENTRY="menuentry \"$START_LABEL $PRETTY_NAME - $RAM_LABEL\" {
+    linux /live/vmlinuz $BOOT_PARAMS $BOOT_COMMON toram
+    initrd /live/initrd.img
+}"
+    ISOLINUX_RAM_ENTRY="
+LABEL ram
+    MENU LABEL $START_LABEL $PRETTY_NAME - $RAM_LABEL
+    LINUX /live/vmlinuz
+    APPEND $BOOT_PARAMS $BOOT_COMMON toram
+    INITRD /live/initrd.img"
+fi
+
+GRUB_THEME_BLOCK="background_image /boot/grub/splash.png
+
+# ==========================================
+# COLORI MENU PRINCIPALE
+# ==========================================
+set menu_color_normal=white/black
+set menu_color_highlight=white/blue
+
+# ==========================================
+# COLORI EDITOR E TERMINALE
+# ==========================================
+set color_normal=white/black
+set color_highlight=white/blue"
+GRUB_HEADER_ENTRIES="menuentry \"--- $MENU_TITLE ---\" {
+    true
+}
+menuentry \"\" {
+    true
+}"
+GRUB_DEFAULT_INDEX=2
+
+if [ -f "$ISODIR/boot/grub/theme.cfg" ]; then
+    GRUB_THEME_BLOCK="insmod gfxmenu
+set theme=/boot/grub/theme.cfg"
+    GRUB_HEADER_ENTRIES=""
+    GRUB_DEFAULT_INDEX=0
+fi
+
+# 1. Generazione GRUB.cfg principale
+cat <<EOF > "$ISODIR/boot/grub/grub.cfg"
+set timeout=5
+set default=$GRUB_DEFAULT_INDEX
+
+insmod efi_gop
+insmod efi_uga
+insmod all_video
+insmod gfxterm
+insmod png
+insmod part_gpt
+insmod part_msdos
+insmod fat
+insmod iso9660
+
+search --no-floppy --set=root --label OA_LIVE
+
+if loadfont /boot/grub/font.pf2; then
+    set gfxmode=auto
+    terminal_output gfxterm
+fi
+
+$GRUB_THEME_BLOCK
+
+$GRUB_HEADER_ENTRIES
+menuentry "$START_LABEL $PRETTY_NAME" {
+    linux /live/vmlinuz $BOOT_PARAMS $BOOT_COMMON
+    initrd /live/initrd.img
+}
+$GRUB_RAM_ENTRY
+EOF
+
+# 2. Generazione ISOLINUX.cfg
+ISOLINUX_HEADER="MENU BACKGROUND splash.png
+MENU TITLE $MENU_TITLE
+MENU ROW 2
+MENU MARGIN 10
+MENU ROWS 12
+MENU TABMSGROW 27
+MENU AUTOBOOTROW 28
+MENU CMDLINEROW 27
+MENU HELPMSGROW 27"
+
+if [ -f "$ISODIR/isolinux/isolinux.theme.cfg" ]; then
+    ISOLINUX_HEADER="MENU BACKGROUND splash.png
+MENU TITLE $MENU_TITLE
+include isolinux.theme.cfg"
+fi
+
+cat <<EOF > "$ISODIR/isolinux/isolinux.cfg"
+UI vesamenu.c32
+TIMEOUT 50
+DEFAULT live
+
+$ISOLINUX_HEADER
+
+LABEL live
+    MENU LABEL $START_LABEL $PRETTY_NAME
+    LINUX /live/vmlinuz
+    APPEND $BOOT_PARAMS $BOOT_COMMON
+    INITRD /live/initrd.img
+$ISOLINUX_RAM_ENTRY
+EOF
+
+# 3. Trampolino EFI (Attenzione agli escape \$ per preservare le variabili per GRUB)
+cat <<EOF > "$ISODIR/EFI/BOOT/grub.cfg"
+search --set=root --label OA_LIVE
+set prefix=(\$root)/boot/grub
+configfile \$prefix/grub.cfg
+EOF
+
+echo "Menu generati con successo."

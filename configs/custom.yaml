@@ -1,0 +1,16 @@
+# custom.yml - Custom configurations for penguins-eggs
+# Override the embedded default settings here.
+
+remaster:
+  # Custom username for the live session (default: "live")
+  # user: "quirinux"
+
+  # You can set a custom password for the live session
+  # password: "evolution"
+
+  # You can adjust compression settings to maximize space saving
+    compression:
+      # Options: zstd, xz, lz4, gzip
+      algorithm: "zstd"
+      # Level: for zstd use 1-19
+      level: 3
