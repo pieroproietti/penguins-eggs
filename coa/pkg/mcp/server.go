@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"coa/pkg/distro"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/utils"
 )
 
@@ -334,6 +335,12 @@ func (s *Server) handleResourcesList(id interface{}) {
 			Description: "Host distribution, kernel release, and live environment status",
 			MimeType:    "text/plain",
 		},
+		{
+			URI:         "eggs://log",
+			Name:        "Penguins Eggs Log",
+			Description: "Main execution and build log file (/var/log/penguins-eggs.log)",
+			MimeType:    "text/plain",
+		},
 	}
 
 	s.sendResponse(JSONRPCResponse{
@@ -385,6 +392,14 @@ func (s *Server) handleResourceRead(id interface{}, rawParams json.RawMessage) {
 		isLive := utils.IsLive()
 		text = fmt.Sprintf("Distribution: %s (%s)\nFamily: %s\nRelease: %s\nCodename: %s\nKernel: %sLive Environment: %v\n",
 			d.DistroID, d.DistroLike, d.FamilyID, d.ReleaseID, d.CodenameID, uname, isLive)
+
+	case "eggs://log":
+		content, err := os.ReadFile(pathDefaults.LogFile)
+		if err != nil {
+			text = fmt.Sprintf("Error reading %s: %v", pathDefaults.LogFile, err)
+		} else {
+			text = string(content)
+		}
 
 	default:
 		s.sendError(id, ErrCodeInvalidParams, fmt.Sprintf("Resource URI '%s' not found", params.URI))

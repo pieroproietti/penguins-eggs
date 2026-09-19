@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
         if (strcmp(argv[1], "cleanup") == 0) {
             const char *target_dir = (argc > 2) ? argv[2] : default_work_dir;
             printf("🚨 [oa-main] CLEANUP Mode: Run `umount` on %s\n", target_dir);
-            oa_init_log("/var/log/oa-tools.log"); 
+            oa_init_log("/var/log/penguins-eggs.log"); 
             int res = perform_safety_teardown(target_dir);
             oa_close_log();
             return (res == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    oa_init_log("/var/log/oa-tools.log");
+    oa_init_log("/var/log/penguins-eggs.log");
 
     cJSON *root = cJSON_Parse(json_data);
     if (!root) {

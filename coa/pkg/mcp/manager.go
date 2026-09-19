@@ -20,6 +20,7 @@ type MCPConfigTarget struct {
 }
 
 var defaultTargets = []MCPConfigTarget{
+	{Name: "Antigravity Global", RelativePath: ".gemini/config/mcp_config.json"},
 	{Name: "Antigravity CLI", RelativePath: ".config/antigravity/mcp.json"},
 	{Name: "Claude Desktop", RelativePath: ".config/Claude/claude_desktop_config.json"},
 	{Name: "Roo-Cline (VSCode Server)", RelativePath: ".vscode-server/data/User/globalStorage/rooveterinaryinc.roo-cline/settings/cline_mcp_settings.json"},
