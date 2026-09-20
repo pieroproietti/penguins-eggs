@@ -82,9 +82,9 @@ echo "✅ LUKS initrd completed successfully: /tmp/oa-initrd.img-luks"
 }
 
 // luksKernelCopyStep replaces "copy-kernel-initrd" in crypted mode.
-func luksKernelCopyStep(workPath string) OATask {
+func luksKernelCopyStep(workPath, isoDir string) OATask {
 	liveRoot := fmt.Sprintf("%s/liveroot", workPath)
-	isoDir := fmt.Sprintf("%s/isodir/live", workPath)
+	targetDir := fmt.Sprintf("%s/live", isoDir)
 	cmd := fmt.Sprintf(`#!/bin/bash
 set -e
 KERNEL="$(uname -r)"
@@ -102,7 +102,7 @@ if [ ! -f "$LIVEROOT/tmp/oa-initrd.img-luks" ]; then
 fi
 mv "$LIVEROOT/tmp/oa-initrd.img-luks" "$ISODIR/initrd.img"
 echo "LUKS: LUKS initrd moved to $ISODIR/initrd.img"
-`, liveRoot, isoDir)
+`, liveRoot, targetDir)
 
 	return OATask{
 		Step: parser.Step{
@@ -120,9 +120,9 @@ echo "LUKS: LUKS initrd moved to $ISODIR/initrd.img"
 // and produces isodir/live/root.img in place of filesystem.squashfs.
 // The passphrase is piped via stdin to cryptsetup (--key-file -)
 // to avoid writing it to disk.
-func luksWrapStep(workPath, passphrase string) OATask {
-	squashfs := fmt.Sprintf("%s/isodir/live/filesystem.squashfs", workPath)
-	rootImg := fmt.Sprintf("%s/isodir/live/root.img", workPath)
+func luksWrapStep(isoDir, passphrase string) OATask {
+	squashfs := fmt.Sprintf("%s/live/filesystem.squashfs", isoDir)
+	rootImg := fmt.Sprintf("%s/live/root.img", isoDir)
 	cmd := fmt.Sprintf(`#!/bin/bash
 set -e
 

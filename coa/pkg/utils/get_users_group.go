@@ -4,9 +4,33 @@ import (
 	"bufio"
 	"os"
 	"os/user"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
+
+// ResolvePath resolves tilde prefix (~/...) to the user's home directory (respecting SUDO_USER if running under sudo)
+// and returns an absolute, cleaned path.
+func ResolvePath(path string) (string, error) {
+	if path == "" {
+		return "", nil
+	}
+	if path == "~" || strings.HasPrefix(path, "~/") {
+		u, err := resolveSourceUser(os.Getenv("SUDO_USER"))
+		var home string
+		if err == nil && u != nil {
+			home = u.HomeDir
+		} else {
+			home = os.Getenv("HOME")
+		}
+		if path == "~" {
+			path = home
+		} else {
+			path = filepath.Join(home, path[2:])
+		}
+	}
+	return filepath.Abs(path)
+}
 
 // essentialDesktopGroups son los grupos que, si faltan, provocan que
 // NetworkManager/blueman/CUPS/el gestor de escáner pidan autenticación

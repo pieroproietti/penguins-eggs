@@ -23,8 +23,8 @@ CUSTOM_INIT="/tmp/initramfs-penguins-eggs-init"
 {{ define "distro_copy_kernel_cmd" }}
 #!/bin/bash
 set -e
-LIVEROOT="/home/eggs/liveroot"
-ISODIR="/home/eggs/isodir"
+LIVEROOT="{{ .LiveRoot }}"
+ISODIR="{{ .IsoDir }}"
 FLAVOR="$(uname -r | awk -F- '{print $NF}')"
 cp "$LIVEROOT/boot/vmlinuz-$FLAVOR" "$ISODIR/live/vmlinuz"
 cp "$LIVEROOT/boot/initramfs-penguins-eggs" "$ISODIR/live/initrd.img"

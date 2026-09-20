@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"os"
+	"path/filepath"
 
+	"coa/pkg/parser"
 	"coa/pkg/pathDefaults"
 	"coa/pkg/utils"
 
@@ -51,6 +53,15 @@ func handledestroy() {
 		utils.LogError("Physical removal failed: %v", err)
 	} else {
 		utils.LogSuccess("Nest is empty. System clean.")
+	}
+
+	// Clean up temporary isodir in target_dir if configured
+	if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil && customCfg.Remaster.TargetDir != "" {
+		targetIsoDir := filepath.Join(customCfg.Remaster.TargetDir, "isodir")
+		if _, err := os.Stat(targetIsoDir); err == nil {
+			utils.LogNormal("Removing target isodir: %s", targetIsoDir)
+			_ = os.RemoveAll(targetIsoDir)
+		}
 	}
 
 	logFile := pathDefaults.LogFile

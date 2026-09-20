@@ -22,9 +22,9 @@ KERNEL_VERSION=$(uname -r)
 echo "-> Copying Fedora Kernel ($KERNEL_VERSION)..."
 
 # Using absolute and safe paths, reading and writing only where strictly needed
-KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
-INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
-DEST_DIR="/home/eggs/isodir/live"
+KERNEL_SRC="{{ .LiveRoot }}/boot/vmlinuz-$KERNEL_VERSION"
+INITRD_SRC="{{ .LiveRoot }}/boot/oa-initrd.img"
+DEST_DIR="{{ .IsoDir }}/live"
 
 # Safety check on KERNEL
 if [ ! -f "$KERNEL_SRC" ] ; then
@@ -55,11 +55,11 @@ echo "-> Copy successfully completed."
 #!/bin/bash
 set -e
 # fedora: distro_hook_squashfs
-mkdir -p /home/eggs/isodir/LiveOS
+mkdir -p {{ .IsoDir }}/LiveOS
 timeout=10
-while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
+while [ ! -f {{ .IsoDir }}/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
     sleep 1
     timeout=$((timeout-1))
 done
-ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
+ln -f {{ .IsoDir }}/live/filesystem.squashfs {{ .IsoDir }}/LiveOS/squashfs.img
 {{ end }}

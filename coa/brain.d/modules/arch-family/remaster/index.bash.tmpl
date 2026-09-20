@@ -115,8 +115,8 @@ EOF
 #!/bin/bash
 set -e
 
-LIVEROOT="/home/eggs/liveroot"
-ISODIR="/home/eggs/isodir"
+LIVEROOT="{{ .LiveRoot }}"
+ISODIR="{{ .IsoDir }}"
 KERNEL_VERSION=$(uname -r)
 KVER_MAJOR_MINOR=$(echo "$KERNEL_VERSION" | cut -d. -f1,2)
 ARCH=$(uname -m)
@@ -175,22 +175,22 @@ set -e
 
 echo "-> Preparing filesystem.squashfs hardlink..."
 timeout=10
-while [ ! -f /home/eggs/isodir/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
+while [ ! -f {{ .IsoDir }}/live/filesystem.squashfs ] && [ $timeout -gt 0 ]; do
     sleep 1; timeout=$((timeout-1))
 done
 
-if [ ! -f /home/eggs/isodir/live/filesystem.squashfs ]; then
+if [ ! -f {{ .IsoDir }}/live/filesystem.squashfs ]; then
     echo "[FATAL ERROR] filesystem.squashfs not found after timeout!"
     exit 1
 fi
 
 {{ if eq .Family "manjaro" }}
-    mkdir -p /home/eggs/isodir/manjaro/x86_64
-    ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/manjaro/x86_64/livefs.sfs
+    mkdir -p {{ .IsoDir }}/manjaro/x86_64
+    ln -f {{ .IsoDir }}/live/filesystem.squashfs {{ .IsoDir }}/manjaro/x86_64/livefs.sfs
     echo "-> livefs.sfs hardlink created for Manjaro."
 {{ else }}
-    mkdir -p /home/eggs/isodir/arch/x86_64
-    ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/arch/x86_64/airootfs.sfs
+    mkdir -p {{ .IsoDir }}/arch/x86_64
+    ln -f {{ .IsoDir }}/live/filesystem.squashfs {{ .IsoDir }}/arch/x86_64/airootfs.sfs
     echo "-> airootfs.sfs hardlink created for Arch/Garuda/EndeavourOS."
 {{ end }}
 {{ end }}

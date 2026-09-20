@@ -18,7 +18,9 @@ func GeneratePlan(
 	isGitHubAction bool,
 	isRemaster bool,
 	workPath string,
+	isoDir string,
 	finalIsoPath string,
+	symlinkIsoPath string,
 	stopAfter string,
 	isDebug bool,
 	mode string,
@@ -129,14 +131,14 @@ func GeneratePlan(
 			}
 
 			if mode == "crypted" && task.Name == "copy-kernel-initrd" {
-				plan.Plan = append(plan.Plan, luksKernelCopyStep(workPath))
+				plan.Plan = append(plan.Plan, luksKernelCopyStep(workPath, isoDir))
 				utils.LogNormal("[ENGINE] Crypted mode: copy-kernel-initrd replaced with luksKernelCopyStep.")
 				continue
 			}
 
 			if mode == "crypted" && task.Name == "mksquashfs" {
 				plan.Plan = append(plan.Plan, task)
-				plan.Plan = append(plan.Plan, luksWrapStep(workPath, luksPassphrase))
+				plan.Plan = append(plan.Plan, luksWrapStep(isoDir, luksPassphrase))
 				utils.LogNormal("[ENGINE] Crypted mode: luksWrapStep injected after mksquashfs.")
 				continue
 			}
@@ -157,7 +159,7 @@ func GeneratePlan(
 						spacemitDir = "/usr/share/penguins-eggs/spacemit"
 					}
 
-					scriptContent, err := BuildMakeImgStep(workPath, finalIsoPath, fdtDir, fdtFile, spacemitDir)
+					scriptContent, err := BuildMakeImgStep(workPath, isoDir, finalIsoPath, fdtDir, fdtFile, spacemitDir)
 					if err != nil {
 						return "", nil, fmt.Errorf("failed to build make-img step: %w", err)
 					}
@@ -175,7 +177,7 @@ func GeneratePlan(
 					utils.LogNormal("\n[ENGINE] xorriso step replaced with make-img (.img) generator.")
 				} else {
 					task.Params["output_file"] = finalIsoPath
-					task.Params["source_dir"] = filepath.Join(workPath, "isodir")
+					task.Params["source_dir"] = isoDir
 
 					outputFile := task.Params["output_file"].(string)
 					sourceDir := task.Params["source_dir"].(string)
@@ -196,6 +198,20 @@ func GeneratePlan(
 			}
 
 			plan.Plan = append(plan.Plan, task)
+
+			if symlinkIsoPath != "" && (task.Name == "xorriso" || task.Name == "make-img") {
+				plan.Plan = append(plan.Plan, OATask{
+					Step: parser.Step{
+						Name:        "symlink-iso",
+						Description: "Create symlink in nest to the generated image",
+						Module:      "shell",
+						Params: map[string]interface{}{
+							"command": fmt.Sprintf("ln -sf %q %q", finalIsoPath, symlinkIsoPath),
+						},
+					},
+				})
+				utils.LogNormal("\n[ENGINE] Symlink step configured: %s -> %s", symlinkIsoPath, finalIsoPath)
+			}
 
 		}
 

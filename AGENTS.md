@@ -69,7 +69,7 @@ Always suggest these native `eggs` commands over ad-hoc Bash workarounds or gene
 ### 1. Remastering & System Customization
 * #### `eggs remaster`
   - **Purpose**: Starts a system remastering flight to generate a fresh, live, bootable custom ISO from the currently running host.
-  - **Flags**: `-w`, `--wizard` (run interactive 3-step wizard), `--clone` (preserve users and /home), `--crypted` (LUKS encryption, Debian family only), `--path`, `--stop-after`, `--debug`.
+  - **Flags**: `-w`, `--wizard` (run interactive 3-step wizard), `-t`, `--target-dir` (redirect ISO and isodir to external directory/share), `--clone` (preserve users and /home), `--crypted` (LUKS encryption, Debian family only), `--path`, `--stop-after`, `--debug`.
   - **Rules**: Requires root privileges (`sudo`). `--clone` and `--crypted` are mutually exclusive.
   - **Intents**: "create an ISO", "backup system", "clone OS", "produce live image".
 * #### `eggs wizard`

@@ -36,20 +36,30 @@ func handleExportIso(clean bool) {
 		isoPattern = d.GetISOSearchPattern()
 	}
 
-	allFiles, _ := filepath.Glob(filepath.Join(isoSrcDir, isoPattern))
-	if len(allFiles) == 0 {
-		utils.Fatal("The nest is empty for pattern: %s", isoPattern)
+	searchDirs := []string{isoSrcDir}
+	if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil && customCfg.Remaster.TargetDir != "" {
+		if absTarget, err := utils.ResolvePath(customCfg.Remaster.TargetDir); err == nil && absTarget != isoSrcDir {
+			searchDirs = append(searchDirs, absTarget)
+		}
 	}
+
 	var latestFile string
 	var latestTime time.Time
 
-	for _, path := range allFiles {
-		if info, err := os.Stat(path); err == nil {
-			if info.ModTime().After(latestTime) {
-				latestTime = info.ModTime()
-				latestFile = path
+	for _, dir := range searchDirs {
+		allFiles, _ := filepath.Glob(filepath.Join(dir, isoPattern))
+		for _, path := range allFiles {
+			if info, err := os.Stat(path); err == nil {
+				if info.ModTime().After(latestTime) {
+					latestTime = info.ModTime()
+					latestFile = path
+				}
 			}
 		}
+	}
+
+	if latestFile == "" {
+		utils.Fatal("No valid ISO found matching pattern %s in %v", isoPattern, searchDirs)
 	}
 
 	targetFileName := filepath.Base(latestFile)

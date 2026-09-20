@@ -23,8 +23,8 @@
 set -e
 # debian: distro_copy_kernel_cmd
 
-LIVEROOT="/home/eggs/liveroot"
-ISODIR="/home/eggs/isodir"
+LIVEROOT="{{ .LiveRoot }}"
+ISODIR="{{ .IsoDir }}"
 KERNEL_VERSION=$(uname -r)
 
 echo "-> Copia Kernel Debian/Ubuntu ($KERNEL_VERSION)..."

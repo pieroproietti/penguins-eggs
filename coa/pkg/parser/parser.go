@@ -3,11 +3,9 @@ package parser
 import (
 	"bytes"
 	"fmt"
-	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strings"
 	"text/template"
 
@@ -18,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
+func DetectAndLoad(isGitHubAction bool, customPaths ...string) (*Profile, error) {
 	myDistro := distro.NewDistro()
 
 	var baseDir string
@@ -47,19 +45,18 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 
 	var index BrainIndex
 	if err := yaml.Unmarshal(indexData, &index); err != nil {
-		return nil, fmt.Errorf("syntax error in index.yaml: %v", err)
+		return nil, fmt.Errorf("unable to parse index %s: %v", indexPath, err)
 	}
 
 	var matchedEntry *DistroMap
-	for i := range index.Distributions {
-		entry := &index.Distributions[i]
-		if strings.EqualFold(entry.ID, myDistro.DistroID) {
-			matchedEntry = entry
+	for _, entry := range index.Distributions {
+		if entry.ID == myDistro.DistroID {
+			matchedEntry = &entry
 			break
 		}
-		for _, l := range entry.Like {
-			if strings.EqualFold(l, myDistro.DistroID) {
-				matchedEntry = entry
+		for _, like := range entry.Like {
+			if like == myDistro.DistroID || like == myDistro.FamilyID {
+				matchedEntry = &entry
 				break
 			}
 		}
@@ -68,55 +65,38 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		}
 	}
 
-	// Automatic fallback: if the specific DistroID is not explicitly listed in index.yaml,
-	// fall back to the family identified by distro.NewDistro() (e.g., "debian", "arch", "fedora")
 	if matchedEntry == nil {
-		targetFamily := strings.ToLower(myDistro.DistroLike)
-		for i := range index.Distributions {
-			entry := &index.Distributions[i]
-			if strings.EqualFold(entry.ID, targetFamily) || strings.EqualFold(entry.ID, myDistro.FamilyID) {
-				matchedEntry = entry
+		for _, entry := range index.Distributions {
+			if entry.ID == myDistro.FamilyID {
+				matchedEntry = &entry
 				break
 			}
 		}
 	}
 
 	if matchedEntry == nil {
-		return nil, fmt.Errorf("no module found for %s (ID: %s)", myDistro.DistroLike, myDistro.DistroID)
-	}
-
-	if matchedEntry.ID == "manjaro" {
-		myDistro.FamilyID = "manjaro"
-	} else if matchedEntry.ID == "arch" {
-		myDistro.FamilyID = "archlinux"
-	} else if matchedEntry.ID == "debian" {
-		myDistro.FamilyID = "debian"
+		return nil, fmt.Errorf("distribution %s (family %s) not supported in brain index", myDistro.DistroID, myDistro.FamilyID)
 	}
 
 	basePath := filepath.Join(baseDir, "base.yaml.tmpl")
-
-	var filesToParse []string
-	filesToParse = append(filesToParse, basePath)
-
+	filesToParse := []string{basePath}
 	var moduleNameLog string
+
 	if matchedEntry.Dir != "" {
+		moduleDir := filepath.Join(baseDir, "modules", matchedEntry.Dir)
 		moduleNameLog = matchedEntry.Dir
-		dirPath := filepath.Join(baseDir, "modules", matchedEntry.Dir)
-		var tmplFiles []string
-		err := filepath.WalkDir(dirPath, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.Walk(moduleDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
-			if !d.IsDir() && strings.HasSuffix(path, ".tmpl") {
-				tmplFiles = append(tmplFiles, path)
+			if !info.IsDir() && strings.HasSuffix(info.Name(), ".tmpl") {
+				filesToParse = append(filesToParse, path)
 			}
 			return nil
 		})
-		if err != nil || len(tmplFiles) == 0 {
-			return nil, fmt.Errorf("no template files found in module directory %s: %v", dirPath, err)
+		if err != nil {
+			return nil, fmt.Errorf("error reading module directory %s: %v", moduleDir, err)
 		}
-		sort.Strings(tmplFiles)
-		filesToParse = append(filesToParse, tmplFiles...)
 	} else if matchedEntry.File != "" {
 		moduleNameLog = matchedEntry.File
 		filesToParse = append(filesToParse, filepath.Join(baseDir, "modules", matchedEntry.File))
@@ -142,6 +122,15 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		hasCalamares = true
 	}
 
+	workDir := "/home/eggs"
+	if len(customPaths) > 0 && customPaths[0] != "" {
+		workDir = customPaths[0]
+	}
+	isoDir := filepath.Join(workDir, "isodir")
+	if len(customPaths) > 1 && customPaths[1] != "" {
+		isoDir = customPaths[1]
+	}
+
 	ctx := TemplateContext{
 		Family:         myDistro.FamilyID,
 		DistroID:       myDistro.DistroID,
@@ -149,6 +138,9 @@ func DetectAndLoad(isGitHubAction bool) (*Profile, error) {
 		RamModeEnabled: ramModeEnabled,
 		LiveUser:       liveUser,
 		HasCalamares:   hasCalamares,
+		WorkDir:        workDir,
+		IsoDir:         isoDir,
+		LiveRoot:       filepath.Join(workDir, "liveroot"),
 	}
 
 	tmpl := template.New(filepath.Base(basePath))
@@ -215,6 +207,9 @@ func mergeCustomSettings(base *RemasterConfig, custom *RemasterConfig) {
 	}
 	if custom.WorkDir != "" {
 		base.WorkDir = custom.WorkDir
+	}
+	if custom.TargetDir != "" {
+		base.TargetDir = custom.TargetDir
 	}
 	if custom.Installer != "" {
 		base.Installer = custom.Installer

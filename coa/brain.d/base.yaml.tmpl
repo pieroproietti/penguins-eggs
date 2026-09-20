@@ -18,7 +18,7 @@ remaster:
     description: "Create a directory and copy the bootloader assets (BIOS/UEFI)"
     module: "shell"
     params:
-      command: "/etc/penguins-eggs.d/scripts/bootloader-copy.sh /tmp/coa/bootloaders /home/eggs/isodir"
+      command: "/etc/penguins-eggs.d/scripts/bootloader-copy.sh /tmp/coa/bootloaders {{ .IsoDir }}"
 
 # ----------------------------------------------------------------------------
 # 3. EFI IMAGE GENERATION
@@ -28,14 +28,14 @@ remaster:
     module: "shell"
     params:
       command: |
-        dd if=/dev/zero of=/home/eggs/isodir/EFI/BOOT/efi.img bs=1M count=12
-        mkfs.vfat /home/eggs/isodir/EFI/BOOT/efi.img
-        mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI
-        mmd -i /home/eggs/isodir/EFI/BOOT/efi.img ::/EFI/BOOT
-        for f in /home/eggs/isodir/EFI/BOOT/*.EFI /home/eggs/isodir/EFI/BOOT/*.efi; do
+        dd if=/dev/zero of={{ .IsoDir }}/EFI/BOOT/efi.img bs=1M count=12
+        mkfs.vfat {{ .IsoDir }}/EFI/BOOT/efi.img
+        mmd -i {{ .IsoDir }}/EFI/BOOT/efi.img ::/EFI
+        mmd -i {{ .IsoDir }}/EFI/BOOT/efi.img ::/EFI/BOOT
+        for f in {{ .IsoDir }}/EFI/BOOT/*.EFI {{ .IsoDir }}/EFI/BOOT/*.efi; do
             if [ -f "$f" ]; then
                 fname=$(basename "$f")
-                mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img "$f" "::/EFI/BOOT/$fname"
+                mcopy -i {{ .IsoDir }}/EFI/BOOT/efi.img "$f" "::/EFI/BOOT/$fname"
             fi
         done
 
@@ -50,14 +50,14 @@ remaster:
         DEFAULT_BRANDING=/etc/penguins-eggs.d/branding.default/livecd
         LIVECD_BRANDING=/etc/penguins-eggs.d/branding/livecd
         [ -f "$LIVECD_BRANDING/splash.png" ] || LIVECD_BRANDING=$DEFAULT_BRANDING
-        [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/boot/grub/splash.png
-        [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" /home/eggs/isodir/isolinux/splash.png
-        [ -f "$LIVECD_BRANDING/grub.theme.cfg" ] && cp -f "$LIVECD_BRANDING/grub.theme.cfg" /home/eggs/isodir/boot/grub/theme.cfg
-        [ -f "$LIVECD_BRANDING/isolinux.theme.cfg" ] && cp -f "$LIVECD_BRANDING/isolinux.theme.cfg" /home/eggs/isodir/isolinux/isolinux.theme.cfg
+        [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" {{ .IsoDir }}/boot/grub/splash.png
+        [ -f "$LIVECD_BRANDING/splash.png" ] && cp -f "$LIVECD_BRANDING/splash.png" {{ .IsoDir }}/isolinux/splash.png
+        [ -f "$LIVECD_BRANDING/grub.theme.cfg" ] && cp -f "$LIVECD_BRANDING/grub.theme.cfg" {{ .IsoDir }}/boot/grub/theme.cfg
+        [ -f "$LIVECD_BRANDING/isolinux.theme.cfg" ] && cp -f "$LIVECD_BRANDING/isolinux.theme.cfg" {{ .IsoDir }}/isolinux/isolinux.theme.cfg
         if [ -f "/usr/share/grub/unicode.pf2" ]; then
-            cp -f /usr/share/grub/unicode.pf2 /home/eggs/isodir/boot/grub/font.pf2
+            cp -f /usr/share/grub/unicode.pf2 {{ .IsoDir }}/boot/grub/font.pf2
         elif [ -f "$LIVECD_BRANDING/unicode.pf2" ]; then
-            cp -f "$LIVECD_BRANDING/unicode.pf2" /home/eggs/isodir/boot/grub/font.pf2
+            cp -f "$LIVECD_BRANDING/unicode.pf2" {{ .IsoDir }}/boot/grub/font.pf2
         fi
 
 # ----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ remaster:
     params:
       src: "/etc/penguins-eggs.d/scripts/generate-menus.sh"
       args:
-        - "/home/eggs/isodir"
+        - "{{ .IsoDir }}"
         - '{{ template "distro_boot_params" . }}'
         - '{{ if .RamModeEnabled }}1{{ else }}0{{ end }}'
 
@@ -84,8 +84,8 @@ remaster:
     module: "shell"
     params:
       command: |
-        if [ -f /home/eggs/isodir/EFI/BOOT/efi.img ] && [ -f /home/eggs/isodir/EFI/BOOT/grub.cfg ]; then
-            mcopy -i /home/eggs/isodir/EFI/BOOT/efi.img -o /home/eggs/isodir/EFI/BOOT/grub.cfg ::/EFI/BOOT/grub.cfg
+        if [ -f {{ .IsoDir }}/EFI/BOOT/efi.img ] && [ -f {{ .IsoDir }}/EFI/BOOT/grub.cfg ]; then
+            mcopy -i {{ .IsoDir }}/EFI/BOOT/efi.img -o {{ .IsoDir }}/EFI/BOOT/grub.cfg ::/EFI/BOOT/grub.cfg
         fi
 
 # ----------------------------------------------------------------------------
@@ -104,31 +104,31 @@ remaster:
     chroot: false
     params:
       command: |
-        echo "# UNCONFIGURED FSTAB" > /home/eggs/liveroot/etc/fstab
-        echo "# UNCONFIGURED CRYPTTAB" > /home/eggs/liveroot/etc/crypttab
-        chmod 644 /home/eggs/liveroot/etc/fstab /home/eggs/liveroot/etc/crypttab
+        echo "# UNCONFIGURED FSTAB" > {{ .LiveRoot }}/etc/fstab
+        echo "# UNCONFIGURED CRYPTTAB" > {{ .LiveRoot }}/etc/crypttab
+        chmod 644 {{ .LiveRoot }}/etc/fstab {{ .LiveRoot }}/etc/crypttab
 
         # Sanitize resume/swap configuration for initramfs-tools (Debian/Devuan/Ubuntu)
-        if [ -d /home/eggs/liveroot/etc/initramfs-tools/conf.d ]; then
-            echo "RESUME=none" > /home/eggs/liveroot/etc/initramfs-tools/conf.d/resume
+        if [ -d {{ .LiveRoot }}/etc/initramfs-tools/conf.d ]; then
+            echo "RESUME=none" > {{ .LiveRoot }}/etc/initramfs-tools/conf.d/resume
         fi
-        if [ -f /home/eggs/liveroot/etc/initramfs-tools/initramfs.conf ]; then
-            sed -i 's/^RESUME=.*/RESUME=none/' /home/eggs/liveroot/etc/initramfs-tools/initramfs.conf
+        if [ -f {{ .LiveRoot }}/etc/initramfs-tools/initramfs.conf ]; then
+            sed -i 's/^RESUME=.*/RESUME=none/' {{ .LiveRoot }}/etc/initramfs-tools/initramfs.conf
         fi
 
         # Prevent systemd-firstboot prompts if the base template has no timezone/localtime configured
-        if [ ! -e /home/eggs/liveroot/etc/localtime ] && [ ! -L /home/eggs/liveroot/etc/localtime ]; then
-            ln -sf /usr/share/zoneinfo/UTC /home/eggs/liveroot/etc/localtime
+        if [ ! -e {{ .LiveRoot }}/etc/localtime ] && [ ! -L {{ .LiveRoot }}/etc/localtime ]; then
+            ln -sf /usr/share/zoneinfo/UTC {{ .LiveRoot }}/etc/localtime
         fi
 
         # Prevent systemd-firstboot locale prompts
-        if [ ! -f /home/eggs/liveroot/etc/locale.conf ]; then
-            echo "LANG=C.UTF-8" > /home/eggs/liveroot/etc/locale.conf
+        if [ ! -f {{ .LiveRoot }}/etc/locale.conf ]; then
+            echo "LANG=C.UTF-8" > {{ .LiveRoot }}/etc/locale.conf
         fi
 
         # Prevent systemd-firstboot hostname prompts
-        if [ ! -f /home/eggs/liveroot/etc/hostname ]; then
-            echo "live-system" > /home/eggs/liveroot/etc/hostname
+        if [ ! -f {{ .LiveRoot }}/etc/hostname ]; then
+            echo "live-system" > {{ .LiveRoot }}/etc/hostname
         fi
 
 
@@ -214,7 +214,7 @@ remaster:
         DEFAULT_SRC=/etc/penguins-eggs.d/branding.default/applications/install-system.desktop.tmpl
         ACTIVE_SRC=/etc/penguins-eggs.d/branding/applications/install-system.desktop.tmpl
         SRC=$DEFAULT_SRC
-        DEST=/home/eggs/liveroot/usr/share/applications/install-system.desktop
+        DEST={{ .LiveRoot }}/usr/share/applications/install-system.desktop
         [ -f "$ACTIVE_SRC" ] && SRC=$ACTIVE_SRC
         mkdir -p "$(dirname "$DEST")"
         if [ -f "$SRC" ]; then
@@ -237,9 +237,9 @@ remaster:
     chroot: false
     params:
       command: |
-        mkdir -p /home/eggs/liveroot/usr/local/bin
-        cp /etc/penguins-eggs.d/scripts/trust-desktop.sh /home/eggs/liveroot/usr/local/bin/trust-desktop
-        chmod 755 /home/eggs/liveroot/usr/local/bin/trust-desktop
+        mkdir -p {{ .LiveRoot }}/usr/local/bin
+        cp /etc/penguins-eggs.d/scripts/trust-desktop.sh {{ .LiveRoot }}/usr/local/bin/trust-desktop
+        chmod 755 {{ .LiveRoot }}/usr/local/bin/trust-desktop
 
   - name: "trust-agent-autostart"
     description: "Enable XDG Autostart for the trust agent"
@@ -277,11 +277,11 @@ remaster:
     params:
       command: |
         DEFAULT_SRC=/etc/penguins-eggs.d/branding.default/artwork/penguins-eggs.svg
-        DEFAULT_DEST=/home/eggs/liveroot/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg
-        PIXMAPS_SVG=/home/eggs/liveroot/usr/share/pixmaps/penguins-eggs.svg
+        DEFAULT_DEST={{ .LiveRoot }}/usr/share/icons/hicolor/scalable/apps/penguins-eggs.svg
+        PIXMAPS_SVG={{ .LiveRoot }}/usr/share/pixmaps/penguins-eggs.svg
         ACTIVE_SRC=/etc/penguins-eggs.d/branding/artwork/install-system.png
-        ACTIVE_DEST=/home/eggs/liveroot/usr/share/pixmaps/install-system.png
-        PIXMAPS_PNG=/home/eggs/liveroot/usr/share/pixmaps/penguins-eggs.png
+        ACTIVE_DEST={{ .LiveRoot }}/usr/share/pixmaps/install-system.png
+        PIXMAPS_PNG={{ .LiveRoot }}/usr/share/pixmaps/penguins-eggs.png
 
         mkdir -p "$(dirname "$DEFAULT_DEST")"
         mkdir -p "$(dirname "$PIXMAPS_SVG")"
@@ -304,8 +304,8 @@ remaster:
           chmod 644 "$PIXMAPS_PNG"
         fi
 
-        if [ -d /home/eggs/liveroot ]; then
-          chroot /home/eggs/liveroot sh -c 'command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -f -t /usr/share/icons/hicolor' 2>/dev/null || true
+        if [ -d {{ .LiveRoot }} ]; then
+          chroot {{ .LiveRoot }} sh -c 'command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -f -t /usr/share/icons/hicolor' 2>/dev/null || true
         fi
 
 # ----------------------------------------------------------------------------
@@ -314,8 +314,8 @@ remaster:
   - name: "mksquashfs"
     module: "mksquashfs"
     params:
-      live_root: "/home/eggs/liveroot"
-      dest_file: "/home/eggs/isodir/live/filesystem.squashfs"
+      live_root: "{{ .LiveRoot }}"
+      dest_file: "{{ .IsoDir }}/live/filesystem.squashfs"
       excludes_file: "/tmp/coa/excludes.list"
 
 # ----------------------------------------------------------------------------

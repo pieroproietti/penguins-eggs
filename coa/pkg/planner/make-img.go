@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func BuildMakeImgStep(workPath, finalIsoPath, fdtDir, fdtFile, spacemitDir string) (string, error) {
-	// srcDir: where squashfs is located, i.e., /home/eggs/isodir
-	srcDir := filepath.Join(workPath, "isodir")
+func BuildMakeImgStep(workPath, isoDir, finalIsoPath, fdtDir, fdtFile, spacemitDir string) (string, error) {
+	// srcDir: where squashfs is located, i.e., isoDir
+	srcDir := isoDir
 	mntDir := filepath.Join(workPath, "mnt/img")
 	fdtDirBootfs := strings.TrimPrefix(fdtDir, "/boot/")
 	fdtDirBootfs = strings.TrimPrefix(fdtDirBootfs, "/")

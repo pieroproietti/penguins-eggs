@@ -31,9 +31,9 @@ KERNEL_VERSION=$(uname -r)
 echo "-> Copia Kernel openSUSE ($KERNEL_VERSION)..."
 
 # Usiamo i percorsi assoluti e sicuri, leggendo e scrivendo dove serve davvero
-KERNEL_SRC="/home/eggs/liveroot/boot/vmlinuz-$KERNEL_VERSION"
-INITRD_SRC="/home/eggs/liveroot/boot/oa-initrd.img"
-DEST_DIR="/home/eggs/isodir/live"
+KERNEL_SRC="{{ .LiveRoot }}/boot/vmlinuz-$KERNEL_VERSION"
+INITRD_SRC="{{ .LiveRoot }}/boot/oa-initrd.img"
+DEST_DIR="{{ .IsoDir }}/live"
 
 # Controllo di sicurezza sul KERNEL
 if [ ! -f "$KERNEL_SRC" ] ; then
@@ -64,6 +64,6 @@ echo "-> Copia completata con successo."
 #!/bin/bash
 set -e
 # opensuse: distro_hook_squashfs
-mkdir -p /home/eggs/isodir/LiveOS
-ln -f /home/eggs/isodir/live/filesystem.squashfs /home/eggs/isodir/LiveOS/squashfs.img
+mkdir -p {{ .IsoDir }}/LiveOS
+ln -f {{ .IsoDir }}/live/filesystem.squashfs {{ .IsoDir }}/LiveOS/squashfs.img
 {{ end }}
