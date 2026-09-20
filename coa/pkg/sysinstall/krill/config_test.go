@@ -153,23 +153,25 @@ func TestDetectLanguage(t *testing.T) {
 
 func TestIsEfiPartition(t *testing.T) {
 	cases := []struct {
-		fs     string
-		label  string
-		pt     string
-		mps    []string
-		expect bool
+		fs        string
+		label     string
+		partLabel string
+		pt        string
+		mps       []string
+		expect    bool
 	}{
-		{"vfat", "SYSTEM", "c12a7328-f81f-11d2-ba4b-00a0c93ec93b", nil, true},
-		{"vfat", "EFI", "0xef", nil, true},
-		{"vfat", "", "", []string{"/boot/efi"}, true},
-		{"vfat", "EFI", "", nil, true},
-		{"ext4", "ROOT", "0x83", []string{"/"}, false},
-		{"ntfs", "Basic data", "", nil, false},
+		{"vfat", "SYSTEM", "", "c12a7328-f81f-11d2-ba4b-00a0c93ec93b", nil, true},
+		{"vfat", "EFI", "", "0xef", nil, true},
+		{"vfat", "", "", "", []string{"/boot/efi"}, true},
+		{"vfat", "EFI", "", "", nil, true},
+		{"vfat", "", "EFI system partition", "", nil, true},
+		{"ext4", "ROOT", "", "0x83", []string{"/"}, false},
+		{"ntfs", "Basic data", "", "", nil, false},
 	}
 
 	for _, c := range cases {
-		if got := isEfiPartition(c.fs, c.label, c.pt, c.mps); got != c.expect {
-			t.Errorf("isEfiPartition(%q, %q, %q, %v) = %v, want %v", c.fs, c.label, c.pt, c.mps, got, c.expect)
+		if got := isEfiPartition(c.fs, c.label, c.partLabel, c.pt, c.mps); got != c.expect {
+			t.Errorf("isEfiPartition(%q, %q, %q, %q, %v) = %v, want %v", c.fs, c.label, c.partLabel, c.pt, c.mps, got, c.expect)
 		}
 	}
 }

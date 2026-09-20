@@ -62,12 +62,15 @@ func runMount(c *ctx) error {
 			path   string
 		}
 
-		mounts := []btrfsMount{
-			{"@home", c.tpath("home")},
-			{"@cache", c.tpath("var", "cache")},
-			{"@log", c.tpath("var", "log")},
-			{"@snapshots", c.tpath(".snapshots")},
+		mounts := []btrfsMount{}
+		if l.Home == "" {
+			mounts = append(mounts, btrfsMount{"@home", c.tpath("home")})
 		}
+		mounts = append(mounts,
+			btrfsMount{"@cache", c.tpath("var", "cache")},
+			btrfsMount{"@log", c.tpath("var", "log")},
+			btrfsMount{"@snapshots", c.tpath(".snapshots")},
+		)
 		if plan.Swap == "file" {
 			mounts = append(mounts, btrfsMount{"@swap", c.tpath("swap")})
 		}
@@ -82,6 +85,20 @@ func runMount(c *ctx) error {
 		}
 	} else {
 		if err := c.mount("-t", plan.FsType, l.Root, plan.Target); err != nil {
+			return err
+		}
+	}
+
+	if l.Home != "" {
+		homeDir := c.tpath("home")
+		if err := os.MkdirAll(homeDir, 0755); err != nil {
+			return err
+		}
+		homeFs := "ext4"
+		if info, err := c.safetyChecks().filesystem(l.Home); err == nil && info.Type != "" {
+			homeFs = info.Type
+		}
+		if err := c.mount("-t", homeFs, l.Home, homeDir); err != nil {
 			return err
 		}
 	}

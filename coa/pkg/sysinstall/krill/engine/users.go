@@ -14,13 +14,32 @@ func runUsers(c *ctx) error {
 		shell = "/bin/bash"
 	}
 
-	args := []string{"useradd", "-m", "-s", shell, "-c", plan.Fullname}
+	userHome := c.tpath("home", plan.Login)
+	userHomeExists := exists(userHome)
+
+	args := []string{"useradd"}
+	if userHomeExists {
+		// Preserva i dati esistenti e non sovrascrivere con /etc/skel
+		args = append(args, "-M")
+	} else {
+		args = append(args, "-m")
+	}
+	args = append(args, "-s", shell, "-c", plan.Fullname)
 	if groups := c.existingGroups(plan.Groups); len(groups) > 0 {
 		args = append(args, "-G", strings.Join(groups, ","))
 	}
 	args = append(args, plan.Login)
 	if err := c.chroot(args...); err != nil {
 		return err
+	}
+
+	if userHomeExists {
+		// Assicura la coerenza di ownership eseguendo chown -R <uid>:<gid> sulla directory utente
+		if err := c.chroot("chown", "-R", plan.Login+":"+plan.Login, "/home/"+plan.Login); err != nil {
+			c.logf("warning: chown -R %s:%s /home/%s failed: %v", plan.Login, plan.Login, plan.Login, err)
+		} else {
+			c.logf("home directory for %s already existed: preserved without skel overwrite and ownership updated", plan.Login)
+		}
 	}
 
 	if plan.UserPass == "" {
@@ -192,7 +211,12 @@ func runRemoveuser(c *ctx) error {
 	if user == "" || (user == c.plan.Login && c.plan.Mode != "coexist") {
 		return nil
 	}
-	if err := c.chroot("userdel", "-r", user); err != nil {
+	delArgs := []string{"userdel"}
+	if c.plan.HomePartition == "" {
+		delArgs = append(delArgs, "-r")
+	}
+	delArgs = append(delArgs, user)
+	if err := c.chroot(delArgs...); err != nil {
 		if c.plan.Mode == "coexist" {
 			return fmt.Errorf("remove live user %s: %w", user, err)
 		}

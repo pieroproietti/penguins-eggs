@@ -248,6 +248,25 @@ func (p PartitionInfo) DisplayString() string {
 	return fmt.Sprintf("%s (%s)", p.Path, info)
 }
 
+func (p PartitionInfo) EfiDisplayString() string {
+	var parts []string
+	if p.Size != "" {
+		parts = append(parts, p.Size)
+	}
+	if p.Label != "" {
+		parts = append(parts, fmt.Sprintf("%q", p.Label))
+	} else if p.PartLabel != "" {
+		parts = append(parts, fmt.Sprintf("%q", p.PartLabel))
+	}
+	if p.MountPoint != "" {
+		parts = append(parts, "mounted on "+p.MountPoint)
+	}
+	if len(parts) == 0 {
+		return p.Path
+	}
+	return fmt.Sprintf("%s (%s)", p.Path, strings.Join(parts, ", "))
+}
+
 type lsblkRoot struct {
 	BlockDevices []lsblkItem `json:"blockdevices"`
 }
@@ -284,7 +303,7 @@ func parseLsblkSize(raw json.RawMessage) (int64, string) {
 	return 0, "?"
 }
 
-func isEfiPartition(fsType, label, partType string, mountPoints []string) bool {
+func isEfiPartition(fsType, label, partLabel, partType string, mountPoints []string) bool {
 	// 1. GUID GPT per EFI System Partition
 	if strings.EqualFold(partType, "c12a7328-f81f-11d2-ba4b-00a0c93ec93b") {
 		return true
@@ -299,11 +318,13 @@ func isEfiPartition(fsType, label, partType string, mountPoints []string) bool {
 			return true
 		}
 	}
-	// 4. File system vfat/fat32 con label EFI o ESP
+	// 4. File system vfat/fat32/fat16 con label o partLabel EFI o ESP
 	fsLower := strings.ToLower(fsType)
 	labelLower := strings.ToLower(label)
-	if (fsLower == "vfat" || fsLower == "fat32" || fsLower == "fat16") &&
-		(labelLower == "efi" || labelLower == "esp" || strings.Contains(labelLower, "efi")) {
+	partLabelLower := strings.ToLower(partLabel)
+	if (fsLower == "vfat" || fsLower == "fat32" || fsLower == "fat16" || fsLower == "fat") &&
+		(labelLower == "efi" || labelLower == "esp" || strings.Contains(labelLower, "efi") || strings.Contains(labelLower, "esp") ||
+			partLabelLower == "efi" || partLabelLower == "esp" || strings.Contains(partLabelLower, "efi") || strings.Contains(partLabelLower, "esp")) {
 		return true
 	}
 	return false
@@ -378,7 +399,7 @@ func collectPartitionsOnDisk(items []lsblkItem, disk string, readOnly, live bool
 					break
 				}
 			}
-			isEfi := isEfiPartition(fs, label, pt, item.MountPoints)
+			isEfi := isEfiPartition(fs, label, partLabel, pt, item.MountPoints)
 
 			parts = append(parts, PartitionInfo{
 				Disk:       parent,
@@ -541,6 +562,114 @@ func GetEfiPartitions(parts []PartitionInfo) []PartitionInfo {
 		}
 	}
 	return efis
+}
+
+// GetCandidateHomePartitions filters partitions that can be used as a separate /home without formatting.
+func GetCandidateHomePartitions(allParts []PartitionInfo, rootPartPath, espPartPath, liveDisk string) []PartitionInfo {
+	var candidates []PartitionInfo
+	for _, p := range allParts {
+		if p.Path == rootPartPath || p.Path == espPartPath || p.IsEfi {
+			continue
+		}
+		if p.ReadOnly || p.InUse || p.MountPoint != "" {
+			continue
+		}
+		if liveDisk != "" && (p.Disk == liveDisk || (p.Disk == "" && strings.HasPrefix(p.Path, liveDisk))) {
+			continue
+		}
+		fs := strings.ToLower(p.FsType)
+		if fs != "ext4" && fs != "ext3" && fs != "ext2" && fs != "btrfs" && fs != "xfs" && fs != "f2fs" && fs != "jfs" {
+			continue
+		}
+		if engine.IsWindowsPartition(p.FsType, p.PartType, p.Label, p.PartLabel) {
+			continue
+		}
+		candidates = append(candidates, p)
+	}
+	return candidates
+}
+
+// SelectDefaultHomeIndex selects the partition with label or partlabel "home" or "data", or 0.
+func SelectDefaultHomeIndex(parts []PartitionInfo) int {
+	for i, p := range parts {
+		l := strings.ToLower(p.Label)
+		pl := strings.ToLower(p.PartLabel)
+		if l == "home" || pl == "home" || l == "data" || pl == "data" || strings.Contains(l, "home") || strings.Contains(pl, "home") {
+			return i
+		}
+	}
+	return 0
+}
+
+// IsAfterWindowsPartition checks if an ESP is located after a Windows partition on the same disk.
+func IsAfterWindowsPartition(esp PartitionInfo, allParts []PartitionInfo) bool {
+	espDisk := esp.Disk
+	if espDisk == "" {
+		return false
+	}
+	foundEsp := false
+	var preParts []PartitionInfo
+	for _, p := range allParts {
+		if p.Disk != espDisk {
+			continue
+		}
+		if p.Path == esp.Path {
+			foundEsp = true
+			break
+		}
+		preParts = append(preParts, p)
+	}
+	if !foundEsp {
+		return false
+	}
+	for _, p := range preParts {
+		if engine.IsWindowsPartition(p.FsType, p.PartType, p.Label, p.PartLabel) {
+			return true
+		}
+	}
+	return false
+}
+
+// SelectDefaultEfiIndex selects the recommended ESP partition index.
+// It never blindly selects the first ESP if multiple are present and one was created for Linux.
+func SelectDefaultEfiIndex(efiParts []PartitionInfo, allParts []PartitionInfo) int {
+	if len(efiParts) == 0 {
+		return -1
+	}
+	if len(efiParts) == 1 {
+		return 0
+	}
+
+	isIndicativeLabel := func(p PartitionInfo) bool {
+		l := strings.ToUpper(p.Label)
+		pl := strings.ToUpper(p.PartLabel)
+		for _, name := range []string{"LINUX_EFI", "LINUX-EFI", "LINUX_BOOT", "BOOT", "LINUX", "KRILL"} {
+			if strings.Contains(l, name) || strings.Contains(pl, name) {
+				return true
+			}
+		}
+		if l == "EFI" || pl == "EFI" {
+			return true
+		}
+		return false
+	}
+
+	// 1. If an ESP after the first has an indicative label, prioritize it.
+	for i := 1; i < len(efiParts); i++ {
+		if isIndicativeLabel(efiParts[i]) {
+			return i
+		}
+	}
+
+	// 2. If an ESP after the first is located after a Windows partition, prioritize it.
+	for i := 1; i < len(efiParts); i++ {
+		if IsAfterWindowsPartition(efiParts[i], allParts) {
+			return i
+		}
+	}
+
+	// 3. Fallback: default to index 1 (second ESP) instead of blindly picking the first (Windows).
+	return 1
 }
 
 // DetectPartitionTableType rileva il tipo di tabella delle partizioni (gpt o msdos).

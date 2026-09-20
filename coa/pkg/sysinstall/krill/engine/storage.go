@@ -8,13 +8,38 @@ import (
 	"coa/pkg/utils"
 )
 
+// IsWindowsPartition identifies NTFS, BitLocker, MSR, and Windows Recovery partitions.
+func IsWindowsPartition(fs, partType, label, partLabel string) bool {
+	fsLower := strings.ToLower(fs)
+	if fsLower == "ntfs" || fsLower == "bitlocker" {
+		return true
+	}
+	if strings.EqualFold(partType, "ebd0a0a2-b9e5-4433-87c0-68b6b72699c7") && (fsLower == "ntfs" || fsLower == "") {
+		return true
+	}
+	if strings.EqualFold(partType, "e3c9e310-0b45-43e6-a825-4d0fe732e14a") { // MSR
+		return true
+	}
+	if strings.EqualFold(partType, "de94bba4-06d1-4d40-a16a-bfd50179d6ac") { // Windows Recovery
+		return true
+	}
+	lLower := strings.ToLower(label)
+	plLower := strings.ToLower(partLabel)
+	if strings.Contains(lLower, "recovery") || strings.Contains(plLower, "recovery") ||
+		strings.Contains(lLower, "msr") || strings.Contains(plLower, "msr") ||
+		strings.Contains(lLower, "microsoft reserved") || strings.Contains(plLower, "microsoft reserved") {
+		return true
+	}
+	return false
+}
+
 // RootPartitionAllowed is shared by discovery and the last check before wipefs.
 func RootPartitionAllowed(label, fs, partType string, busy, readOnly bool) bool {
 	return RootPartitionAllowedWithPartLabel(label, "", fs, partType, busy, readOnly)
 }
 
 func RootPartitionAllowedWithPartLabel(label, partLabel, fs, partType string, busy, readOnly bool) bool {
-	return fs != "swap" && !busy && !readOnly &&
+	return fs != "swap" && !busy && !readOnly && !IsWindowsPartition(fs, partType, label, partLabel) &&
 		!strings.EqualFold(partType, espGUID) && !strings.EqualFold(partType, "0xef") && !strings.EqualFold(partType, "ef")
 }
 

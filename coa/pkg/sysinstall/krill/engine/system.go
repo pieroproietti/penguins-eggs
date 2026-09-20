@@ -23,7 +23,13 @@ func runUnpackfs(c *ctx) error {
 		return fmt.Errorf("unsquashfs not available on the live system")
 	}
 	// -f scrive su directory esistente (il target è già montato)
-	return c.run("unsquashfs", "-f", "-no-progress", "-d", c.plan.Target, src)
+	args := []string{"-f", "-no-progress", "-d", c.plan.Target}
+	if c.plan.HomePartition != "" {
+		args = append(args, "-excludes", src, "home")
+	} else {
+		args = append(args, src)
+	}
+	return c.run("unsquashfs", args...)
 }
 
 func generateMachineID() (string, error) {
@@ -114,7 +120,9 @@ func runFstab(c *ctx) error {
 		// root subvolume
 		lines = append(lines, fmt.Sprintf("UUID=%s / btrfs subvol=/@,%s 0 1", uuid, opts))
 		// subvolumes standard
-		lines = append(lines, fmt.Sprintf("UUID=%s /home btrfs subvol=/@home,%s 0 2", uuid, opts))
+		if l.Home == "" {
+			lines = append(lines, fmt.Sprintf("UUID=%s /home btrfs subvol=/@home,%s 0 2", uuid, opts))
+		}
 		lines = append(lines, fmt.Sprintf("UUID=%s /var/cache btrfs subvol=/@cache,%s 0 2", uuid, opts))
 		lines = append(lines, fmt.Sprintf("UUID=%s /var/log btrfs subvol=/@log,%s 0 2", uuid, opts))
 		lines = append(lines, fmt.Sprintf("UUID=%s /.snapshots btrfs subvol=/@snapshots,%s 0 2", uuid, opts))
@@ -138,6 +146,13 @@ func runFstab(c *ctx) error {
 		}
 	}
 
+	if l.Home != "" {
+		homeFs := "ext4"
+		if info, err := c.safetyChecks().filesystem(l.Home); err == nil && info.Type != "" {
+			homeFs = info.Type
+		}
+		lines = append(lines, fmt.Sprintf("UUID=%s /home %s defaults 0 2", uuidOf(l.Home), homeFs))
+	}
 	if l.Boot != "" {
 		lines = append(lines, fmt.Sprintf("UUID=%s /boot ext4 defaults 0 2", uuidOf(l.Boot)))
 		fixBootSymlinks(c.tpath("boot"))
@@ -188,6 +203,11 @@ func copyFile(src, dst string) error {
 }
 
 func (c *ctx) uuidOf(device string) string {
+	if c.checks != nil && c.checks.filesystem != nil {
+		if info, err := c.checks.filesystem(device); err == nil && info.UUID != "" {
+			return info.UUID
+		}
+	}
 	out, err := exec.Command("blkid", "-s", "UUID", "-o", "value", device).Output()
 	if err != nil {
 		c.logf("blkid %s failed: %v", device, err)

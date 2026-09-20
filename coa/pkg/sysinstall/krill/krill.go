@@ -127,18 +127,22 @@ type model struct {
 	diskBios       string
 	diskModes      []string
 	diskModeIdx    int
-	disks          []DiskInfo
-	diskIdx        int
-	candidateParts []PartitionInfo
-	partIdx        int
-	efiParts       []PartitionInfo
-	efiIdx         int
-	fsTypes        []string
-	fsIdx          int
-	swapTypes      []string
-	swapIdx        int
-	diskField      int
-	initialization *coexistInitialization
+	disks              []DiskInfo
+	diskIdx            int
+	candidateParts     []PartitionInfo
+	partIdx            int
+	candidateHomeParts []PartitionInfo
+	homePartIdx        int
+	homeUse            bool
+	allParts           []PartitionInfo
+	efiParts           []PartitionInfo
+	efiIdx             int
+	fsTypes            []string
+	fsIdx              int
+	swapTypes          []string
+	swapIdx            int
+	diskField          int
+	initialization     *coexistInitialization
 
 	// Coexist: separate preparation and installation paths.
 	coexistStage       coexistStage
@@ -627,14 +631,15 @@ func (m *model) refreshPartitions() {
 }
 
 func (m *model) refreshPartitionsWith(detect func() ([]PartitionInfo, error), liveDisk string) {
-	m.candidateParts, m.efiParts = nil, nil
-	m.partIdx, m.efiIdx = -1, -1
+	m.candidateParts, m.efiParts, m.candidateHomeParts = nil, nil, nil
+	m.partIdx, m.efiIdx, m.homePartIdx = -1, -1, -1
 	m.storageError = ""
 	allParts, err := detect()
 	if err != nil {
 		m.storageError = err.Error()
 		return
 	}
+	m.allParts = allParts
 	if len(m.disks) == 0 || m.diskIdx < 0 || m.diskIdx >= len(m.disks) {
 		m.storageError = "No installation disk available."
 		return
@@ -654,9 +659,45 @@ func (m *model) refreshPartitionsWith(detect func() ([]PartitionInfo, error), li
 			m.efiIdx = 0
 		}
 	} else {
-		m.partIdx, m.efiIdx = 0, 0
-		if len(m.efiParts) == 0 && m.diskBios == "UEFI" {
-			m.efiParts = GetEfiPartitions(allParts)
+		m.partIdx = 0
+		if m.diskBios == "UEFI" {
+			systemEfis := GetEfiPartitions(allParts)
+			for _, se := range systemEfis {
+				found := false
+				for _, ep := range m.efiParts {
+					if ep.Path == se.Path {
+						found = true
+						break
+					}
+				}
+				if !found {
+					m.efiParts = append(m.efiParts, se)
+				}
+			}
+			m.efiIdx = SelectDefaultEfiIndex(m.efiParts, allParts)
+		} else {
+			m.efiIdx = 0
+		}
+		m.refreshHomePartitions(liveDisk)
+	}
+}
+
+func (m *model) refreshHomePartitions(liveDisk string) {
+	rootPart := ""
+	if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
+		rootPart = m.candidateParts[m.partIdx].Path
+	}
+	espPart := ""
+	if len(m.efiParts) > 0 && m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
+		espPart = m.efiParts[m.efiIdx].Path
+	}
+	m.candidateHomeParts = GetCandidateHomePartitions(m.allParts, rootPart, espPart, liveDisk)
+	if len(m.candidateHomeParts) == 0 {
+		m.homeUse = false
+		m.homePartIdx = -1
+	} else {
+		if m.homePartIdx < 0 || m.homePartIdx >= len(m.candidateHomeParts) {
+			m.homePartIdx = SelectDefaultHomeIndex(m.candidateHomeParts)
 		}
 	}
 }
@@ -678,6 +719,8 @@ const (
 	diskFieldDevice
 	diskFieldTargetPart
 	diskFieldEfi
+	diskFieldHomeUse
+	diskFieldHomePart
 	diskFieldNamespace
 	diskFieldFs
 	diskFieldSwap
@@ -706,8 +749,12 @@ func (m *model) activeDiskFields() []diskFieldKind {
 		return []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldFs, diskFieldSwap}
 	}
 	fields := []diskFieldKind{diskFieldMode, diskFieldDevice, diskFieldTargetPart}
-	if m.diskBios == "UEFI" && len(m.efiParts) > 1 {
+	if m.diskBios == "UEFI" {
 		fields = append(fields, diskFieldEfi)
+	}
+	fields = append(fields, diskFieldHomeUse)
+	if m.homeUse && len(m.candidateHomeParts) > 0 {
+		fields = append(fields, diskFieldHomePart)
 	}
 	fields = append(fields, diskFieldFs, diskFieldSwap)
 	return fields
@@ -839,6 +886,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		case diskFieldTargetPart:
 			if len(m.candidateParts) > 0 {
 				m.partIdx = cycle(m.partIdx, delta, len(m.candidateParts))
+				m.refreshHomePartitions(DetectLiveDisk())
 				if m.isCoexist() && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) && !m.systemIDCustom {
 					m.systemID = engine.GenerateSlotSystemID(m.candidateParts[m.partIdx].Path, distro.NewDistro().DistroID)
 					if len(m.userInputs) > fieldHostname {
@@ -849,6 +897,24 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		case diskFieldEfi:
 			if len(m.efiParts) > 0 {
 				m.efiIdx = cycle(m.efiIdx, delta, len(m.efiParts))
+				m.refreshHomePartitions(DetectLiveDisk())
+			}
+		case diskFieldHomeUse:
+			m.homeUse = !m.homeUse
+			if m.homeUse {
+				m.refreshHomePartitions(DetectLiveDisk())
+				if len(m.candidateHomeParts) == 0 {
+					m.homeUse = false
+					m.diskError = "No compatible Linux partition found for /home"
+				} else {
+					m.diskError = ""
+				}
+			} else {
+				m.diskError = ""
+			}
+		case diskFieldHomePart:
+			if len(m.candidateHomeParts) > 0 {
+				m.homePartIdx = cycle(m.homePartIdx, delta, len(m.candidateHomeParts))
 			}
 		case diskFieldFs:
 			m.fsIdx = cycle(m.fsIdx, delta, len(m.fsTypes))
@@ -891,6 +957,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		case diskFieldTargetPart:
 			if len(m.candidateParts) > 0 {
 				m.partIdx = cycle(m.partIdx, delta, len(m.candidateParts))
+				m.refreshHomePartitions(DetectLiveDisk())
 				if m.isCoexist() && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) && !m.systemIDCustom {
 					m.systemID = engine.GenerateSlotSystemID(m.candidateParts[m.partIdx].Path, distro.NewDistro().DistroID)
 					if len(m.userInputs) > fieldHostname {
@@ -901,6 +968,24 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		case diskFieldEfi:
 			if len(m.efiParts) > 0 {
 				m.efiIdx = cycle(m.efiIdx, delta, len(m.efiParts))
+				m.refreshHomePartitions(DetectLiveDisk())
+			}
+		case diskFieldHomeUse:
+			m.homeUse = !m.homeUse
+			if m.homeUse {
+				m.refreshHomePartitions(DetectLiveDisk())
+				if len(m.candidateHomeParts) == 0 {
+					m.homeUse = false
+					m.diskError = "No compatible Linux partition found for /home"
+				} else {
+					m.diskError = ""
+				}
+			} else {
+				m.diskError = ""
+			}
+		case diskFieldHomePart:
+			if len(m.candidateHomeParts) > 0 {
+				m.homePartIdx = cycle(m.homePartIdx, delta, len(m.candidateHomeParts))
 			}
 		case diskFieldFs:
 			m.fsIdx = cycle(m.fsIdx, delta, len(m.fsTypes))
@@ -930,9 +1015,19 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 		}
-		if m.diskModeIdx == 1 && len(m.candidateParts) == 0 {
-			// Non possiamo proseguire se non c'è una partizione valida da sostituire
-			return m, nil
+		if m.diskModeIdx == 1 {
+			if len(m.candidateParts) == 0 {
+				m.diskError = "No candidate partition found to replace"
+				return m, nil
+			}
+			if m.diskBios == "UEFI" && len(m.efiParts) == 0 {
+				m.diskError = "No EFI System Partition found. An ESP is required for UEFI installation."
+				return m, nil
+			}
+			if m.homeUse && (len(m.candidateHomeParts) == 0 || m.homePartIdx < 0) {
+				m.diskError = "Existing /home enabled, but no valid home partition selected."
+				return m, nil
+			}
 		}
 		return m.advanceToUsersOrSummary()
 	}
@@ -941,6 +1036,9 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 
 // Follow the generated module sequence, including clone account preservation.
 func (m model) createsUsers() bool {
+	if m.cfg == nil {
+		return true
+	}
 	for _, module := range m.cfg.Settings.Exec() {
 		if module == "users" {
 			return true
@@ -1265,30 +1363,38 @@ func (m model) viewDisk() string {
 			if m.isCoexist() && len(m.candidateParts) > 0 {
 				partStr = "SELECT ROOT"
 			}
-			if len(m.candidateParts) > 0 && m.partIdx >= 0 {
+			if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
 				partStr = m.candidateParts[m.partIdx].DisplayString()
 			}
-			rows = append(rows, m.selectorRow(isActive, "Target partition", partStr))
+			rows = append(rows, m.selectorRow(isActive, "Target partition (Root /)", partStr))
 			if m.isCoexist() {
 				esp := m.coexistESPError()
 				if esp == "" {
 					esp = m.efiParts[0].Path + " [fixed, preserved]"
 				}
 				rows = append(rows, m.selectorRow(false, "EFI System Partition", esp))
-			} else if m.diskBios == "UEFI" && len(m.efiParts) == 1 {
-				rows = append(rows, fmt.Sprintf("  %-20s: %s %s", "EFI System Partition",
-					greenText.Render(m.efiParts[0].Path+" ("+m.efiParts[0].Size+")"),
-					dimText.Render("[auto-detected, preserved]")))
 			} else if !m.isCoexist() && m.diskBios == "UEFI" && len(m.efiParts) == 0 {
 				rows = append(rows, fmt.Sprintf("  %-20s: %s", "EFI System Partition",
 					redBgWhiteText.Render(" none detected ")))
 			}
 		case diskFieldEfi:
 			efiStr := "none"
-			if len(m.efiParts) > 0 && m.efiIdx >= 0 {
-				efiStr = m.efiParts[m.efiIdx].Path + " (" + m.efiParts[m.efiIdx].Size + ")"
+			if len(m.efiParts) > 0 && m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
+				efiStr = m.efiParts[m.efiIdx].EfiDisplayString()
 			}
-			rows = append(rows, m.selectorRow(isActive, "EFI System Partition", efiStr))
+			rows = append(rows, m.selectorRow(isActive, "ESP (/boot/efi)", efiStr))
+		case diskFieldHomeUse:
+			homeUseStr := "No"
+			if m.homeUse {
+				homeUseStr = "Yes"
+			}
+			rows = append(rows, m.selectorRow(isActive, "Existing /home? [sì/No]", homeUseStr))
+		case diskFieldHomePart:
+			homePartStr := "none available"
+			if len(m.candidateHomeParts) > 0 && m.homePartIdx >= 0 && m.homePartIdx < len(m.candidateHomeParts) {
+				homePartStr = m.candidateHomeParts[m.homePartIdx].DisplayString()
+			}
+			rows = append(rows, m.selectorRow(isActive, "Home partition (/home)", homePartStr))
 		case diskFieldNamespace:
 			rows = append(rows, m.selectorRow(isActive, "System Name (ID)", orDefault(m.systemID, "type an ID, e.g. debian")))
 		case diskFieldFs:
@@ -1321,15 +1427,20 @@ func (m model) viewDisk() string {
 		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, redBgWhiteText.Render(warning1), redBgWhiteText.Render(warning2)))
 	} else {
 		targetPath := "selected partition"
-		if len(m.candidateParts) > 0 && m.partIdx >= 0 {
+		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
 			targetPath = m.candidateParts[m.partIdx].Path
 		}
 		warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
-		w1 := fmt.Sprintf("(*) this will FORMAT and ERASE only partition: %s", targetPath)
-		w2 := fmt.Sprintf("    all other partitions on %s will NOT be touched.", device.Path)
-		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, warningStyle.Render(w1), dimText.Render(w2)))
+		w1 := fmt.Sprintf("(*) this will FORMAT and ERASE only Root partition: %s", targetPath)
+		var wLines = []string{warningStyle.Render(w1)}
+		if m.homeUse && len(m.candidateHomeParts) > 0 && m.homePartIdx >= 0 && m.homePartIdx < len(m.candidateHomeParts) {
+			homePath := m.candidateHomeParts[m.homePartIdx].Path
+			wLines = append(wLines, greenText.Render(fmt.Sprintf("    /home on %s will be PRESERVED (NO FORMAT)", homePath)))
+		}
+		wLines = append(wLines, dimText.Render(fmt.Sprintf("    all other partitions on %s will NOT be touched.", device.Path)))
+		rows = append(rows, lipgloss.JoinVertical(lipgloss.Left, wLines...))
 		if len(m.candidateParts) == 0 {
-			noPartWarn := redBgWhiteText.Render(" ⚠️  No candidate partition found on this disk (must be >= 4G and not live/EFI) ")
+			noPartWarn := redBgWhiteText.Render(" ⚠️  No candidate partition found on this disk (must be >= 4G and not live/EFI/Windows) ")
 			rows = append(rows, "", noPartWarn)
 		}
 	}
@@ -1414,6 +1525,49 @@ func (m model) viewSummary() string {
 
 	if m.diskModeIdx == 0 {
 		warnBox = redBgWhiteText.Render(fmt.Sprintf(" ⚠️  WARNING: ALL DATA ON %s (%s) WILL BE PERMANENTLY ERASED! ", device.Path, device.Size))
+	} else if m.diskModeIdx == 1 {
+		targetPart := "n/a"
+		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
+			targetPart = m.candidateParts[m.partIdx].Path
+		}
+		espStr := "n/a"
+		if len(m.efiParts) > 0 && m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
+			espDev := m.efiParts[m.efiIdx].Path
+			var otherEsps []string
+			for _, ep := range m.efiParts {
+				if ep.Path != espDev {
+					otherEsps = append(otherEsps, ep.Path)
+				}
+			}
+			if len(otherEsps) > 0 {
+				espStr = fmt.Sprintf("%s  [USO - Nessuna modifica a %s]", espDev, strings.Join(otherEsps, ", "))
+			} else {
+				espStr = fmt.Sprintf("%s  [USO - Nessuna modifica]", espDev)
+			}
+		}
+		homeStr := "(nessuna - inclusa nella partizione di root)"
+		if m.homeUse && len(m.candidateHomeParts) > 0 && m.homePartIdx >= 0 && m.homePartIdx < len(m.candidateHomeParts) {
+			homeDev := m.candidateHomeParts[m.homePartIdx].Path
+			homeStr = fmt.Sprintf("%s  [PRESERVATA - NESSUNA FORMATTAZIONE]", homeDev)
+		}
+
+		sep := "============================================================"
+		title := "              RIEPILOGO INSTALLAZIONE PRE-PARTIZIONATA"
+		espLine := fmt.Sprintf("  ESP (/boot/efi):  %s", espStr)
+		rootLine := fmt.Sprintf("  Root (/):         %s  [FORMATTAZIONE %s]", targetPart, m.fsTypes[m.fsIdx])
+		homeLine := fmt.Sprintf("  Home (/home):     %s", homeStr)
+		warnText := fmt.Sprintf("ATTENZIONE: Verrà formattata SOLO la partizione di Root (%s).\nI dati sulla partizione Home e le altre partizioni non saranno toccati.", targetPart)
+
+		warnBox = lipgloss.JoinVertical(lipgloss.Left,
+			cyanText.Render(sep),
+			cyanText.Render(title),
+			cyanText.Render(sep),
+			espLine,
+			rootLine,
+			homeLine,
+			cyanText.Render(sep),
+			redBgWhiteText.Render(" "+warnText+" "),
+		)
 	} else {
 		targetPart := "n/a"
 		if len(m.candidateParts) > 0 && m.partIdx >= 0 && m.partIdx < len(m.candidateParts) {
@@ -1548,6 +1702,7 @@ func (m *model) buildPlan() *engine.Plan {
 	mode := "erase"
 	targetPart := ""
 	espPart := ""
+	homePart := ""
 	tableType := orDefault(cfg.Partition.DefaultPartitionTableType, "msdos")
 
 	if m.diskModeIdx == 1 || m.isCoexist() {
@@ -1560,6 +1715,9 @@ func (m *model) buildPlan() *engine.Plan {
 		}
 		if len(m.efiParts) > 0 && m.efiIdx >= 0 && m.efiIdx < len(m.efiParts) {
 			espPart = m.efiParts[m.efiIdx].Path
+		}
+		if m.diskModeIdx == 1 && m.homeUse && len(m.candidateHomeParts) > 0 && m.homePartIdx >= 0 && m.homePartIdx < len(m.candidateHomeParts) {
+			homePart = m.candidateHomeParts[m.homePartIdx].Path
 		}
 		if len(m.disks) > 0 && m.diskIdx < len(m.disks) {
 			tableType = DetectPartitionTableType(m.disks[m.diskIdx].Path)
@@ -1593,6 +1751,7 @@ func (m *model) buildPlan() *engine.Plan {
 		PreviousID:      previousID,
 		TargetPartition: targetPart,
 		EspPartition:    espPart,
+		HomePartition:   homePart,
 		TableType:       tableType,
 		FsType:          m.fsTypes[m.fsIdx],
 		Swap:            swapChoice,

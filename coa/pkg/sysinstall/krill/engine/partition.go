@@ -23,19 +23,21 @@ type layout struct {
 	Esp  string // vuota su msdos
 	Swap string // vuota se la swap non è una partizione
 	Root string
+	Home string // partizione /home opzionale preservata
 }
 
 // partsFor calcola i nomi delle partizioni in modo deterministico,
 // così ogni modulo (partition, mount, fstab) vede lo stesso layout.
 func partsFor(plan *Plan) layout {
 	if plan.Mode == "coexist" {
-		return layout{Esp: plan.EspPartition, Root: plan.TargetPartition}
+		return layout{Esp: plan.EspPartition, Root: plan.TargetPartition, Home: plan.HomePartition}
 	}
 	if runtime.GOARCH == "riscv64" {
 		if plan.Mode == "replace" {
 			return layout{
 				Boot: devPart(plan.Device, 5),
 				Root: plan.TargetPartition,
+				Home: plan.HomePartition,
 			}
 		}
 		return layout{
@@ -47,6 +49,7 @@ func partsFor(plan *Plan) layout {
 		return layout{
 			Esp:  plan.EspPartition,
 			Root: plan.TargetPartition,
+			Home: plan.HomePartition,
 		}
 	}
 	n := 1

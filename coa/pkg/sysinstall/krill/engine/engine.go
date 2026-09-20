@@ -29,6 +29,7 @@ type Plan struct {
 	Mode            string // erase (default) | replace | coexist
 	TargetPartition string // es. /dev/sda2 (usato in modalità replace)
 	EspPartition    string // es. /dev/sda1 (partizione EFI usata in modalità replace)
+	HomePartition   string // es. /dev/sda3 (partizione /home opzionale preservata)
 	EFIBootloaderID string // Coexist root label and EFI identity
 	PreviousID      string // Pre-existing Coexist identity on selected slot (if replacing)
 	TableType       string // gpt | msdos
