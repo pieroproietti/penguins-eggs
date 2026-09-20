@@ -2,6 +2,27 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.17 - 2026-09-20
+This release introduces full support for **Pre-partitioned disk** installations in Krill with multi-ESP dual-boot and separate `/home` preservation, adds `--target-dir` redirection for remastering flights, modernizes MCP logging, and improves overall installer reliability.
+
+### 🦐 Krill: Pre-partitioned Disk Installation & Dual-Boot Enhancements
+* **Pre-partitioned Mode**: Evolved the legacy "Replace a partition" mode into the comprehensive **"Pre-partitioned disk"** mode, designed for advanced partitioning workflows (e.g. prepared via GParted, cfdisk, or dual-boot setups).
+* **Multi-ESP & Dual-Boot Protection**: In UEFI systems with multiple EFI System Partitions (e.g., Windows ESP alongside a dedicated Linux ESP), Krill automatically detects all ESPs, intelligently pre-selects the Linux/secondary ESP, and guarantees that Windows ESPs and other existing bootloaders remain completely untouched.
+* **Separate Existing `/home` Preservation**: Added support for attaching an existing `/home` partition. The user can mount their dedicated home partition, which is preserved without formatting, integrated into `/etc/fstab`, and protected from user deletion modules.
+* **Granular Safety & Candidate Filtering**: Automatically filters out Windows system partitions (MSR, Windows C:, BitLocker, Recovery) from Root candidate lists. The summary view clearly specifies that only the Root partition is formatted while Home and other partitions are strictly preserved.
+
+### 🍳 Remastering: External Target Directory & Artifact Redirection
+* **`--target-dir` Flag**: Added `-t` / `--target-dir` to `eggs remaster`, allowing users to redirect the build nest (`isodir`) and final ISO output to an external directory, secondary disk, or network share. This solves disk space limitations on hosts with small root or `/home` volumes.
+* **Clean Remaster Trees**: Excluded the `.disk` metadata directory from squashfs builds to prevent carrying over stale installer artifacts from previous flights.
+
+### 🤖 Model Context Protocol (MCP) & Agent Protocol
+* **Modernized Log Path**: Standardized the daemon and runtime log location to `/var/log/penguins-eggs.log` and exposed the unified `eggs://log` MCP resource.
+* **Autonomous Diagnosis Protocol**: Added a conditional log inspection protocol in `AGENTS.md` guiding AI agents to autonomously diagnose errors from logs only upon non-zero exit codes while reporting cleanly on success.
+
+### 🛡️ Usability & Reliability
+* **Squashfs Preflight Guidance**: Improved `eggs sysinstall` to detect missing squashfs images upfront when run on a host system, advising the user to first execute `eggs remaster`.
+* **Clean Terminal Summary**: Refined and simplified the Coexist summary screen layout for enhanced legibility across different terminal dimensions.
+
 ## Release Notes: penguins-eggs v26.9.16 - 2026-09-16
 This release brings full end-to-end support for installing system clones (`--clone`) into **Coexist** slots, eliminates machine-id duplication across virtual machines / hypervisors, and refines the Pure Slots user documentation with comprehensive visual diagrams.
 
