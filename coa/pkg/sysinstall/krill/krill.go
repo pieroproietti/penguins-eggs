@@ -247,7 +247,7 @@ func initialModelWithOptions(cfg *InstallerConfig, fstype string, coexist bool, 
 	coexistDisks := engine.DetectCoexistDisks()
 	hasCoexist := len(coexistDisks) > 0
 
-	diskModes := []string{"Erase disk", "Replace a partition"}
+	diskModes := []string{"Erase disk", "Pre-partitioned disk"}
 	if hasCoexist || coexist {
 		diskModes = append(diskModes, "Coexist")
 	}
@@ -1017,7 +1017,7 @@ func (m model) updateDisk(key string) (tea.Model, tea.Cmd) {
 		}
 		if m.diskModeIdx == 1 {
 			if len(m.candidateParts) == 0 {
-				m.diskError = "No candidate partition found to replace"
+				m.diskError = "No candidate partition found for Root"
 				return m, nil
 			}
 			if m.diskBios == "UEFI" && len(m.efiParts) == 0 {
@@ -1520,7 +1520,7 @@ func (m model) viewSummary() string {
 	noOpt := "  [ No, cancel and go back ]"
 	yesOptText := "  [ YES, erase disk and install ]"
 	if m.diskModeIdx == 1 || m.isCoexist() {
-		yesOptText = "  [ YES, replace partition and install ]"
+		yesOptText = "  [ YES, install to pre-partitioned disk ]"
 	}
 
 	if m.diskModeIdx == 0 {

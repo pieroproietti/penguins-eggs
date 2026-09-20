@@ -36,7 +36,7 @@ func TestCoexistESPDiscoveryMatchesPreflight(t *testing.T) {
 
 func TestCoexistDiskSelections(t *testing.T) {
 	m := model{
-		diskModeIdx: 2, coexistStage: coexistInstall, diskModes: []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
+		diskModeIdx: 2, coexistStage: coexistInstall, diskModes: []string{"Erase disk", "Pre-partitioned disk", "Coexist with existing installations"},
 		disks:          []DiskInfo{{Path: "/dev/test"}},
 		candidateParts: []PartitionInfo{{Path: "/dev/test5"}},
 		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},
@@ -81,7 +81,7 @@ func TestCoexistTargetSelectorShowsFilesystemLabel(t *testing.T) {
 	m := model{
 		diskModeIdx:    2,
 		coexistStage:   coexistInstall,
-		diskModes:      []string{"Erase disk", "Replace a partition", "Coexist with existing installations"},
+		diskModes:      []string{"Erase disk", "Pre-partitioned disk", "Coexist with existing installations"},
 		disks:          []DiskInfo{{Path: "/dev/test"}},
 		candidateParts: []PartitionInfo{{Path: "/dev/sda5", Size: "8G", FsType: "ext4", Label: "arch-colibri-4"}},
 		efiParts:       []PartitionInfo{{Path: "/dev/test1"}},

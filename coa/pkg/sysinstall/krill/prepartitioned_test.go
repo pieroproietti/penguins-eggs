@@ -105,7 +105,7 @@ func TestReplaceSummaryScreenDisplay(t *testing.T) {
 	m := model{
 		state:       StateSummary,
 		diskModeIdx: 1,
-		diskModes:   []string{"Erase disk", "Replace a partition"},
+		diskModes:   []string{"Erase disk", "Pre-partitioned disk"},
 		productName: "penguins-eggs",
 		disks:       []DiskInfo{{Path: "/dev/nvme0n1", Size: "500G"}},
 		candidateParts: []PartitionInfo{
@@ -129,6 +129,12 @@ func TestReplaceSummaryScreenDisplay(t *testing.T) {
 	}
 
 	summary := m.viewSummary()
+	if !strings.Contains(summary, "Installation mode: Pre-partitioned disk") {
+		t.Fatalf("summary missing Pre-partitioned disk mode:\n%s", summary)
+	}
+	if !strings.Contains(summary, "[ YES, install to pre-partitioned disk ]") {
+		t.Fatalf("summary missing pre-partitioned confirmation button:\n%s", summary)
+	}
 	if !strings.Contains(summary, "RIEPILOGO INSTALLAZIONE PRE-PARTIZIONATA") {
 		t.Fatalf("summary missing pre-partitioned layout title:\n%s", summary)
 	}
