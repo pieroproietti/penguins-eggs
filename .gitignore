@@ -33,6 +33,7 @@ oa/oa.log
 coa/oa.log
 
 # --- Temporary files (The "nest" leftovers) ---
+.disk/
 plan_coa_tmp.json
 coa/plan_coa_tmp.json
 *.tmp
