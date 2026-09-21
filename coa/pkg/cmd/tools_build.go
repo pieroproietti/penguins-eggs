@@ -26,6 +26,9 @@ It orchestrates the full compilation of both the C-native engine (oa) and the Go
 		}
 
 		myDistro := distro.NewDistro()
+		if myDistro.FamilyID == "fedora" && utils.IsSELinuxEnforcing() {
+			utils.LogWarning("Fedora detected with SELinux in Enforcing mode. It is recommended to set SELINUX=permissive (in /etc/selinux/config or via 'sudo setenforce 0') to avoid unexplained build blocks.")
+		}
 		builder.HandleBuild(myDistro)
 	},
 }

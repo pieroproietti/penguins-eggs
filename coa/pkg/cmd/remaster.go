@@ -157,6 +157,10 @@ func RunRemasterFlight(opts RemasterOptions) {
 
 	myDistro := distro.NewDistro()
 
+	if myDistro.FamilyID == "fedora" && utils.IsSELinuxEnforcing() {
+		utils.LogWarning("Fedora detected with SELinux in Enforcing mode. It is strongly recommended to set SELINUX=permissive (in /etc/selinux/config or via 'sudo setenforce 0') to avoid unexplained execution blocks.")
+	}
+
 	if produceMode == "crypted" && myDistro.FamilyID != "debian" {
 		utils.Fatal("The --crypted option is only available for the Debian family (detected: %s).", myDistro.DistroLike)
 	}

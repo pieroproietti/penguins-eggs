@@ -132,9 +132,11 @@ penguins-eggs detects the host automatically. Currently supported families:
 | Alpine | Alpine Linux |
 | Arch | Arch Linux, EndeavourOS, Garuda |
 | Debian | Debian, Ubuntu, Pop!_OS, Linux Mint, Kali, MX Linux |
-| Fedora | Fedora, Nobara |
+| Fedora | Fedora, Nobara *(recommended: `SELINUX=permissive` in `/etc/selinux/config`)* |
 | Manjaro | Manjaro, BigLinux |
 | openSUSE | openSUSE Tumbleweed |
+
+> **Fedora Note**: On Fedora systems, it is recommended to set `SELINUX=permissive` in `/etc/selinux/config` (or run `sudo setenforce 0`) to avoid unexplained permission blocks during remastering.
 
 Adding a new distribution requires only a new template module directory under `brain.d/modules/` — no Go or C changes.
 

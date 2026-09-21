@@ -36,6 +36,7 @@ For `eggs` commands, see [eggs Command Reference](./DOCS/2-user-manual/2-command
 
 ### Prerequisites
 - A Linux system (Debian-based, Arch-based, Fedora-based or Manjaro-based).
+  - *Note for Fedora users*: It is recommended to set `SELINUX=permissive` in `/etc/selinux/config` (or run `sudo setenforce 0`) to avoid unexplained permission blocks.
 - `gcc` and `make` (for `oa`).
 - `golang` 1.25+ (for `coa`).
 

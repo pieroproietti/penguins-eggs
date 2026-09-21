@@ -26,6 +26,8 @@ To generate `.rpm` packages using the Fedora-agnostic logic:
 *   **rpm-build**: The core engine for building RPM packages.
 *   **dnf-plugins-core**: Necessary for managing build dependencies and toolchains.
 
+> **Note for Fedora users**: It is strongly recommended to set `SELINUX=permissive` in `/etc/selinux/config` (or run `sudo setenforce 0`) to prevent unexplained permission denials or execution blocks during build and remastering procedures.
+
 ---
 
 ## The Build Logic
