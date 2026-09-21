@@ -157,7 +157,7 @@ func parseESPProperties(path, out string) (bool, error) {
 
 // ValidateCoexistFamily is also used before offering destructive disk preparation.
 func ValidateCoexistFamily(family string) error {
-	if family != "debian" && family != "archlinux" && family != "manjaro" && family != "fedora" {
+	if family != "debian" && family != "archlinux" && family != "manjaro" && family != "fedora" && family != "opensuse" {
 		return fmt.Errorf("Coexist bootloader isolation is not implemented for family %q; installation stopped before formatting", family)
 	}
 	return nil

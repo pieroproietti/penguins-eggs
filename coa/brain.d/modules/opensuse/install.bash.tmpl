@@ -24,7 +24,12 @@ if [ -f /etc/default/grub ]; then
 fi
 
 # Rilevamento automatico basato su configurazioni attive (Evidence-Based Detection)
-if [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /boot/efi/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
+if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+    # Only GRUB currently isolates each Coexist installation on the shared ESP.
+    # Existing Limine/systemd-boot configuration must not override this choice.
+    echo "-> Coexist: installing GRUB with the selected installation identity."
+    {{ include "install_distro_grub" . }}
+elif [ -f /boot/limine.conf ] || [ -f /boot/efi/limine.conf ] || [ -f /boot/limine/limine.conf ] || [ -f /boot/efi/limine/limine.conf ] || [ -f /etc/limine-entry-tool.conf ] || [ -f /etc/default/limine ]; then
     echo "-> Evidence found: Limine configuration detected."
     {{ include "install_distro_limine" . }}
 elif [ -f /boot/loader/loader.conf ] || [ -f /boot/efi/loader/loader.conf ]; then
@@ -37,15 +42,27 @@ fi
 {{ end }}
 
 {{ define "install_distro_grub" }}
+if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+    if [ ! -d /sys/firmware/efi ] || ! grep -q "/boot/efi" /proc/mounts; then
+        echo "[FATAL ERROR] Coexist requires UEFI and a mounted EFI System Partition." >&2
+        exit 1
+    fi
+    EFI_ID="${KRILL_EFI_BOOTLOADER_ID:?Missing Coexist EFI bootloader ID}"
+else
+    EFI_ID="{{ .DistroID }}"
+fi
+
 # Rileva Btrfs e crea il symlink di boot al livello root del filesystem
-if [ "$(findmnt -n -o FSTYPE /)" = "btrfs" ]; then
+if [ "$(findmnt -n -o FSTYPE / 2>/dev/null)" = "btrfs" ]; then
       echo "-> Configurazione Btrfs rilevata. Creazione del symlink /boot al livello root..."
-      ROOT_DEV=$(findmnt -n -o SOURCE /)
-      mkdir -p /tmp/btrfs-raw
-      mount "$ROOT_DEV" /tmp/btrfs-raw
-      ln -sf @/boot /tmp/btrfs-raw/boot
-      umount /tmp/btrfs-raw
-      rmdir /tmp/btrfs-raw
+      ROOT_DEV=$(findmnt -n -o SOURCE / 2>/dev/null)
+      if [ -n "$ROOT_DEV" ]; then
+          mkdir -p /tmp/btrfs-raw
+          mount "$ROOT_DEV" /tmp/btrfs-raw 2>/dev/null || true
+          ln -sf @/boot /tmp/btrfs-raw/boot 2>/dev/null || true
+          umount /tmp/btrfs-raw 2>/dev/null || true
+          rmdir /tmp/btrfs-raw 2>/dev/null || true
+      fi
 fi
 
 if [ -d /sys/firmware/efi ]; then
@@ -78,28 +95,37 @@ if [ -d /sys/firmware/efi ]; then
               ;;
       esac
 
-      grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id={{ .DistroID }} --recheck --force
-      
-      # Fallback UEFI Absolute (Garantisce l'avvio anche se la NVRAM fa i capricci)
-      mkdir -p /boot/efi/EFI/BOOT
-      if [ -f "/boot/efi/EFI/{{ .DistroID }}/shim.efi" ]; then
-          cp "/boot/efi/EFI/{{ .DistroID }}/shim.efi" "/boot/efi/EFI/BOOT/$BOOT_BIN"
-          if [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$GRUB_BIN"
-          elif [ -f "/boot/efi/EFI/{{ .DistroID }}/grub.efi" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" "/boot/efi/EFI/BOOT/$GRUB_BIN"
-          fi
+      if [ "${KRILL_INSTALL_MODE:-}" = coexist ]; then
+          # Use the validated runtime identity, keeping normal NVRAM registration.
+          # Coexist must preserve the shared EFI/BOOT fallback.
+          grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="$EFI_ID" --recheck || exit 1
       else
-          if [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
-          elif [ -f "/boot/efi/EFI/{{ .DistroID }}/grub.efi" ]; then
-              cp "/boot/efi/EFI/{{ .DistroID }}/grub.efi" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+          if ! grub2-install --target="$GRUB_TARGET" --efi-directory=/boot/efi --bootloader-id="$EFI_ID" --recheck --force; then
+              [ -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ] || [ -f "/boot/efi/EFI/$EFI_ID/grub.efi" ] || { echo "[FATAL ERROR] grub2-install failed and no EFI binary was written"; exit 1; }
+              echo "-> WARNING: grub2-install failed (likely NVRAM-only); EFI binary is present, continuing with removable fallback."
+          fi
+          
+          # Fallback UEFI Absolute (Garantisce l'avvio anche se la NVRAM fa i capricci)
+          mkdir -p /boot/efi/EFI/BOOT
+          if [ -f "/boot/efi/EFI/$EFI_ID/shim.efi" ]; then
+              cp "/boot/efi/EFI/$EFI_ID/shim.efi" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+              if [ -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ]; then
+                  cp "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" "/boot/efi/EFI/BOOT/$GRUB_BIN"
+              elif [ -f "/boot/efi/EFI/$EFI_ID/grub.efi" ]; then
+                  cp "/boot/efi/EFI/$EFI_ID/grub.efi" "/boot/efi/EFI/BOOT/$GRUB_BIN"
+              fi
+          else
+              if [ -f "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" ]; then
+                  cp "/boot/efi/EFI/$EFI_ID/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+              elif [ -f "/boot/efi/EFI/$EFI_ID/grub.efi" ]; then
+                  cp "/boot/efi/EFI/$EFI_ID/grub.efi" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+              fi
           fi
       fi
 
+      mkdir -p "/boot/efi/EFI/$EFI_ID"
       grub2-mkconfig -o /boot/grub2/grub.cfg
-      mkdir -p "/boot/efi/EFI/{{ .DistroID }}"
-      grub2-mkconfig -o "/boot/efi/EFI/{{ .DistroID }}/grub.cfg"
+      grub2-mkconfig -o "/boot/efi/EFI/$EFI_ID/grub.cfg"
 else
       TARGET_DISK=$(grub2-probe -t disk / 2>/dev/null || echo "/dev/sda")
       grub2-install --target=i386-pc --recheck "$TARGET_DISK"

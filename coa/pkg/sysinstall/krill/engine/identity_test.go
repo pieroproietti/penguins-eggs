@@ -47,7 +47,6 @@ func TestCoexistAdditionalPreflightGuards(t *testing.T) {
 		name   string
 		change func(*Plan, *partitionChecks)
 	}{
-		{"openSUSE bootloader", func(_ *Plan, c *partitionChecks) { c.family = func() string { return "opensuse" } }},
 		{"Alpine bootloader", func(_ *Plan, c *partitionChecks) { c.family = func() string { return "alpine" } }},
 		{"unknown bootloader", func(_ *Plan, c *partitionChecks) { c.family = func() string { return "unknown" } }},
 		{"mounted ESP", func(p *Plan, c *partitionChecks) {
