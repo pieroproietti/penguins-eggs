@@ -202,6 +202,28 @@ remaster:
           </action>
         </policyconfig>
 
+  - name: "polkit-rules"
+    description: "Polkit rules: require authentication for cloning personal data"
+    module: "template"
+    chroot: true
+    params:
+      dest: "/usr/share/polkit-1/rules.d/49-penguins-eggs.rules"
+      permissions: 420 # 0644 octal
+      content: |
+        /* Polkit rules for Penguins' Eggs
+         * Allow normal remaster and tools without password in active session,
+         * but enforce authentication for system cloning.
+         */
+        polkit.addRule(function(action, subject) {
+            if (action.id === "net.penguins-eggs.pkexec.run" ||
+                (action.id === "org.freedesktop.policykit.exec" && action.lookup("program") === "/usr/bin/eggs")) {
+                var cmd = action.lookup("command_line");
+                if (cmd && (cmd.indexOf("--clone") !== -1 || cmd.indexOf("--crypted") !== -1)) {
+                    return polkit.Result.AUTH_ADMIN;
+                }
+            }
+        });
+
 # ----------------------------------------------------------------------------
 # 12. DESKTOP LAUNCHER
 # ----------------------------------------------------------------------------
