@@ -61,6 +61,11 @@ func printLuksInfo(cfg CryptoConfig) {
 }
 
 func promptLuksPassword() (string, error) {
+	if envPass := os.Getenv("EGGS_LUKS_PASSPHRASE"); envPass != "" {
+		utils.LogNormal("LUKS passphrase provided via environment.")
+		return envPass, nil
+	}
+
 	useDefault := tui.RunConfirmDefault(
 		fmt.Sprintf("Use the default password \"%s\" for LUKS encryption?", luksDefaultPassword))
 
@@ -73,6 +78,12 @@ func promptLuksPassword() (string, error) {
 }
 
 func promptCryptoConfig() CryptoConfig {
+	if os.Getenv("EGGS_LUKS_PASSPHRASE") != "" {
+		utils.LogNormal("Default (Maximum Security) configuration selected for non-interactive execution.")
+		printLuksInfo(DefaultCryptoConfig)
+		return DefaultCryptoConfig
+	}
+
 	useDefault := tui.RunConfirmDefault("Use the default LUKS configuration (Recommended: Maximum Security)?")
 
 	if useDefault {
