@@ -46,7 +46,7 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	// ==========================================================
 	excludes = append(excludes,
 		"dev/*",
-		"mnt", 
+		"mnt",
 		"media",
 		"proc/*",
 		"sys/*",
@@ -71,6 +71,11 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		"boot/efi/EFI",
 		"boot/loader/entries/",
 		"boot/grub/!(themes|unicode.pf2)",
+		// Initrd live già copiato in isodir/live/initrd.img.
+		"boot/oa-initrd.img",
+		// Immagini rescue Fedora legate all'host; conserviamo kernel e initramfs ordinari.
+		"boot/initramfs-0-rescue-*.img",
+		"boot/vmlinuz-0-rescue-*",
 		"etc/fstab",
 		"etc/mtab",
 		"swapfile",
@@ -108,10 +113,15 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		"var/lib/apt/periodic/*",
 		"var/lib/dpkg/*-old",
 
-		// Pacman (Arch) e DNF (Fedora)
+		// Pacman (Arch)
 		"var/cache/pacman/pkg/*",
 		"var/lib/pacman/sync/*",
+
+		// Cache DNF/DNF5 e PackageKit (Fedora), senza toccare database e stato RPM.
 		"var/cache/dnf/*",
+		"var/cache/libdnf5/*",
+		"var/cache/dnf5daemon-server/*",
+		"var/cache/PackageKit/*",
 
 		// Log: teniamo solo le directory di servizi persistenti
 		"var/log/!(apache2|clamav|libvirt|journal|samba)",
