@@ -57,6 +57,15 @@ sudo tailor wear colibri
 sudo eggs remaster
 ```
 
+### Graphical desktop experience with penguins-gui
+
+If you prefer a desktop application, you can use **[penguins-gui](https://github.com/pieroproietti/penguins-gui)**: an independent desktop GUI for `penguins-eggs` written in Go with the Fyne toolkit. It lets you:
+- Select remaster modes (Standard Live, System Clone, or Crypted Clone with graphical passphrase dialogs);
+- Monitor build output in real time with copy and clear actions;
+- Locate and open the produced ISO folder with `xdg-open`;
+- Install `penguins-eggs` CLI and Calamares (with Qt5/Qt6 dependencies) directly from the menus;
+- Run maintenance tasks (update `/etc/skel`, configure `grub40`, clean remnants, kill staging).
+
 ### Customize compression and ISO naming
 
 ```bash

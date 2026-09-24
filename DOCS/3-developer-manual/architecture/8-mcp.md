@@ -82,6 +82,7 @@ AI assistants can directly inspect system configuration and environment state:
 - **`eggs://exclude-list`**: Reads `/etc/penguins-eggs.d/custom.exclude.list` (custom squashfs exclusions).
 - **`eggs://version`**: Returns the active `eggs version` output.
 - **`eggs://status`**: Gathers real-time environment telemetry using `distro.NewDistro()`, `uname -a`, and `utils.IsLive()`.
+- **`eggs://log`**: Reads `/var/log/penguins-eggs.log` (central execution and remastering log).
 
 ---
 

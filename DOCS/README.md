@@ -41,7 +41,8 @@ Welcome to the official **penguins-eggs** (C/Go engine) documentation.
 
 ---
 
-## 👔 4. Companion Ecosystem: Tailoring & Wardrobe Ateliers
+## 🖥️ 4. Companion Ecosystem: GUI, Tailoring & Wardrobe Ateliers
+- **[penguins-gui](https://github.com/pieroproietti/penguins-gui)** — Independent desktop Graphical User Interface (GUI) written in Go with Fyne to trigger remasters, monitor build output, locate ISOs, and run maintenance tasks graphically.
 - **[penguins-tailor](https://github.com/pieroproietti/penguins-tailor)** — Standalone system tailoring tool providing the `tailor` CLI command to configure and dress systems with desktop profiles and accessories before remastering.
 - **Wardrobe Ateliers** — Configuration repositories containing costumes and accessories:
   - Main Atelier: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (by Piero Proietti)

@@ -15,6 +15,7 @@ The binary is installed as `eggs` (with `coa` working interchangeably as an alia
 | **`remaster`** | 🟢 Yes | Builds the live ISO. |
 | **`wizard`** | 🟢 Yes | Interactive 3-step wizard for configuring and launching remastering. |
 | **`sysinstall`** | 🟡 Mixed | Launches the system installer (GUI or TUI) on the target. |
+| **`coexist`** | 🟡 Mixed | Manages Coexist multi-boot disks and slot installations (`init`, `info`, `install`). |
 | **`destroy`** | 🟢 Yes | Unmounts the filesystems and safely cleans the workspace (`kill` is an alias). |
 | **`adapt`** | 🔴 No | Dynamically adapts the video resolution inside a VM. |
 | **`export`** | 🔴 No | Transfers artifacts (ISO/packages/logs) to a remote server. |
@@ -40,8 +41,9 @@ The heart of the system. Reads the YAML profile through the parser, generates th
 *   **Usage:** `sudo eggs remaster [flags]`
 *   **Flags:**
     *   `-w`, `--wizard`: starts the interactive 3-step wizard flow.
-    *   `--clone`: clone mode — preserves users and `/home` in the ISO.
-    *   `--crypted`: LUKS-encrypted mode — produces an encrypted squashfs (Debian family only). Mutually exclusive with `--clone`.
+    *   `-t`, `--target-dir <path>`: redirects `isodir` (squashfs & boot tree) and final ISO output to an external directory/share, creating a symlink in `/home/eggs`.
+    *   `--clone`: clone mode — preserves users, credentials, and `/home` in the ISO (requires Polkit `AUTH_ADMIN`).
+    *   `--crypted`: LUKS-encrypted mode — produces an encrypted squashfs (Debian family only; requires Polkit `AUTH_ADMIN`). Pass `EGGS_LUKS_PASSPHRASE` for non-interactive automation. Mutually exclusive with `--clone`.
     *   `--path <string>`: working directory. Default: `/home/eggs`.
     *   `--stop-after <step>`: **[debug]** stops execution after a specific step (e.g. `initramfs`), leaving the *chroot* mounted for manual inspection.
     *   `--debug`: prints the JSON plan (or the pre-processed YAML) and exits without building anything.
@@ -70,9 +72,20 @@ The orchestrator for installing the operating system to disk. Acts as a router t
 
 *   **Usage:** `sudo eggs sysinstall <engine>`
 *   **Engines:**
-    *   `calamares`: launches the graphical installer (GUI).
-    *   `krill`: launches the text installer (TUI).
-        *   `--coexist`: opens directly in Coexist multi-boot mode to install alongside other OSes.
+    *   `calamares`: launches the graphical installer (GUI). Honors dynamic custom branding overlays (`branding.desc.tmpl` -> `branding.desc`), `slideshowAPI: 2`, and styles located in `/etc/penguins-eggs.d/branding/calamares/branding`.
+    *   `krill`: launches the custom native Go text installer (TUI). Automatically supports:
+        1. **Full Installation**: partitions and formats entire disk.
+        2. **Pre-partitioned disk**: installs to selected existing partition, automatically isolates and protects Windows ESP in multi-ESP environments, and allows preserving an existing separate `/home` partition without reformatting.
+        3. **Coexist Multi-Boot**: installs to a designated pure slot (`coexist-N`).
+        *(Note: If the running live system was produced with `--clone` or `--crypted`, Krill automatically preserves cloned users, passwords, and home directories without prompting for new user creation).*
+
+### `eggs coexist`
+Manages Coexist multi-boot disks and slot installations across Alpine, Arch, Debian, Ubuntu, Fedora, and openSUSE.
+
+*   **Subcommands:**
+    *   `eggs coexist init <device>`: partitions and initializes a physical disk with UEFI GPT layout (512 MiB ESP and uniform slots with PARTLABEL `coexist-N` and filesystem label `rootN`). Requires `sudo`. Flags: `--size <GiB>` (default 10), `--fstype <ext4|btrfs>`, `-y, --yes`.
+    *   `eggs coexist info [device]`: inspects block devices, detected ESP, slots, filesystems, and availability. (User mode).
+    *   `eggs coexist install [slot]`: launches Krill directly in Coexist mode to install the current system into a designated slot (with automatic `<part>-<distro>` naming and isolated openSUSE GRUB bootloaders). Requires `sudo`.
 
 ### `eggs destroy` (alias: `eggs kill`)
 The "safe destroyer". Tears down the remastering environment: it uses `MNT_DETACH` (lazy unmount) to free the virtual mount points (`/proc`, `/sys`, `/dev`) without kernel panics or host hangs, then deletes the working directory.
@@ -144,7 +157,7 @@ AI agents connected via MCP can invoke the following tools:
 
 | MCP Tool | Description | Parameters |
 |---|---|---|
-| `eggs_remaster` | Remasters the running system into a live bootable ISO. | `clone` (bool), `crypted` (bool), `compression` (string: `zstd`, `xz`, `lz4`, `gzip`), `path` (string), `stop_after` (string), `debug` (bool) |
+| `eggs_remaster` | Remasters the running system into a live bootable ISO. | `clone` (bool), `crypted` (bool), `compression` (string: `zstd`, `xz`, `lz4`, `gzip`), `path` (string), `target_dir` (string), `stop_after` (string), `debug` (bool) |
 | `eggs_sysinstall` | Installs the live system environment permanently to local disk storage. | `installer` (`krill`, `calamares`) |
 | `eggs_export` | Exports artifacts (ISO, packages, logs) to remote Proxmox storage. | `target` (required: `iso`, `pkg`, `log`) |
 | `eggs_tools` | Executes system utilities and maintenance tasks. | `tool` (required: `clean`, `grub40`, `skel`, `build`), `args` (string) |
@@ -161,6 +174,7 @@ AI agents can read system state directly using MCP resources:
 | `eggs://exclude-list` | Custom Exclude List | Contents of `/etc/penguins-eggs.d/custom.exclude.list` |
 | `eggs://version` | Version Info | Build version, target architecture, and binary details |
 | `eggs://status` | System Remaster Status | Host distribution, family, kernel release, and live environment status |
+| `eggs://log` | Main Execution Log | Contents of `/var/log/penguins-eggs.log` |
 
 ---
 
