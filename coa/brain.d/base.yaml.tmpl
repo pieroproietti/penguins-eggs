@@ -121,8 +121,11 @@ remaster:
             ln -sf /usr/share/zoneinfo/UTC {{ .LiveRoot }}/etc/localtime
         fi
 
-        # Prevent systemd-firstboot locale prompts
-        if [ ! -f {{ .LiveRoot }}/etc/locale.conf ]; then
+        # Prevent systemd-firstboot locale prompts, respecting the master's
+        # real locale (Debian keeps it in /etc/default/locale, not /etc/locale.conf)
+        if [ -f {{ .LiveRoot }}/etc/default/locale ]; then
+            :
+        elif [ ! -f {{ .LiveRoot }}/etc/locale.conf ]; then
             echo "LANG=C.UTF-8" > {{ .LiveRoot }}/etc/locale.conf
         fi
 
