@@ -2,13 +2,17 @@ package setup
 
 import (
 	"bufio"
+	"coa/pkg/utils"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-var defaultCalamaresBranding = "/etc/penguins-eggs.d/branding.default/calamares/branding"
+var (
+	defaultCalamaresBranding = "/etc/penguins-eggs.d/branding.default/calamares/branding"
+	vendorCalamaresBranding  = "/etc/penguins-eggs.d/branding/calamares/branding"
+)
 
 // BrandingConfig contiene i dati dinamici da iniettare nel template
 type BrandingConfig struct {
@@ -99,11 +103,13 @@ func brandingDesc(oaVersion string) error {
 		if err := copyBrandingOverlay(defaultCalamaresBranding, targetDir); err != nil {
 			return fmt.Errorf("unable to apply default Calamares branding from %s: %v", defaultCalamaresBranding, err)
 		}
-		if err := renderAndSaveFile(defaultTemplate, targetPath, config, 0644); err != nil {
-			return err
-		}
-		if err := os.Remove(filepath.Join(targetDir, "branding.desc.tmpl")); err != nil && !os.IsNotExist(err) {
-			return fmt.Errorf("unable to remove rendered branding template: %v", err)
+		if _, err := os.Stat(defaultTemplate); err == nil {
+			if err := renderAndSaveFile(defaultTemplate, targetPath, config, 0644); err != nil {
+				return err
+			}
+			if err := os.Remove(filepath.Join(targetDir, "branding.desc.tmpl")); err != nil && !os.IsNotExist(err) {
+				return fmt.Errorf("unable to remove rendered branding template: %v", err)
+			}
 		}
 	} else if err := renderAndSaveEmbedded("branding.desc.tmpl", targetPath, config, 0644); err != nil {
 		return err
@@ -111,18 +117,53 @@ func brandingDesc(oaVersion string) error {
 
 	// 6. Sovrascriviamo/completiamo il branding predefinito con gli asset del
 	// vendor, se presenti. Un costume dell'atelier (es. "quirinux" da penguins-wardrobe)
-	// puo' depositare qui logo, slideshow e un branding.desc proprio tramite il
+	// o una personalizzazione in /etc/penguins-eggs.d/branding puo' depositare qui
+	// logo, slideshow e un branding.desc (o branding.desc.tmpl) proprio tramite il
 	// suo overlay sysroot (stessa cartella usata per lo splash di
 	// GRUB/ISOLINUX in base.yaml.tmpl), senza bisogno di alcun comando
 	// aggiuntivo oltre all'applicazione del costume con penguins-tailor ('tailor wear').
-	vendorBranding := "/etc/penguins-eggs.d/branding/calamares/branding"
+	vendorBranding := vendorCalamaresBranding
+	if fi, err := os.Stat(vendorBranding); err != nil || !fi.IsDir() {
+		altDir := "/etc/penguins-eggs.d/branding/calamares"
+		legacyDir := "/etc/penguins-eggs.d/brain.d/assets/calamares"
+		if isBrandingDir(altDir) {
+			vendorBranding = altDir
+		} else if fiLegacy, errLegacy := os.Stat(legacyDir); errLegacy == nil && fiLegacy.IsDir() {
+			vendorBranding = legacyDir
+		}
+	}
+
 	if fi, err := os.Stat(vendorBranding); err == nil && fi.IsDir() {
+		utils.LogNormal("Applying custom Calamares branding from %s...", vendorBranding)
 		if err := copyBrandingOverlay(vendorBranding, targetDir); err != nil {
 			return fmt.Errorf("unable to apply vendor calamares branding from %s: %v", vendorBranding, err)
+		}
+
+		vendorTemplate := filepath.Join(vendorBranding, "branding.desc.tmpl")
+		if _, err := os.Stat(vendorTemplate); err == nil {
+			if err := renderAndSaveFile(vendorTemplate, targetPath, config, 0644); err != nil {
+				return fmt.Errorf("unable to render vendor Calamares branding template %s: %w", vendorTemplate, err)
+			}
+			if err := os.Remove(filepath.Join(targetDir, "branding.desc.tmpl")); err != nil && !os.IsNotExist(err) {
+				return fmt.Errorf("unable to remove rendered vendor branding template: %v", err)
+			}
 		}
 	}
 
 	return nil
+}
+
+func isBrandingDir(dir string) bool {
+	fi, err := os.Stat(dir)
+	if err != nil || !fi.IsDir() {
+		return false
+	}
+	for _, f := range []string{"branding.desc", "branding.desc.tmpl", "show.qml"} {
+		if _, err := os.Stat(filepath.Join(dir, f)); err == nil {
+			return true
+		}
+	}
+	return false
 }
 
 // copyBrandingOverlay copia ricorsivamente il contenuto di src dentro dst,
@@ -137,6 +178,9 @@ func copyBrandingOverlay(src, dst string) error {
 		rel, err := filepath.Rel(src, path)
 		if err != nil {
 			return err
+		}
+		if info.IsDir() && rel == "modules" {
+			return filepath.SkipDir
 		}
 		target := filepath.Join(dst, rel)
 		if info.IsDir() {
