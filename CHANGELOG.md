@@ -2,6 +2,26 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.24 - 2026-09-24
+This release fixes Calamares custom branding template rendering in `sysinstall` (#140), introduces openSUSE support for Coexist multi-boot installations, adds non-interactive LUKS passphrase automation, strengthens Polkit security for system cloning, and refines distro-specific remastering rules.
+
+### 🎨 Calamares & Installer Branding Overlays (Fixes #140)
+* **Dynamic Template Rendering for Overlays**: When a custom vendor or user branding overlay is placed at `/etc/penguins-eggs.d/branding/calamares/branding` mirroring `branding.default`, any `branding.desc.tmpl` is now properly parsed and rendered with dynamic `BrandingConfig` variables (`ProductName`, `Version`, URLs, etc.) into `branding.desc`, cleaning up the `.tmpl` file.
+* **Full Overlay Honor**: Custom `productName`, images, styles, and modern Calamares `slideshowAPI: 2` settings are now fully applied in `eggs sysinstall`, fixing the bug where Calamares fell back to generic "eggs" defaults.
+* **Branding Path Fallbacks & Protections**: Added robust discovery for `/etc/penguins-eggs.d/branding/calamares` and legacy `/etc/penguins-eggs.d/brain.d/assets/calamares`. Protected Calamares branding directories from being polluted by module definitions.
+* **Clear User Feedback**: Added centralized logging (`utils.LogNormal`) confirming when custom Calamares branding is detected and applied.
+
+### 🦎 Coexist Multi-Boot: openSUSE Support
+* **openSUSE Bootloader Isolation**: Enabled Coexist slot installations for openSUSE with isolated GRUB bootloader configuration and vendor identification.
+
+### 🔒 Security, Polkit & Encryption Automation
+* **Non-Interactive LUKS Passphrase**: Added support for the `EGGS_LUKS_PASSPHRASE` environment variable, enabling fully automated, non-interactive encrypted remastering flights in CI/CD pipelines and scripts.
+* **Polkit Admin Authentication**: Enforced administrator authentication (`AUTH_ADMIN`) via Polkit for system cloning (`--clone`) and crypted cloning (`--crypted`) actions to safeguard host user data.
+
+### 🐧 Distro Optimizations & Remastering Cleanups
+* **Fedora Exclusions & SELinux Advice**: Excluded Fedora rescue kernel images and `dnf` cache directories from live squashfs builds; recommended SELinux permissive mode during checks on Fedora to avoid runtime blocks.
+* **Alpine Linux Dependency Templates**: Refined Alpine packaging and dependency templates.
+
 ## Release Notes: penguins-eggs v26.9.17 - 2026-09-20
 This release introduces full support for **Pre-partitioned disk** installations in Krill with multi-ESP dual-boot and separate `/home` preservation, adds `--target-dir` redirection for remastering flights, modernizes MCP logging, and improves overall installer reliability.
 
