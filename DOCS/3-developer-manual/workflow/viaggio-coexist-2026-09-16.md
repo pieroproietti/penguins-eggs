@@ -283,7 +283,7 @@ La soluzione è stata implementata direttamente in Krill:
 
 - [Guida pratica Coexist](../../2-user-manual/5-coexist.md)
 - [Architettura e revisione Coexist](../../4-krill-coexist-mode.md)
-- [Preparazione dell'installer](../../../coa/pkg/sysinstall/setup/orchestrator.go)
-- [Riconoscimento della modalità e conservazione utenti](../../../coa/pkg/sysinstall/setup/sibling.go)
-- [Test con immagini squashfs](../../../coa/pkg/sysinstall/setup/sibling_test.go)
-- [Test del percorso utenti in Krill](../../../coa/pkg/sysinstall/krill/clone_flow_test.go)
+- [Preparazione dell'installer](https://github.com/pieroproietti/penguins-eggs/blob/main/coa/pkg/sysinstall/setup/orchestrator.go)
+- [Riconoscimento della modalità e conservazione utenti](https://github.com/pieroproietti/penguins-eggs/blob/main/coa/pkg/sysinstall/setup/sibling.go)
+- [Test con immagini squashfs](https://github.com/pieroproietti/penguins-eggs/blob/main/coa/pkg/sysinstall/setup/sibling_test.go)
+- [Test del percorso utenti in Krill](https://github.com/pieroproietti/penguins-eggs/blob/main/coa/pkg/sysinstall/krill/clone_flow_test.go)
