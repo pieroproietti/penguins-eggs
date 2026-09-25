@@ -922,9 +922,6 @@ func DetectTimezones() TimezoneData {
 // DetectLanguage restituisce la lingua corrente del sistema live.
 // Se la connessione di rete non è attiva o LANG non è impostato, restituisce "en_US.UTF-8" come fallback neutro.
 func DetectLanguage() string {
-	if !utils.HasNetworkConnectivity() {
-		return "en_US.UTF-8"
-	}
 	if lang := os.Getenv("LANG"); lang != "" {
 		return lang
 	}

@@ -10,8 +10,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"coa/pkg/utils"
 )
 
 func runUnpackfs(c *ctx) error {
@@ -249,7 +247,7 @@ func (c *ctx) makeSwapfile(path string) error {
 
 func runLocale(c *ctx) error {
 	lang := c.plan.Language
-	if lang == "" || (!utils.HasNetworkConnectivity() && lang != "en_US.UTF-8") {
+	if lang == "" {
 		c.logf("network connectivity unavailable or unspecified language, defaulting to neutral fallback en_US.UTF-8")
 		lang = "en_US.UTF-8"
 	}

@@ -8,6 +8,28 @@ BOOT_PARAMS="$2"
 BOOT_COMMON="audit=0 splash quiet loglevel=3 systemd.show_status=auto udev.log_priority=3"
 RAM_MODE_ENABLED="${3:-1}"
 
+# live-config no hereda el idioma del filesystem squasheado: si no recibe
+# el parametro de arranque 'locales=', usa siempre 'en_US.UTF-8' por defecto,
+# sin importar lo que haya configurado en /etc/default/locale en la imagen.
+# Para que la sesion live coincida con el idioma del sistema master desde el
+# que se ejecuta 'coa remaster', leemos aqui el idioma del master (este script
+# se ejecuta sobre el master, no en chroot) y lo pasamos explicitamente como
+# parametro de arranque.
+MASTER_LANG=""
+if [ -f /etc/default/locale ]; then
+    MASTER_LANG=$(grep -m1 '^LANG=' /etc/default/locale | cut -d= -f2 | tr -d '"')
+fi
+if [ -z "$MASTER_LANG" ] && [ -f /etc/locale.conf ]; then
+    MASTER_LANG=$(grep -m1 '^LANG=' /etc/locale.conf | cut -d= -f2 | tr -d '"')
+fi
+[ -z "$MASTER_LANG" ] && MASTER_LANG="$LANG"
+if [ -n "$MASTER_LANG" ]; then
+    BOOT_COMMON="$BOOT_COMMON locales=$MASTER_LANG"
+    echo "Idioma del master detectado: $MASTER_LANG (se preconfigurara en la iso)"
+else
+    echo "No se detecto idioma del master, live-config usara el default en_US.UTF-8"
+fi
+
 echo "Generazione menu per: $PRETTY_NAME"
 
 if [ -z "$ISODIR" ] || [ -z "$PRETTY_NAME" ]; then
@@ -36,7 +58,7 @@ render_branding_template() {
     content=${content//\{\{\{kernel\}\}\}/$(uname -r)}
     content=${content//\{\{\{vmlinuz\}\}\}//live/vmlinuz}
     content=${content//\{\{\{initrdImg\}\}\}//live/initrd.img}
-    content=${content//\{\{\{kernel_parameters\}\}\}/$BOOT_PARAMS}
+    content=${content//\{\{\{kernel_parameters\}\}\}/$BOOT_PARAMS $BOOT_COMMON}
     content=${content//\{\{\{rmModules\}\}\}/}
     printf '%s\n' "$content" > "$target"
 }
