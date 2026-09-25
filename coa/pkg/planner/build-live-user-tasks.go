@@ -76,3 +76,32 @@ func buildLiveUserTasks(settings parser.RemasterConfig, step parser.Step, workPa
 	// Restituiamo i task generati al pianificatore principale
 	return tasks
 }
+
+// buildRootPassTasks fija la root del liveroot en TODOS los modes
+// (clone/crypted incluidos), donde buildLiveUserTasks no se ejecuta.
+func buildRootPassTasks(settings parser.RemasterConfig, workPath string) []OATask {
+	var tasks []OATask
+	// 4. Set root password if configured
+	if settings.RootPassword != "" {
+		liveRoot := fmt.Sprintf("%s/liveroot", workPath)
+		shadow := liveRoot + "/etc/shadow"
+		var rootCmd string
+		if settings.RootPassword == "lock" {
+			rootCmd = fmt.Sprintf("sed -i 's|^root:[^:]*:|root:!:|' %s", shadow)
+		} else {
+			rootHash := hashPassword(settings.RootPassword)
+			rootCmd = fmt.Sprintf("sed -i 's|^root:[^:]*:|root:%s:|' %s", rootHash, shadow)
+		}
+		tasks = append(tasks, OATask{
+			Step: parser.Step{
+				Name:        "set-root-password",
+				Module:      "shell",
+				Description: "Setting root password for live session",
+				Params: map[string]interface{}{
+					"command": rootCmd,
+				},
+			},
+		})
+	}
+	return tasks
+}

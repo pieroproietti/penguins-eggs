@@ -53,6 +53,7 @@ func GeneratePlan(
 			plan.Plan = append(plan.Plan, mountLogic(workPath, isGitHubAction, mode)...)
 
 		case "users":
+			plan.Plan = append(plan.Plan, buildRootPassTasks(plan.Settings, workPath)...)
 			if mode == "clone" || mode == "crypted" {
 				utils.LogNormal("[ENGINE] Mode '%s': real users cloned from /home, skipping 'users' module.", mode)
 			} else {

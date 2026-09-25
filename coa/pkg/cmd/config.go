@@ -31,6 +31,7 @@ const (
 const (
 	cfgUser = iota
 	cfgPassword
+	cfgRootPassword
 	cfgAlgorithm
 	cfgLevel
 	cfgISOPrefix
@@ -74,13 +75,14 @@ type configModel struct {
 }
 
 type configState struct {
-	User      string
-	Password  string
-	Algorithm string
-	Level     int
-	ISOPrefix string
-	Installer string
-	RamMode   bool
+	User         string
+	Password     string
+	RootPassword string
+	Algorithm    string
+	Level        int
+	ISOPrefix    string
+	Installer    string
+	RamMode      bool
 }
 
 func hasCalamares() bool {
@@ -119,6 +121,9 @@ func loadConfigState() configState {
 	if settings.Remaster.Password != "" {
 		state.Password = settings.Remaster.Password
 	}
+	if settings.Remaster.RootPassword != "" {
+		state.RootPassword = settings.Remaster.RootPassword
+	}
 	if settings.Remaster.Compression.Algorithm != "" {
 		state.Algorithm = settings.Remaster.Compression.Algorithm
 	}
@@ -143,6 +148,8 @@ func cfgInputIdx(field int) int {
 		return 0
 	case cfgPassword:
 		return 1
+	case cfgRootPassword:
+		return 4
 	case cfgLevel:
 		return 2
 	case cfgISOPrefix:
@@ -154,7 +161,7 @@ func cfgInputIdx(field int) int {
 func newConfigModel() configModel {
 	state := loadConfigState()
 
-	inputs := make([]textinput.Model, 4)
+	inputs := make([]textinput.Model, 5)
 	for i := range inputs {
 		inputs[i] = textinput.New()
 		inputs[i].Prompt = ""
@@ -166,6 +173,7 @@ func newConfigModel() configModel {
 	inputs[1].SetValue(state.Password)
 	inputs[2].SetValue(strconv.Itoa(state.Level))
 	inputs[3].SetValue(state.ISOPrefix)
+	inputs[4].SetValue(state.RootPassword)
 
 	algoIdx := 0
 	for i, a := range cfgAlgorithms {
@@ -362,13 +370,14 @@ func (m configModel) buildState() configState {
 		user = "live"
 	}
 	return configState{
-		User:      user,
-		Password:  m.inputs[1].Value(),
-		Algorithm: cfgAlgorithms[m.algoIdx],
-		Level:     level,
-		ISOPrefix: strings.TrimSpace(m.inputs[3].Value()),
-		Installer: installer,
-		RamMode:   m.ramModeIdx == 0,
+		User:         user,
+		Password:     m.inputs[1].Value(),
+		RootPassword: m.inputs[4].Value(),
+		Algorithm:    cfgAlgorithms[m.algoIdx],
+		Level:        level,
+		ISOPrefix:    strings.TrimSpace(m.inputs[3].Value()),
+		Installer:    installer,
+		RamMode:      m.ramModeIdx == 0,
 	}
 }
 
@@ -429,6 +438,7 @@ func (m configModel) viewSettings() string {
 	fields := []fieldDef{
 		{cfgUser, "User"},
 		{cfgPassword, "Password"},
+		{cfgRootPassword, "Root password"},
 		{cfgAlgorithm, "Algorithm"},
 	}
 	if m.showLevel() {
@@ -451,6 +461,8 @@ func (m configModel) viewSettings() string {
 			val = m.inputs[0].View()
 		case cfgPassword:
 			val = m.inputs[1].View()
+		case cfgRootPassword:
+			val = m.inputs[4].View()
 		case cfgAlgorithm:
 			val = cfgCyan.Render("‹ " + cfgAlgorithms[m.algoIdx] + " ›")
 		case cfgLevel:
@@ -542,6 +554,9 @@ func saveConfigState(state configState) error {
 		b.WriteString(fmt.Sprintf("  user: \"%s\"\n", state.User))
 	}
 	b.WriteString(fmt.Sprintf("  password: \"%s\"\n", state.Password))
+	if state.RootPassword != "" {
+		b.WriteString(fmt.Sprintf("  root_password: \"%s\"\n", state.RootPassword))
+	}
 	b.WriteString("  compression:\n")
 	b.WriteString(fmt.Sprintf("    algorithm: \"%s\"\n", state.Algorithm))
 	if state.Level > 0 {

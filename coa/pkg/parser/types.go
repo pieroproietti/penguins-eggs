@@ -38,14 +38,15 @@ type Settings struct {
 }
 
 type RemasterConfig struct {
-	User        string            `yaml:"user" json:"user" mapstructure:"user"`
-	Password    string            `yaml:"password" json:"password" mapstructure:"password"`
-	WorkDir     string            `yaml:"work_dir" json:"work_dir" mapstructure:"work_dir"`
-	TargetDir   string            `yaml:"target_dir,omitempty" json:"target_dir,omitempty" mapstructure:"target_dir"`
-	Installer   string            `yaml:"installer,omitempty" json:"installer,omitempty" mapstructure:"installer"`
-	Compression CompressionConfig `yaml:"compression" json:"compression" mapstructure:"compression"`
-	ISOPrefix   string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty" mapstructure:"iso_prefix"`
-	RamMode     *bool             `yaml:"ram_mode,omitempty" json:"ram_mode,omitempty" mapstructure:"ram_mode"`
+	User         string            `yaml:"user" json:"user" mapstructure:"user"`
+	Password     string            `yaml:"password" json:"password" mapstructure:"password"`
+	RootPassword string            `yaml:"root_password,omitempty" json:"root_password,omitempty" mapstructure:"root_password"`
+	WorkDir      string            `yaml:"work_dir" json:"work_dir" mapstructure:"work_dir"`
+	TargetDir    string            `yaml:"target_dir,omitempty" json:"target_dir,omitempty" mapstructure:"target_dir"`
+	Installer    string            `yaml:"installer,omitempty" json:"installer,omitempty" mapstructure:"installer"`
+	Compression  CompressionConfig `yaml:"compression" json:"compression" mapstructure:"compression"`
+	ISOPrefix    string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty" mapstructure:"iso_prefix"`
+	RamMode      *bool             `yaml:"ram_mode,omitempty" json:"ram_mode,omitempty" mapstructure:"ram_mode"`
 }
 
 type CompressionConfig struct {
@@ -76,4 +77,3 @@ type DistroMap struct {
 	File string   `yaml:"file,omitempty"`
 	Dir  string   `yaml:"dir,omitempty"`
 }
-
