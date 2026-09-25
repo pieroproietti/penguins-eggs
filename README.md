@@ -78,13 +78,11 @@ You can use penguins-eggs through its GUI, [penguins-gui](https://github.com/pie
 ## Star History
 
 This project collects stars, look to the sky... contribute!
-
-[![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
-
 [![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/penguins-eggs&Date)
 
 ---
 *Created with passion by Piero Proietti.*
+[![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
 
 ### blog
 * [https://penguins-eggs.net](https://penguins-eggs.net)
