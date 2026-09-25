@@ -71,9 +71,6 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
   * **Main Atelier**: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (maintained by Piero Proietti)
   * **Quirinux Atelier**: [charliemartinez/penguins-wardrobe](https://github.com/charliemartinez/penguins-wardrobe) (maintained by Charlie Martinez for Quirinux)
 
-[![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
-
-
 ## Penguins GUI
 You can use penguins-eggs through its GUI, [penguins-gui](https://github.com/pieroproietti/penguins-gui).
 ![penguins-gui](https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png)
@@ -81,6 +78,8 @@ You can use penguins-eggs through its GUI, [penguins-gui](https://github.com/pie
 ## Star History
 
 This project collects stars, look to the sky... contribute!
+
+[![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
 
 [![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/penguins-eggs&Date)
 
