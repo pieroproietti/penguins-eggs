@@ -74,6 +74,10 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
 [![coaoa](./coaoa.jpeg "Visit the Penguins' eggs Telegram channel")](https://t.me/penguins_eggs)
 
 
+## Penguins GUI
+You can use penguins-eggs through its GUI, [penguins-gui](https://github.com/pieroproietti/penguins-gui).
+![penguins-gui](https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png)
+
 ## Star History
 
 This project collects stars, look to the sky... contribute!
