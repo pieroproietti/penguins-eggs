@@ -54,7 +54,7 @@ func GeneratePlan(
 
 		case "users":
 			if mode == "clone" || mode == "crypted" {
-				utils.LogNormal("[ENGINE] Mode '%s': real users cloned from /home, skipping 'users' module.", mode)
+				utils.LogNormal("[ENGINE] Mode '%s': real users cloned from /home, skipping 'users' module (root credentials preserved as-is).", mode)
 			} else {
 				plan.Plan = append(plan.Plan, buildLiveUserTasks(plan.Settings, step, workPath)...)
 			}
