@@ -65,8 +65,9 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
 
 
 `penguins-eggs` works hand-in-hand with dedicated companion tools and configuration repositories:
-![penguins-gui](https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png)
 * **[penguins-gui](https://github.com/pieroproietti/penguins-gui)**: The independent desktop graphical user interface (GUI) written in Go with !Fyne. Allows desktop users to configure and trigger remastering flights (standard live, system clone, and encrypted clone with graphical passphrase entry), view real-time build logs, locate and open created ISOs with `xdg-open`, configure official repositories, install the `eggs` CLI, install Calamares with Qt5/Qt6 runtimes, and execute maintenance tasks.
+![penguins-gui](https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png)
+
 * **[penguins-tailor](https://github.com/pieroproietti/penguins-tailor)**: The CLI tool providing the `tailor` command to configure, dress, and customize your Linux system with desktop profiles ("costumes") and "accessories" before remastering.
 * **Wardrobe Ateliers** (Costumes & Accessories):
   * **Main Atelier**: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (maintained by Piero Proietti)
