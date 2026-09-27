@@ -64,3 +64,9 @@ clean:
 	@rm -rf docs/man docs/completion docs/md
 
 .PHONY: all build_oa build_coa docs package clean
+
+# Standalone x86_64 bundle; does not install anything on the build host.
+appimage:
+	@bash packaging/appimage/build.sh
+
+.PHONY: appimage

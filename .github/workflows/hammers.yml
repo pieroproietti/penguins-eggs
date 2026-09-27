@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true    
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   hammer-build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +43,7 @@ jobs:
               "
             # The installation now pulls directly from the project folder
             install_cmd: apk add --allow-untrusted ./*.apk
-              
+
           # ==========================================
           # 🏹 ARCH LINUX (The Proving Ground)
           # ==========================================
@@ -92,12 +92,12 @@ jobs:
             pkg_pattern: "*.deb"
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
-              
+
               apt-get update
-              
+
               # 2. Pre-configure console-setup and keyboard to avoid Dialog blocking
               apt-get install -y debconf-utils
-              
+
               # Use this instead of <<<
               echo "keyboard-configuration keyboard-configuration/layout select US" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
@@ -167,35 +167,35 @@ jobs:
           - distro: debian-riscv64
             image: ubuntu:22.04
             pkg_pattern: "*.deb"
-            
+
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
-              
+
               # 1. THE MULTI-ARCH MAGIC: Let's also add updates to align versions!
               dpkg --add-architecture riscv64
               sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
-              
+
               # Insert the base repo, updates, and security patches for RISC-V
               cat <<EOF > /etc/apt/sources.list.d/riscv64.list
               deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
               deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
               deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
               EOF
-              
+
               apt-get update
               apt-get install -y debconf-utils
               echo "keyboard-configuration keyboard-configuration/layout select US" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
-              
+
               # 2. Toolchain + Emulator + native RISC-V libcrypt (now the versions will match!)
               apt-get install -y wget build-essential git sudo dpkg-dev gcc-riscv64-linux-gnu qemu-user-static binfmt-support libcrypt-dev:riscv64
-              
+
               # Download Go for x86_64
               wget -q https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
               ln -s /usr/local/go/bin/go /usr/bin/go
-              
+
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
             pack_cmd: |
@@ -204,10 +204,10 @@ jobs:
                 set -e
                 cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
-                
+
                 # 🧹 THE BROOM MAGIC
                 make clean
-                
+
                 # THE ARMORED MAGIC
                 make package GOOS=linux GOARCH=riscv64 CC=riscv64-linux-gnu-gcc RUNNER=qemu-riscv64-static
               "
@@ -219,35 +219,35 @@ jobs:
           - distro: debian-arm64
             image: ubuntu:22.04
             pkg_pattern: "*.deb"
-            
+
             prep_cmd: |
               export DEBIAN_FRONTEND=noninteractive
-              
+
               # 1. THE MULTI-ARCH MAGIC: Add the ARM64 architecture
               dpkg --add-architecture arm64
               sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
-              
+
               # Insert the base repo, updates, and security patches for ARM64
               cat <<EOF > /etc/apt/sources.list.d/arm64.list
               deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
               deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
               deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
               EOF
-              
+
               apt-get update
               apt-get install -y debconf-utils
               echo "keyboard-configuration keyboard-configuration/layout select US" | debconf-set-selections
               echo "keyboard-configuration keyboard-configuration/modelcode select pc105" | debconf-set-selections
               echo "console-setup console-setup/detect guess" | debconf-set-selections
-              
+
               # 2. Toolchain + Emulator + native ARM64 libcrypt
               apt-get install -y wget build-essential git sudo dpkg-dev gcc-aarch64-linux-gnu qemu-user-static binfmt-support libcrypt-dev:arm64
-              
+
               # Download Go for x86_64
               wget -q https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
               tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
               ln -s /usr/local/go/bin/go /usr/bin/go
-              
+
               useradd -m -s /bin/bash artisan
               echo "artisan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
             pack_cmd: |
@@ -256,15 +256,15 @@ jobs:
                 set -e
                 cd '$GITHUB_WORKSPACE'
                 git config --global --add safe.directory '*'
-                
+
                 # 🧹 THE BROOM MAGIC
                 make clean
-                
+
                 # THE ARMORED MAGIC FOR ARM64
                 make package GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc RUNNER=qemu-aarch64-static
               "
             install_cmd: echo "✅ ARM64 package generated. Skipping installation test on x86_64 runner."
-            
+
     container:
       image: ${{ matrix.image }}
 
@@ -305,4 +305,27 @@ jobs:
           name: penguins-eggs-${{ matrix.distro }}
           path: export/
           retention-days: 7
-          
+
+  hammer-appimage:
+    name: AppImage x86_64
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: coa/go.mod
+          cache-dependency-path: coa/go.sum
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential libcrypt-dev squashfs-tools desktop-file-utils
+      - name: Build AppImage
+        run: make appimage
+      - name: Test extracted AppImage without FUSE or root
+        run: bash packaging/appimage/smoke-test.sh dist/appimage/*.AppImage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: penguins-eggs-appimage-x86_64
+          path: dist/appimage/*
+          if-no-files-found: error
+          retention-days: 7

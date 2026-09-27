@@ -48,3 +48,7 @@ py_oa_tools.egg-info
 # --- AI assistant local instructions (not for upstream) ---
 CLAUDE.md
 claude.md
+
+# AppImage output
+/dist/appimage/
+*.AppImage

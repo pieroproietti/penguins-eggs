@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+appdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+export PATH="$appdir/usr/bin:$PATH"
+if [ "${1:-}" = --install-system ]; then
+    exec "$appdir/install-system"
+fi
+# Remaster plans reference installed scripts and the live image must retain eggs.
+case "${1:-}" in
+    remaster|wizard)
+        if [ ! -x /usr/local/bin/eggs ] || [ ! -x /etc/penguins-eggs.d/scripts/bootloader-copy.sh ]; then
+            echo 'Install the bundled binaries and resources first: sudo ./penguins-eggs-*.AppImage --install-system' >&2
+            exit 1
+        fi
+        ;;
+esac
+exec "$appdir/usr/bin/eggs" "$@"

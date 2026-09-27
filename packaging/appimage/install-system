@@ -1,0 +1,24 @@
+#!/bin/sh
+# Explicit installation only: never called automatically by AppRun.
+set -eu
+if [ "$(id -u)" != 0 ]; then
+    echo 'Run the AppImage with sudo and --install-system.' >&2
+    exit 1
+fi
+appdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+install -d /usr/local/bin /etc/penguins-eggs.d /usr/share/penguins-eggs
+install -m 0755 "$appdir/usr/bin/coa" /usr/local/bin/coa
+install -m 0755 "$appdir/usr/bin/oa" /usr/local/bin/oa
+ln -sfn coa /usr/local/bin/eggs
+# Update shipped resources, preserving the user's custom configuration and branding.
+for resource in brain.d scripts branding.default; do
+    cp -a "$appdir/etc/penguins-eggs.d/$resource" /etc/penguins-eggs.d/
+done
+for config in custom.yaml custom.exclude.list; do
+    if [ ! -e "/etc/penguins-eggs.d/$config" ]; then
+        install -m 0644 "$appdir/etc/penguins-eggs.d/$config" "/etc/penguins-eggs.d/$config"
+    fi
+done
+cp -a "$appdir/usr/share/penguins-eggs/spacemit" /usr/share/penguins-eggs/
+echo 'Installed eggs, coa and oa in /usr/local/bin, with their system resources.'
+echo 'Distribution runtime dependencies are still required for remastering.'

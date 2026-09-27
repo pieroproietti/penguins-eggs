@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=penguins-eggs
+Comment=Remaster Linux systems into bootable live images
+Exec=eggs
+Icon=penguins-eggs
+Terminal=true
+Categories=System;
