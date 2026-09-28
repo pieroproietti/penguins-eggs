@@ -305,27 +305,3 @@ jobs:
           name: penguins-eggs-${{ matrix.distro }}
           path: export/
           retention-days: 7
-
-  hammer-appimage:
-    name: AppImage x86_64
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: coa/go.mod
-          cache-dependency-path: coa/go.sum
-      - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential libcrypt-dev squashfs-tools desktop-file-utils
-      - name: Build AppImage
-        run: make appimage
-      - name: Test extracted AppImage without FUSE or root
-        run: bash packaging/appimage/smoke-test.sh dist/appimage/*.AppImage
-      - uses: actions/upload-artifact@v4
-        with:
-          name: penguins-eggs-appimage-x86_64
-          path: dist/appimage/*
-          if-no-files-found: error
-          retention-days: 7
