@@ -21,7 +21,8 @@ func LogError(format string, a ...interface{}) {
 }
 
 func getDebianDepends(arch string) string {
-	base := "btrfs-progs, curl, dosfstools, git, gpg, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent"
+	// Debian and Ubuntu package the sfdisk executable separately in fdisk.
+	base := "btrfs-progs, curl, dosfstools, fdisk, git, gpg, libarchive-tools, live-boot, live-boot-initramfs-tools, mtools, rsync, squashfs-tools, sudo, xorriso, yq, qemu-guest-agent"
 	switch arch {
 	case "amd64", "i386":
 		return base + ", grub-efi-amd64-bin, grub-pc-bin"

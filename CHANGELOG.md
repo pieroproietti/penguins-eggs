@@ -2,6 +2,13 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.9.29 - 2026-09-29
+
+* **Debian/Ubuntu installer dependencies**: Declare `fdisk` as a required package, ensuring the `sfdisk` executable is installed with eggs on Debian, Ubuntu, and derivatives such as Zorin.
+* **Live and installed system locale**: Preserve the source system's locale in live boot parameters and avoid network-dependent language fallbacks in Krill.
+* **Documentation**: Update companion GUI guidance and Coexist source links.
+* **Packaging CI**: Stop generating AppImage artifacts; retain native distribution packages.
+
 ## Release Notes: penguins-eggs v26.9.24 - 2026-09-24
 This release fixes Calamares custom branding template rendering in `sysinstall` (#140), introduces openSUSE support for Coexist multi-boot installations, adds non-interactive LUKS passphrase automation, strengthens Polkit security for system cloning, and refines distro-specific remastering rules.
 
