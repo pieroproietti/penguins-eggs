@@ -28,7 +28,7 @@ func userConf() error {
 	// 1. Identify the live user
 	liveUser := os.Getenv("SUDO_USER")
 	if liveUser == "" || liveUser == "root" {
-		liveUser = "live"
+		liveUser = configuredLiveUser()
 	}
 
 	// 2. Read the real groups

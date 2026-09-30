@@ -2,7 +2,18 @@ package setup
 
 import (
 	"path/filepath"
+
+	"coa/pkg/parser"
 )
+
+// configuredLiveUser returns the live username set via 'eggs config'
+// (remaster.user in custom.yaml), falling back to the default "live".
+func configuredLiveUser() string {
+	if settings, err := parser.LoadCustomSettings(); err == nil && settings != nil && settings.Remaster.User != "" {
+		return settings.Remaster.User
+	}
+	return "live"
+}
 
 // Definiamo una struct dedicata per il template
 type RemoveUserConfig struct {
@@ -11,7 +22,7 @@ type RemoveUserConfig struct {
 
 func removeuserConf() error {
 	config := RemoveUserConfig{
-		Username: "live", // Il tuo standard per l'uovo
+		Username: configuredLiveUser(),
 	}
 
 	targetPath := filepath.Join(InstallerDRoot, "modules", "removeuser.conf")
