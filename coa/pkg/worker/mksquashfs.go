@@ -56,7 +56,7 @@ func RunMksquashfs(payload []byte) error {
 		level = "3"
 	}
 
-	blockSize := "1M"
+	blockSize := squashfsBlockSize
 	procs := fmt.Sprintf("%d", runtime.NumCPU())
 
 	args := []string{
@@ -75,22 +75,7 @@ func RunMksquashfs(payload []byte) error {
 		args = append(args, "-ef", excludesFile)
 	}
 
-	switch algo {
-	case "zstd":
-		args = append(args, "-comp", "zstd", "-Xcompression-level", level)
-	case "xz":
-		// -Xbcj x86 aplica un filtro de pre-procesamiento pensado para
-		// código x86/x86_64 (reordena offsets de saltos/llamadas para
-		// que se repitan más patrones), mejorando la compresión real de
-		// xz en un sistema Linux típico sin costo de compatibilidad:
-		// mksquashfs/unsquashfs lo soportan de forma nativa y
-		// transparente al montar/leer el squashfs resultante.
-		args = append(args, "-comp", "xz", "-Xbcj", "x86", "-Xdict-size", "1M")
-	case "gzip":
-		args = append(args, "-comp", "gzip")
-	default:
-		args = append(args, "-comp", algo)
-	}
+	args = append(args, squashfsCompressionArgs(algo, level, runtime.GOARCH)...)
 
 	fmt.Printf("📦 [worker] Running: mksquashfs %s\n", shellJoin(args))
 
