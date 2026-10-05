@@ -2,6 +2,22 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.5 - 2026-10-05
+
+This release introduces dynamic live user configuration and root password synchronization for standard remasters, optimizes xz compression performance on non-x86 architectures, fixes Calamares `machine-id` setup on non-systemd systems, and improves bootloader download resilience.
+
+### 👤 Live User & Credentials Handling
+* **Configured Live User**: `remaster.user` from `custom.yaml` is now respected across the installer and live system stack (`removeuser.conf`, SUDO_USER fallback, live sudoers template, GECOS and `/home/<user>` in native C engine), eliminating orphan "live" user accounts when a custom live user is configured (#145, #147).
+* **Live Root Password Synchronization**: In standard remaster mode, root's password in the live `/etc/shadow` is automatically synchronized with the live user's password (if root is password-enabled on the distribution), ensuring the live ISO does not inherit the host master's root password (#147).
+
+### ⚡ Squashfs & Architecture Optimizations
+* **Target-Aware BCJ Filter**: The `-Xbcj x86` filter for `mksquashfs` is now applied only on x86/amd64 systems. On non-x86 architectures (such as ARM64 and RISC-V), this halves the xz compression duration by skipping redundant dual-pass filtering on non-x86 code (#148).
+* **Compression Configuration**: Clarified `custom.yaml` settings regarding xz (which uses optimal 1M dictionary/blocks) and corrected the valid level range for zstd (1-22).
+
+### 🛠️ Installer & System Stability
+* **Non-Systemd Machine-ID (Calamares)**: Detected init system now takes precedence over costume overlay configurations, preventing Calamares on non-systemd distributions (e.g. Devuan) from aborting with exit code 127 when calling `systemd-machine-id-setup` (#147).
+* **Bootloader Download Timeout**: Increased HTTP client timeout from 30s to 5m in `EnsureBootloaders`, preventing transfer timeouts (`context deadline exceeded`) on slow or high-latency network connections (#146).
+
 ## Release Notes: penguins-eggs v26.9.29 - 2026-09-29
 
 * **Debian/Ubuntu installer dependencies**: Declare `fdisk` as a required package, ensuring the `sfdisk` executable is installed with eggs on Debian, Ubuntu, and derivatives such as Zorin.
