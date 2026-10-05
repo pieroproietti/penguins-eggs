@@ -124,6 +124,40 @@ jobs:
           done
           echo -e "\n✅ SSH service ready!"
 
+      # --------------------------------------------------------------------
+      # PREPARAZIONE AMBIENTE, UPGRADE E REBOOT SU NUOVO KERNEL
+      # --------------------------------------------------------------------
+      - name: 📦 Preparazione ambiente e aggiornamento sistema (${{ inputs.os }})
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
+            echo "📦 Preparing Environment (${{ inputs.os }})..."
+            echo '${{ env.VM_PASS }}' | sudo -S ${{ inputs.prep_cmd }}
+          EOF
+
+      - name: 🔄 Riavvio VM per nuovo Kernel
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
+        run: |
+          echo "Invio comando di reboot alla VM per avviare il nuovo kernel..."
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} "echo '${{ env.VM_PASS }}' | sudo -S reboot" || true
+          echo "Attesa avvio ciclo di riavvio..."
+          sleep 10
+
+      - name: ⏳ Attesa disponibilità SSH post-reboot...
+        env:
+          SSHPASS: ${{ env.VM_PASS }}
+        run: |
+          while ! sshpass -e ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ${{ env.VM_USER }}@${{ env.VM_IP }} exit; do
+            sleep 2
+            echo -n "."
+          done
+          echo -e "\n✅ VM riavviata con successo su nuovo kernel!"
+
+      # --------------------------------------------------------------------
+      # TRASFERIMENTO PACCHETTI, REMASTER ED EXPORT
+      # --------------------------------------------------------------------
       - name: 🚚 Trasferisci i pacchetti alla VM
         env:
           SSHPASS: ${{ env.VM_PASS }}
@@ -136,9 +170,6 @@ jobs:
           SSHPASS: ${{ env.VM_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ env.VM_USER }}@${{ env.VM_IP }} << EOF
-            echo "📦 Preparing Environment (${{ inputs.os }})..."
-            echo '${{ env.VM_PASS }}' | sudo -S ${{ inputs.prep_cmd }}
-            
             echo "⚙️ penguins-eggs Installation..."
             echo '${{ env.VM_PASS }}' | sudo -S ${{ inputs.install_cmd }}
             
