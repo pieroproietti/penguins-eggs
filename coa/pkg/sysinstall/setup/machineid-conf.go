@@ -5,6 +5,10 @@ import (
 	"path/filepath"
 )
 
+// systemdRuntimePath exists only while systemd is the running init.
+// It is a variable so tests can point it elsewhere.
+var systemdRuntimePath = "/run/systemd/private"
+
 // machineIdConf generates machineid.conf adapted to the current init system.
 // Calamares' machineid module runs 'systemd-machine-id-setup' inside the
 // target chroot when 'systemd: true' is set. On systemd-less distros (e.g.
@@ -13,9 +17,13 @@ import (
 //
 // Detection: if /run/systemd/private exists, systemd is the running init.
 // This is the canonical check used by systemd itself and by many other tools.
+//
+// It must run after calamaresModulesOverlay: a costume may ship its own
+// machineid.conf (e.g. written for a systemd distro), and the detected init
+// has to override it.
 func machineIdConf() error {
 	useSystemd := false
-	if _, err := os.Stat("/run/systemd/private"); err == nil {
+	if _, err := os.Stat(systemdRuntimePath); err == nil {
 		useSystemd = true
 	}
 

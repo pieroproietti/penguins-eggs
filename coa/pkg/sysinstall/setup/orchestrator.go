@@ -52,8 +52,11 @@ func BuildInstaller(oaVersion string) error {
 		userConf,
 		removeuserConf,
 		shellprocessOaChrootRunner,
-		machineIdConf,
+		// The costume overlay goes first: it may ship module files written for
+		// another init system. machineIdConf must run after it so that the init
+		// detected on the live system always has the last word.
 		calamaresModulesOverlay,
+		machineIdConf,
 		func() error { return unpackfsConf(source) },
 	}
 

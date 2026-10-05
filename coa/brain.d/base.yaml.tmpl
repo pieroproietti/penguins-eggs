@@ -169,7 +169,7 @@ remaster:
       dest: "/etc/sudoers.d/00-live"
       permissions: 288 # 0440 octal
       content: |
-        live ALL=(ALL) NOPASSWD:ALL
+        {{ .LiveUser }} ALL=(ALL) NOPASSWD:ALL
         %wheel ALL=(ALL) NOPASSWD:ALL
         %sudo ALL=(ALL) NOPASSWD:ALL
 

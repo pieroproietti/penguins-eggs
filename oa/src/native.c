@@ -131,9 +131,13 @@ int run_native_users(cJSON *task) {
         cJSON_ArrayForEach(u, users_array) {
             const char *login = get_json_string(u, "login", "");
             const char *pass  = get_json_string(u, "password", "");
-            const char *home  = get_json_string(u, "home", "/home/live");
 
             if (strlen(login) == 0) continue;
+
+            // Default home follows the configured login (never a hardcoded "live").
+            char default_home[PATH_SAFE];
+            snprintf(default_home, sizeof(default_home), "/home/%s", login);
+            const char *home  = get_json_string(u, "home", default_home);
 
             int uid = OE_UID_HUMAN_MIN + user_index;
             int gid = OE_UID_HUMAN_MIN + user_index;
@@ -147,7 +151,13 @@ int run_native_users(cJSON *task) {
                 final_pass = crypt(pass, salt);
             }
 
-            yocto_write_passwd(fp, login, uid, gid, "live,,,", home, "/bin/bash");
+            // GECOS (full name shown by display managers/greeters) must match
+            // the configured login, otherwise a renamed live user still shows
+            // up as "live" on the login screen and in the session.
+            char gecos[PATH_SAFE];
+            snprintf(gecos, sizeof(gecos), "%s,,,", login);
+
+            yocto_write_passwd(fp, login, uid, gid, gecos, home, "/bin/bash");
             yocto_write_shadow(fs, login, final_pass);
 
             FILE *fg = fopen(g_path, "a");

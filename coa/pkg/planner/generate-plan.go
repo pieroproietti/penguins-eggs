@@ -54,7 +54,7 @@ func GeneratePlan(
 
 		case "users":
 			if mode == "clone" || mode == "crypted" {
-				utils.LogNormal("[ENGINE] Mode '%s': real users cloned from /home, skipping 'users' module.", mode)
+				utils.LogNormal("[ENGINE] Mode '%s': real users cloned from /home, skipping 'users' module (root credentials preserved as-is).", mode)
 			} else {
 				plan.Plan = append(plan.Plan, buildLiveUserTasks(plan.Settings, step, workPath)...)
 			}
@@ -99,19 +99,6 @@ func GeneratePlan(
 				}
 				task.Params["user"] = liveUser
 				task.Params["is_gui"] = true
-			}
-
-			if task.Name == "conf-live-sudoers" {
-				if task.Params == nil {
-					task.Params = make(map[string]interface{})
-				}
-				liveUser := profile.Settings.Remaster.User
-				if liveUser == "" {
-					liveUser = "live"
-				}
-				if content, ok := task.Params["content"].(string); ok {
-					task.Params["content"] = content + fmt.Sprintf("\n%s ALL=(ALL) NOPASSWD:ALL\n", liveUser)
-				}
 			}
 
 			if task.Name == "mksquashfs" {
