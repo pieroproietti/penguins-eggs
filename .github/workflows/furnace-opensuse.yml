@@ -24,5 +24,5 @@ jobs:
       subnet: '192.168.1'
       artifact_name: 'penguins-eggs-opensuse'
       artifact_url: 'https://github.com/pieroproietti/penguins-eggs/releases/latest/download/penguins-eggs-opensuse.zip'
-      prep_cmd: "sh -c 'zypper -n refresh && zypper -n install sshpass'"
+      prep_cmd: "sh -c 'zypper -n refresh && zypper -n update -y && zypper -n install sshpass go rpm-build rpmdevtools gcc make git'"
       install_cmd: "zypper -n --no-gpg-checks install ./*.rpm"
