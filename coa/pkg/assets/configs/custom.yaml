@@ -11,6 +11,8 @@ remaster:
   # You can adjust compression settings to maximize space saving
     compression:
       # Options: zstd, xz, lz4, gzip
+      # xz always uses the strongest settings mksquashfs offers (1M blocks,
+      # 1M dictionary, x86 filter on x86 systems) and ignores 'level'.
       algorithm: "zstd"
-      # Level: for zstd use 1-19
+      # Level: only used by zstd, 1-22 (with 1M blocks, 19 is about as good as it gets)
       level: 3
