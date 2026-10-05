@@ -48,9 +48,9 @@ func EnsureBootloaders(targetDir string) error {
 
 // downloadAndExtract isolates network and I/O logic
 func downloadAndExtract(url string, targetDir string) error {
-	// Security timeout: if the network freezes, abort after 30s
+	// Security timeout: allow up to 5 minutes for downloading ~22MB on slow connections
 	client := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 5 * time.Minute,
 	}
 
 	resp, err := client.Get(url)
