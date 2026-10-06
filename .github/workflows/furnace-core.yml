@@ -176,6 +176,9 @@ jobs:
             echo "🧹 Cleaning up old ISOs to free space..."
             echo '${{ env.VM_PASS }}' | sudo -S eggs kill
             
+            echo "📦 Adding penguins-eggs repository..."
+            echo '${{ env.VM_PASS }}' | sudo -S eggs tools repo add
+            
             echo "💿 Creating Live ISO (eggs remaster)..."
             echo '${{ env.VM_PASS }}' | sudo -S coa remaster
             
