@@ -2,6 +2,16 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.7 - 2026-10-07
+
+This release standardizes the default EFI System Partition (ESP) sizing across Krill and Calamares to 512 MiB, avoiding disk waste while guaranteeing reliable bootloader headroom for Arch and other distributions, and integrates official repository configuration into CI workflows.
+
+### 🦐 Installer & EFI System Partition
+* **Standardized 512 MiB ESP Default**: The default EFI System Partition size is now set to **512 MiB** across Krill's automated whole-disk partitioning (`runErase` in `partition.go`) and Calamares module templates (`partition.conf.tmpl`). This guarantees full compatibility and safety for distributions using `systemd-boot` (such as Arch Linux / Kiro profiles) where kernels and initramfs reside in the ESP, while keeping disk usage lean and aligned with Coexist multi-boot slots.
+
+### 🏭 Continuous Integration ("The Furnace")
+* **Repository Provisioning**: Added automatic configuration of the official penguins-eggs repository before remastering flights in the Furnace core pipeline workflow (`furnace-core.yml`).
+
 ## Release Notes: penguins-eggs v26.10.5 - 2026-10-05
 
 This release introduces dynamic live user configuration and root password synchronization for standard remasters, optimizes xz compression performance on non-x86 architectures, fixes Calamares `machine-id` setup on non-systemd systems, and improves bootloader download resilience.
