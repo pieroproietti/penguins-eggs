@@ -1,5 +1,5 @@
 // Partizionamento e creazione filesystem. Layout coerente con il
-// partition.conf generato dalla pipeline: su gpt una ESP da 300MiB più
+// partition.conf generato dalla pipeline: su gpt una ESP da 512MiB più
 // root, su msdos solo root avviabile; la swap (se scelta) è una
 // partizione dedicata prima della root.
 package engine
@@ -215,7 +215,7 @@ func runErase(c *ctx) error {
 	// Script per sfdisk: U = EFI System, S = swap, L = Linux.
 	var lines []string
 	if plan.TableType == "gpt" {
-		lines = append(lines, "label: gpt", ",300MiB,U")
+		lines = append(lines, "label: gpt", ",512MiB,U")
 	} else {
 		lines = append(lines, "label: dos")
 	}
