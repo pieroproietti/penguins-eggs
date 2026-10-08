@@ -3,7 +3,7 @@
 sync.py - Sync and convert documentation from upload/sourceforge to upload/penguins-eggs.net
 
 Replicates the directory tree from sourceforge to penguins-eggs.net, converting *.md files
-into both *.html (with UTF-8 and modern styling) and *.txt (plain text).
+into *.html (with UTF-8 and modern styling).
 Also provisions .htaccess to enforce UTF-8 charset and Apache mod_autoindex integration.
 """
 
@@ -13,108 +13,6 @@ import re
 import shutil
 import sys
 from pathlib import Path
-
-
-def md_to_txt(content: str) -> str:
-    """Converts markdown content into clean, readable plain text."""
-    lines = content.splitlines()
-    out = []
-    in_code_block = False
-
-    for line in lines:
-        stripped = line.strip()
-
-        # Handle fenced code blocks (``` ... ```)
-        if stripped.startswith("```"):
-            in_code_block = not in_code_block
-            out.append("")
-            continue
-
-        if in_code_block:
-            out.append(line)
-            continue
-
-        # Headers
-        h1 = re.match(r"^#\s+(.+)$", line)
-        h2 = re.match(r"^##\s+(.+)$", line)
-        h3 = re.match(r"^###\s+(.+)$", line)
-        h4 = re.match(r"^####+\s+(.+)$", line)
-
-        if h1:
-            title = h1.group(1).strip()
-            title = re.sub(r"\[(.*?)\]\((.*?)\)", r"\1 (\2)", title)
-            title = re.sub(r"[\*_`]{1,3}", "", title)
-            sep = "=" * max(len(title) + 4, 50)
-            out.append("")
-            out.append(sep)
-            out.append(title)
-            out.append(sep)
-            out.append("")
-            continue
-        elif h2:
-            title = h2.group(1).strip()
-            title = re.sub(r"\[(.*?)\]\((.*?)\)", r"\1 (\2)", title)
-            title = re.sub(r"[\*_`]{1,3}", "", title)
-            sep = "-" * max(len(title) + 4, 50)
-            out.append("")
-            out.append(title)
-            out.append(sep)
-            continue
-        elif h3:
-            title = h3.group(1).strip()
-            title = re.sub(r"\[(.*?)\]\((.*?)\)", r"\1 (\2)", title)
-            title = re.sub(r"[\*_`]{1,3}", "", title)
-            out.append("")
-            out.append(f"-- {title} --")
-            continue
-        elif h4:
-            title = h4.group(1).strip()
-            title = re.sub(r"\[(.*?)\]\((.*?)\)", r"\1 (\2)", title)
-            title = re.sub(r"[\*_`]{1,3}", "", title)
-            out.append("")
-            out.append(f"  * {title}:")
-            continue
-
-        # Horizontal rules
-        if re.match(r"^(\-{3,}|\*{3,}|_{3,})$", stripped):
-            out.append("----------------------------------------------------------------------")
-            continue
-
-        cur = line
-
-        # Images: ![alt](url) -> [Image: alt]
-        def repl_img(m):
-            alt, url = m.group(1).strip(), m.group(2).strip()
-            if alt:
-                return f"[Image: {alt}]"
-            return f"[Image: {url}]"
-
-        cur = re.sub(r"\!\[(.*?)\]\((.*?)\)", repl_img, cur)
-
-        # Links: [text](url) -> text (url)
-        def repl_link(m):
-            text, url = m.group(1).strip(), m.group(2).strip()
-            url = url.replace("README.md", "README.txt")
-            if text == url:
-                return url
-            return f"{text} ({url})"
-
-        cur = re.sub(r"\[(.*?)\]\((.*?)\)", repl_link, cur)
-        cur = cur.replace("README.md", "README.txt")
-
-        # Inline code
-        cur = re.sub(r"`+([^`\n]+)`+", r"\1", cur)
-
-        # Bold & Italic
-        cur = re.sub(r"\*\*(.*?)\*\*", r"\1", cur)
-        cur = re.sub(r"__(.*?)__", r"\1", cur)
-        cur = re.sub(r"(?<!\*)\*(?!\*)([^\n\*]+)\*", r"\1", cur)
-
-        out.append(cur)
-
-    res = "\n".join(out)
-    res = re.sub(r"\n{3,}", "\n\n", res)
-    return res.strip() + "\n"
 
 
 def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
@@ -176,8 +74,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
             h_text = h_match.group(2).strip()
             # Update links inside headers: [text](url) -> <a href="url">text</a>
             def repl_header_link(m):
-                t, u = m.group(1), m.group(2)
-                u = u.replace("README.md", "README.html")
+                t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
                 return f'<a href="{u}">{t}</a>'
             h_text = re.sub(r"\[(.*?)\]\((.*?)\)", repl_header_link, h_text)
             body_lines.append(f"<h{level}>{h_text}</h{level}>")
@@ -199,7 +96,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
                     c_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", c)
                     c_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", c_fmt)
                     def repl_table_link(m):
-                        t, u = m.group(1), m.group(2).replace("README.md", "README.html")
+                        t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
                         return f'<a href="{u}">{t}</a>'
                     c_fmt = re.sub(r"\[(.*?)\]\((.*?)\)", repl_table_link, c_fmt)
                     td_cells.append(f"<td>{c_fmt}</td>")
@@ -219,7 +116,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
             item_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", item_text)
             item_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", item_fmt)
             def repl_list_link(m):
-                t, u = m.group(1), m.group(2).replace("README.md", "README.html")
+                t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
                 return f'<a href="{u}">{t}</a>'
             item_fmt = re.sub(r"\[(.*?)\]\((.*?)\)", repl_list_link, item_fmt)
             body_lines.append(f"<li>{item_fmt}</li>")
@@ -235,7 +132,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
             item_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", item_text)
             item_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", item_fmt)
             def repl_num_link(m):
-                t, u = m.group(1), m.group(2).replace("README.md", "README.html")
+                t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
                 return f'<a href="{u}">{t}</a>'
             item_fmt = re.sub(r"\[(.*?)\]\((.*?)\)", repl_num_link, item_fmt)
             body_lines.append(f"<p><strong>{num}.</strong> {item_fmt}</p>")
@@ -247,7 +144,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
         p_text = re.sub(r"\!\[(.*?)\]\((.*?)\)", r'<img src="\2" alt="\1">', p_text)
         # Link
         def repl_p_link(m):
-            t, u = m.group(1), m.group(2).replace("README.md", "README.html")
+            t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
             return f'<a href="{u}">{t}</a>'
         p_text = re.sub(r"\[(.*?)\]\((.*?)\)", repl_p_link, p_text)
         # Bold & Code
@@ -365,7 +262,7 @@ def write_htaccess(dst_dir: Path) -> None:
 AddDefaultCharset UTF-8
 AddCharset UTF-8 .html .htm .txt .md
 
-# Use README.html or README.txt for directory index descriptions (mod_autoindex)
+# Use README.html for directory index descriptions (mod_autoindex)
 <IfModule mod_autoindex.c>
     ReadmeName README.html
     IndexOptions +FancyIndexing +HTMLTable +VersionSort +NameWidth=* +DescriptionWidth=* +Charset=UTF-8
@@ -377,7 +274,7 @@ AddCharset UTF-8 .html .htm .txt .md
 
 
 def sync_folders(src_dir: Path, dst_dir: Path) -> None:
-    """Synchronizes src_dir structure into dst_dir, converting md files to html and txt."""
+    """Synchronizes src_dir structure into dst_dir, converting md files to html."""
     if not src_dir.exists():
         print(f"Error: Source directory {src_dir} does not exist.", file=sys.stderr)
         sys.exit(1)
@@ -404,21 +301,13 @@ def sync_folders(src_dir: Path, dst_dir: Path) -> None:
                 content = src_file.read_text(encoding="utf-8")
                 doc_title = extract_title(content, default=f"Penguins' Eggs — {rel_root.name or 'Documentation'}")
 
-                # 1. Generate .html
+                # Generate .html
                 html_name = f[:-3] + ".html"
                 html_file = target_root / html_name
                 html_content = md_to_html(content, title=doc_title)
                 html_file.write_text(html_content, encoding="utf-8")
                 print(f"  [HTML]    {rel_root / f} -> {rel_root / html_name}")
                 processed_dst_files.add(html_file.resolve())
-
-                # 2. Generate .txt
-                txt_name = f[:-3] + ".txt"
-                txt_file = target_root / txt_name
-                txt_content = md_to_txt(content)
-                txt_file.write_text(txt_content, encoding="utf-8")
-                print(f"  [TXT]     {rel_root / f} -> {rel_root / txt_name}")
-                processed_dst_files.add(txt_file.resolve())
             else:
                 dst_file = target_root / f
                 shutil.copy2(src_file, dst_file)

@@ -71,7 +71,7 @@ appimage:
 
 .PHONY: appimage
 
-# Replicate upload/sourceforge to upload/penguins-eggs.net converting README.md to README.txt
+# Replicate upload/sourceforge to upload/penguins-eggs.net converting README.md to README.html
 sync-upload:
 	@bash upload/sync.sh
 
