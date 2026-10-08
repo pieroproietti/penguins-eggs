@@ -12,7 +12,7 @@ The projects are intentionally separated: each tool has a different job.
                          │
               ┌──────────┴──────────┐
               │                     │
-           Chef                  Tailor (debian family only)
+            Chef           Tailor (debian family only)
               │                     │
         desktop/costumes     desktop/costumes
               │                     │
