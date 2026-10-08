@@ -1,0 +1,10 @@
+# Apache configuration for penguins-eggs.net
+# Force UTF-8 default charset for all text & html files
+AddDefaultCharset UTF-8
+AddCharset UTF-8 .html .htm .txt .md
+
+# Use README.html or README.txt for directory index descriptions (mod_autoindex)
+<IfModule mod_autoindex.c>
+    ReadmeName README.html
+    IndexOptions +FancyIndexing +HTMLTable +VersionSort +NameWidth=* +DescriptionWidth=* +Charset=UTF-8
+</IfModule>

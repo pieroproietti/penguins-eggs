@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penguins&#x27; Eggs — ISO images</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+    background-color: #ffffff;
+  }
+  h1, h2, h3, h4 {
+    color: #1a1a1a;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+  }
+  h1 { font-size: 2em; border-bottom: 2px solid #eaecef; }
+  h2 { font-size: 1.5em; margin-top: 24px; }
+  h3 { font-size: 1.25em; border-bottom: none; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 88%;
+    line-height: 1.45;
+  }
+  code {
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    padding: 0.2em 0.4em;
+    font-size: 85%;
+  }
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+  }
+  th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px 14px;
+    text-align: left;
+  }
+  th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+  }
+  tr:nth-child(2n) {
+    background-color: #fafbfc;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  hr {
+    border: 0;
+    border-top: 1px solid #eaecef;
+    margin: 24px 0;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<h1>Penguins' Eggs — ISO images</h1>
+<p>This directory contains ISO images produced with <strong>penguins-eggs</strong>.</p>
+<p>All ISO images have ``<code>user=artisan password=evolution</code>``</p>
+<p>The ISO images are not all the same: some are minimal systems intended as a starting point for customization, while others are already configured as complete desktop systems.</p>
+<h2>Choosing an ISO</h2>
+<h3>`naked`</h3>
+<p>A <code>naked</code> ISO is a <strong>minimal, CLI-oriented system</strong>.</p>
+<p>It is intentionally kept without a complete desktop environment and is useful when you want to:</p>
+<ul>
+<li>start from a clean Linux system;</li>
+<li>build your own configuration;</li>
+<li>use <code>penguins-tailor</code> to apply a costume;</li>
+<li>create your own customized remaster;</li>
+<li>use the system as a server or development base.</li>
+</ul>
+<p>Think of <code>naked</code> as the <strong>bare penguin</strong>: the system is functional, but it has not yet been dressed.</p>
+<h3>Named desktop editions</h3>
+<p>Other ISO images have names such as:</p>
+<ul>
+<li><code>colibri</code> use xfce4 desktop</li>
+<li><code>albatros</code> use kde desktop</li>
+<li><code>duck</code> use cinnamon desktop</li>
+<li><code>eagle</code> use gnome desktop</li>
+<li><code>swallow</code> use lxqt desktop</li>
+<li><code>sparrow</code> use mate desktop</li>
+<li>and other names appearing in the filename.</li>
+</ul>
+<p>These are <strong>already customized systems</strong> using chef. The name identifies the configuration or costume used when the ISO was produced.</p>
+<p>They may include:</p>
+<ul>
+<li>a desktop environment;</li>
+<li>applications;</li>
+<li>desktop configuration;</li>
+<li>themes and artwork;</li>
+<li>system configuration;</li>
+<li>a customized live environment.</li>
+</ul>
+<p>These images are intended to be used directly as desktop systems, or as examples of what can be produced with the Penguins ecosystem.</p>
+<h2>Distribution matters</h2>
+<p>The distribution is part of the ISO identity.</p>
+<p>For example:</p>
+<pre><code>egg-of-debian-trixie-naked-amd64-...
+egg-of-fedora-44-naked-amd64-...
+egg-of-opensuse-slowroll-...-amd64-...</code></pre>
+<p>The ISO is a remaster of the distribution named in the filename.</p>
+<p>This is important because the underlying distribution determines:</p>
+<ul>
+<li>the package system;</li>
+<li>the kernel and initramfs;</li>
+<li>the boot infrastructure;</li>
+<li>the available installers;</li>
+<li>the system configuration.</li>
+</ul>
+<p>Penguins' Eggs does not turn all distributions into the same operating system. It remasters the running system while respecting the characteristics of the original distribution.</p>
+</body>
+</html>

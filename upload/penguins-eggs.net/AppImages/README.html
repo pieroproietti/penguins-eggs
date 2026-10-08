@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penguins&#x27; Eggs — AppImages</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+    background-color: #ffffff;
+  }
+  h1, h2, h3, h4 {
+    color: #1a1a1a;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+  }
+  h1 { font-size: 2em; border-bottom: 2px solid #eaecef; }
+  h2 { font-size: 1.5em; margin-top: 24px; }
+  h3 { font-size: 1.25em; border-bottom: none; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 88%;
+    line-height: 1.45;
+  }
+  code {
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    padding: 0.2em 0.4em;
+    font-size: 85%;
+  }
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+  }
+  th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px 14px;
+    text-align: left;
+  }
+  th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+  }
+  tr:nth-child(2n) {
+    background-color: #fafbfc;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  hr {
+    border: 0;
+    border-top: 1px solid #eaecef;
+    margin: 24px 0;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<h2>🖥️ <a href="https://github.com/pieroproietti/penguins-gui">penguins-gui</a></h2>
+<p><strong>penguins-gui</strong> is an optional graphical frontend for <strong>penguins-eggs</strong>.</p>
+<p><img src="https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png?raw=true" alt="penguins-gui"></p>
+<p>It is an independent desktop application written in Go using Fyne and distributed both as native packages and as an <strong>AppImage</strong>.</p>
+<p>The AppImage can run on virtually any modern Linux distribution without installation. When started, <strong>penguins-gui</strong> automatically detects whether <strong>penguins-eggs</strong> is available on the system and, if needed, downloads and installs the correct native package for the current distribution.</p>
+<p>This means that the easiest way to remaster a Linux system is simply:</p>
+<p><strong>1.</strong> Download <strong>penguins-gui</strong> (AppImage).</p>
+<p><strong>2.</strong> Make it executable.</p>
+<p><strong>3.</strong> Run it.</p>
+<p><strong>4.</strong> Let the application install and configure <strong>penguins-eggs</strong> automatically.</p>
+<p><strong>5.</strong> Create your custom live ISO.</p>
+<p>The graphical interface does not replace Eggs and does not contain the remastering engine.</p>
+<p>Instead, it provides an easy and user-friendly way to operate the existing command-line tools.</p>
+<p>With <strong>penguins-gui</strong> you can:</p>
+<ul>
+<li>create a standard remaster;</li>
+<li>create a complete system clone;</li>
+<li>create an encrypted clone;</li>
+<li>monitor the live command output;</li>
+<li>locate the generated ISO image;</li>
+<li>open the ISO output directory;</li>
+<li>install and configure Eggs;</li>
+<li>install and configure Calamares.</li>
+</ul>
+<p><code>penguins-eggs</code> remains fully usable from the command line, without the GUI.</p>
+<p>The GUI is therefore completely <strong>optional</strong>, but for most users it represents the fastest and easiest way to create a custom Linux live ISO.</p>
+</body>
+</html>

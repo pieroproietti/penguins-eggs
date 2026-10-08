@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penguins&#x27; Eggs — Packages</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+    background-color: #ffffff;
+  }
+  h1, h2, h3, h4 {
+    color: #1a1a1a;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+  }
+  h1 { font-size: 2em; border-bottom: 2px solid #eaecef; }
+  h2 { font-size: 1.5em; margin-top: 24px; }
+  h3 { font-size: 1.25em; border-bottom: none; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 88%;
+    line-height: 1.45;
+  }
+  code {
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    padding: 0.2em 0.4em;
+    font-size: 85%;
+  }
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+  }
+  th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px 14px;
+    text-align: left;
+  }
+  th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+  }
+  tr:nth-child(2n) {
+    background-color: #fafbfc;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  hr {
+    border: 0;
+    border-top: 1px solid #eaecef;
+    margin: 24px 0;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<h1>Penguins' Eggs — Packages</h1>
+<p>This directory contains native packages belonging to the <strong>Penguins Linux ecosystem</strong>.</p>
+<p>The projects are intentionally separated: each tool has a different job.</p>
+<h2>The ecosystem</h2>
+<pre><code>                    Linux system
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+           Chef                  Tailor (debian family only)
+              │                     │
+        desktop/costumes     desktop/costumes
+              │                     │
+              └──────────┬──────────┘
+                         │
+                    penguins-eggs
+                         │
+                    live ISO
+                         │
+                    penguins-gui
+                    (optional GUI)</code></pre>
+<p>The tools can be used independently. They are not different editions of the same program.</p>
+<hr>
+<h2>🖥️ <a href="https://github.com/pieroproietti/penguins-gui">penguins-gui</a></h2>
+<p>See: <a href="../AppImages/">AppImages/README.md</a></p>
+<hr>
+<h2>🥚 <a href="https://github.com/pieroproietti/penguins-eggs">penguins-eggs</a></h2>
+<p><strong>penguins-eggs is the remastering engine.</strong></p>
+<p>Its purpose is to take a running Linux system and turn it into a bootable live ISO.</p>
+<p>Eggs deals with the core remastering process:</p>
+<ul>
+<li>collecting the running system;</li>
+<li>preparing the live filesystem;</li>
+<li>creating the SquashFS;</li>
+<li>preparing the initramfs and boot environment;</li>
+<li>creating the ISO;</li>
+<li>providing installation through Krill or integration with Calamares.</li>
+</ul>
+<p>The normal command is:</p>
+<pre><code>sudo eggs remaster</code></pre>
+<p>Eggs is the <strong>core of the ecosystem</strong>.</p>
+<hr>
+<h2>👨‍🍳 <a href="https://github.com/pieroproietti/penguins-chef">penguins-chef</a></h2>
+<p><strong>Chef configures systems by applying explicit recipes.</strong></p>
+<p>Chef is a standalone tool for system provisioning and configuration. A recipe describes operations that should be performed on a Linux system.</p>
+<p>Typical uses include:</p>
+<ul>
+<li>configuring a base system;</li>
+<li>installing packages;</li>
+<li>enabling or configuring services;</li>
+<li>applying reproducible system changes;</li>
+<li>preparing a system before it is remastered by Eggs.</li>
+</ul>
+<p>For example, to obtain my colibri where I develop eggs:</p>
+<pre><code>chef get
+sudo chef apply .chef/recipes/costumes/colibri/colibri.yaml
+sudo chef apply .chef/recipes/dev/devel.yaml</code></pre>
+<p>Chef is therefore concerned primarily with <strong>system configuration and provisioning</strong>.</p>
+<p>It does not replace Eggs.</p>
+<p>Think of Chef as the person who <strong>cooks the system</strong>.</p>
+<hr>
+<h2>✂️ <a href="https://github.com/pieroproietti/penguins-tailor">penguins-tailor</a> (only debian based systems)</h2>
+<p>Tailor was the first version of chef, and work only on Debian/Devuan/Ubuntu systems.</p>
+<p><strong>Tailor dresses the system.</strong></p>
+<p>Tailor is the companion tool for applying desktop configurations, themes, packages and other customizations collected in a <strong>wardrobe</strong>.</p>
+<p>A costume can describe things such as:</p>
+<ul>
+<li>desktop environment;</li>
+<li>applications;</li>
+<li>themes;</li>
+<li>icons;</li>
+<li><code>/etc/skel</code> configuration;</li>
+<li>desktop-specific settings;</li>
+<li>additional system configuration.</li>
+</ul>
+<p>Typical workflow:</p>
+<pre><code>tailor get
+tailor list
+sudo tailor wear &lt;costume&gt;</code></pre>
+<p>Tailor is especially useful when starting from a <code>naked</code> system and preparing it before creating an ISO.</p>
+<hr>
+<h2>🕰️ <a href="https://github.com/pieroproietti/penguins-eggs-legacy">penguins-eggs-legacy</a></h2>
+<p><code>penguins-eggs-legacy</code> is the <strong>previous generation of Penguins' Eggs</strong>.</p>
+<p>It is the original TypeScript/Node.js implementation that preceded the current C/Go implementation.</p>
+<p>The current <code>penguins-eggs</code> is the active implementation.</p>
+<p>Legacy is kept available for:</p>
+<ul>
+<li>existing installations;</li>
+<li>compatibility;</li>
+<li>users who still depend on the old implementation;</li>
+<li>historical/reference purposes.</li>
+</ul>
+<p>For a new installation, <strong>use <code>penguins-eggs</code> unless you specifically need Legacy</strong>.</p>
+<hr>
+<h2>Which package should I install?</h2>
+<table><thead><tr><th>What you want to do</th><th>Package</th></tr></thead><tbody>
+<tr><td>Create a live ISO</td> <td><strong>penguins-eggs</strong></td></tr>
+<tr><td>Configure a Linux system from recipes</td> <td><strong>penguins-chef</strong></td></tr>
+<tr><td>Customize a desktop with costumes (debian)</td> <td><strong>penguins-tailor</strong></td></tr>
+<tr><td>Use penguins-eggs via GUI</td> <td><strong>penguins-gui</strong></td></tr>
+<tr><td>Continue using the old Eggs implementation</td> <td><strong>penguins-eggs-legacy</strong></td></tr>
+</tbody></table>
+<h3>Typical workflows</h3>
+<h4>Build a customized Linux ISO</h4>
+<pre><code>base Linux system (CLI/naked)
+       ↓
+     Chef
+       ↓
+     Eggs
+       ↓
+    Live ISO</code></pre>
+<h4>Use Eggs directly</h4>
+<pre><code>running Linux system
+       ↓
+     Eggs
+       ↓
+    Live ISO</code></pre>
+<h4>Use eggs in a graphical desktop</h4>
+<pre><code>penguins-gui
+       ↓
+     Eggs
+       ↓
+    Live ISO</code></pre>
+<p>The tools are complementary, not competing implementations.</p>
+<hr>
+<h2>Where to start</h2>
+<p>If you are new to Penguins' Eggs:</p>
+<p><strong>1.</strong> Install <strong>penguins-eggs</strong>.</p>
+<p><strong>2.</strong> Create a standard remaster.</p>
+<p><strong>3.</strong> If you want a customized desktop, look at <strong>penguins-cher</strong> or <strong>penguins-tailor</strong>.</p>
+<p><strong>4.</strong> If you prefer a desktop application, install <strong>penguins-gui</strong>.</p>
+<p><strong>5.</strong> Use <strong>legacy</strong> only when you have a specific reason to use the previous implementation.</p>
+</body>
+</html>

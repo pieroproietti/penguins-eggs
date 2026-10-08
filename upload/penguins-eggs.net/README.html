@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐧 penguins-eggs</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+    background-color: #ffffff;
+  }
+  h1, h2, h3, h4 {
+    color: #1a1a1a;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+  }
+  h1 { font-size: 2em; border-bottom: 2px solid #eaecef; }
+  h2 { font-size: 1.5em; margin-top: 24px; }
+  h3 { font-size: 1.25em; border-bottom: none; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 88%;
+    line-height: 1.45;
+  }
+  code {
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    padding: 0.2em 0.4em;
+    font-size: 85%;
+  }
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+  }
+  th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px 14px;
+    text-align: left;
+  }
+  th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+  }
+  tr:nth-child(2n) {
+    background-color: #fafbfc;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  hr {
+    border: 0;
+    border-top: 1px solid #eaecef;
+    margin: 24px 0;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<h1>🐧 penguins-eggs</h1>
+<p>penguins-eggs is growing, even though, at its core, it has always remained the same. </p>
+<p>The main purpose of the project is still the same: remaster a running Linux system and create a bootable live ISO from it.</p>
+<p>The engine that performs the actual remastering remains <code>penguins-eggs</code>. Around it, a streamlined ecosystem of companion tools has developed, each with a specific responsibility.</p>
+<h2>🧩 The Ecosystem Components</h2>
+<h3>🥚 penguins-eggs (The Core Engine)</h3>
+<ul>
+<li>The core command-line tool that transforms an active Linux system into a bootable Live ISO.</li>
+<li>Designed to work across a wide range of Linux distributions and architectures.</li>
+<li>Can be used directly from the CLI, integrated into other workflows, or driven through the graphical interface.</li>
+</ul>
+<h3>🖥️ penguins-gui (The Graphical Interface)</h3>
+<ul>
+<li>An independent desktop application written in Go using Fyne.</li>
+<li>Distributed as an <strong>AppImage</strong>, allowing it to run on virtually any Linux distribution without prior installation.</li>
+<li>Acts as a friendly graphical entry point and automatically handles downloading and installing the appropriate native <code>penguins-eggs</code> package for your distribution.</li>
+</ul>
+<h3>👨‍🍳 penguins-chef (The Recipe & Package Manager)</h3>
+<ul>
+<li>Responsible for applying pre-defined package selections and targeted system customizations.</li>
+<li>Acts as a "recipe" manager to prepare and mold the working environment to your specific needs.</li>
+</ul>
+<hr>
+<h2>🗺️ Workflow Overview</h2>
+<pre><code>penguins-gui ──┐
+               ├──&gt; penguins-eggs ──&gt; Live ISO
+CLI ───────────┘
+
+penguins-chef    →  package selections and system customizations</code></pre>
+<hr>
+<h2>🚀 The Easiest Way to Get Started</h2>
+<p>If you simply want to remaster the Linux system you are currently running, you don't need to master the entire ecosystem:</p>
+<p><strong>1.</strong> <strong>Download</strong> <code>penguins-gui</code> as an AppImage.</p>
+<p><strong>2.</strong> <strong>Run</strong> the application.</p>
+<p><strong>3.</strong> <strong>Let it automatically find and install</strong> the correct <code>penguins-eggs</code> package for your distribution.</p>
+<p><strong>4.</strong> <strong>Create</strong> your live ISO.</p>
+<p>For users who prefer the command line, <code>penguins-eggs</code> remains fully available as a direct and complete tool.</p>
+</body>
+</html>
