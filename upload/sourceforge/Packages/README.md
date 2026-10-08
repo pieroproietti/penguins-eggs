@@ -31,7 +31,7 @@ The tools can be used independently. They are not different editions of the same
 ---
 ## 🖥️ [penguins-gui](https://github.com/pieroproietti/penguins-gui)
 
-See: [AppImages/README.md](../AppImages/)
+See: [appimage/README.md](appimage/)
 
 ---
 
@@ -192,6 +192,6 @@ If you are new to Penguins' Eggs:
 
 1. Install **penguins-eggs**.
 2. Create a standard remaster.
-3. If you want a customized desktop, look at **penguins-cher** or **penguins-tailor**.
+3. If you want a customized desktop, look at **penguins-chef** or **penguins-tailor**.
 4. If you prefer a desktop application, install **penguins-gui**.
 5. Use **legacy** only when you have a specific reason to use the previous implementation.

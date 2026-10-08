@@ -23,24 +23,25 @@ from pathlib import Path
 DIR_MAPPING = {
     "isos": "isos",
     "packages": "packages",
-    "appimages": "packages/appimage",
     "appimage": "packages/appimage",
+    "appimages": "packages/appimage",
 }
 
 
 def map_rel_path(rel_path: Path) -> Path:
     """Maps a relative path from sourceforge to penguins-eggs.net structure.
 
-    Isos       -> isos
-    Packages   -> packages
-    AppImages  -> packages/appimage
+    Isos              -> isos
+    Packages          -> packages
+    Packages/appimage -> packages/appimage
+    (legacy: AppImages -> packages/appimage)
     """
     parts = rel_path.parts
     if not parts:
         return Path(".")
 
     first_lower = parts[0].lower()
-    mapped_first = DIR_MAPPING.get(first_lower, parts[0])
+    mapped_first = DIR_MAPPING.get(first_lower, parts[0].lower())
 
     if first_lower == "packages" and len(parts) > 1 and parts[1].lower() in ("appimage", "appimages"):
         rest = ("appimage",) + parts[2:]
@@ -84,7 +85,7 @@ def rewrite_link(text: str, url: str, src_rel_dir: Path, dst_rel_dir: Path) -> t
     new_url = new_rel.replace("README.md", "README.html") + fragment
 
     # Adapt link text references if folder names were changed
-    new_text = re.sub(r"\bAppImages\b", "appimage", new_text)
+    new_text = re.sub(r"\b[Aa]pp[Ii]mages\b", "appimage", new_text)
     new_text = re.sub(r"\bIsos\b", "isos", new_text)
     new_text = re.sub(r"\bPackages\b", "packages", new_text)
 
@@ -122,6 +123,17 @@ def md_to_html(
             return f'<a href="{u}">{t}</a>'
         return re.sub(r"\[(.*?)\]\((.*?)\)", repl, text)
 
+    def format_inline(text: str) -> str:
+        # Images: ![alt](url)
+        text = re.sub(r"\!\[(.*?)\]\((.*?)\)", r'<img src="\2" alt="\1">', text)
+        # Markdown links: [text](url)
+        text = replace_markdown_links(text)
+        # Bold: **text**
+        text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
+        # Inline code: `code` or ```code```
+        text = re.sub(r"`+([^`]+)`+", r"<code>\1</code>", text)
+        return text
+
     for line in lines:
         stripped = line.strip()
 
@@ -158,8 +170,7 @@ def md_to_html(
         if h_match:
             body_lines.extend(close_blocks())
             level = len(h_match.group(1))
-            h_text = h_match.group(2).strip()
-            h_text = replace_markdown_links(h_text)
+            h_text = format_inline(h_match.group(2).strip())
             body_lines.append(f"<h{level}>{h_text}</h{level}>")
             continue
 
@@ -174,12 +185,7 @@ def md_to_html(
                 th_cells = "".join(f"<th>{html.escape(c)}</th>" for c in cells)
                 body_lines.append(f"<table><thead><tr>{th_cells}</tr></thead><tbody>")
             else:
-                td_cells = []
-                for c in cells:
-                    c_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", c)
-                    c_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", c_fmt)
-                    c_fmt = replace_markdown_links(c_fmt)
-                    td_cells.append(f"<td>{c_fmt}</td>")
+                td_cells = [f"<td>{format_inline(c)}</td>" for c in cells]
                 body_lines.append(f"<tr>{' '.join(td_cells)}</tr>")
             continue
         elif in_table:
@@ -193,10 +199,7 @@ def md_to_html(
                 body_lines.append("<ul>")
                 in_list = True
             item_text = list_match.group(1)
-            item_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", item_text)
-            item_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", item_fmt)
-            item_fmt = replace_markdown_links(item_fmt)
-            body_lines.append(f"<li>{item_fmt}</li>")
+            body_lines.append(f"<li>{format_inline(item_text)}</li>")
             continue
         elif in_list:
             body_lines.extend(close_blocks())
@@ -206,23 +209,11 @@ def md_to_html(
         if num_match:
             num = num_match.group(1)
             item_text = num_match.group(2)
-            item_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", item_text)
-            item_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", item_fmt)
-            item_fmt = replace_markdown_links(item_fmt)
-            body_lines.append(f"<p><strong>{num}.</strong> {item_fmt}</p>")
+            body_lines.append(f"<p><strong>{num}.</strong> {format_inline(item_text)}</p>")
             continue
 
         # Regular paragraph
-        p_text = line
-        # Image
-        p_text = re.sub(r"\!\[(.*?)\]\((.*?)\)", r'<img src="\2" alt="\1">', p_text)
-        # Link
-        p_text = replace_markdown_links(p_text)
-        # Bold & Code
-        p_text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", p_text)
-        p_text = re.sub(r"`([^`]+)`", r"<code>\1</code>", p_text)
-
-        body_lines.append(f"<p>{p_text}</p>")
+        body_lines.append(f"<p>{format_inline(line)}</p>")
 
     body_lines.extend(close_blocks())
     body_content = "\n".join(body_lines)
