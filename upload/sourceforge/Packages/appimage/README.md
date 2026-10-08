@@ -1,4 +1,4 @@
-![](https://penguins-eggs.net/img/penguins-header.png)
+[![](https://penguins-eggs.net/img/penguins-header.png)](https://penguins-eggs.net)
 
 ## 🖥️ [penguins-gui](https://github.com/pieroproietti/penguins-gui)
 

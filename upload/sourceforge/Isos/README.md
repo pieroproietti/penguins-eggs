@@ -1,4 +1,4 @@
-![](https://penguins-eggs.net/img/penguins-header.png)
+[![](https://penguins-eggs.net/img/penguins-header.png)](https://penguins-eggs.net)
 # Penguins' Eggs — ISO images
 
 This directory contains ISO images produced with **penguins-eggs**.
