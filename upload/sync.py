@@ -4,6 +4,11 @@ sync.py - Sync and convert documentation from upload/sourceforge to upload/pengu
 
 Replicates the directory tree from sourceforge to penguins-eggs.net, converting *.md files
 into *.html (with UTF-8 and modern styling).
+Structure mapping:
+  Isos       -> isos
+  Packages   -> packages
+  AppImages  -> packages/appimage
+
 Also provisions .htaccess to enforce UTF-8 charset and Apache mod_autoindex integration.
 """
 
@@ -14,8 +19,84 @@ import shutil
 import sys
 from pathlib import Path
 
+# Mapping from sourceforge top-level folder names to penguins-eggs.net structure
+DIR_MAPPING = {
+    "isos": "isos",
+    "packages": "packages",
+    "appimages": "packages/appimage",
+    "appimage": "packages/appimage",
+}
 
-def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
+
+def map_rel_path(rel_path: Path) -> Path:
+    """Maps a relative path from sourceforge to penguins-eggs.net structure.
+
+    Isos       -> isos
+    Packages   -> packages
+    AppImages  -> packages/appimage
+    """
+    parts = rel_path.parts
+    if not parts:
+        return Path(".")
+
+    first_lower = parts[0].lower()
+    mapped_first = DIR_MAPPING.get(first_lower, parts[0])
+
+    if first_lower == "packages" and len(parts) > 1 and parts[1].lower() in ("appimage", "appimages"):
+        rest = ("appimage",) + parts[2:]
+        return Path("packages") / Path(*rest)
+
+    if len(parts) > 1:
+        return Path(mapped_first) / Path(*parts[1:])
+    return Path(mapped_first)
+
+
+def rewrite_link(text: str, url: str, src_rel_dir: Path, dst_rel_dir: Path) -> tuple[str, str]:
+    """Rewrites link text and URL, adjusting paths from sourceforge to penguins-eggs.net."""
+    new_text = text.replace("README.md", "README.html")
+    new_url = url.replace("README.md", "README.html")
+
+    # Keep absolute URLs, mailto and anchor-only links untouched
+    if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", url) or url.startswith("mailto:") or url.startswith("#"):
+        return new_text, new_url
+
+    url_parts = url.split("#", 1)
+    url_base = url_parts[0]
+    fragment = f"#{url_parts[1]}" if len(url_parts) > 1 else ""
+
+    if not url_base:
+        return new_text, new_url
+
+    has_trailing_slash = url_base.endswith("/")
+
+    # Resolve link relative to src_rel_dir and map to dst structure
+    resolved_src = os.path.normpath(str(src_rel_dir / url_base))
+    mapped_dst = map_rel_path(Path(resolved_src))
+
+    try:
+        new_rel = os.path.relpath(str(mapped_dst), str(dst_rel_dir))
+    except ValueError:
+        return new_text, new_url
+
+    if has_trailing_slash and not new_rel.endswith("/"):
+        new_rel += "/"
+
+    new_url = new_rel.replace("README.md", "README.html") + fragment
+
+    # Adapt link text references if folder names were changed
+    new_text = re.sub(r"\bAppImages\b", "appimage", new_text)
+    new_text = re.sub(r"\bIsos\b", "isos", new_text)
+    new_text = re.sub(r"\bPackages\b", "packages", new_text)
+
+    return new_text, new_url
+
+
+def md_to_html(
+    content: str,
+    title: str = "Penguins' Eggs",
+    src_rel_dir: Path = Path("."),
+    dst_rel_dir: Path = Path("."),
+) -> str:
     """Converts markdown content into clean, responsive HTML with explicit UTF-8 encoding."""
     lines = content.splitlines()
     body_lines = []
@@ -34,6 +115,12 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
             res.append("</tbody></table>")
             in_table = False
         return res
+
+    def replace_markdown_links(text: str) -> str:
+        def repl(m):
+            t, u = rewrite_link(m.group(1), m.group(2), src_rel_dir, dst_rel_dir)
+            return f'<a href="{u}">{t}</a>'
+        return re.sub(r"\[(.*?)\]\((.*?)\)", repl, text)
 
     for line in lines:
         stripped = line.strip()
@@ -72,11 +159,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
             body_lines.extend(close_blocks())
             level = len(h_match.group(1))
             h_text = h_match.group(2).strip()
-            # Update links inside headers: [text](url) -> <a href="url">text</a>
-            def repl_header_link(m):
-                t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
-                return f'<a href="{u}">{t}</a>'
-            h_text = re.sub(r"\[(.*?)\]\((.*?)\)", repl_header_link, h_text)
+            h_text = replace_markdown_links(h_text)
             body_lines.append(f"<h{level}>{h_text}</h{level}>")
             continue
 
@@ -95,10 +178,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
                 for c in cells:
                     c_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", c)
                     c_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", c_fmt)
-                    def repl_table_link(m):
-                        t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
-                        return f'<a href="{u}">{t}</a>'
-                    c_fmt = re.sub(r"\[(.*?)\]\((.*?)\)", repl_table_link, c_fmt)
+                    c_fmt = replace_markdown_links(c_fmt)
                     td_cells.append(f"<td>{c_fmt}</td>")
                 body_lines.append(f"<tr>{' '.join(td_cells)}</tr>")
             continue
@@ -115,10 +195,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
             item_text = list_match.group(1)
             item_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", item_text)
             item_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", item_fmt)
-            def repl_list_link(m):
-                t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
-                return f'<a href="{u}">{t}</a>'
-            item_fmt = re.sub(r"\[(.*?)\]\((.*?)\)", repl_list_link, item_fmt)
+            item_fmt = replace_markdown_links(item_fmt)
             body_lines.append(f"<li>{item_fmt}</li>")
             continue
         elif in_list:
@@ -131,10 +208,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
             item_text = num_match.group(2)
             item_fmt = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", item_text)
             item_fmt = re.sub(r"`([^`]+)`", r"<code>\1</code>", item_fmt)
-            def repl_num_link(m):
-                t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
-                return f'<a href="{u}">{t}</a>'
-            item_fmt = re.sub(r"\[(.*?)\]\((.*?)\)", repl_num_link, item_fmt)
+            item_fmt = replace_markdown_links(item_fmt)
             body_lines.append(f"<p><strong>{num}.</strong> {item_fmt}</p>")
             continue
 
@@ -143,10 +217,7 @@ def md_to_html(content: str, title: str = "Penguins' Eggs") -> str:
         # Image
         p_text = re.sub(r"\!\[(.*?)\]\((.*?)\)", r'<img src="\2" alt="\1">', p_text)
         # Link
-        def repl_p_link(m):
-            t, u = m.group(1).replace("README.md", "README.html"), m.group(2).replace("README.md", "README.html")
-            return f'<a href="{u}">{t}</a>'
-        p_text = re.sub(r"\[(.*?)\]\((.*?)\)", repl_p_link, p_text)
+        p_text = replace_markdown_links(p_text)
         # Bold & Code
         p_text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", p_text)
         p_text = re.sub(r"`([^`]+)`", r"<code>\1</code>", p_text)
@@ -286,14 +357,20 @@ def sync_folders(src_dir: Path, dst_dir: Path) -> None:
     # Generate .htaccess in root destination
     write_htaccess(dst_dir)
 
-    processed_dst_files = { (dst_dir / ".htaccess").resolve() }
+    processed_dst_files = {(dst_dir / ".htaccess").resolve()}
     processed_dst_dirs = set()
 
     for root, dirs, files in os.walk(src_dir):
         rel_root = Path(root).relative_to(src_dir)
-        target_root = dst_dir / rel_root
+        target_rel_root = map_rel_path(rel_root)
+        target_root = dst_dir / target_rel_root
         target_root.mkdir(parents=True, exist_ok=True)
-        processed_dst_dirs.add(target_root.resolve())
+
+        # Track directory and all parent directories up to dst_dir
+        curr = target_root.resolve()
+        while curr != dst_dir.resolve() and curr != curr.parent:
+            processed_dst_dirs.add(curr)
+            curr = curr.parent
 
         for f in sorted(files):
             src_file = Path(root) / f
@@ -304,14 +381,14 @@ def sync_folders(src_dir: Path, dst_dir: Path) -> None:
                 # Generate .html
                 html_name = f[:-3] + ".html"
                 html_file = target_root / html_name
-                html_content = md_to_html(content, title=doc_title)
+                html_content = md_to_html(content, title=doc_title, src_rel_dir=rel_root, dst_rel_dir=target_rel_root)
                 html_file.write_text(html_content, encoding="utf-8")
-                print(f"  [HTML]    {rel_root / f} -> {rel_root / html_name}")
+                print(f"  [HTML]    {rel_root / f} -> {target_rel_root / html_name}")
                 processed_dst_files.add(html_file.resolve())
             else:
                 dst_file = target_root / f
                 shutil.copy2(src_file, dst_file)
-                print(f"  [COPY]    {rel_root / f} -> {rel_root / f}")
+                print(f"  [COPY]    {rel_root / f} -> {target_rel_root / f}")
                 processed_dst_files.add(dst_file.resolve())
 
     # Clean up obsolete files/folders
