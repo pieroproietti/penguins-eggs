@@ -70,3 +70,9 @@ appimage:
 	@bash packaging/appimage/build.sh
 
 .PHONY: appimage
+
+# Replicate upload/sourceforge to upload/penguins-eggs.net converting README.md to README.txt
+sync-upload:
+	@bash upload/sync.sh
+
+.PHONY: sync-upload
