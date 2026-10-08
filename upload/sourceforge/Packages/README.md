@@ -1,3 +1,4 @@
+![](https://penguins-eggs.net/img/penguins-header.png)
 # Penguins' Eggs — Packages
 
 This directory contains native packages belonging to the **Penguins Linux ecosystem**.

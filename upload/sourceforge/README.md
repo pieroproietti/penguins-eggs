@@ -1,3 +1,4 @@
+![](https://penguins-eggs.net/img/penguins-header.png)
 # 🐧 penguins-eggs
 
 penguins-eggs is growing, even though, at its core, it has always remained the same. 

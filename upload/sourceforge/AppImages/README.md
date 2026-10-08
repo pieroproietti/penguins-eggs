@@ -1,3 +1,5 @@
+![](https://penguins-eggs.net/img/penguins-header.png)
+
 ## 🖥️ [penguins-gui](https://github.com/pieroproietti/penguins-gui)
 
 **penguins-gui** is an optional graphical frontend for **penguins-eggs**.
