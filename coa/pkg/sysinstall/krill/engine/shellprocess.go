@@ -75,6 +75,7 @@ func (c *ctx) runShellprocess(id string) error {
 		// The pre-rendered Debian template reads these at installation time.
 		// Export in this child only; ell and the worker chroot inherit them.
 		command = "export KRILL_INSTALL_MODE=" + shellQuote(c.plan.Mode) +
+			" KRILL_TARGET_DEVICE=" + shellQuote(c.plan.Device) +
 			" KRILL_EFI_BOOTLOADER_ID=" + shellQuote(c.plan.EFIBootloaderID) + "; " + command
 
 		var err error

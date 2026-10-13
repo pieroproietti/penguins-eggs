@@ -11,8 +11,47 @@
 # 5. INITRAMFS LIVE
 # ----------------------------------------------------------------------------
 {{ define "distro_initramfs_cmd" }}
-# debian: distro_initramfs_cmd: no need operations
-"true"
+#!/bin/bash
+set -e
+# debian: distro_initramfs_cmd
+
+KERNEL_VERSION=$(uname -r)
+if [ ! -d "/lib/modules/$KERNEL_VERSION" ]; then
+    KERNEL_VERSION=$(ls -1 /lib/modules 2>/dev/null | grep -E '^[0-9]' | head -n 1)
+fi
+
+echo "-> Generazione initramfs live Debian/Ubuntu/Kylin ($KERNEL_VERSION)..."
+
+# Ensure essential modules for live ISO boot and virtual storage controllers are included
+mkdir -p /etc/initramfs-tools
+touch /etc/initramfs-tools/modules
+for mod in virtio_pci virtio_blk virtio_scsi isofs overlay; do
+    if ! grep -qs "^$mod" /etc/initramfs-tools/modules; then
+        echo "$mod" >> /etc/initramfs-tools/modules
+    fi
+done
+
+if command -v mkinitramfs >/dev/null 2>&1; then
+    mkinitramfs -o /boot/oa-initrd.img "$KERNEL_VERSION"
+elif [ -x /usr/sbin/update-initramfs.orig.initramfs-tools ]; then
+    /usr/sbin/update-initramfs.orig.initramfs-tools -c -k "$KERNEL_VERSION" -b /boot
+    [ -f "/boot/initrd.img-$KERNEL_VERSION" ] && cp -f "/boot/initrd.img-$KERNEL_VERSION" /boot/oa-initrd.img
+elif command -v update-initramfs >/dev/null 2>&1; then
+    touch /.live-build
+    update-initramfs -c -k "$KERNEL_VERSION" -b /boot || update-initramfs -u -k "$KERNEL_VERSION"
+    rm -f /.live-build
+    [ -f "/boot/initrd.img-$KERNEL_VERSION" ] && cp -f "/boot/initrd.img-$KERNEL_VERSION" /boot/oa-initrd.img
+elif command -v dracut >/dev/null 2>&1; then
+    dracut -f --no-hostonly --add "dmsquash-live livenet" /boot/oa-initrd.img "$KERNEL_VERSION"
+else
+    echo "[FATAL ERROR] Impossibile trovare un generatore di initramfs (mkinitramfs/update-initramfs/dracut)!"
+    exit 1
+fi
+
+if [ ! -f /boot/oa-initrd.img ]; then
+    echo "[FATAL ERROR] Generazione di /boot/oa-initrd.img non riuscita!"
+    exit 1
+fi
 {{ end -}}
 
 # ----------------------------------------------------------------------------
@@ -26,20 +65,29 @@ set -e
 LIVEROOT="{{ .LiveRoot }}"
 ISODIR="{{ .IsoDir }}"
 KERNEL_VERSION=$(uname -r)
+if [ ! -d "$LIVEROOT/lib/modules/$KERNEL_VERSION" ]; then
+    KERNEL_VERSION=$(ls -1 "$LIVEROOT/lib/modules" 2>/dev/null | grep -E '^[0-9]' | head -n 1)
+fi
 
-echo "-> Copia Kernel Debian/Ubuntu ($KERNEL_VERSION)..."
+echo "-> Copia Kernel e Initramfs Debian/Ubuntu/Kylin ($KERNEL_VERSION)..."
 
 if [ -f "$LIVEROOT/boot/vmlinuz-$KERNEL_VERSION" ]; then
     KERNEL_SRC="$LIVEROOT/boot/vmlinuz-$KERNEL_VERSION"
-    INITRD_SRC="$LIVEROOT/boot/initrd.img-$KERNEL_VERSION"
 else
     KERNEL_SRC=$(find "$LIVEROOT/boot" -maxdepth 1 -name "vmlinuz-*" -type f | sort -V | tail -n 1)
-    INITRD_SRC=$(find "$LIVEROOT/boot" -maxdepth 1 -name "initrd.img-*" -type f | sort -V | tail -n 1)
 fi
 
 if [ ! -f "$KERNEL_SRC" ]; then
     echo "[FATAL ERROR] Impossibile trovare il kernel in $LIVEROOT/boot!"
     exit 1
+fi
+
+if [ -f "$LIVEROOT/boot/oa-initrd.img" ]; then
+    INITRD_SRC="$LIVEROOT/boot/oa-initrd.img"
+elif [ -f "$LIVEROOT/boot/initrd.img-$KERNEL_VERSION" ]; then
+    INITRD_SRC="$LIVEROOT/boot/initrd.img-$KERNEL_VERSION"
+else
+    INITRD_SRC=$(find "$LIVEROOT/boot" -maxdepth 1 -name "initrd.img-*" -type f | sort -V | tail -n 1)
 fi
 
 if [ ! -f "$INITRD_SRC" ]; then
@@ -49,7 +97,11 @@ fi
 
 mkdir -p "$ISODIR/live"
 cp "$KERNEL_SRC" "$ISODIR/live/vmlinuz"
+echo "-> Copia initrd ($INITRD_SRC -> $ISODIR/live/initrd.img)..."
 cp "$INITRD_SRC" "$ISODIR/live/initrd.img"
+
+rm -f "$LIVEROOT/boot/oa-initrd.img"
+echo "-> Copia completata con successo."
 {{ end }}
 
 # ----------------------------------------------------------------------------

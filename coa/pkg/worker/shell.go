@@ -29,7 +29,14 @@ func RunShell(payload []byte) error {
 		return fmt.Errorf("no command specified in 'command' parameter")
 	}
 
-	scriptContent := []byte("set -e\nexport PATH=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH\"\n\n" + config.Params.Command)
+	envPrefix := ""
+	for _, envVar := range []string{"KRILL_INSTALL_MODE", "KRILL_TARGET_DEVICE", "KRILL_EFI_BOOTLOADER_ID"} {
+		if val := os.Getenv(envVar); val != "" {
+			envPrefix += fmt.Sprintf("export %s=%q\n", envVar, val)
+		}
+	}
+
+	scriptContent := []byte("set -e\nexport PATH=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH\"\n" + envPrefix + "\n" + config.Params.Command)
 
 	return executeUnifiedShell(config, scriptContent)
 }

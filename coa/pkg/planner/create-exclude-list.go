@@ -150,11 +150,14 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 	excludes = append(excludes, detectSwapFiles()...)
 
 	// ==========================================================
-	// 3. Hack per Debian: cryptdisks
-	// Grazie a mksquashfs -wildcards, possiamo evitare di fare
-	// scansioni del disco in Go. Basta questa stringa magica!
+	// 3. Hack per Debian e derivate: cryptdisks, installer OEM
 	// ==========================================================
-	excludes = append(excludes, "etc/rc*.d/*cryptdisks*")
+	excludes = append(excludes,
+		"etc/rc*.d/*cryptdisks*",
+		"etc/grub.d/42_openkylin_multiboot",
+		"etc/openkylin-installer",
+		"etc/openkylin-installer/**",
+	)
 
 	// ==========================================================
 	// 4. Cura Dimagrante Specifica per GitHub Actions (Smoketest)

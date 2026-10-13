@@ -372,12 +372,14 @@ remaster:
 # ==============================================================================
 install:
   - name: "install-cleanup"
-    description: "remove 00-live"
+    description: "clean live and installer leftovers"
     module: "shell"
     chroot: true
     params:
       command: |
         rm -f /etc/sudoers.d/00-live
+        rm -f /etc/grub.d/42_openkylin_multiboot 2>/dev/null || true
+        rm -rf /etc/openkylin-installer 2>/dev/null || true
 
   - name: "install-ssh-keys"
     description: "generate host SSH keys"

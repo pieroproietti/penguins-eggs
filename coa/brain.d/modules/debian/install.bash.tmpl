@@ -80,6 +80,10 @@ fi
 
 echo "-> Preserving original GRUB configuration & setting OS prober..."
 
+# Remove obsolete OEM installer hooks if present (e.g. openKylin multiboot)
+rm -f /etc/grub.d/42_openkylin_multiboot 2>/dev/null || true
+rm -rf /etc/openkylin-installer 2>/dev/null || true
+
 if [ -f /etc/default/grub ]; then
     if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
         sed -i 's/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
@@ -151,7 +155,7 @@ elif [ "$(uname -m)" = "riscv64" ]; then
         [ -f "$SPACEMIT_ASSETS/u-boot.itb" ] && dd if="$SPACEMIT_ASSETS/u-boot.itb" of="${TARGET_DISK}p4" conv=fsync status=none 2>/dev/null || true
     fi
 else
-    TARGET_DISK=$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")
+    TARGET_DISK="${KRILL_TARGET_DEVICE:-$(grub-probe -t disk / 2>/dev/null || echo "/dev/sda")}"
     grub-install --target=i386-pc --recheck "$TARGET_DISK"
     update-grub
 fi
