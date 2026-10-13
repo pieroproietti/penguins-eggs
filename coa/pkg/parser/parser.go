@@ -22,7 +22,14 @@ func DetectAndLoad(isGitHubAction bool, customPaths ...string) (*Profile, error)
 	var baseDir string
 	pathsToTry := []string{
 		filepath.Join("coa", "brain.d"),
+		filepath.Join("..", "..", "brain.d"),
 		"/etc/penguins-eggs.d/brain.d",
+	}
+	if root := os.Getenv("OA_PROJ_ROOT"); root != "" {
+		pathsToTry = append([]string{filepath.Join(root, "coa", "brain.d")}, pathsToTry...)
+	}
+	if root := os.Getenv("GITHUB_WORKSPACE"); root != "" {
+		pathsToTry = append([]string{filepath.Join(root, "coa", "brain.d")}, pathsToTry...)
 	}
 
 	for _, path := range pathsToTry {

@@ -2,35 +2,19 @@
 set -e
 make clean package "$@"
 
-. /etc/os-release
-
-case "$ID" in
-    alpine)
-        sudo apk add --allow-untrusted penguins-eggs-*.apk
-        ;;
-
-    arch)
-        sudo pacman -U --noconfirm penguins-eggs-*.pkg.tar.zst
-        ;;
-
-    debian)
-        sudo dpkg -i penguins-eggs_*.deb
-        ;;
-    fedora)
-        sudo dnf reinstall -y penguins-eggs-*.rpm
-        ;;
-    opensuse*)
+if ls penguins-eggs_*.deb 1>/dev/null 2>&1; then
+    sudo dpkg -i penguins-eggs_*.deb
+elif ls penguins-eggs-*.pkg.tar.zst 1>/dev/null 2>&1; then
+    sudo pacman -U --noconfirm penguins-eggs-*.pkg.tar.zst
+elif ls penguins-eggs-*.apk 1>/dev/null 2>&1; then
+    sudo apk add --allow-untrusted penguins-eggs-*.apk
+elif ls penguins-eggs-*.rpm 1>/dev/null 2>&1; then
+    if command -v zypper >/dev/null 2>&1; then
         sudo zypper --no-gpg-checks install -y penguins-eggs-*.rpm
-        ;;
-    *)
-        # fallback su LIKE_ID
-        case "$ID_LIKE" in
-            *arch*)   sudo pacman -U --noconfirm penguins-eggs-*.pkg.tar.zst ;;
-            *debian*|*devuan*|*ubuntu*) sudo dpkg -i penguins-eggs_*.deb ;;
-            *fedora*|*rhel*) sudo dnf install -y penguins-eggs-*.rpm ;;
-            *) echo "Distro non supportata: $ID"; exit 1 ;;
-        esac
-        ;;
-esac
-
-
+    else
+        sudo dnf reinstall -y penguins-eggs-*.rpm
+    fi
+else
+    echo "Nessun pacchetto trovato da installare."
+    exit 1
+fi

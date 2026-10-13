@@ -106,6 +106,13 @@ func TestDistroDetectionCases(t *testing.T) {
 			},
 			wantFamily: "archlinux",
 		},
+		{
+			name: "openkylin without ID_LIKE matches debian",
+			osRelease: map[string]string{
+				"ID": "openkylin",
+			},
+			wantFamily: "debian",
+		},
 	}
 
 	for _, tt := range tests {

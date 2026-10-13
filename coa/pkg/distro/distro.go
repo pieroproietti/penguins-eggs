@@ -10,9 +10,12 @@ import (
 	"coa/pkg/utils"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Distro struct {
@@ -49,6 +52,101 @@ func NewDistro() *Distro {
 	return fromOSRelease(parseOsRelease())
 }
 
+type brainIndex struct {
+	Distributions []struct {
+		ID   string   `yaml:"id"`
+		Like []string `yaml:"like"`
+	} `yaml:"distributions"`
+}
+
+func findBrainIndex() string {
+	if root := os.Getenv("OA_PROJ_ROOT"); root != "" {
+		p := filepath.Join(root, "coa", "brain.d", "index.yaml")
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+	}
+	if root := os.Getenv("GITHUB_WORKSPACE"); root != "" {
+		p := filepath.Join(root, "coa", "brain.d", "index.yaml")
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+	}
+
+	installed := "/etc/penguins-eggs.d/brain.d/index.yaml"
+	if _, err := os.Stat(installed); err == nil {
+		return installed
+	}
+
+	searchPaths := []string{
+		filepath.Join("coa", "brain.d", "index.yaml"),
+		filepath.Join("..", "brain.d", "index.yaml"),
+		filepath.Join("..", "..", "brain.d", "index.yaml"),
+		filepath.Join("brain.d", "index.yaml"),
+	}
+	for _, p := range searchPaths {
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+	}
+	return ""
+}
+
+func mapEntryToFamily(id string) (string, string) {
+	switch id {
+	case "debian":
+		return "debian", "Debian"
+	case "alpine":
+		return "alpine", "Alpine"
+	case "manjaro":
+		return "manjaro", "Manjaro"
+	case "arch", "archlinux":
+		return "archlinux", "Arch"
+	case "fedora":
+		return "fedora", "Fedora"
+	case "opensuse", "suse":
+		return "opensuse", "Opensuse"
+	default:
+		return id, id
+	}
+}
+
+func matchBrainIndex(candidates []string) (string, string, bool) {
+	indexPath := findBrainIndex()
+	if indexPath == "" {
+		return "", "", false
+	}
+
+	data, err := os.ReadFile(indexPath)
+	if err != nil {
+		return "", "", false
+	}
+
+	var idx brainIndex
+	if err := yaml.Unmarshal(data, &idx); err != nil {
+		return "", "", false
+	}
+
+	for _, c := range candidates {
+		cLower := strings.ToLower(c)
+		for _, entry := range idx.Distributions {
+			entryIDLower := strings.ToLower(entry.ID)
+			if cLower == entryIDLower {
+				fam, like := mapEntryToFamily(entryIDLower)
+				return fam, like, true
+			}
+			for _, l := range entry.Like {
+				if cLower == strings.ToLower(l) {
+					fam, like := mapEntryToFamily(entryIDLower)
+					return fam, like, true
+				}
+			}
+		}
+	}
+
+	return "", "", false
+}
+
 func fromOSRelease(osInfo map[string]string) *Distro {
 	rawID := strings.ToLower(osInfo["ID"])
 	rawLike := strings.ToLower(osInfo["ID_LIKE"])
@@ -65,9 +163,17 @@ func fromOSRelease(osInfo map[string]string) *Distro {
 
 	candidates := append([]string{rawID}, likes...)
 
+	// 1. Dynamic detection via brain.d/index.yaml if available
+	if familyID, distroLike, ok := matchBrainIndex(candidates); ok {
+		d.FamilyID = familyID
+		d.DistroLike = distroLike
+		return d
+	}
+
+	// 2. Static fallback if brain.d/index.yaml is missing
 	for _, c := range candidates {
 		switch c {
-		case "debian", "ubuntu":
+		case "debian", "ubuntu", "devuan", "kali", "linuxmint", "openkylin", "pop", "quirinux", "abellha":
 			d.FamilyID = "debian"
 			d.DistroLike = "Debian"
 			return d
@@ -87,12 +193,12 @@ func fromOSRelease(osInfo map[string]string) *Distro {
 			d.DistroLike = "Arch"
 			return d
 
-		case "fedora", "rhel":
+		case "fedora", "rhel", "nobara":
 			d.FamilyID = "fedora"
 			d.DistroLike = "Fedora"
 			return d
 
-		case "opensuse", "suse":
+		case "opensuse", "suse", "opensuse-slowroll", "opensuse-tumbleweed":
 			d.FamilyID = "opensuse"
 			d.DistroLike = "Opensuse"
 			return d
