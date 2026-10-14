@@ -46,9 +46,13 @@ Triggered manually (`workflow_dispatch`), Furnace runs on a **self-hosted runner
 | Alpine | 301 | `virgin` |
 | Arch | 302 | `virgin` |
 | Debian | 303 | `virgin` |
-| Fedora | 304 | `virgin` |
+| Devuan | 304 | `virgin` |
+| Fedora | 305 | `virgin` |
+| Manjaro | 306 | `virgin` |
+| openSUSE | 307 | `virgin` |
+| Ubuntu | 308 | `virgin` |
+| openKylin | 309 | `virgin` |
 
-> **Why only these four?** CLI editions of Manjaro are hard to source, and openSUSE support is currently lagging behind. The Furnace matrix will grow as those gaps close.
 
 The flight plan of each job:
 
