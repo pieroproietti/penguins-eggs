@@ -2,6 +2,26 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.14 - 2026-10-14
+
+This release introduces native support for **openKylin** and expanded Debian-family derivatives, restores original GNU GRUB installer execution bypassing vendor ESP restrictions, fixes virtual machine mouse alignment in `eggs adapt` via SPICE guest agent resets, enriches live initramfs boot module provisioning, and adds an automated documentation sync pipeline for SourceForge and web mirrors.
+
+### 🐉 openKylin & Derivative Distribution Support
+* **Distribution Sensing & brain.d Dynamic Indexing**: Added first-class detection for openKylin (`openkylin`) mapped to the Debian family in `coa/pkg/distro/distro.go`. Introduced dynamic profile index resolution via `brain.d/index.yaml` allowing derivatives to inherit family definitions automatically, alongside expanded static fallbacks for Devuan, Kali, Linux Mint, Pop!_OS, Quirinux, Abellha, Nobara (Fedora), and openSUSE Slowroll / Tumbleweed.
+* **Bypass Vendor ESP Hardcoded Lock**: OpenKylin ships a custom Python wrapper around `grub-install` that aborts whenever the target ESP UUID does not match a hardcoded value (`2C9D-17A5`). Eggs now automatically detects diverted or wrapped `grub-install` executables, purges OEM installer hooks (`42_openkylin_multiboot`, `/etc/openkylin-installer`), and restores standard GNU `grub-install` during live system installation, allowing Krill to successfully write EFI bootloaders to newly partitioned disks.
+* **Krill Target Device Propagation**: Passed `KRILL_TARGET_DEVICE` and installation mode variables through Krill execution chroots and worker environments, ensuring robust device fallback during bootloader installation when `grub-probe` cannot resolve the disk automatically.
+
+### 🖥️ Display Adaptation & Guest Agent Integration
+* **Automatic SPICE Mouse Realignment (`eggs adapt`)**: Solved mouse pointer coordinate desynchronization following dynamic `xrandr` resolution changes inside virtual machines (KVM/QEMU). `eggs adapt` now detects and restarts `spice-vdagent`, instantly realigning the cursor and input bounding box without requiring a session logout/login.
+
+### 📦 Packaging & Live Boot Initialization
+* **Debian/Ubuntu Initramfs Module Assurance**: Enhanced `distro_initramfs_cmd` in `remaster.bash.tmpl` to dynamically generate `/boot/oa-initrd.img` and ensure required virtual storage and live filesystem modules (`virtio_pci`, `virtio_blk`, `virtio_scsi`, `isofs`, `overlay`) are explicitly registered in `/etc/initramfs-tools/modules`.
+* **Packaging Dependency Optimization**: Replaced legacy or unavailable initramfs package references with `busybox-initramfs | busybox-static` in Debian packaging definitions, and integrated `libcrypt-dev` into local developer toolchains.
+
+### 🌐 Documentation & Mirror Synchronization
+* **SourceForge & Web Mirror Sync Pipeline**: Added `upload/sync.py` and `make sync-upload` to automatically mirror documentation from `upload/sourceforge` to `upload/penguins-eggs.net`.
+* **UTF-8 HTML Generation & Modern Typography**: Generates clean, responsive HTML documentation with UTF-8 character encoding, Apache `.htaccess` directives to prevent charset mojibake, and updated links to official penguins-eggs portals.
+
 ## Release Notes: penguins-eggs v26.10.7 - 2026-10-07
 
 This release standardizes the default EFI System Partition (ESP) sizing across Krill and Calamares to 512 MiB, avoiding disk waste while guaranteeing reliable bootloader headroom for Arch and other distributions, and integrates official repository configuration into CI workflows.
