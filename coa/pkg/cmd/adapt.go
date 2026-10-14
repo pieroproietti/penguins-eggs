@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"coa/pkg/utils"
 
@@ -36,10 +37,26 @@ func handleAdapt() {
 
 	virtualOutputs := []string{"Virtual-0", "Virtual-1", "Virtual-2", "Virtual-3"}
 
+	adapted := false
 	for _, output := range virtualOutputs {
-		// Ignoriamo gli errori e l'output in modo silenzioso, perché non tutti gli output esisteranno
-		_ = utils.ExecQuiet(fmt.Sprintf("xrandr --output %s --auto", output))
+		err := utils.ExecQuiet(fmt.Sprintf("xrandr --output %s --auto", output))
+		if err == nil {
+			adapted = true
+		}
 	}
 
-	utils.LogSuccess("Resolution adapted.")
+	if adapted {
+		// Se eseguito con sudo (EUID == 0), riavvia il servizio di sistema spice-vdagent.
+		// Altrimenti, riavvia solo l'istanza utente di spice-vdagent (con -x per non
+		// toccare il demone di root spice-vdagentd) senza chiedere password.
+		if os.Geteuid() == 0 {
+			_ = utils.ExecQuiet("systemctl restart spice-vdagent 2>/dev/null || true")
+		} else {
+			_ = utils.ExecQuiet("pkill -x spice-vdagent && spice-vdagent >/dev/null 2>&1 || true")
+		}
+
+		utils.LogSuccess("Resolution adapted.")
+	} else {
+		utils.LogNormal("No virtual outputs found to adapt.")
+	}
 }
