@@ -80,9 +80,13 @@ fi
 
 echo "-> Preserving original GRUB configuration & setting OS prober..."
 
-# Remove obsolete OEM installer hooks if present (e.g. openKylin multiboot)
+# Remove obsolete OEM installer hooks if present (e.g. openKylin multiboot & grub-install wrapper)
 rm -f /etc/grub.d/42_openkylin_multiboot 2>/dev/null || true
 rm -rf /etc/openkylin-installer 2>/dev/null || true
+if [ -f /usr/sbin/grub-install.openkylin-original ]; then
+    rm -f /usr/sbin/grub-install
+    dpkg-divert --local --rename --remove /usr/sbin/grub-install >/dev/null 2>&1 || mv -f /usr/sbin/grub-install.openkylin-original /usr/sbin/grub-install
+fi
 
 if [ -f /etc/default/grub ]; then
     if grep -q "^GRUB_DISABLE_OS_PROBER=" /etc/default/grub; then
