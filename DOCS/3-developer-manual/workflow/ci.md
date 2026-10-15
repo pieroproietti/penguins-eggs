@@ -49,8 +49,9 @@ Triggered manually (`workflow_dispatch`), Furnace runs on a **self-hosted runner
 | Devuan | 304 | `virgin` |
 | Fedora | 305 | `virgin` |
 | Manjaro | 306 | `virgin` |
-| openSUSE | 307 | `virgin` |
-| Ubuntu | 308 | `virgin` |
+| openKylin | 307 | `virgin` |
+| openSUSE | 308 | `virgin` |
+| Ubuntu | 309| `virgin` |
 | openKylin | 309 | `virgin` |
 
 

@@ -19,7 +19,7 @@ jobs:
     with:
       source: ${{ inputs.source }}
       os: 'opensuse'
-      vmid: 307
+      vmid: 308
       snapshot: 'virgin'
       subnet: '192.168.1'
       artifact_name: 'penguins-eggs-opensuse'
