@@ -51,8 +51,7 @@ Triggered manually (`workflow_dispatch`), Furnace runs on a **self-hosted runner
 | Manjaro | 306 | `virgin` |
 | openKylin | 307 | `virgin` |
 | openSUSE | 308 | `virgin` |
-| Ubuntu | 309| `virgin` |
-| openKylin | 309 | `virgin` |
+| Ubuntu | 309 | `virgin` |
 
 
 The flight plan of each job:
