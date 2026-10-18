@@ -74,5 +74,6 @@ Examples:
 
 func init() {
 	coexistInstallCmd.Flags().StringVar(&krillFstype, "fstype", "", "filesystem type to use (ext4, btrfs)")
+	coexistInstallCmd.Flags().BoolVar(&sysinstallAnonymous, "anonymous", false, "Opt out of anonymous census telemetry")
 	coexistCmd.AddCommand(coexistInstallCmd)
 }

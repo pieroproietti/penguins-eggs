@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"coa/pkg/census"
 	"coa/pkg/sysinstall/setup"
 	"coa/pkg/utils"
 	"io"
@@ -48,6 +49,17 @@ func RunCalamaresInstaller(oaVersion string) {
 		utils.LogError("The graphical installer was interrupted with an error: %v", err)
 		os.Exit(1)
 	}
+
+	_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
+	census.Send(census.EventOptions{
+		Action:      "sysinstall",
+		EggsVersion: oaVersion,
+		Anonymous:   sysinstallAnonymous || isCrypted,
+		Crypted:     isCrypted,
+		Clone:       isClone,
+		Compression: "",
+		Coexist:     false,
+	})
 
 	utils.LogNormal("Calamares installation finished.")
 	os.Exit(0)

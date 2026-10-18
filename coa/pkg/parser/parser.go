@@ -230,6 +230,9 @@ func mergeCustomSettings(base *RemasterConfig, custom *RemasterConfig) {
 	if custom.ISOPrefix != "" {
 		base.ISOPrefix = custom.ISOPrefix
 	}
+	if custom.Anonymous {
+		base.Anonymous = true
+	}
 }
 
 func LoadCustomSettings() (*Settings, error) {

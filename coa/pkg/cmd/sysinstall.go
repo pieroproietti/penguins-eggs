@@ -10,7 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var sysinstallCoexist bool
+var (
+	sysinstallCoexist   bool
+	sysinstallAnonymous bool
+)
 
 var sysinstallCmd = &cobra.Command{
 	Use:   "sysinstall",
@@ -57,5 +60,6 @@ func isCalamaresAvailable() bool {
 }
 
 func init() {
+	sysinstallCmd.PersistentFlags().BoolVar(&sysinstallAnonymous, "anonymous", false, "Opt out of anonymous census telemetry")
 	rootCmd.AddCommand(sysinstallCmd)
 }

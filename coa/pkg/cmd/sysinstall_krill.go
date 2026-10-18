@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"coa/pkg/census"
 	"coa/pkg/sysinstall/krill"
 	"coa/pkg/sysinstall/krill/engine"
 	"coa/pkg/sysinstall/setup"
@@ -80,8 +81,21 @@ func runKrillInstallerWithSlot(oaVersion string, fstype string, coexist bool, ta
 		os.Exit(1)
 	}
 
-	if installed && coexist {
-		updateHostBootloader()
+	if installed {
+		if coexist {
+			updateHostBootloader()
+		}
+
+		_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
+		census.Send(census.EventOptions{
+			Action:      "sysinstall",
+			EggsVersion: oaVersion,
+			Anonymous:   sysinstallAnonymous || isCrypted,
+			Crypted:     isCrypted,
+			Clone:       isClone,
+			Compression: "",
+			Coexist:     coexist,
+		})
 	}
 
 	utils.LogNormal("%s[Krill]%s Exiting installer.", utils.ColorGreen, utils.ColorReset)

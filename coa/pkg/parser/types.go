@@ -34,7 +34,8 @@ type User struct {
 
 // Strutture di Settings
 type Settings struct {
-	Remaster RemasterConfig `yaml:"remaster" json:"remaster" mapstructure:"remaster"`
+	Anonymous bool           `yaml:"anonymous,omitempty" json:"anonymous,omitempty" mapstructure:"anonymous"`
+	Remaster  RemasterConfig `yaml:"remaster" json:"remaster" mapstructure:"remaster"`
 }
 
 type RemasterConfig struct {
@@ -46,6 +47,7 @@ type RemasterConfig struct {
 	Compression CompressionConfig `yaml:"compression" json:"compression" mapstructure:"compression"`
 	ISOPrefix   string            `yaml:"iso_prefix,omitempty" json:"iso_prefix,omitempty" mapstructure:"iso_prefix"`
 	RamMode     *bool             `yaml:"ram_mode,omitempty" json:"ram_mode,omitempty" mapstructure:"ram_mode"`
+	Anonymous   bool              `yaml:"anonymous,omitempty" json:"anonymous,omitempty" mapstructure:"anonymous"`
 }
 
 type CompressionConfig struct {

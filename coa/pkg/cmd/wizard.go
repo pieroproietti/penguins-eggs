@@ -135,6 +135,7 @@ func RunWizard(destPath string) {
 		ProduceMode:      selectedMode,
 		CompressionAlgo:  compAlgo,
 		CompressionLevel: compLevel,
+		Anonymous:        anonymousFlag || selectedMode == "crypted",
 	}
 
 	RunRemasterFlight(opts)

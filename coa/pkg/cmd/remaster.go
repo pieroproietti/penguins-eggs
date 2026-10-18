@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"coa/pkg/census"
 	"coa/pkg/distro"
 	"coa/pkg/parser"
 	"coa/pkg/pathDefaults"
@@ -27,6 +28,7 @@ var (
 	cloneFlag        bool
 	cryptedFlag      bool
 	cryptedCloneFlag bool
+	anonymousFlag    bool
 	fdtFlag          string
 	compressionFlag  string
 	wizardFlag       bool
@@ -42,6 +44,7 @@ type RemasterOptions struct {
 	StopAfter        string
 	DebugPlan        bool
 	FdtPath          string
+	Anonymous        bool
 }
 
 var remasterCmd = &cobra.Command{
@@ -90,6 +93,9 @@ and generate a precise execution plan for the OA planner.`,
 			produceMode = "crypted"
 		}
 
+		// Automatic privacy rule: --crypted always forces anonymous = true
+		isAnonymous := anonymousFlag || isCrypted
+
 		opts := RemasterOptions{
 			ProducePath:     producePath,
 			TargetDir:       targetDirFlag,
@@ -98,6 +104,7 @@ and generate a precise execution plan for the OA planner.`,
 			StopAfter:       stopAfter,
 			DebugPlan:       debugPlan,
 			FdtPath:         fdtFlag,
+			Anonymous:       isAnonymous,
 		}
 
 		RunRemasterFlight(opts)
@@ -384,6 +391,18 @@ func RunRemasterFlight(opts RemasterOptions) {
 		} else {
 			utils.LogSuccess("Remastering completed in %02d:%02d:%02d — the egg is ready!", h, m, s)
 		}
+
+		isCryptedMode := produceMode == "crypted"
+		census.Send(census.EventOptions{
+			Action:      "remaster",
+			EggsVersion: AppVersion,
+			Anonymous:   opts.Anonymous || isCryptedMode,
+			Crypted:     isCryptedMode,
+			Clone:       produceMode == "clone",
+			Compression: compression,
+			Coexist:     false,
+			Distro:      myDistro,
+		})
 	}
 }
 
@@ -412,6 +431,7 @@ func init() {
 	remasterCmd.Flags().BoolVar(&cryptedFlag, "crypted", false, "Create an ISO with LUKS-encrypted filesystem.squashfs")
 	remasterCmd.Flags().BoolVar(&cryptedCloneFlag, "cryptedclone", false, "Alias for --crypted")
 	_ = remasterCmd.Flags().MarkHidden("cryptedclone")
+	remasterCmd.Flags().BoolVar(&anonymousFlag, "anonymous", false, "Opt out of anonymous census telemetry")
 	remasterCmd.Flags().StringVar(&compressionFlag, "compression", "", "SquashFS compression algorithm (zstd, xz, lz4, gzip)")
 	remasterCmd.Flags().StringVar(&stopAfter, "stop-after", "", "Stop execution after a specific step (e.g. initramfs)")
 	remasterCmd.Flags().BoolVar(&debugPlan, "debug", false, "Print the JSON plan and exit without remastering")

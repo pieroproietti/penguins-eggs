@@ -41,3 +41,12 @@ func TestSysinstallSubcommands(t *testing.T) {
 		t.Errorf("sysinstallCmd missing 'krill' subcommand")
 	}
 }
+
+func TestAnonymousFlags(t *testing.T) {
+	if remasterCmd.Flags().Lookup("anonymous") == nil {
+		t.Errorf("remasterCmd missing '--anonymous' flag")
+	}
+	if sysinstallCmd.PersistentFlags().Lookup("anonymous") == nil {
+		t.Errorf("sysinstallCmd missing '--anonymous' persistent flag")
+	}
+}
