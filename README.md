@@ -61,17 +61,27 @@ Documentation can be found on [DOCS](./DOCS/README.md). See also the [Manifestum
 
 The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosophy can be read on my blog.
 
-## 🖥️ Ecosystem: GUI, Tailoring & Wardrobe Ateliers
+## 🧩 The Ecosystem: penguins-gui & penguins-chef
 
+The engine that performs the live remastering remains **penguins-eggs**. Around it, a streamlined ecosystem of companion tools has developed, each with a focused responsibility:
 
-`penguins-eggs` works hand-in-hand with dedicated companion tools and configuration repositories:
-* **[penguins-gui](https://github.com/pieroproietti/penguins-gui)**: The independent desktop graphical user interface (GUI) written in Go with !Fyne. Allows desktop users to configure and trigger remastering flights (standard live, system clone, and encrypted clone with graphical passphrase entry), view real-time build logs, locate and open created ISOs with `xdg-open`, configure official repositories, install the `eggs` CLI, install Calamares with Qt5/Qt6 runtimes, and execute maintenance tasks.
-![penguins-gui](https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png)
+```text
+penguins-gui ──┐
+               ├──> penguins-eggs ──> Live ISO
+CLI ───────────┘
 
-* **[penguins-tailor](https://github.com/pieroproietti/penguins-tailor)**: The CLI tool providing the `tailor` command to configure, dress, and customize your Linux system with desktop profiles ("costumes") and "accessories" before remastering.
-* **Wardrobe Ateliers** (Costumes & Accessories):
-  * **Main Atelier**: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (maintained by Piero Proietti)
-  * **Quirinux Atelier**: [charliemartinez/penguins-wardrobe](https://github.com/charliemartinez/penguins-wardrobe) (maintained by Charlie Martinez for Quirinux)
+penguins-chef    →  system provisioning, recipes, and customizations
+```
+
+* **[penguins-gui](https://github.com/pieroproietti/penguins-gui)** (The Graphical Interface): An independent desktop application written in Go using Fyne, also distributed as an **AppImage** to run everywhere without installation. It acts as a friendly entry point: it automatically detects and installs the appropriate native `penguins-eggs` package for your distribution, triggers remastering flights graphically (Standard Live, System Clone, and Crypted Clone with graphical passphrase entry), displays real-time execution logs, automatically locates and opens the created ISO directory via `xdg-open`, configures repositories, and installs Calamares.
+![penguins-gui](https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png?raw=true)
+
+* **[penguins-chef](https://github.com/pieroproietti/penguins-chef)** (The Recipe & Provisioning Engine): A standalone tool for system provisioning and configuration. Chef configures Linux systems by applying explicit, reproducible recipes — installing packages, setting up services, and shaping desktop environments before the system is remastered by `eggs`. Think of Chef as the person who cooks the system:
+  ```bash
+  chef get
+  sudo chef apply .chef/recipes/costumes/colibri/colibri.yaml
+  sudo chef apply .chef/recipes/dev/devel.yaml
+  ```
 
 ## 🌍 Worldwide Census: Live Pulse
 
