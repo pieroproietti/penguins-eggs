@@ -2,6 +2,25 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.19 - 2026-10-19
+
+This release introduces **Census** — a privacy-first, anonymous telemetry system (`coa/pkg/census`) designed to help map distribution adoption, architectures, desktop environments, and installation modes across the `penguins-eggs` ecosystem — alongside openKylin integration in the automated Proxmox "Furnace" CI pipeline.
+
+### 📊 Census: Anonymous Telemetry & Privacy-First Opt-Out
+* **Anonymous Telemetry Engine (`coa/pkg/census`)**: Dispatches lightweight, non-blocking JSON telemetry (`remaster` and `sysinstall` events) to `https://penguins-eggs.net/api/census` with a strict `2.5s` timeout. Network failures or offline environments fail silently without ever delaying or altering CLI execution.
+* **Privacy & Multi-Level Opt-Out (`--anonymous`)**:
+  - **CLI Flag**: Added `--anonymous` to `eggs remaster`, `eggs sysinstall` (`krill` and `calamares`), `eggs coexist install`, and `eggs wizard`.
+  - **Automatic LUKS Privacy Guard**: Encrypted remastering flights (`--crypted`) and installations from LUKS-encrypted live images automatically enforce `anonymous = true`, skipping all telemetry transmission.
+  - **Global Opt-Out**: Full support for environment variable (`EGGS_ANONYMOUS=1` / `true` / `yes`) and persistent configuration (`anonymous: true` in `/etc/penguins-eggs.d/custom.yaml`).
+* **Transparent Local Payload Inspection (`census.json`)**: Every transmitted payload is saved locally with proper user ownership (`SUDO_UID`/`SUDO_GID` and `PKEXEC_UID` resolution) in `~/.config/penguins-eggs/census.json` and `/etc/penguins-eggs/census.json`, allowing users to inspect the exact data sent.
+* **Pre-Umount Emission & Target Root Persistence (`sysinstall`)**:
+  - **Krill Pre-Umount Hook (`BeforeUmount`)**: Dispatches `sysinstall` telemetry and persists `census.json` + `.census_id` directly into the newly installed target root (`/etc/penguins-eggs/census.json` and `/home/<user>/.config/penguins-eggs/census.json`) before filesystems are unmounted or an immediate reboot is triggered.
+  - **Calamares Chroot Runner Integration**: Emits `sysinstall` telemetry via the `ell` dispatcher at the end of `krill-chroot-runner.sh` while `/tmp/calamares-root-*` is still mounted, preventing reboot preemption and persisting `census.json` into the installed system.
+* **Squashfs Exclusion Hygiene**: Added `.census_id` and `census.json` paths to `GenerateExcludeList` so remastered live ISOs never leak the host's telemetry UUID or local payload cache into child images.
+
+### 🏭 Continuous Integration ("The Furnace")
+* **openKylin Pipeline & Matrix Alignment**: Added dedicated `.github/workflows/furnace-openkylin.yml` workflow and integrated openKylin (VMID 307) and Ubuntu (VMID 309) into `furnace-all.yml` and the developer CI documentation.
+
 ## Release Notes: penguins-eggs v26.10.14 - 2026-10-14
 
 This release introduces native support for **openKylin** and expanded Debian-family derivatives, restores original GNU GRUB installer execution bypassing vendor ESP restrictions, fixes virtual machine mouse alignment in `eggs adapt` via SPICE guest agent resets, enriches live initramfs boot module provisioning, and adds an automated documentation sync pipeline for SourceForge and web mirrors.
