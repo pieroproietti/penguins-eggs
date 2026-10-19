@@ -73,6 +73,33 @@ The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosop
   * **Main Atelier**: [pieroproietti/penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) (maintained by Piero Proietti)
   * **Quirinux Atelier**: [charliemartinez/penguins-wardrobe](https://github.com/charliemartinez/penguins-wardrobe) (maintained by Charlie Martinez for Quirinux)
 
+## 🌍 Worldwide Census: Live Pulse
+
+To give real-time visibility into how **penguins-eggs** is used around the world and what distributions, architectures, and desktop environments are actively crafted and deployed, penguins-eggs features a transparent, privacy-respecting **Census** telemetry. Every live remastering flight (`eggs remaster`) and system installation (`eggs sysinstall` via Krill or Calamares) can anonymously contribute high-level metrics.
+
+[![Census Events](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_events&label=Remaster%20%26%20Install%20Events&color=007ec6)](https://penguins-eggs.net/api/census)
+[![Unique Systems](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.unique_machines&label=Unique%20Machines&color=28a745)](https://penguins-eggs.net/api/census)
+[![Live Census API](https://img.shields.io/badge/Census-Live%20JSON%20API-orange)](https://penguins-eggs.net/api/census)
+
+The live, aggregated global snapshot is publicly available at:
+👉 **[https://penguins-eggs.net/api/census](https://penguins-eggs.net/api/census)**
+
+### What does the Census show?
+* **Actions in the Wild**: Remaster flights (`remaster`), installations (`sysinstall`), and clone deployments (`--clone`).
+* **Distributions & Families**: Live data across Alpine, Arch, Debian, Devuan, Fedora, Kali, Linux Mint, Manjaro, openKylin, Ubuntu, and derivative distros.
+* **Environments & Hardware**: Architectures (`amd64`, `arm64`), Desktop Environments (CLI, XFCE, Openbox, Cinnamon, GNOME, KDE, etc.), init systems (`systemd`, `runit`, `openrc`), and virtualization platforms (bare metal, KVM, QEMU, VMware).
+* **Global Footprint**: Countries and continents where custom live systems are actively created.
+
+### 🛡️ Privacy & Transparency by Design
+The Census is engineered with strict privacy principles:
+* **Strictly Anonymous**: Uses a one-way, salted SHA-256 hash UUID derived from `/etc/machine-id`. No IP addresses, user credentials, personal data, or hostnames are ever collected or stored.
+* **Inspect What You Share**: The exact JSON payload is saved locally for inspection at `~/.config/penguins-eggs/census.json` (and `/etc/penguins-eggs/census.json`).
+* **Encrypted Protection**: Encrypted remaster flights (`--crypted`) automatically disable census telemetry completely.
+* **Effortless Opt-Out**: You can disable census reporting at any time:
+  - Via CLI flag: `eggs remaster --anonymous` or `eggs sysinstall --anonymous`
+  - Via environment variable: `export EGGS_ANONYMOUS=1`
+  - In configuration: set `anonymous: true` in `/etc/penguins-eggs.d/custom.yaml`
+
 ## Star History
 
 This project collects stars, look to the sky... contribute!
