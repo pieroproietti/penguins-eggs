@@ -89,6 +89,12 @@ func generateChrootRunner(profile *parser.Profile) error {
 		sb.WriteString("fi\n\n")
 	}
 
+	sb.WriteString("if [ \"$FAILED\" -eq 0 ] && [ -z \"$KRILL_INSTALL_MODE\" ]; then\n")
+	sb.WriteString(fmt.Sprintf("    %s ell <<'EOF_CENSUS' || true\n", currentExe))
+	sb.WriteString("{\n  \"module\": \"census\",\n  \"chroot\": false\n}\n")
+	sb.WriteString("EOF_CENSUS\n")
+	sb.WriteString("    touch /run/penguins-eggs-census-sysinstall.sent 2>/dev/null || true\n")
+	sb.WriteString("fi\n\n")
 	sb.WriteString("exit $FAILED\n")
 
 	outPath := filepath.Join(InstallerDRoot, "krill-chroot-runner.sh")

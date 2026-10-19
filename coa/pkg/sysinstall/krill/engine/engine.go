@@ -67,6 +67,8 @@ type Plan struct {
 	RemoveUser   string // utente live da rimuovere
 
 	Target string // mount point, default DefaultTarget
+
+	BeforeUmount func(*Plan)
 }
 
 // Event è il progresso comunicato alla UI (TUI o console).
@@ -158,8 +160,15 @@ func Run(plan *Plan, progress func(Event)) error {
 	c.logf("=== krill install: mode=%s device=%s target_part=%s esp=%s fs=%s swap=%s target=%s ===",
 		plan.Mode, plan.Device, plan.TargetPartition, plan.EspPartition, plan.FsType, plan.Swap, plan.Target)
 
+	beforeUmountCalled := false
 	total := len(sequence)
 	for i, name := range sequence {
+		if name == "umount" && plan.BeforeUmount != nil && !beforeUmountCalled {
+			beforeUmountCalled = true
+			c.logf("--- running pre-umount hook ---")
+			plan.BeforeUmount(plan)
+		}
+
 		progress(Event{Index: i, Total: total, Module: name, Message: labelFor(name)})
 		c.logf("--- module %d/%d: %s ---", i+1, total, name)
 
@@ -181,6 +190,10 @@ func Run(plan *Plan, progress func(Event)) error {
 			runUmount(c) // non lasciamo il sistema live con i mount appesi
 			return fmt.Errorf("module %s: %w (details in %s)", name, err, logPath)
 		}
+	}
+
+	if plan.BeforeUmount != nil && !beforeUmountCalled {
+		plan.BeforeUmount(plan)
 	}
 
 	progress(Event{Index: total, Total: total, Module: "done", Message: "Installation complete"})

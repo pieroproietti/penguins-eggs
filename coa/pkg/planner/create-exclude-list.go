@@ -89,6 +89,10 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		"etc/machine-id",
 		"var/lib/dbus/machine-id",
 		"var/lib/systemd/random-seed",
+		"etc/penguins-eggs/.census_id",
+		"etc/penguins-eggs.d/.census_id",
+		"etc/penguins-eggs/census.json",
+		"etc/penguins-eggs.d/census.json",
 
 		// Rete: rigenerato dal DHCP/systemd-resolved al boot
 		"etc/resolv.conf",

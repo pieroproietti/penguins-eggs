@@ -3,7 +3,10 @@ package dispatcher
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
+	"coa/pkg/census"
+	"coa/pkg/sysinstall/setup"
 	"coa/pkg/worker"
 )
 
@@ -24,6 +27,18 @@ func RouteTask(payload []byte) error {
 	switch envelope.Module {
 	case "autologin-gui":
 		return worker.RunAutologin(payload)
+
+	case "census":
+		_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
+		census.Send(census.EventOptions{
+			Action:      "sysinstall",
+			EggsVersion: os.Getenv("EGGS_VERSION"),
+			Anonymous:   isCrypted,
+			Crypted:     isCrypted,
+			Clone:       isClone,
+			TargetRoot:  os.Getenv("TARGET_ROOT"),
+		})
+		return nil
 
 	case "copy":
 		return worker.RunCopy(payload)

@@ -68,6 +68,11 @@ func runKrillInstaller(oaVersion string, fstype string, coexist bool) {
 }
 
 func runKrillInstallerWithSlot(oaVersion string, fstype string, coexist bool, targetSlot string) {
+	_ = os.Setenv("EGGS_VERSION", oaVersion)
+	if sysinstallAnonymous {
+		_ = os.Setenv("EGGS_ANONYMOUS", "1")
+	}
+
 	if err := setup.BuildInstaller(oaVersion); err != nil {
 		utils.LogError("Installer environment setup error: %v", err)
 		os.Exit(1)
@@ -86,19 +91,24 @@ func runKrillInstallerWithSlot(oaVersion string, fstype string, coexist bool, ta
 			updateHostBootloader()
 		}
 
-		_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
-		census.Send(census.EventOptions{
-			Action:      "sysinstall",
-			EggsVersion: oaVersion,
-			Anonymous:   sysinstallAnonymous || isCrypted,
-			Crypted:     isCrypted,
-			Clone:       isClone,
-			Compression: "",
-			Coexist:     coexist,
-		})
+		if !krill.CensusSent() {
+			_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
+			census.Send(census.EventOptions{
+				Action:      "sysinstall",
+				EggsVersion: oaVersion,
+				Anonymous:   sysinstallAnonymous || isCrypted,
+				Crypted:     isCrypted,
+				Clone:       isClone,
+				Compression: "",
+				Coexist:     coexist,
+			})
+		}
 	}
 
 	utils.LogNormal("%s[Krill]%s Exiting installer.", utils.ColorGreen, utils.ColorReset)
+	if installed {
+		krill.ExecutePendingRestart()
+	}
 	os.Exit(0)
 }
 

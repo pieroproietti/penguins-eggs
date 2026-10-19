@@ -9,6 +9,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"coa/pkg/census"
 	"coa/pkg/distro"
 	"coa/pkg/sysinstall/krill/engine"
 	"coa/pkg/utils"
@@ -176,6 +177,7 @@ type model struct {
 	restartEnabled bool
 	restartChecked bool
 	restartCommand string
+	restartNow     bool
 }
 
 func shellQuote(s string) string {
@@ -482,7 +484,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if m.state == StateInstall {
 					if m.installDone {
 						if m.installErr == nil && m.restartEnabled && m.restartChecked {
-							return m, runRestart(m.restartCommand)
+							m.restartNow = true
 						}
 						return m, tea.Quit
 					}
@@ -1779,6 +1781,40 @@ func (m *model) buildPlan() *engine.Plan {
 		NetDns:       "",
 		UnpackSource: cfg.SquashfsSource(),
 		RemoveUser:   cfg.Removeuser.Username,
+		BeforeUmount: func(p *engine.Plan) {
+			_, isCrypted, isClone := census.DetectLiveSourceMode(p.UnpackSource)
+			census.Send(census.EventOptions{
+				Action:      "sysinstall",
+				EggsVersion: m.version,
+				Anonymous:   isCrypted,
+				Crypted:     isCrypted,
+				Clone:       isClone,
+				Compression: "",
+				Coexist:     p.Mode == "coexist",
+				TargetRoot:  p.Target,
+				TargetUser:  p.Login,
+			})
+			censusDispatched = true
+		},
+	}
+}
+
+var (
+	censusDispatched      bool
+	pendingRestartCommand string
+)
+
+// CensusSent returns true if the sysinstall census event was already dispatched
+// during the pre-umount hook.
+func CensusSent() bool {
+	return censusDispatched
+}
+
+// ExecutePendingRestart runs the deferred reboot command (if selected by the user
+// on the Finished screen) after the TUI and post-install tasks have completed.
+func ExecutePendingRestart() {
+	if fields := strings.Fields(pendingRestartCommand); len(fields) > 0 {
+		_ = exec.Command(fields[0], fields[1:]...).Run()
 	}
 }
 
@@ -1807,6 +1843,9 @@ func RunWithOptions(fstype string, coexist bool) (bool, error) {
 }
 
 func RunWithSlot(fstype string, coexist bool, targetSlot string) (bool, error) {
+	censusDispatched = false
+	pendingRestartCommand = ""
+
 	cfg, err := LoadInstallerConfig(DefaultConfigRoot)
 	if err != nil {
 		return false, fmt.Errorf("installer configuration not found in %s: %w", DefaultConfigRoot, err)
@@ -1828,6 +1867,9 @@ func RunWithSlot(fstype string, coexist bool, targetSlot string) (bool, error) {
 	installed := false
 	if fm, ok := finalModel.(model); ok && fm.installDone && fm.installErr == nil {
 		installed = true
+		if fm.restartNow {
+			pendingRestartCommand = fm.restartCommand
+		}
 	}
 
 	return installed, nil

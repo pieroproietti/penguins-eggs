@@ -23,7 +23,15 @@ var calamaresSubCmd = &cobra.Command{
 	},
 }
 
+const calamaresCensusMarker = "/run/penguins-eggs-census-sysinstall.sent"
+
 func RunCalamaresInstaller(oaVersion string) {
+	_ = os.Setenv("EGGS_VERSION", oaVersion)
+	if sysinstallAnonymous {
+		_ = os.Setenv("EGGS_ANONYMOUS", "1")
+	}
+	_ = os.Remove(calamaresCensusMarker)
+
 	if err := setup.BuildInstaller(oaVersion); err != nil {
 		utils.LogError("Installer environment setup error: %v", err)
 		os.Exit(1)
@@ -50,16 +58,18 @@ func RunCalamaresInstaller(oaVersion string) {
 		os.Exit(1)
 	}
 
-	_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
-	census.Send(census.EventOptions{
-		Action:      "sysinstall",
-		EggsVersion: oaVersion,
-		Anonymous:   sysinstallAnonymous || isCrypted,
-		Crypted:     isCrypted,
-		Clone:       isClone,
-		Compression: "",
-		Coexist:     false,
-	})
+	if _, err := os.Stat(calamaresCensusMarker); os.IsNotExist(err) {
+		_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
+		census.Send(census.EventOptions{
+			Action:      "sysinstall",
+			EggsVersion: oaVersion,
+			Anonymous:   sysinstallAnonymous || isCrypted,
+			Crypted:     isCrypted,
+			Clone:       isClone,
+			Compression: "",
+			Coexist:     false,
+		})
+	}
 
 	utils.LogNormal("Calamares installation finished.")
 	os.Exit(0)
