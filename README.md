@@ -83,7 +83,7 @@ penguins-chef    →  system provisioning, recipes, and customizations
   sudo chef apply .chef/recipes/dev/devel.yaml
   ```
 
-## 🌍 Census
+## 🌍 Worldwide Live Usage
 
 [![remaster](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.remaster&label=remaster&color=007ec6)](https://penguins-eggs.net/api/census)
 [![sysinstall](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.sysinstall&label=sysinstall&color=28a745)](https://penguins-eggs.net/api/census)
