@@ -1,10 +1,3 @@
-See AI context: https://penguins-eggs.net/llms.txt
-
-[![country](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_countries&label=country&color=orange)](https://penguins-eggs.net/api/census)
-[![distro](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_distros&label=distro&color=blueviolet)](https://penguins-eggs.net/api/census)
-[![remaster](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.remaster&label=remaster&color=007ec6)](https://penguins-eggs.net/api/census)
-[![sysinstall](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.sysinstall&label=sysinstall&color=28a745)](https://penguins-eggs.net/api/census)
-
 ### 🥚 penguins-eggs
 Since Oct 19, 2026 
 [![country](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_countries&label=country&color=orange)](https://penguins-eggs.net/api/census)
