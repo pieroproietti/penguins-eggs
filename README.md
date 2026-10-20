@@ -94,7 +94,7 @@ penguins-chef    →  system provisioning, recipes, and customizations
 An independent desktop application written in Go using Fyne, also distributed as an **AppImage** to run everywhere without installation. It acts as a friendly entry point: it automatically detects and installs the appropriate native `penguins-eggs` package for your distribution, triggers remastering flights graphically (Standard Live, System Clone, and Crypted Clone with graphical passphrase entry), displays real-time execution logs, automatically locates and opens the created ISO directory via `xdg-open`, configures repositories, and installs Calamares.
 ![penguins-gui](https://github.com/pieroproietti/penguins-gui/blob/main/penguins-gui.png?raw=true)
 
-### [penguins-chef](https://github.com/pieroproietti/penguins-chef)** (The Recipe & Provisioning 
+### **[penguins-chef](https://github.com/pieroproietti/penguins-chef)** (The Recipe & Provisioning 
 Engine): A standalone tool for system provisioning and configuration. Chef configures Linux systems by applying explicit, reproducible recipes — installing packages, setting up services, and shaping desktop environments before the system is remastered by `eggs`. Think of Chef as the person who cooks the system:
   ```bash
   chef get
