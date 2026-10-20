@@ -1,38 +1,50 @@
-### 🥚 penguins-eggs
-Since Oct 19, 2026 
+# 🥚 penguins-eggs
+
+**A universal Linux remastering and reinstallation system.**
+
 [![country](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_countries&label=country&color=orange)](https://penguins-eggs.net/api/census)
 [![distro](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_distros&label=distro&color=blueviolet)](https://penguins-eggs.net/api/census)
 [![remaster](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.remaster&label=remaster&color=007ec6)](https://penguins-eggs.net/api/census)
 [![sysinstall](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.sysinstall&label=sysinstall&color=28a745)](https://penguins-eggs.net/api/census)
-
-After years of passionate work on the TypeScript **penguins-eggs**, its next evolution is here: the C/Go rewrite now carries the `penguins-eggs` name. The old TypeScript version lives on as [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs-legacy).
-penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
-The goal is ambitious: a truly universal approach to Linux remastering. Every distribution is different, yet they all share common roots. penguins-eggs already supports Alpine, Arch, Debian, Fedora, Manjaro and openSUSE — and aims to prove that a single, unified engine can handle them all.
-
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
+
 ---
 
-## 🏗 penguins-eggs
+**penguins-eggs** is a command-line tool that lets you **remaster** your running Linux system into a bootable, hybrid live ISO (UEFI + BIOS) and easily **reinstall** it on other machines or virtual environments.
 
-We have transitioned to a monorepo structure to ensure perfect synchronization between the workhorse (oa) and the orchestrator (coa).
+Whether you want to build a custom Linux distribution, clone your workstation with all configurations and personal data intact, or deploy systems at scale, `eggs` provides a fast, unified, and consistent workflow across multiple Linux families.
 
-### 🧠 [coa](./DOCS/3-developer-manual/architecture/1-overview.md) (**brooding in my dialect**) - The Mind
-It manages the full lifecycle: from laying the ISO to the final installation and AI agent orchestration (via MCP). It powers the primary **`eggs`** CLI command.
+---
 
-The name derives from the dialect word coa, referring to the act of brooding or incubating eggs until they are ready to hatch. During early development, the repo was named `oa-tools` with binaries `coa` and `oa`, but `eggs` is the primary CLI executable used by developers and users.
+### Key Features
 
-**Language: Go**
+* **Remastering (`eggs remaster`, `eggs wizard`)**:
+  - **Standard Live**: Generates a clean, redistributable live ISO stripped of personal credentials.
+  - **Clone Mode (`--clone`)**: Produces a full system backup preserving user accounts, configurations, and home directories.
+  - **Encrypted Clone (`--crypted`)**: Creates a secure, LUKS2-encrypted live system.
+* **Reinstallation (`eggs sysinstall`)**:
+  - **Krill (TUI)**: Fast, native text installer supporting full disk installations, pre-partitioned layouts (handling multi-ESP dual-boot and preserving `/home`), and **Coexist** multi-boot slots.
+  - **Calamares (GUI)**: Full integration with the Calamares graphical installer, complete with dynamic branding and custom artwork.
+* **Cross-Distribution**: Works across Alpine, Arch, Debian, Devuan, Ubuntu, Fedora, Manjaro, and openSUSE.
+* **AI & Automation (`eggs mcp`)**: Built-in Model Context Protocol server enabling AI assistants to safely inspect and run remastering flights.
 
-For `eggs` commands, see [eggs Command Reference](./DOCS/2-user-manual/2-commands.md).
+---
 
-### 🦾 [oa](./DOCS/3-developer-manual/architecture/3-oa.md) (**eggs in my dialect**) - The Workhorse
-**Language: C**
-`oa` is the low-level engine. It handles the "heavy lifting" of the system:
-- Managing OverlayFS and mount points.
-- Executing SquashFS compression.
-- Remove and create users and groups via yocto_style functions.
-- Interacting directly with the Linux Kernel and system binaries.
-- **Philosophy:** Performance, stability, and zero-dependency execution.
+## 🏗 Architecture: The Brain and The Muscle
+
+penguins-eggs is built with a dual architecture combining the performance of C with the flexibility of Go:
+
+### 🧠 [coa](./DOCS/3-developer-manual/architecture/1-overview.md) - The Brain (Go)
+The orchestration layer powering the primary **`eggs`** CLI. It manages configuration blueprints, distribution probing, installer routing, and the MCP agent daemon.
+
+*For command usage, see the [eggs Command Reference](./DOCS/2-user-manual/2-commands.md).*
+
+### 🦾 [oa](./DOCS/3-developer-manual/architecture/3-oa.md) - The Muscle (C)
+The low-level workhorse engine with zero third-party dependencies. It interacts directly with the Linux kernel:
+* Managing OverlayFS and chroot mounts.
+* Driving SquashFS compression engines.
+* Handling safe user and group synchronization.
+* Delivering maximum speed and zero-copy efficiency.
 
 ## 🚀 Getting Started
 
