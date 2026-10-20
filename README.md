@@ -30,6 +30,14 @@ Whether you want to build a custom Linux distribution, clone your workstation wi
 
 ---
 
+## 📜 Philosophy
+
+The **penguins-eggs** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
+
+For the founding vision and origins, see the [Manifestum](./DOCS/1-philosophy/1-manifestum.md) and the [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) article. Full documentation can be found in [DOCS](./DOCS/README.md).
+
+---
+
 ## 🏗 Architecture: The Brain and The Muscle
 
 penguins-eggs is built with a dual architecture combining the performance of C with the flexibility of Go:
@@ -69,13 +77,6 @@ This will compile both binaries:
 > TIP: Actually you can get native packages, simply using `make clean package`
 
 ---
-
-## 📜 Philosophy
-The **penguins-eggs** project aims to provide a "Passepartout" for Linux remastering. By separating the **Mind** (Go) from the **Workhorse** (C), we achieve a clean, maintainable, and incredibly fast workflow that can adapt to any distribution without changing the user experience.
-
-Documentation can be found on [DOCS](./DOCS/README.md). See also the [Manifestum](./DOCS/1-philosophy/1-manifestum.md) for the founding vision and origins.
-
-The article [eggs-bananas](https://penguins-eggs.net/blog/eggs-bananas) philosophy can be read on my blog.
 
 ## 🧩 The Ecosystem: penguins-gui & penguins-chef
 
