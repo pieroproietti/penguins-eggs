@@ -25,7 +25,7 @@ Whether you want to build a custom Linux distribution, clone your workstation wi
 * **Reinstallation (`eggs sysinstall`)**:
   - **Krill (TUI)**: Fast, native text installer supporting full disk installations, pre-partitioned layouts (handling multi-ESP dual-boot and preserving `/home`), and **Coexist** multi-boot slots.
   - **Calamares (GUI)**: Full integration with the Calamares graphical installer, complete with dynamic branding and custom artwork.
-* **Cross-Distribution**: Works across Alpine, Arch, Debian, Devuan, Ubuntu, Fedora, Manjaro, and openSUSE.
+* **Cross-Distribution**: Works across Alpine, Arch, Debian, Devuan, OpenKylin, Ubuntu, Fedora, Manjaro, openSUSE and derivatives.
 * **AI & Automation (`eggs mcp`)**: Built-in Model Context Protocol server enabling AI assistants to safely inspect and run remastering flights.
 
 ---
