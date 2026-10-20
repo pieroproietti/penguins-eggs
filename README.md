@@ -98,9 +98,10 @@ An independent desktop application written in Go using Fyne, also distributed as
 Engine): A standalone tool for system provisioning and configuration. Chef configures Linux systems by applying explicit, reproducible recipes — installing packages, setting up services, and shaping desktop environments before the system is remastered by `eggs`. Think of Chef as the person who cooks the system:
   ```bash
   chef get
-  sudo chef apply .chef/recipes/costumes/colibri/colibri.yaml
+  sudo chef apply
   sudo chef apply .chef/recipes/dev/devel.yaml
   ```
+![penguins-chef](https://github.com/pieroproietti/penguins-chef/blob/main/penguins-chef.png?raw=true)
 
 ## 🌍 Star History
 This project collects stars, look to the sky... contribute!
