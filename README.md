@@ -85,7 +85,7 @@ The engine that performs the live remastering remains **penguins-eggs**. Around 
 ```text
 penguins-gui ──┐
                ├──> penguins-eggs ──> Live ISO
-CLI ─────────┘
+CLI ──────────┘
 
 penguins-chef    →  system provisioning, recipes, and customizations
 ```
