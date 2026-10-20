@@ -1,5 +1,12 @@
 See AI context: https://penguins-eggs.net/llms.txt
 
+## 🌍 Worldwide Live Adoption
+Since October 19, 2026: 
+[![country](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_countries&label=country&color=orange)](https://penguins-eggs.net/api/census)
+[![distro](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_distros&label=distro&color=blueviolet)](https://penguins-eggs.net/api/census)
+[![remaster](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.remaster&label=remaster&color=007ec6)](https://penguins-eggs.net/api/census)
+[![sysinstall](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.sysinstall&label=sysinstall&color=28a745)](https://penguins-eggs.net/api/census)
+
 ### 🥚 penguins-eggs
 After years of passionate work on the TypeScript **penguins-eggs**, its next evolution is here: the C/Go rewrite now carries the `penguins-eggs` name. The old TypeScript version lives on as [penguins-eggs-legacy](https://github.com/pieroproietti/penguins-eggs-legacy).
 penguins-eggs is built on **oa**, a high-performance C-native remastering engine, and **coa**, its intelligent Go orchestrator. This new architecture replaces fragile bash scripts with native Linux kernel syscalls and strict zero-copy principles — delivering a significant leap in speed and reliability.
