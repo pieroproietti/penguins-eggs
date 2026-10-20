@@ -15,17 +15,71 @@ func fileExists(path string) bool {
 	return err == nil && !info.IsDir()
 }
 
+type XorrisoParams struct {
+	OutputFile  string   `json:"output_file"`
+	SourceDir   string   `json:"source_dir"`
+	Volid       string   `json:"volid"`
+	IsolinuxBin string   `json:"isolinux_bin"`
+	IsolinuxCat string   `json:"isolinux_cat"`
+	Isohdpfx    string   `json:"isohdpfx"`
+	EfiImg      string   `json:"efi_img"`
+	ExtraArgs   []string `json:"extra_args,omitempty"`
+}
+
+func buildXorrisoArgs(p XorrisoParams, actualOutput, actualSource string, hasIsolinux, hasEfi bool) []string {
+	args := []string{
+		"-as", "mkisofs",
+		"-r",
+		"-l",
+		"-iso-level", "3",
+		"-J",
+		"-joliet-long",
+		"-volid", p.Volid,
+	}
+
+	if hasIsolinux {
+		// Legacy BIOS boot (ISOLINUX)
+		args = append(args,
+			"-eltorito-boot", p.IsolinuxBin,
+			"-eltorito-catalog", p.IsolinuxCat,
+			"-no-emul-boot",
+			"-boot-load-size", "4",
+			"-boot-info-table",
+			"-isohybrid-mbr", p.Isohdpfx,
+		)
+		if hasEfi {
+			// UEFI boot as alt-boot
+			args = append(args,
+				"-eltorito-alt-boot",
+				"-e", p.EfiImg,
+				"-no-emul-boot",
+				"-isohybrid-gpt-basdat",
+			)
+		}
+	} else if hasEfi {
+		// Pure UEFI boot (arm64, riscv64, or UEFI-only x86)
+		args = append(args,
+			"-e", p.EfiImg,
+			"-no-emul-boot",
+			"-isohybrid-gpt-basdat",
+		)
+	}
+
+	if len(p.ExtraArgs) > 0 {
+		args = append(args, p.ExtraArgs...)
+	}
+
+	args = append(args,
+		"-o", actualOutput,
+		actualSource,
+	)
+
+	return args
+}
+
 func RunXorriso(payload []byte) error {
 	var cfg struct {
-		Params struct {
-			OutputFile  string `json:"output_file"`
-			SourceDir   string `json:"source_dir"`
-			Volid       string `json:"volid"`
-			IsolinuxBin string `json:"isolinux_bin"`
-			IsolinuxCat string `json:"isolinux_cat"`
-			Isohdpfx    string `json:"isohdpfx"`
-			EfiImg      string `json:"efi_img"`
-		} `json:"params"`
+		Params XorrisoParams `json:"params"`
 	}
 
 	if err := json.Unmarshal(payload, &cfg); err != nil {
@@ -74,45 +128,7 @@ func RunXorriso(payload []byte) error {
 		utils.LogWarning("[worker] Warning: neither ISOLINUX nor EFI boot loader was found. The ISO may not boot.")
 	}
 
-	args := []string{
-		"-as", "mkisofs",
-		"-iso-level", "3",
-		"-full-iso9660-filenames",
-		"-volid", p.Volid,
-	}
-
-	if hasIsolinux {
-		// Legacy BIOS boot (ISOLINUX)
-		args = append(args,
-			"-eltorito-boot", p.IsolinuxBin,
-			"-eltorito-catalog", p.IsolinuxCat,
-			"-no-emul-boot",
-			"-boot-load-size", "4",
-			"-boot-info-table",
-			"-isohybrid-mbr", p.Isohdpfx,
-		)
-		if hasEfi {
-			// UEFI boot as alt-boot
-			args = append(args,
-				"-eltorito-alt-boot",
-				"-e", p.EfiImg,
-				"-no-emul-boot",
-				"-isohybrid-gpt-basdat",
-			)
-		}
-	} else if hasEfi {
-		// Pure UEFI boot (arm64, riscv64, or UEFI-only x86)
-		args = append(args,
-			"-e", p.EfiImg,
-			"-no-emul-boot",
-			"-isohybrid-gpt-basdat",
-		)
-	}
-
-	args = append(args,
-		"-o", actualOutput,
-		actualSource,
-	)
+	args := buildXorrisoArgs(p, actualOutput, actualSource, hasIsolinux, hasEfi)
 
 	bootModeStr := "ISO9660"
 	if hasIsolinux && hasEfi {
@@ -133,4 +149,3 @@ func RunXorriso(payload []byte) error {
 	utils.LogSuccess("[worker] ISO image created successfully at: %s", actualOutput)
 	return nil
 }
-
