@@ -2,6 +2,24 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.20 - 2026-10-20
+
+This release eliminates false squashfs exclusion warnings at startup on freshly initialized or redirected workspaces (#149), introduces Joliet filesystem support and extensible CLI arguments in the xorriso worker (#152), and updates documentation to reflect the modern companion ecosystem (`penguins-gui` and `penguins-chef`) alongside dynamic census telemetry badges.
+
+### 🧹 Engine & Workspace Cleanup Hygiene
+* **Stat-Aware Squashfs Exclusions (`#149`)**: Dynamically resolves the remaster workspace in `GenerateExcludeList` (`coa/pkg/planner/create-exclude-list.go`) and validates `liveroot` existence via `os.Stat` before appending it to `/tmp/coa/excludes.list`. When a workspace is clean, initialized for the first time, or redirected via `--target-dir` / `custom.yaml`, `mksquashfs` no longer emits the misleading warning: `cannot stat /home/eggs/liveroot, because no such file or directory, ignoring`.
+* **Safe Destroy Teardown (`eggs destroy`)**: `handledestroy` now honors custom `remaster.work_dir` configurations and checks `os.Stat(workPath)` before attempting physical removal, cleanly notifying when the workspace is already absent.
+* **Exclude List Unit Testing**: Added comprehensive unit test coverage (`coa/pkg/planner/create-exclude-list_test.go`) validating dynamic exclusion handling for missing and present `liveroot` folders, custom paths, and backwards-compatible invocations.
+
+### 💿 ISO Mastering & Filesystem Extensions
+* **Joliet Extension Support (`#152`)**: Added `-J` and `-joliet-long` flags to the `xorriso` ISO mastering engine (`coa/pkg/worker/xorriso.go`), guaranteeing long Unicode file and folder name compatibility across Windows and older optical disc utilities without path truncation.
+* **Extensible Xorriso Invocations (`extra_args`)**: Added support for passing custom arbitrary parameters to the xorriso worker, backed by a comprehensive unit test matrix in `coa/pkg/worker/xorriso_test.go`.
+
+### 📚 Ecosystem & Documentation Modernization
+* **Companion Ecosystem Alignment**: Updated README and developer guardrails to highlight `penguins-gui` (lightweight desktop GUI in Go/Fyne) and `penguins-chef` (system provisioning via YAML recipes), retiring legacy references to tailor and wardrobe.
+* **Worldwide Census Badges**: Integrated dynamic shields badges into the README linking directly to the real-time telemetry dashboard on `penguins-eggs.net` (tracking remasters, sysinstall events, country adoption, and top distributions).
+* **Refined Narrative Structure**: Streamlined the introductory architecture and philosophy documentation to clarify `penguins-eggs` as an agile, C/Go-native remastering and reinstallation system.
+
 ## Release Notes: penguins-eggs v26.10.19 - 2026-10-19
 
 This release introduces **Census** — a privacy-first, anonymous telemetry system (`coa/pkg/census`) designed to help map distribution adoption, architectures, desktop environments, and installation modes across the `penguins-eggs` ecosystem — alongside openKylin integration in the automated Proxmox "Furnace" CI pipeline.
