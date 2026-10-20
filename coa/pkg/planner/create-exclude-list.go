@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"coa/pkg/pathDefaults"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -37,9 +38,14 @@ func detectSwapFiles() []string {
 
 // GenerateExcludeList crea il file .list dinamico per mksquashfs.
 // La 'G' maiuscola permette a remaster.go di chiamarla liberamente.
-func GenerateExcludeList(mode string, isGitHubAction bool) string {
+func GenerateExcludeList(mode string, isGitHubAction bool, customWorkPath ...string) string {
 	outPath := pathDefaults.ExcludeList
 	var excludes []string
+
+	workPath := pathDefaults.DefaultWorkPath
+	if len(customWorkPath) > 0 && customWorkPath[0] != "" {
+		workPath = customWorkPath[0]
+	}
 
 	// ==========================================================
 	// 1. Filesystem Virtuali e Temporanei
@@ -55,14 +61,31 @@ func GenerateExcludeList(mode string, isGitHubAction bool) string {
 		"var/tmp/*",
 		"var/tmp/.??*",
 		"lost+found",
-		"home/eggs/.overlay/*",
-		"home/eggs/.overlay/.??*", // Questo prende i file nascosti ma ignora "." e ".."
-		"home/eggs/isodir/*",
-		"home/eggs/*.iso",
-		// In mode clone/crypted /home è bind-montata in liveroot: senza questa
-		// esclusione mksquashfs si rivede ricorsivamente sotto home/eggs/liveroot.
-		"home/eggs/liveroot",
 	)
+
+	// Esclusioni relative al workspace di lavoro
+	relWork := strings.TrimPrefix(workPath, "/")
+	excludes = append(excludes,
+		filepath.Join(relWork, ".overlay")+"/*",
+		filepath.Join(relWork, ".overlay")+"/.??*", // Questo prende i file nascosti ma ignora "." e ".."
+		filepath.Join(relWork, "isodir")+"/*",
+		filepath.Join(relWork, "*.iso"),
+	)
+
+	// In mode clone/crypted /home è bind-montata in liveroot: senza questa
+	// esclusione mksquashfs si rivede ricorsivamente sotto liveroot.
+	// Verifichiamo se il percorso esiste prima di inserirlo nell'elenco di esclusione
+	// per evitare che mksquashfs generi falsi warning di 'cannot stat ..., ignoring'.
+	liveRoot := filepath.Join(workPath, "liveroot")
+	if _, err := os.Stat(liveRoot); err == nil {
+		excludes = append(excludes, strings.TrimPrefix(liveRoot, "/"))
+	}
+	if workPath != pathDefaults.DefaultWorkPath {
+		defaultLiveRoot := filepath.Join(pathDefaults.DefaultWorkPath, "liveroot")
+		if _, err := os.Stat(defaultLiveRoot); err == nil {
+			excludes = append(excludes, strings.TrimPrefix(defaultLiveRoot, "/"))
+		}
+	}
 
 	// ==========================================================
 	// 2. Esclusioni Standard di Sistema

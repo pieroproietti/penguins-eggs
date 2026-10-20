@@ -42,21 +42,29 @@ func init() {
 func handledestroy() {
 	utils.LogNormal("Freeing the nest...")
 
+	customCfg, _ := parser.LoadCustomSettings()
+	workPath := pathDefaults.DefaultWorkPath
+	if customCfg != nil && customCfg.Remaster.WorkDir != "" {
+		workPath = customCfg.Remaster.WorkDir
+	}
+
 	if err := utils.Exec("oa cleanup"); err != nil {
 		utils.Fatal("Cleanup (unmount) failed: %v - refusing to remove the workspace while mounts may still be attached; inspect and unmount manually before retrying.", err)
 	}
 
-	workPath := pathDefaults.DefaultWorkPath
-	utils.LogNormal("Removing workspace: %s", workPath)
-
-	if err := utils.Exec("rm -rf " + workPath); err != nil {
-		utils.LogError("Physical removal failed: %v", err)
-	} else {
-		utils.LogSuccess("Nest is empty. System clean.")
+	if _, err := os.Stat(workPath); err == nil {
+		utils.LogNormal("Removing workspace: %s", workPath)
+		if err := utils.Exec("rm -rf " + workPath); err != nil {
+			utils.LogError("Physical removal failed: %v", err)
+		} else {
+			utils.LogSuccess("Nest is empty. System clean.")
+		}
+	} else if os.IsNotExist(err) {
+		utils.LogNormal("Workspace '%s' does not exist, nothing to remove.", workPath)
 	}
 
 	// Clean up temporary isodir in target_dir if configured
-	if customCfg, err := parser.LoadCustomSettings(); err == nil && customCfg != nil && customCfg.Remaster.TargetDir != "" {
+	if customCfg != nil && customCfg.Remaster.TargetDir != "" {
 		targetIsoDir := filepath.Join(customCfg.Remaster.TargetDir, "isodir")
 		if _, err := os.Stat(targetIsoDir); err == nil {
 			utils.LogNormal("Removing target isodir: %s", targetIsoDir)

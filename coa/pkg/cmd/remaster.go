@@ -274,7 +274,7 @@ func RunRemasterFlight(opts RemasterOptions) {
 	}
 
 	utils.LogNormal("Generating exclude list (%s mode)...", produceMode)
-	excludeListPath := planner.GenerateExcludeList(produceMode, isGitHubAction)
+	excludeListPath := planner.GenerateExcludeList(produceMode, isGitHubAction, producePath)
 
 	compression := "zstd"
 	if profile.Settings.Remaster.Compression.Algorithm != "" {
