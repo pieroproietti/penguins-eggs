@@ -6,6 +6,7 @@
 [![distro](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.total_distros&label=distro&color=blueviolet)](https://penguins-eggs.net/api/census#distro)
 [![remaster](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.remaster&label=remaster&color=007ec6)](https://penguins-eggs.net/api/census#remaster)
 [![sysinstall](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpenguins-eggs.net%2Fapi%2Fcensus&query=%24.by_action.sysinstall&label=sysinstall&color=28a745)](https://penguins-eggs.net/api/census#sysinstall)
+[![recent-events](https://img.shields.io/badge/recent-events-informational)](https://penguins-eggs.net/api/census#recent-events)
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
 ---
