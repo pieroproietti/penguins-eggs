@@ -2,6 +2,16 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.21 - 2026-10-21
+
+This release resolves the terminal stuttering during SquashFS creation by restoring transparent TTY inheritance to worker subprocesses, ensures clean log segregation without polluting disk logs with carriage return sequences, and enforces explicit progress reporting for `penguins-gui` streaming.
+
+### ⚡ Engine & TTY Stream Optimization
+* **Direct Worker Execution (`oa/src/engine.c`)**: Removed the shell pipeline wrapper (`bash -c "set -o pipefail; coa ell 2>&1 | tee -a /var/log/penguins-eggs.log"`) when dispatching Go worker tasks from the C engine. `oa` now invokes `execlp("coa", "coa", "ell", NULL)` directly.
+* **Fluid Progress Refresh**: Restored direct TTY descriptor inheritance (`isatty(1) == 1`) during terminal-based remaster flights. By eliminating the intermediary pipe to `tee`, `mksquashfs` bypasses 4KB/64KB libc block buffering and renders its live compression progress bar smoothly in real time without micro-stutters.
+* **Clean Log File Segregation**: Terminated the raw capture of animated `\r` (carriage return) sequences into `/var/log/penguins-eggs.log`. Structured log messages (`[coa]`, `[WARNING]`, `[ERROR]`) are now persisted cleanly and stripped of ANSI escape codes directly by Go's centralized logging system (`coa/pkg/utils/logs.go`).
+* **Enforced Progress for GUI Automation**: Explicitly appended the `-progress` flag to `mksquashfs` invocations (`coa/pkg/worker/mksquashfs.go`), guaranteeing steady progress bar emission when stdout is captured via pipes by `penguins-gui`.
+
 ## Release Notes: penguins-eggs v26.10.20 - 2026-10-20
 
 This release eliminates false squashfs exclusion warnings at startup on freshly initialized or redirected workspaces (#149), introduces Joliet filesystem support and extensible CLI arguments in the xorriso worker (#152), and updates documentation to reflect the modern companion ecosystem (`penguins-gui` and `penguins-chef`) alongside dynamic census telemetry badges.
