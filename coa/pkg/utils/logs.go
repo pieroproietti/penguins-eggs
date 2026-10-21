@@ -40,30 +40,45 @@ func colorize(colorCode string) string {
 	return colorCode
 }
 
+const defaultLogFile = "/var/log/penguins-eggs.log"
+
+func writeToLogFile(tag, msg string) {
+	f, err := os.OpenFile(defaultLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	fmt.Fprintf(f, "%s %s\n", tag, msg)
+}
+
 // --- SISTEMA DI LOGGING CENTRALIZZATO ---
 
 // LogNormal stampa un messaggio informativo con il tag [coa]
 func LogNormal(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	fmt.Printf("%s[coa]%s %s\n", colorize(ColorCyan), colorize(ColorReset), msg)
+	writeToLogFile("[coa]", msg)
 }
 
 // LogSuccess stampa un messaggio di successo
 func LogSuccess(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	fmt.Printf("%s[coa]%s %s\n", colorize(ColorGreen), colorize(ColorReset), msg)
+	writeToLogFile("[coa]", msg)
 }
 
 // LogWarning stampa un messaggio di avviso
 func LogWarning(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	fmt.Printf("%s[WARNING]%s %s\n", colorize(ColorYellow), colorize(ColorReset), msg)
+	writeToLogFile("[WARNING]", msg)
 }
 
 // LogError stampa un messaggio di errore sullo STANDARD ERROR
 func LogError(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	fmt.Fprintf(os.Stderr, "\n%s[ERROR]%s %s\n", colorize(ColorRed), colorize(ColorReset), msg)
+	writeToLogFile("[ERROR]", msg)
 }
 
 // Fatal stampa un errore ed esce con codice 1

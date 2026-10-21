@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"coa/pkg/utils"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -66,6 +67,7 @@ func RunMksquashfs(payload []byte) error {
 		"-b", blockSize,
 		"-processors", procs,
 		"-noappend",
+		"-progress",
 		"-wildcards",
 		"-p", "mnt d 0755 root root",
 		"-p", "media d 0755 root root",
@@ -77,7 +79,7 @@ func RunMksquashfs(payload []byte) error {
 
 	args = append(args, squashfsCompressionArgs(algo, level, runtime.GOARCH)...)
 
-	fmt.Printf("📦 [worker] Running: mksquashfs %s\n", shellJoin(args))
+	utils.LogNormal("📦 [worker] Running: mksquashfs %s", shellJoin(args))
 
 	cmd := exec.Command("mksquashfs", args...)
 	cmd.Stdout = os.Stdout

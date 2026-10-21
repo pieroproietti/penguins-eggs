@@ -40,10 +40,9 @@ int run_go_worker(cJSON *task) {
         close(pipefd[0]);
         close(pipefd[1]);
 
-        execlp("bash", "bash", "-c", "set -o pipefail; coa ell 2>&1 | tee -a /var/log/penguins-eggs.log", NULL);
-        //execlp("sh", "sh", "-c", "coa ell 2>&1 | tee -a /var/log/oa-tools.log", NULL);
+        execlp("coa", "coa", "ell", NULL);
 
-        LOG_ERR("❌ [oa-engine] Error executing 'coa ell' via sh (errno: %d)", errno);
+        LOG_ERR("❌ [oa-engine] Error executing 'coa ell' (errno: %d)", errno);
         exit(EXIT_FAILURE);
     } else {
         close(pipefd[0]);
