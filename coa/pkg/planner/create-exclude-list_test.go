@@ -15,6 +15,9 @@ func TestGenerateExcludeListLiverootCheck(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpWorkDir)
 
+	tmpExcludeList := filepath.Join(tmpWorkDir, "excludes.list")
+	t.Setenv("EGGS_EXCLUDE_LIST_PATH", tmpExcludeList)
+
 	// 1. Without liveroot existing in tmpWorkDir
 	listPath := GenerateExcludeList("standard", false, tmpWorkDir)
 	data, err := os.ReadFile(listPath)

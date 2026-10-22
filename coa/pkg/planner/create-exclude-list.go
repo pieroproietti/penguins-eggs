@@ -40,6 +40,9 @@ func detectSwapFiles() []string {
 // La 'G' maiuscola permette a remaster.go di chiamarla liberamente.
 func GenerateExcludeList(mode string, isGitHubAction bool, customWorkPath ...string) string {
 	outPath := pathDefaults.ExcludeList
+	if custom := strings.TrimSpace(os.Getenv("EGGS_EXCLUDE_LIST_PATH")); custom != "" {
+		outPath = custom
+	}
 	var excludes []string
 
 	workPath := pathDefaults.DefaultWorkPath
@@ -257,11 +260,17 @@ func GenerateExcludeList(mode string, isGitHubAction bool, customWorkPath ...str
 		}
 	}
 
-	os.MkdirAll(pathDefaults.StagingDir, 0755)
+	os.MkdirAll(filepath.Dir(outPath), 0755)
 
 	// Uniamo tutto con a capo
 	fileContent := strings.Join(excludes, "\n") + "\n"
-	os.WriteFile(outPath, []byte(fileContent), 0644)
+	if err := os.WriteFile(outPath, []byte(fileContent), 0644); err != nil {
+		if tmpFile, tmpErr := os.CreateTemp("", "coa-excludes-*.list"); tmpErr == nil {
+			tmpFile.WriteString(fileContent)
+			tmpFile.Close()
+			return tmpFile.Name()
+		}
+	}
 
 	return outPath
 }
