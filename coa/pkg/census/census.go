@@ -594,19 +594,75 @@ func isValidUUID(u string) bool {
 	return true
 }
 
+func isIgnoredDesktopSession(s string) bool {
+	s = strings.ToLower(strings.TrimSpace(s))
+	switch s {
+	case "lightdm-xsession", "xsession", "default", "custom", "ssh", "none":
+		return true
+	default:
+		return false
+	}
+}
+
+func normalizeDesktopName(name string) string {
+	name = strings.ToLower(strings.TrimSpace(name))
+	name = strings.TrimPrefix(name, "x-")
+	switch {
+	case strings.Contains(name, "xfce"):
+		return "xfce"
+	case strings.Contains(name, "plasma") || strings.Contains(name, "kde"):
+		return "kde"
+	case strings.Contains(name, "cinnamon"):
+		return "cinnamon"
+	case strings.Contains(name, "mate"):
+		return "mate"
+	case strings.Contains(name, "lxqt"):
+		return "lxqt"
+	case strings.Contains(name, "lxde"):
+		return "lxde"
+	case strings.Contains(name, "budgie"):
+		return "budgie"
+	case strings.Contains(name, "gnome") || name == "ubuntu" || name == "pop":
+		return "gnome"
+	case strings.Contains(name, "cosmic"):
+		return "cosmic"
+	case strings.Contains(name, "deepin") || strings.Contains(name, "dde"):
+		return "deepin"
+	default:
+		return name
+	}
+}
+
 func detectDesktop() string {
-	for _, envKey := range []string{"XDG_CURRENT_DESKTOP", "DESKTOP_SESSION"} {
+	for _, envKey := range []string{"XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "XDG_SESSION_DESKTOP"} {
 		if val := strings.TrimSpace(os.Getenv(envKey)); val != "" {
 			parts := strings.Split(val, ":")
-			return strings.ToLower(strings.TrimSpace(parts[len(parts)-1]))
+			raw := strings.TrimSpace(parts[len(parts)-1])
+			if !isIgnoredDesktopSession(raw) {
+				return normalizeDesktopName(raw)
+			}
 		}
 	}
 
-	if files, err := filepath.Glob("/usr/share/xsessions/*.desktop"); err == nil && len(files) > 0 {
-		return strings.ToLower(strings.TrimSuffix(filepath.Base(files[0]), ".desktop"))
+	xsessionsDir := "/usr/share/xsessions"
+	if custom := strings.TrimSpace(os.Getenv("EGGS_XSESSIONS_PATH")); custom != "" {
+		xsessionsDir = custom
 	}
-	if files, err := filepath.Glob("/usr/share/wayland-sessions/*.desktop"); err == nil && len(files) > 0 {
-		return strings.ToLower(strings.TrimSuffix(filepath.Base(files[0]), ".desktop"))
+	waylandSessionsDir := "/usr/share/wayland-sessions"
+	if custom := strings.TrimSpace(os.Getenv("EGGS_WAYLAND_SESSIONS_PATH")); custom != "" {
+		waylandSessionsDir = custom
+	}
+
+	var candidateSessions []string
+	for _, dir := range []string{xsessionsDir, waylandSessionsDir} {
+		if files, err := filepath.Glob(filepath.Join(dir, "*.desktop")); err == nil {
+			for _, file := range files {
+				base := strings.TrimSuffix(filepath.Base(file), ".desktop")
+				if !isIgnoredDesktopSession(base) {
+					candidateSessions = append(candidateSessions, normalizeDesktopName(base))
+				}
+			}
+		}
 	}
 
 	desktopBins := []struct {
@@ -623,6 +679,24 @@ func detectDesktop() string {
 		{"lxsession", "lxde"},
 		{"openbox-session", "openbox"},
 	}
+
+	// Prefer a candidate session that matches an installed desktop binary
+	for _, s := range candidateSessions {
+		for _, db := range desktopBins {
+			if s == db.name {
+				if _, err := exec.LookPath(db.bin); err == nil {
+					return s
+				}
+			}
+		}
+	}
+
+	// If candidate sessions were found, return the first non-ignored candidate
+	if len(candidateSessions) > 0 {
+		return candidateSessions[0]
+	}
+
+	// If no session files exist, check if any desktop binary is on PATH
 	for _, db := range desktopBins {
 		if _, err := exec.LookPath(db.bin); err == nil {
 			return db.name

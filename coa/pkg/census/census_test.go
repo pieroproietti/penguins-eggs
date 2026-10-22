@@ -398,4 +398,93 @@ func TestSysinstallTargetRootPersistenceAndUUID(t *testing.T) {
 	}
 }
 
+func TestDetectDesktop(t *testing.T) {
+	// 1. Desktop detected from XDG_CURRENT_DESKTOP
+	t.Run("from XDG_CURRENT_DESKTOP", func(t *testing.T) {
+		t.Setenv("XDG_CURRENT_DESKTOP", "XFCE")
+		t.Setenv("DESKTOP_SESSION", "")
+		t.Setenv("XDG_SESSION_DESKTOP", "")
+		if got := detectDesktop(); got != "xfce" {
+			t.Errorf("expected 'xfce', got %q", got)
+		}
+	})
+
+	t.Run("from compound XDG_CURRENT_DESKTOP", func(t *testing.T) {
+		t.Setenv("XDG_CURRENT_DESKTOP", "ubuntu:GNOME")
+		t.Setenv("DESKTOP_SESSION", "")
+		t.Setenv("XDG_SESSION_DESKTOP", "")
+		if got := detectDesktop(); got != "gnome" {
+			t.Errorf("expected 'gnome', got %q", got)
+		}
+	})
+
+	// 2. Ignores lightdm-xsession in env var and in xsessions
+	t.Run("ignores lightdm-xsession and picks xfce", func(t *testing.T) {
+		t.Setenv("XDG_CURRENT_DESKTOP", "")
+		t.Setenv("DESKTOP_SESSION", "lightdm-xsession")
+		t.Setenv("XDG_SESSION_DESKTOP", "")
+
+		tmpXsessions := t.TempDir()
+		t.Setenv("EGGS_XSESSIONS_PATH", tmpXsessions)
+		t.Setenv("EGGS_WAYLAND_SESSIONS_PATH", t.TempDir())
+
+		// Create lightdm-xsession.desktop and xfce.desktop
+		_ = os.WriteFile(filepath.Join(tmpXsessions, "lightdm-xsession.desktop"), []byte("[Desktop Entry]\nName=Default"), 0644)
+		_ = os.WriteFile(filepath.Join(tmpXsessions, "xfce.desktop"), []byte("[Desktop Entry]\nName=Xfce"), 0644)
+
+		if got := detectDesktop(); got != "xfce" {
+			t.Errorf("expected 'xfce', got %q", got)
+		}
+	})
+
+	// 3. Normalizes plasma to kde
+	t.Run("normalizes plasma to kde", func(t *testing.T) {
+		t.Setenv("XDG_CURRENT_DESKTOP", "")
+		t.Setenv("DESKTOP_SESSION", "")
+		t.Setenv("XDG_SESSION_DESKTOP", "")
+
+		tmpXsessions := t.TempDir()
+		t.Setenv("EGGS_XSESSIONS_PATH", tmpXsessions)
+		t.Setenv("EGGS_WAYLAND_SESSIONS_PATH", t.TempDir())
+
+		_ = os.WriteFile(filepath.Join(tmpXsessions, "plasma.desktop"), []byte("[Desktop Entry]\nName=Plasma"), 0644)
+
+		if got := detectDesktop(); got != "kde" {
+			t.Errorf("expected 'kde', got %q", got)
+		}
+	})
+
+	// 4. Detects Wayland session like sway
+	t.Run("detects sway from wayland-sessions", func(t *testing.T) {
+		t.Setenv("XDG_CURRENT_DESKTOP", "")
+		t.Setenv("DESKTOP_SESSION", "")
+		t.Setenv("XDG_SESSION_DESKTOP", "")
+
+		t.Setenv("EGGS_XSESSIONS_PATH", t.TempDir())
+		tmpWayland := t.TempDir()
+		t.Setenv("EGGS_WAYLAND_SESSIONS_PATH", tmpWayland)
+
+		_ = os.WriteFile(filepath.Join(tmpWayland, "sway.desktop"), []byte("[Desktop Entry]\nName=Sway"), 0644)
+
+		if got := detectDesktop(); got != "sway" {
+			t.Errorf("expected 'sway', got %q", got)
+		}
+	})
+
+	// 5. Headless / CLI fallback
+	t.Run("falls back to cli when empty and no bin on PATH", func(t *testing.T) {
+		t.Setenv("XDG_CURRENT_DESKTOP", "")
+		t.Setenv("DESKTOP_SESSION", "")
+		t.Setenv("XDG_SESSION_DESKTOP", "")
+		t.Setenv("PATH", t.TempDir()) // Empty PATH to avoid finding system binaries
+		t.Setenv("EGGS_XSESSIONS_PATH", t.TempDir())
+		t.Setenv("EGGS_WAYLAND_SESSIONS_PATH", t.TempDir())
+
+		if got := detectDesktop(); got != "cli" {
+			t.Errorf("expected 'cli', got %q", got)
+		}
+	})
+}
+
+
 
