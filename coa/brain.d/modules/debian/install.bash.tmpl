@@ -141,9 +141,25 @@ if [ -d /sys/firmware/efi ]; then
             [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] || { echo "[FATAL ERROR] grub-install failed and no EFI binary was written"; exit 1; }
         fi
 
-        # Removable fallback
-        mkdir -p /boot/efi/EFI/BOOT
-        [ -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" ] && cp -f "/boot/efi/EFI/{{ .DistroID }}/$GRUB_BIN" "/boot/efi/EFI/BOOT/$BOOT_BIN"
+        # Removable fallback (EFI/BOOT). Signed GRUB looks for grub.cfg next to
+        # itself, so the fallback directory needs the same set of files that
+        # grub-install --force-extra-removable would write: shim (as BOOT*.EFI),
+        # grub, MokManager, fallback and the grub.cfg stub.
+        ESP_ID_DIR="/boot/efi/EFI/{{ .DistroID }}"
+        ESP_BOOT_DIR="/boot/efi/EFI/BOOT"
+        SHIM_BIN="shim${GRUB_BIN#grub}"
+        MM_BIN="mm${GRUB_BIN#grub}"
+        FB_BIN="fb${GRUB_BIN#grub}"
+        mkdir -p "$ESP_BOOT_DIR"
+        if [ -f "$ESP_ID_DIR/$SHIM_BIN" ]; then
+            cp -f "$ESP_ID_DIR/$SHIM_BIN" "$ESP_BOOT_DIR/$BOOT_BIN"
+            [ -f "$ESP_ID_DIR/$GRUB_BIN" ] && cp -f "$ESP_ID_DIR/$GRUB_BIN" "$ESP_BOOT_DIR/$GRUB_BIN"
+            [ -f "$ESP_ID_DIR/$MM_BIN" ] && cp -f "$ESP_ID_DIR/$MM_BIN" "$ESP_BOOT_DIR/$MM_BIN"
+            [ -f "$ESP_ID_DIR/$FB_BIN" ] && cp -f "$ESP_ID_DIR/$FB_BIN" "$ESP_BOOT_DIR/$FB_BIN"
+        else
+            [ -f "$ESP_ID_DIR/$GRUB_BIN" ] && cp -f "$ESP_ID_DIR/$GRUB_BIN" "$ESP_BOOT_DIR/$BOOT_BIN"
+        fi
+        [ -f "$ESP_ID_DIR/grub.cfg" ] && cp -f "$ESP_ID_DIR/grub.cfg" "$ESP_BOOT_DIR/grub.cfg"
     fi
     update-grub
 elif [ "$(uname -m)" = "riscv64" ]; then
