@@ -2,6 +2,19 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.22 - 2026-10-22
+
+This release refines desktop environment detection for the Census telemetry engine, filters non-desktop display manager session wrappers, normalizes desktop family aliases, and hardens exclude list generation for unprivileged builds and test suites.
+
+### 📊 Census Telemetry & Desktop Sensing
+* **Desktop Session Sanitization (`coa/pkg/census/census.go`)**: Filters out generic display manager session wrappers (`lightdm-xsession`, `xsession`, `default`, `custom`, `ssh`, `none`) from `XDG_CURRENT_DESKTOP`, `DESKTOP_SESSION`, and `XDG_SESSION_DESKTOP`.
+* **Standardized Desktop Normalization**: Automatically unifies desktop names into standard families (`plasma`/`kde` → `kde`, `xfce`, `cinnamon`, `mate`, `lxqt`, `lxde`, `budgie`, `ubuntu`/`pop` → `gnome`, `cosmic`, `deepin`/`dde`).
+* **Binary Sniffing & Session Prioritization**: Cross-references candidate session desktop entries with installed binaries on `PATH` to accurately distinguish between installed and active desktop environments, falling back gracefully to `cli` on headless/server hosts.
+* **Test Isolation via Environment Hooks**: Added `EGGS_XSESSIONS_PATH` and `EGGS_WAYLAND_SESSIONS_PATH` overrides for unit test environments, backed by comprehensive testing in `TestDetectDesktop` (`coa/pkg/census/census_test.go`).
+
+### 🛠️ Engine & Packaging Hygiene
+* **Exclude List Permission Resilience (`coa/pkg/planner/create-exclude-list.go`)**: Added `EGGS_EXCLUDE_LIST_PATH` environment override and an automatic fallback to user-writable temporary files (`coa-excludes-*.list`) when writing to `/tmp/coa/excludes.list` fails (e.g. unprivileged unit test execution following root remaster operations).
+
 ## Release Notes: penguins-eggs v26.10.21 - 2026-10-21
 
 This release resolves the terminal stuttering during SquashFS creation by restoring transparent TTY inheritance to worker subprocesses, ensures clean log segregation without polluting disk logs with carriage return sequences, and enforces explicit progress reporting for `penguins-gui` streaming.
