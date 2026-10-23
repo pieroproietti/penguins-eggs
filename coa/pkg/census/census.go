@@ -604,42 +604,120 @@ func isIgnoredDesktopSession(s string) bool {
 	}
 }
 
-func normalizeDesktopName(name string) string {
-	name = strings.ToLower(strings.TrimSpace(name))
-	name = strings.TrimPrefix(name, "x-")
-	switch {
-	case strings.Contains(name, "xfce"):
-		return "xfce"
-	case strings.Contains(name, "plasma") || strings.Contains(name, "kde"):
-		return "kde"
-	case strings.Contains(name, "cinnamon"):
-		return "cinnamon"
-	case strings.Contains(name, "mate"):
-		return "mate"
-	case strings.Contains(name, "lxqt"):
-		return "lxqt"
-	case strings.Contains(name, "lxde"):
-		return "lxde"
-	case strings.Contains(name, "budgie"):
-		return "budgie"
-	case strings.Contains(name, "gnome") || name == "ubuntu" || name == "pop":
-		return "gnome"
-	case strings.Contains(name, "cosmic"):
-		return "cosmic"
-	case strings.Contains(name, "deepin") || strings.Contains(name, "dde"):
-		return "deepin"
-	default:
-		return name
+// NormalizeDesktop normalizes raw desktop environment strings (from env vars or session names)
+// to a canonical identifier (e.g., "kde", "gnome", "xfce", "cli").
+func NormalizeDesktop(raw string) string {
+	d := strings.ToLower(strings.TrimSpace(raw))
+	if d == "" || isIgnoredDesktopSession(d) {
+		return "cli"
 	}
+
+	// Controlli per le corrispondenze principali
+	// Nota: controlliamo budgie, pantheon e cosmic prima di gnome,
+	// poiché ambienti come Budgie e Pantheon possono dichiarare "Budgie:GNOME" o "Pantheon:GNOME".
+	if strings.Contains(d, "cinnamon") {
+		return "cinnamon"
+	}
+	if strings.Contains(d, "budgie") {
+		return "budgie"
+	}
+	if strings.Contains(d, "pantheon") {
+		return "pantheon"
+	}
+	if strings.Contains(d, "cosmic") {
+		return "cosmic"
+	}
+	if strings.Contains(d, "gnome") || strings.HasPrefix(d, "ubuntu") || strings.HasPrefix(d, "pop") {
+		return "gnome"
+	}
+	if strings.Contains(d, "plasma") || strings.Contains(d, "kde") {
+		return "kde"
+	}
+	if strings.Contains(d, "xfce") {
+		return "xfce"
+	}
+	if strings.Contains(d, "mate") {
+		return "mate"
+	}
+	if strings.Contains(d, "lxqt") {
+		return "lxqt"
+	}
+	if strings.Contains(d, "lxde") {
+		return "lxde"
+	}
+	if strings.Contains(d, "deepin") || strings.Contains(d, "dde") {
+		return "deepin"
+	}
+	if strings.Contains(d, "ukui") {
+		return "ukui"
+	}
+	if strings.Contains(d, "enlightenment") {
+		return "enlightenment"
+	}
+	if strings.Contains(d, "hyprland") {
+		return "hyprland"
+	}
+	if strings.Contains(d, "sway") {
+		return "sway"
+	}
+	if strings.Contains(d, "i3") {
+		return "i3"
+	}
+	if strings.Contains(d, "openbox") {
+		return "openbox"
+	}
+
+	// finestre minimali / tiling / window manager custom
+	if strings.Contains(d, "dwm") {
+		return "dwm"
+	}
+	
+	if strings.Contains(d, "jwm") {
+		return "jwm"
+	}
+
+	// Se ci sono valori multipli separati da due punti (XDG_CURRENT_DESKTOP) non riconosciuti sopra,
+	// estraiamo il primo elemento valido.
+	if strings.Contains(d, ":") {
+		for _, part := range strings.Split(d, ":") {
+			part = strings.TrimSpace(part)
+			if part != "" && !isIgnoredDesktopSession(part) {
+				d = part
+				break
+			}
+		}
+	}
+
+	// Fallback: rimozione prefissi e suffissi comuni
+	d = strings.TrimPrefix(d, "x-")
+
+	suffixes := []string{"-x11", "-wayland", "-xorg", "-session"}
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(d, suffix) {
+			d = strings.TrimSuffix(d, suffix)
+			break
+		}
+	}
+
+	if d == "" || isIgnoredDesktopSession(d) {
+		return "cli"
+	}
+
+	return d
+}
+
+func normalizeDesktopName(name string) string {
+	return NormalizeDesktop(name)
 }
 
 func detectDesktop() string {
 	for _, envKey := range []string{"XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "XDG_SESSION_DESKTOP"} {
 		if val := strings.TrimSpace(os.Getenv(envKey)); val != "" {
-			parts := strings.Split(val, ":")
-			raw := strings.TrimSpace(parts[len(parts)-1])
-			if !isIgnoredDesktopSession(raw) {
-				return normalizeDesktopName(raw)
+			if !isIgnoredDesktopSession(val) {
+				norm := NormalizeDesktop(val)
+				if norm != "cli" && !isIgnoredDesktopSession(norm) {
+					return norm
+				}
 			}
 		}
 	}
@@ -659,7 +737,10 @@ func detectDesktop() string {
 			for _, file := range files {
 				base := strings.TrimSuffix(filepath.Base(file), ".desktop")
 				if !isIgnoredDesktopSession(base) {
-					candidateSessions = append(candidateSessions, normalizeDesktopName(base))
+					norm := NormalizeDesktop(base)
+					if norm != "cli" && !isIgnoredDesktopSession(norm) {
+						candidateSessions = append(candidateSessions, norm)
+					}
 				}
 			}
 		}
@@ -677,7 +758,20 @@ func detectDesktop() string {
 		{"mate-session", "mate"},
 		{"lxqt-session", "lxqt"},
 		{"lxsession", "lxde"},
+		{"budgie-session", "budgie"},
+		{"deepin-session", "deepin"},
+		{"dde-session", "deepin"},
+		{"ukui-session", "ukui"},
+		{"pantheon-session", "pantheon"},
+		{"enlightenment_start", "enlightenment"},
+		{"enlightenment", "enlightenment"},
+		{"cosmic-session", "cosmic"},
+		{"Hyprland", "hyprland"},
+		{"hyprland", "hyprland"},
+		{"sway", "sway"},
+		{"i3", "i3"},
 		{"openbox-session", "openbox"},
+		{"openbox", "openbox"},
 	}
 
 	// Prefer a candidate session that matches an installed desktop binary

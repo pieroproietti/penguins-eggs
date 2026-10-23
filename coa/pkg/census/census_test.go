@@ -486,5 +486,70 @@ func TestDetectDesktop(t *testing.T) {
 	})
 }
 
+func TestNormalizeDesktop(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"", "cli"},
+		{"   ", "cli"},
+		{"none", "cli"},
+		{"default", "cli"},
+		{"lightdm-xsession", "cli"},
+		{"cinnamon", "cinnamon"},
+		{"X-Cinnamon", "cinnamon"},
+		{"cinnamon-wayland", "cinnamon"},
+		{"gnome", "gnome"},
+		{"GNOME", "gnome"},
+		{"gnome-xorg", "gnome"},
+		{"ubuntu", "gnome"},
+		{"ubuntu:GNOME", "gnome"},
+		{"pop", "gnome"},
+		{"pop:GNOME", "gnome"},
+		{"plasma", "kde"},
+		{"kde", "kde"},
+		{"plasmawayland", "kde"},
+		{"startplasma-x11", "kde"},
+		{"xfce", "xfce"},
+		{"XFCE", "xfce"},
+		{"xfce4", "xfce"},
+		{"mate", "mate"},
+		{"MATE", "mate"},
+		{"lxqt", "lxqt"},
+		{"LXQt", "lxqt"},
+		{"lxde", "lxde"},
+		{"budgie", "budgie"},
+		{"Budgie:GNOME", "budgie"},
+		{"budgie-desktop", "budgie"},
+		{"deepin", "deepin"},
+		{"dde", "deepin"},
+		{"ukui", "ukui"},
+		{"UKUI", "ukui"},
+		{"pantheon", "pantheon"},
+		{"Pantheon:GNOME", "pantheon"},
+		{"enlightenment", "enlightenment"},
+		{"cosmic", "cosmic"},
+		{"hyprland", "hyprland"},
+		{"sway", "sway"},
+		{"i3", "i3"},
+		{"openbox", "openbox"},
+		// Fallbacks con rimozione prefisso x- e suffissi
+		{"qtile-wayland", "qtile"},
+		{"river-wayland", "river"},
+		{"dwm-x11", "dwm"},
+		{"bspwm-session", "bspwm"},
+		{"x-awesome", "awesome"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			got := NormalizeDesktop(tt.input)
+			if got != tt.expected {
+				t.Errorf("NormalizeDesktop(%q) = %q, want %q", tt.input, got, tt.expected)
+			}
+		})
+	}
+}
+
 
 
