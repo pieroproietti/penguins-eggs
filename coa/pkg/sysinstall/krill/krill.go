@@ -1783,17 +1783,18 @@ func (m *model) buildPlan() *engine.Plan {
 		RemoveUser:   cfg.Removeuser.Username,
 		BeforeUmount: func(p *engine.Plan) {
 			_, isCrypted, isClone := census.DetectLiveSourceMode(p.UnpackSource)
-			census.Send(census.EventOptions{
-				Action:      "sysinstall",
-				EggsVersion: m.version,
-				Anonymous:   isCrypted,
-				Crypted:     isCrypted,
-				Clone:       isClone,
-				Compression: "",
-				Coexist:     p.Mode == "coexist",
-				TargetRoot:  p.Target,
-				TargetUser:  p.Login,
-			})
+			if !isCrypted {
+				parentID := census.DetectParentIDFromSource(p.UnpackSource)
+				census.Send(census.EventOptions{
+					Action:      "sysinstall",
+					EggsVersion: m.version,
+					Anonymous:   false,
+					Clone:       isClone,
+					TargetRoot:  p.Target,
+					TargetUser:  p.Login,
+					ParentID:    parentID,
+				})
+			}
 			censusDispatched = true
 		},
 	}

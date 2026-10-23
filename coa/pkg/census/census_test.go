@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -115,22 +116,17 @@ func TestShouldSkipPrivacyRules(t *testing.T) {
 	t.Setenv("EGGS_ANONYMOUS", "")
 
 	// 1. Explicit --anonymous flag
-	if !ShouldSkip(true, false) {
+	if !ShouldSkip(true) {
 		t.Errorf("expected ShouldSkip=true when anonymousFlag is true")
 	}
 
-	// 2. Automatic privacy rule: --crypted forces anonymous
-	if !ShouldSkip(false, true) {
-		t.Errorf("expected ShouldSkip=true when crypted is true")
-	}
-
-	// 3. Environment variable opt-out
+	// 2. Environment variable opt-out
 	t.Setenv("EGGS_ANONYMOUS", "1")
-	if !ShouldSkip(false, false) {
+	if !ShouldSkip(false) {
 		t.Errorf("expected ShouldSkip=true when EGGS_ANONYMOUS=1")
 	}
 	t.Setenv("EGGS_ANONYMOUS", "true")
-	if !ShouldSkip(false, false) {
+	if !ShouldSkip(false) {
 		t.Errorf("expected ShouldSkip=true when EGGS_ANONYMOUS=true")
 	}
 }
@@ -171,23 +167,6 @@ func TestAnonymousDoesNotCreateUUIDOrSendRequest(t *testing.T) {
 	if _, err := os.Stat(censusJSONPath); !os.IsNotExist(err) {
 		t.Errorf("local census.json %s should not be created when Anonymous=true", censusJSONPath)
 	}
-
-	// Test implicit anonymous via Crypted=true
-	Send(EventOptions{
-		Action:      "remaster",
-		EggsVersion: "1.0.0",
-		Anonymous:   false,
-		Crypted:     true,
-	})
-	if called {
-		t.Errorf("server should not be called when Crypted=true")
-	}
-	if _, err := os.Stat(idPath); !os.IsNotExist(err) {
-		t.Errorf("UUID file %s should not be created when Crypted=true", idPath)
-	}
-	if _, err := os.Stat(censusJSONPath); !os.IsNotExist(err) {
-		t.Errorf("local census.json %s should not be created when Crypted=true", censusJSONPath)
-	}
 }
 
 func TestSendSuccessAndPayloadStructure(t *testing.T) {
@@ -223,10 +202,7 @@ func TestSendSuccessAndPayloadStructure(t *testing.T) {
 		Action:      "remaster",
 		EggsVersion: "26.10.18",
 		Anonymous:   false,
-		Crypted:     false,
 		Clone:       true,
-		Compression: "zstd",
-		Coexist:     false,
 		Distro: &distro.Distro{
 			DistroID:   "debian",
 			DistroLike: "Debian",
@@ -248,10 +224,10 @@ func TestSendSuccessAndPayloadStructure(t *testing.T) {
 	if received.Distro.ID != "debian" || received.Distro.Like != "debian" || received.Distro.Codename != "trixie" || received.Distro.Release != "13" {
 		t.Errorf("unexpected distro info: %+v", received.Distro)
 	}
-	if received.System.Arch != "amd64" || received.System.Desktop == "" || received.System.Virt == "" || received.System.Init == "" {
+	if received.System.Arch != "amd64" || received.System.Desktop == "" || received.System.DisplayServer == "" || received.System.Virt == "" || received.System.Init == "" {
 		t.Errorf("unexpected system info: %+v", received.System)
 	}
-	if !received.Options.Clone || received.Options.Compression != "zstd" || received.Options.Coexist {
+	if !received.Options.Clone {
 		t.Errorf("unexpected options info: %+v", received.Options)
 	}
 
@@ -546,6 +522,171 @@ func TestNormalizeDesktop(t *testing.T) {
 			got := NormalizeDesktop(tt.input)
 			if got != tt.expected {
 				t.Errorf("NormalizeDesktop(%q) = %q, want %q", tt.input, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestParentIDTelemetry(t *testing.T) {
+	tmpDir := t.TempDir()
+	midFile := filepath.Join(tmpDir, "machine-id")
+	t.Setenv("EGGS_MACHINE_ID_PATH", midFile)
+	t.Setenv("EGGS_CENSUS_ID_PATH", filepath.Join(tmpDir, ".census_id"))
+	t.Setenv("EGGS_CENSUS_PAYLOAD_PATH", filepath.Join(tmpDir, "census.json"))
+
+	parentMachineID := "1111222233334444aaaabbbbccccdddd"
+	if err := os.WriteFile(midFile, []byte(parentMachineID+"\n"), 0644); err != nil {
+		t.Fatalf("failed to write test machine-id: %v", err)
+	}
+
+	// 1. GetAnonymizedMachineID generates valid deterministic UUID
+	anonymized := GetAnonymizedMachineID()
+	if !isValidUUID(anonymized) {
+		t.Fatalf("expected valid UUID from GetAnonymizedMachineID, got %q", anonymized)
+	}
+	expectedUUID := DeriveUUIDFromMachineID(parentMachineID)
+	if anonymized != expectedUUID {
+		t.Errorf("expected %q, got %q", expectedUUID, anonymized)
+	}
+
+	// 2. DetectParentID from env var EGGS_PARENT_ID
+	t.Setenv("EGGS_PARENT_ID", anonymized)
+	if got := DetectParentID(""); got != anonymized {
+		t.Errorf("expected parent ID %q from EGGS_PARENT_ID, got %q", anonymized, got)
+	}
+	t.Setenv("EGGS_PARENT_ID", "")
+
+	// 3. DetectParentID from file via EGGS_PARENT_ID_PATH
+	pFilePath := filepath.Join(tmpDir, "parent_id")
+	_ = os.WriteFile(pFilePath, []byte(anonymized+"\n"), 0644)
+	t.Setenv("EGGS_PARENT_ID_PATH", pFilePath)
+	if got := DetectParentID(""); got != anonymized {
+		t.Errorf("expected parent ID %q from EGGS_PARENT_ID_PATH, got %q", anonymized, got)
+	}
+	t.Setenv("EGGS_PARENT_ID_PATH", "")
+
+	// 4. DetectParentIDFromSource relative to squashfs path
+	liveDir := filepath.Join(tmpDir, "live")
+	_ = os.MkdirAll(liveDir, 0755)
+	sqPath := filepath.Join(liveDir, "filesystem.squashfs")
+	_ = os.WriteFile(sqPath, []byte("fake-squashfs"), 0644)
+	_ = os.WriteFile(filepath.Join(liveDir, "parent_id"), []byte(anonymized+"\n"), 0644)
+	if got := DetectParentIDFromSource(sqPath); got != anonymized {
+		t.Errorf("expected parent ID %q from source dir, got %q", anonymized, got)
+	}
+
+	// 5. Send with ParentID produces snake_case "parent_id" in JSON
+	var receivedBody []byte
+	var received Payload
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		buf := make([]byte, 4096)
+		n, _ := r.Body.Read(buf)
+		receivedBody = buf[:n]
+		_ = json.Unmarshal(receivedBody, &received)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	origEndpoint := Endpoint
+	Endpoint = srv.URL
+	defer func() { Endpoint = origEndpoint }()
+
+	targetRoot := filepath.Join(tmpDir, "target")
+	_ = os.MkdirAll(filepath.Join(targetRoot, "etc"), 0755)
+
+	Send(EventOptions{
+		Action:      "sysinstall",
+		EggsVersion: "26.10.23",
+		ParentID:    anonymized,
+		TargetRoot:  targetRoot,
+	})
+
+	if received.ParentID != anonymized {
+		t.Errorf("expected received parent_id %q, got %q", anonymized, received.ParentID)
+	}
+	if !strings.Contains(string(receivedBody), `"parent_id"`) {
+		t.Errorf("expected transmitted JSON to contain snake_case 'parent_id', got: %s", string(receivedBody))
+	}
+
+	// 6. Verify saveTargetPayload saved parent-id to <targetRoot>/etc/penguins-eggs.d/parent-id
+	savedTargetParentID := filepath.Join(targetRoot, "etc", "penguins-eggs.d", "parent-id")
+	data, err := os.ReadFile(savedTargetParentID)
+	if err != nil {
+		t.Fatalf("expected target parent-id file at %s: %v", savedTargetParentID, err)
+	}
+	if strings.TrimSpace(string(data)) != anonymized {
+		t.Errorf("target parent-id mismatch: got %q, want %q", strings.TrimSpace(string(data)), anonymized)
+	}
+}
+
+func TestDetectDisplayServer(t *testing.T) {
+	tests := []struct {
+		name           string
+		waylandDisplay string
+		sessionType    string
+		display        string
+		expected       string
+	}{
+		{
+			name:           "wayland from WAYLAND_DISPLAY",
+			waylandDisplay: "wayland-0",
+			sessionType:    "",
+			display:        "",
+			expected:       "wayland",
+		},
+		{
+			name:           "wayland from XDG_SESSION_TYPE",
+			waylandDisplay: "",
+			sessionType:    "wayland",
+			display:        "",
+			expected:       "wayland",
+		},
+		{
+			name:           "wayland takes precedence over DISPLAY (XWayland)",
+			waylandDisplay: "wayland-1",
+			sessionType:    "wayland",
+			display:        ":0",
+			expected:       "wayland",
+		},
+		{
+			name:           "x11 from XDG_SESSION_TYPE",
+			waylandDisplay: "",
+			sessionType:    "x11",
+			display:        "",
+			expected:       "x11",
+		},
+		{
+			name:           "x11 from DISPLAY",
+			waylandDisplay: "",
+			sessionType:    "",
+			display:        ":0.0",
+			expected:       "x11",
+		},
+		{
+			name:           "fallback cli from tty session",
+			waylandDisplay: "",
+			sessionType:    "tty",
+			display:        "",
+			expected:       "cli",
+		},
+		{
+			name:           "fallback cli when no display server env set",
+			waylandDisplay: "",
+			sessionType:    "",
+			display:        "",
+			expected:       "cli",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("WAYLAND_DISPLAY", tt.waylandDisplay)
+			t.Setenv("XDG_SESSION_TYPE", tt.sessionType)
+			t.Setenv("DISPLAY", tt.display)
+
+			got := DetectDisplayServer()
+			if got != tt.expected {
+				t.Errorf("DetectDisplayServer() = %q, want %q", got, tt.expected)
 			}
 		})
 	}

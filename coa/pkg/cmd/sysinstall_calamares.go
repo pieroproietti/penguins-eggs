@@ -59,16 +59,18 @@ func RunCalamaresInstaller(oaVersion string) {
 	}
 
 	if _, err := os.Stat(calamaresCensusMarker); os.IsNotExist(err) {
-		_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
-		census.Send(census.EventOptions{
-			Action:      "sysinstall",
-			EggsVersion: oaVersion,
-			Anonymous:   sysinstallAnonymous || isCrypted,
-			Crypted:     isCrypted,
-			Clone:       isClone,
-			Compression: "",
-			Coexist:     false,
-		})
+		sqPath := setup.FindSquashfsPath()
+		_, isCrypted, isClone := census.DetectLiveSourceMode(sqPath)
+		if !isCrypted {
+			parentID := census.DetectParentIDFromSource(sqPath)
+			census.Send(census.EventOptions{
+				Action:      "sysinstall",
+				EggsVersion: oaVersion,
+				Anonymous:   sysinstallAnonymous,
+				Clone:       isClone,
+				ParentID:    parentID,
+			})
+		}
 	}
 
 	utils.LogNormal("Calamares installation finished.")

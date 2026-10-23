@@ -33,6 +33,8 @@ const (
 	systemCensusDirDPath     = "/etc/penguins-eggs.d/.census_id"
 	systemCensusJSONPath     = "/etc/penguins-eggs/census.json"
 	systemCensusDirDJSONPath = "/etc/penguins-eggs.d/census.json"
+	systemParentIDPath       = "/etc/penguins-eggs.d/parent-id"
+	systemParentIDDirDPath   = "/etc/penguins-eggs/parent-id"
 )
 
 // Endpoint can be overridden in tests.
@@ -48,22 +50,22 @@ type DistroInfo struct {
 
 // SystemInfo represents the host system metadata in the census payload.
 type SystemInfo struct {
-	Arch    string `json:"arch"`
-	Desktop string `json:"desktop"`
-	Virt    string `json:"virt"`
-	Init    string `json:"init"`
+	Arch          string `json:"arch"`
+	Desktop       string `json:"desktop"`
+	DisplayServer string `json:"display_server"`
+	Virt          string `json:"virt"`
+	Init          string `json:"init"`
 }
 
 // OptionsInfo represents the execution options in the census payload.
 type OptionsInfo struct {
-	Clone       bool   `json:"clone"`
-	Compression string `json:"compression"`
-	Coexist     bool   `json:"coexist"`
+	Clone bool `json:"clone"`
 }
 
 // Payload defines the JSON structure sent to the census endpoint.
 type Payload struct {
 	UUID        string      `json:"uuid"`
+	ParentID    string      `json:"parent_id,omitempty"`
 	EggsVersion string      `json:"eggs_version"`
 	Action      string      `json:"action"`
 	Distro      DistroInfo  `json:"distro"`
@@ -76,22 +78,19 @@ type EventOptions struct {
 	Action      string
 	EggsVersion string
 	Anonymous   bool
-	Crypted     bool
 	Clone       bool
-	Compression string
-	Coexist     bool
 	Distro      *distro.Distro
 	TargetRoot  string
 	TargetUser  string
+	ParentID    string
 }
 
 // ShouldSkip evaluates all privacy and opt-out rules:
 // 1. Explicit --anonymous flag
-// 2. Automatic privacy rule: --crypted / LUKS encryption forces anonymous = true
-// 3. Global opt-out via EGGS_ANONYMOUS environment variable
-// 4. Global opt-out via custom.yaml configuration
-func ShouldSkip(anonymousFlag, crypted bool) bool {
-	if anonymousFlag || crypted {
+// 2. Global opt-out via EGGS_ANONYMOUS environment variable
+// 3. Global opt-out via custom.yaml configuration
+func ShouldSkip(anonymousFlag bool) bool {
+	if anonymousFlag {
 		return true
 	}
 
@@ -116,7 +115,7 @@ func Send(opts EventOptions) {
 		_ = recover()
 	}()
 
-	if ShouldSkip(opts.Anonymous, opts.Crypted) {
+	if ShouldSkip(opts.Anonymous) {
 		return
 	}
 
@@ -201,8 +200,14 @@ func BuildPayload(uuid string, opts EventOptions) Payload {
 		arch = runtime.GOARCH
 	}
 
+	parentID := strings.TrimSpace(opts.ParentID)
+	if parentID == "" {
+		parentID = DetectParentID(opts.TargetRoot)
+	}
+
 	return Payload{
 		UUID:        uuid,
+		ParentID:    parentID,
 		EggsVersion: opts.EggsVersion,
 		Action:      opts.Action,
 		Distro: DistroInfo{
@@ -212,15 +217,14 @@ func BuildPayload(uuid string, opts EventOptions) Payload {
 			Release:  d.ReleaseID,
 		},
 		System: SystemInfo{
-			Arch:    arch,
-			Desktop: detectDesktop(),
-			Virt:    detectVirt(),
-			Init:    detectInit(),
+			Arch:          arch,
+			Desktop:       detectDesktop(),
+			DisplayServer: detectDisplayServer(),
+			Virt:          detectVirt(),
+			Init:          detectInit(),
 		},
 		Options: OptionsInfo{
-			Clone:       opts.Clone,
-			Compression: opts.Compression,
-			Coexist:     opts.Coexist,
+			Clone: opts.Clone,
 		},
 	}
 }
@@ -297,6 +301,14 @@ func saveTargetPayload(data []byte, targetRoot, targetUser string) {
 	targetEtcDir := filepath.Join(targetRoot, "etc", "penguins-eggs")
 	if err := os.MkdirAll(targetEtcDir, 0755); err == nil {
 		_ = os.WriteFile(filepath.Join(targetEtcDir, "census.json"), data, 0644)
+	}
+
+	var p Payload
+	if err := json.Unmarshal(data, &p); err == nil && p.ParentID != "" {
+		targetDirD := filepath.Join(targetRoot, "etc", "penguins-eggs.d")
+		if err := os.MkdirAll(targetDirD, 0755); err == nil {
+			_ = os.WriteFile(filepath.Join(targetDirD, "parent-id"), []byte(p.ParentID+"\n"), 0644)
+		}
 	}
 
 	seenUsers := make(map[string]bool)
@@ -532,6 +544,11 @@ func isValidMachineID(s string) bool {
 	return !allZero
 }
 
+// DeriveUUIDFromMachineID derives a deterministic RFC 4122 v5 UUID from a raw machine-id string.
+func DeriveUUIDFromMachineID(machineID string) string {
+	return deriveUUIDFromMachineID(machineID)
+}
+
 func deriveUUIDFromMachineID(machineID string) string {
 	normalized := strings.ToLower(strings.TrimSpace(machineID))
 	sum := sha256.Sum256([]byte("penguins-eggs-census:" + normalized))
@@ -541,6 +558,179 @@ func deriveUUIDFromMachineID(machineID string) string {
 	b[8] = (b[8] & 0x3f) | 0x80 // Variant RFC 4122
 	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
 		b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+}
+
+// GetAnonymizedMachineID returns the anonymized UUID derived from the host machine-id,
+// or a fallback UUID if machine-id is not available or uninitialized.
+func GetAnonymizedMachineID() string {
+	if customMachineID := strings.TrimSpace(os.Getenv("EGGS_MACHINE_ID_PATH")); customMachineID != "" {
+		if id, ok := readAndDeriveMachineID(customMachineID); ok {
+			return id
+		}
+	}
+
+	for _, p := range []string{machineIDPath, dbusMachineIDPath} {
+		if id, ok := readAndDeriveMachineID(p); ok {
+			return id
+		}
+	}
+
+	if u, err := getOrCreateUUID(); err == nil && u != "" {
+		return u
+	}
+	return ""
+}
+
+// DetectParentID attempts to discover the parent-id from environment variables,
+// target root filesystem, or system locations (/etc/penguins-eggs.d/parent-id, sibling.yaml).
+func DetectParentID(targetRoot string) string {
+	if custom := strings.TrimSpace(os.Getenv("EGGS_PARENT_ID")); custom != "" && isValidUUID(custom) {
+		return custom
+	}
+	if customPath := strings.TrimSpace(os.Getenv("EGGS_PARENT_ID_PATH")); customPath != "" {
+		if id := readParentIDFromFile(customPath); id != "" {
+			return id
+		}
+	}
+
+	var candidateFiles []string
+	if targetRoot != "" {
+		candidateFiles = append(candidateFiles,
+			filepath.Join(targetRoot, "etc", "penguins-eggs.d", "parent-id"),
+			filepath.Join(targetRoot, "etc", "penguins-eggs", "parent-id"),
+			filepath.Join(targetRoot, "etc", "penguins-eggs.d", "sibling.yaml"),
+			filepath.Join(targetRoot, "etc", "penguins-eggs", "sibling.yaml"),
+		)
+	}
+	candidateFiles = append(candidateFiles,
+		systemParentIDPath,
+		systemParentIDDirDPath,
+		"/etc/penguins-eggs.d/sibling.yaml",
+		"/etc/penguins-eggs/sibling.yaml",
+	)
+
+	for _, f := range candidateFiles {
+		if id := readParentIDFromFile(f); id != "" {
+			return id
+		}
+	}
+
+	return ""
+}
+
+func readParentIDFromFile(p string) string {
+	data, err := os.ReadFile(p)
+	if err != nil {
+		return ""
+	}
+	content := strings.TrimSpace(string(data))
+	if strings.HasSuffix(p, ".yaml") || strings.HasSuffix(p, ".yml") {
+		for _, line := range strings.Split(content, "\n") {
+			line = strings.TrimSpace(line)
+			if strings.HasPrefix(line, "parent_id:") || strings.HasPrefix(line, "parent-id:") {
+				parts := strings.SplitN(line, ":", 2)
+				if len(parts) == 2 {
+					val := strings.Trim(strings.TrimSpace(parts[1]), `"'`)
+					if isValidUUID(val) {
+						return val
+					}
+				}
+			}
+		}
+		return ""
+	}
+	if isValidUUID(content) {
+		return content
+	}
+	return ""
+}
+
+// DetectParentIDFromSource inspects the running system, live media, or source squashfs/iso image
+// to determine the parent-id saved during remaster.
+func DetectParentIDFromSource(squashfsPath string) string {
+	if id := DetectParentID(""); id != "" {
+		return id
+	}
+
+	var candidates []string
+
+	if squashfsPath != "" {
+		dir := filepath.Dir(squashfsPath)
+		candidates = append(candidates,
+			filepath.Join(dir, "parent_id"),
+			filepath.Join(dir, "live", "parent_id"),
+			filepath.Join(dir, "..", "parent_id"),
+			filepath.Join(dir, "..", "live", "parent_id"),
+			filepath.Join(dir, "..", "..", "parent_id"),
+		)
+	}
+
+	// Standard live media mountpoints across supported distributions
+	candidates = append(candidates,
+		"/run/live/medium/parent_id",
+		"/run/live/medium/live/parent_id",
+		"/lib/live/mount/medium/parent_id",
+		"/lib/live/mount/medium/live/parent_id",
+		"/run/archiso/bootmnt/parent_id",
+		"/run/miso/bootmnt/parent_id",
+		"/run/initramfs/live/parent_id",
+		"/run/initramfs/live/live/parent_id",
+		"/live/parent_id",
+		"/home/eggs/isodir/parent_id",
+		"/home/eggs/isodir/live/parent_id",
+	)
+
+	for _, c := range candidates {
+		if id := readParentIDFromFile(c); id != "" {
+			return id
+		}
+	}
+
+	if squashfsPath != "" {
+		if _, err := os.Stat(squashfsPath); err == nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 1500*time.Millisecond)
+			defer cancel()
+
+			if strings.HasSuffix(squashfsPath, ".iso") {
+				for _, target := range []string{"parent_id", "live/parent_id"} {
+					if out, err := exec.CommandContext(ctx, "bsdtar", "-O", "-xf", squashfsPath, target).Output(); err == nil {
+						id := strings.TrimSpace(string(out))
+						if isValidUUID(id) {
+							return id
+						}
+					}
+				}
+			} else {
+				// 1. Try reading parent_id / live/parent_id / etc/penguins-eggs.d/parent-id from squashfs
+				for _, target := range []string{"parent_id", "live/parent_id", "etc/penguins-eggs.d/parent-id"} {
+					if out, err := exec.CommandContext(ctx, "unsquashfs", "-cat", squashfsPath, target).Output(); err == nil {
+						id := strings.TrimSpace(string(out))
+						if isValidUUID(id) {
+							return id
+						}
+					}
+				}
+
+				// 2. Try reading etc/penguins-eggs.d/sibling.yaml from squashfs
+				if out, err := exec.CommandContext(ctx, "unsquashfs", "-cat", squashfsPath, "etc/penguins-eggs.d/sibling.yaml").Output(); err == nil {
+					for _, line := range strings.Split(string(out), "\n") {
+						line = strings.TrimSpace(line)
+						if strings.HasPrefix(line, "parent_id:") || strings.HasPrefix(line, "parent-id:") {
+							parts := strings.SplitN(line, ":", 2)
+							if len(parts) == 2 {
+								val := strings.Trim(strings.TrimSpace(parts[1]), `"'`)
+								if isValidUUID(val) {
+									return val
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return ""
 }
 
 func candidateUUIDPaths() []string {
@@ -795,6 +985,33 @@ func detectDesktop() string {
 		if _, err := exec.LookPath(db.bin); err == nil {
 			return db.name
 		}
+	}
+
+	return "cli"
+}
+
+// DetectDisplayServer detects whether the graphical session uses wayland, x11, or falls back to cli.
+func DetectDisplayServer() string {
+	return detectDisplayServer()
+}
+
+func detectDisplayServer() string {
+	if val := strings.TrimSpace(os.Getenv("WAYLAND_DISPLAY")); val != "" {
+		return "wayland"
+	}
+
+	sessionType := strings.ToLower(strings.TrimSpace(os.Getenv("XDG_SESSION_TYPE")))
+	switch sessionType {
+	case "wayland":
+		return "wayland"
+	case "x11":
+		return "x11"
+	case "tty":
+		return "cli"
+	}
+
+	if val := strings.TrimSpace(os.Getenv("DISPLAY")); val != "" {
+		return "x11"
 	}
 
 	return "cli"

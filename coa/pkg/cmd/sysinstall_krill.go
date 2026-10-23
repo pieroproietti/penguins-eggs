@@ -92,16 +92,18 @@ func runKrillInstallerWithSlot(oaVersion string, fstype string, coexist bool, ta
 		}
 
 		if !krill.CensusSent() {
-			_, isCrypted, isClone := census.DetectLiveSourceMode(setup.FindSquashfsPath())
-			census.Send(census.EventOptions{
-				Action:      "sysinstall",
-				EggsVersion: oaVersion,
-				Anonymous:   sysinstallAnonymous || isCrypted,
-				Crypted:     isCrypted,
-				Clone:       isClone,
-				Compression: "",
-				Coexist:     coexist,
-			})
+			sqPath := setup.FindSquashfsPath()
+			_, isCrypted, isClone := census.DetectLiveSourceMode(sqPath)
+			if !isCrypted {
+				parentID := census.DetectParentIDFromSource(sqPath)
+				census.Send(census.EventOptions{
+					Action:      "sysinstall",
+					EggsVersion: oaVersion,
+					Anonymous:   sysinstallAnonymous,
+					Clone:       isClone,
+					ParentID:    parentID,
+				})
+			}
 		}
 	}
 

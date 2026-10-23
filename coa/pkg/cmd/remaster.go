@@ -158,6 +158,19 @@ func RunRemasterFlight(opts RemasterOptions) {
 	}
 	isoDir := filepath.Join(snapshotDir, "isodir")
 
+	// Save parent-id (anonymized machine-id of the parent host) into isodir so it is included in the live ISO
+	if parentID := census.GetAnonymizedMachineID(); parentID != "" {
+		_ = os.MkdirAll(filepath.Join(isoDir, "live"), 0755)
+		_ = os.WriteFile(filepath.Join(isoDir, "parent_id"), []byte(parentID+"\n"), 0644)
+		_ = os.WriteFile(filepath.Join(isoDir, "live", "parent_id"), []byte(parentID+"\n"), 0644)
+		if isExternal {
+			produceIsoDir := filepath.Join(producePath, "isodir")
+			_ = os.MkdirAll(filepath.Join(produceIsoDir, "live"), 0755)
+			_ = os.WriteFile(filepath.Join(produceIsoDir, "parent_id"), []byte(parentID+"\n"), 0644)
+			_ = os.WriteFile(filepath.Join(produceIsoDir, "live", "parent_id"), []byte(parentID+"\n"), 0644)
+		}
+	}
+
 	startTime := time.Now()
 
 	utils.LogNormal("Starting remastering procedure (mode: %s)...", produceMode)
@@ -392,17 +405,16 @@ func RunRemasterFlight(opts RemasterOptions) {
 			utils.LogSuccess("Remastering completed in %02d:%02d:%02d — the egg is ready!", h, m, s)
 		}
 
-		isCryptedMode := produceMode == "crypted"
-		census.Send(census.EventOptions{
-			Action:      "remaster",
-			EggsVersion: AppVersion,
-			Anonymous:   opts.Anonymous || isCryptedMode,
-			Crypted:     isCryptedMode,
-			Clone:       produceMode == "clone",
-			Compression: compression,
-			Coexist:     false,
-			Distro:      myDistro,
-		})
+		if produceMode != "crypted" {
+			census.Send(census.EventOptions{
+				Action:      "remaster",
+				EggsVersion: AppVersion,
+				Anonymous:   opts.Anonymous,
+				Clone:       produceMode == "clone",
+				Distro:      myDistro,
+				ParentID:    census.DetectParentID(""),
+			})
+		}
 	}
 }
 
