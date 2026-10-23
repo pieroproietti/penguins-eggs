@@ -2,6 +2,7 @@ package census
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -689,6 +690,55 @@ func TestDetectDisplayServer(t *testing.T) {
 				t.Errorf("DetectDisplayServer() = %q, want %q", got, tt.expected)
 			}
 		})
+	}
+}
+
+func TestAnonymousCensusPayloadStrict(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Setenv("HOME", tmpDir)
+	t.Setenv("XDG_CONFIG_HOME", tmpDir)
+	t.Setenv("EGGS_ANONYMOUS", "")
+
+	var receivedBody []byte
+	var received Payload
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		receivedBody = body
+		_ = json.Unmarshal(body, &received)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	origEndpoint := Endpoint
+	Endpoint = srv.URL
+	defer func() { Endpoint = origEndpoint }()
+
+	targetRoot := filepath.Join(tmpDir, "target")
+	_ = os.MkdirAll(filepath.Join(targetRoot, "etc"), 0755)
+
+	Send(EventOptions{
+		Action:      "remaster",
+		EggsVersion: "26.10.23",
+		ParentID:    "parent-uuid-5678",
+		TargetRoot:  targetRoot,
+	})
+
+	if strings.Contains(string(receivedBody), `"community"`) {
+		t.Errorf("census payload must NOT contain community metadata: %s", string(receivedBody))
+	}
+	if received.ParentID != "parent-uuid-5678" {
+		t.Errorf("expected parent_id preserved, got %s", received.ParentID)
+	}
+
+	// Verify target saved parent-id but NOT community.json
+	targetParentIDFile := filepath.Join(targetRoot, "etc", "penguins-eggs.d", "parent-id")
+	if _, err := os.Stat(targetParentIDFile); err != nil {
+		t.Errorf("expected target parent-id at %s: %v", targetParentIDFile, err)
+	}
+
+	targetCommFile := filepath.Join(targetRoot, "etc", "penguins-eggs.d", "community.json")
+	if _, err := os.Stat(targetCommFile); !os.IsNotExist(err) {
+		t.Errorf("expected target community.json to NOT exist, but found it")
 	}
 }
 

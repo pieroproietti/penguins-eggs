@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -235,17 +236,89 @@ func mergeCustomSettings(base *RemasterConfig, custom *RemasterConfig) {
 	}
 }
 
-func LoadCustomSettings() (*Settings, error) {
-	v := viper.New()
-	v.SetConfigName("custom")
-	v.AddConfigPath("/etc/penguins-eggs.d/")
-	v.AddConfigPath(".")
-
-	if err := v.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			return nil, nil
+func candidateCustomConfigPaths() (systemPath string, userPaths []string, workPath string) {
+	systemPath = "/etc/penguins-eggs.d/custom.yaml"
+	if _, err := os.Stat(systemPath); os.IsNotExist(err) {
+		if _, err := os.Stat("/etc/penguins-eggs.d/custom.yml"); err == nil {
+			systemPath = "/etc/penguins-eggs.d/custom.yml"
 		}
-		return nil, err
+	}
+
+	seen := make(map[string]bool)
+	addUserPath := func(p string) {
+		if p != "" && !seen[p] {
+			seen[p] = true
+			userPaths = append(userPaths, p)
+		}
+	}
+
+	if sudoUser := strings.TrimSpace(os.Getenv("SUDO_USER")); sudoUser != "" && sudoUser != "root" {
+		if u, err := user.Lookup(sudoUser); err == nil && u.HomeDir != "" {
+			addUserPath(filepath.Join(u.HomeDir, ".config", "penguins-eggs", "custom.yaml"))
+			addUserPath(filepath.Join(u.HomeDir, ".config", "penguins-eggs", "custom.yml"))
+		}
+	}
+
+	if cfgDir, err := os.UserConfigDir(); err == nil && cfgDir != "" {
+		addUserPath(filepath.Join(cfgDir, "penguins-eggs", "custom.yaml"))
+		addUserPath(filepath.Join(cfgDir, "penguins-eggs", "custom.yml"))
+	} else if homeDir, err := os.UserHomeDir(); err == nil && homeDir != "" {
+		addUserPath(filepath.Join(homeDir, ".config", "penguins-eggs", "custom.yaml"))
+		addUserPath(filepath.Join(homeDir, ".config", "penguins-eggs", "custom.yml"))
+	}
+
+	workPath = "./custom.yaml"
+	if _, err := os.Stat(workPath); os.IsNotExist(err) {
+		if _, err := os.Stat("./custom.yml"); err == nil {
+			workPath = "./custom.yml"
+		}
+	}
+
+	return systemPath, userPaths, workPath
+}
+
+func LoadCustomSettings() (*Settings, error) {
+	systemPath, userPaths, workPath := candidateCustomConfigPaths()
+
+	var loadedAny bool
+	v := viper.New()
+	v.SetConfigType("yaml")
+
+	// 1. Load system-level custom.yaml if present
+	if _, err := os.Stat(systemPath); err == nil {
+		v.SetConfigFile(systemPath)
+		if err := v.ReadInConfig(); err == nil {
+			loadedAny = true
+		}
+	}
+
+	// 2. Merge user-level custom.yaml (user overrides)
+	for _, uPath := range userPaths {
+		if _, err := os.Stat(uPath); err == nil {
+			v.SetConfigFile(uPath)
+			if !loadedAny {
+				if err := v.ReadInConfig(); err == nil {
+					loadedAny = true
+				}
+			} else {
+				_ = v.MergeInConfig()
+			}
+			break
+		}
+	}
+
+	// 3. Fallback to current directory custom.yaml if nothing loaded yet
+	if !loadedAny {
+		if _, err := os.Stat(workPath); err == nil {
+			v.SetConfigFile(workPath)
+			if err := v.ReadInConfig(); err == nil {
+				loadedAny = true
+			}
+		}
+	}
+
+	if !loadedAny {
+		return nil, nil
 	}
 
 	var settings Settings
