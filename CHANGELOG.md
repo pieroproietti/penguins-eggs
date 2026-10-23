@@ -2,6 +2,20 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.23 - 2026-10-23
+
+This release unifies and expands desktop environment normalization and sensing across all major Linux desktops and compositors for the Census telemetry engine, while integrating an EFI boot fallback safeguard for Debian installations.
+
+### 📊 Census Telemetry & Desktop Sensing
+* **Comprehensive Desktop Normalization (`coa/pkg/census/census.go`)**: Implemented canonical normalization for all major desktop environments and modern Wayland compositors (`cinnamon`, `budgie`, `pantheon`, `cosmic`, `gnome`, `kde`/`plasma`, `xfce`, `mate`, `lxqt`, `lxde`, `deepin`/`dde`, `ukui`, `enlightenment`, `hyprland`, `sway`, `i3`, `openbox`).
+* **Intelligent Hierarchy & Hybrid Desktop Handling**: Prioritizes `budgie`, `pantheon`, and `cosmic` before generic GNOME matching, correctly categorizing compound sessions like `Budgie:GNOME` and `Pantheon:GNOME`.
+* **Universal Session & Window Manager Fallback**: Automatically strips prefixes (`x-`) and session/display server suffixes (`-x11`, `-wayland`, `-xorg`, `-session`), ensuring window managers and compositors (e.g. `qtile`, `bspwm`, `river`, `dwm`) are neatly identified.
+* **Extended Desktop Binary Sniffing**: Expanded PATH detection heuristics in `desktopBins` to detect installed sessions including `Hyprland`, `sway`, `i3`, `enlightenment`, `budgie`, `ukui`, `deepin`, and `openbox`.
+* **Exhaustive Unit Test Coverage (`coa/pkg/census/census_test.go`)**: Added `TestNormalizeDesktop` table-driven test matrix verifying 44 desktop strings, compound aliases, and edge cases.
+
+### 🥾 Live System Installation & EFI Boot
+* **Debian EFI Boot Fallback Safeguard (`coa/brain.d/modules/debian/install.bash.tmpl`)**: Added automated EFI fallback bootloader installation (`bootx64.efi`) for Debian target installations to ensure reliable UEFI booting across diverse firmware implementations.
+
 ## Release Notes: penguins-eggs v26.10.22 - 2026-10-22
 
 This release refines desktop environment detection for the Census telemetry engine, filters non-desktop display manager session wrappers, normalizes desktop family aliases, and hardens exclude list generation for unprivileged builds and test suites.
