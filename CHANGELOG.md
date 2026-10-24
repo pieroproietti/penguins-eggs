@@ -2,6 +2,23 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.24 - 2026-10-24
+
+This release introduces multi-generation `parent_id` lineage tracking across `remaster` and `sysinstall` flights, adds display server detection (`wayland`, `x11`, `cli`) to the Census telemetry engine, streamlines the anonymous telemetry payload, and enhances hierarchical `custom.yaml` configuration loading.
+
+### 🧬 Census Lineage Tracking (`parent_id`)
+* **SquashFS & ISO Lineage Injection (`coa/pkg/census/census.go`, `coa/pkg/worker/mksquashfs.go`, `bootstrap-liveroot.sh`)**: During `remaster`, the host's anonymized deterministic `machine-id` (`GetAnonymizedMachineID`) is written both to the ISO9660 staging tree (`isodir/parent_id`, `isodir/live/parent_id`) and directly inside the Live SquashFS root (`<liveRoot>/etc/penguins-eggs.d/parent-id` via `InjectParentIDToLiveRoot`). Strict path guards prevent modifying `/etc/penguins-eggs.d/parent-id` on the host's real filesystem.
+* **Bootloader-Agnostic `sysinstall` Propagation**: Both Krill (`krill.go`, `sysinstall_krill.go`) and Calamares (`router.go`, `sysinstall_calamares.go`) automatically resolve `parent_id` via `DetectParentIDFromSource` from the running Live SquashFS, live media mountpoints, or archive streams (ensuring compatibility with standard boots, GRUB loopback, and Ventoy).
+* **Target Persistence & Second-Generation Remasters (`saveTargetPayload`, `remaster.go`)**: `sysinstall` persists `<targetRoot>/etc/penguins-eggs.d/parent-id` onto the newly installed system while purging stale `.census_id` residues. Subsequent `remaster` runs on derived installations (or live sessions) invoke `DetectParentIDFromSource("")` to report their parent lineage while stamping their own UUID as the parent of newly produced ISOs.
+
+### 📊 Display Server Sensing & Telemetry Refinement
+* **Display Server Detection (`display_server`)**: Added `detectDisplayServer()` to `SystemInfo` in `coa/pkg/census/census.go`, sensing `wayland`, `x11`, or `cli` across environment variables (`WAYLAND_DISPLAY`, `XDG_SESSION_TYPE`, `DISPLAY`), `loginctl` session types, and Wayland runtime sockets, properly prioritizing Wayland when XWayland sets `DISPLAY`.
+* **Streamlined Anonymous Telemetry Payload**: Simplified `OptionsInfo` to report only `clone` status (removing `compression`, `coexist`, and `crypted` properties) and enforced silent telemetry bypass on `--crypted` remaster and installation flights.
+
+### ⚙️ Configuration & Testing
+* **Hierarchical `custom.yaml` Merging (`coa/pkg/parser/parser.go`)**: Upgraded `LoadCustomSettings` to merge system-wide `/etc/penguins-eggs.d/custom.yaml` settings with user-level overrides in `~/.config/penguins-eggs/custom.yaml` (supporting both `.yaml` and `.yml` extensions, `XDG_CONFIG_HOME`, and `SUDO_USER` resolution).
+* **Unit Test Coverage (`coa/pkg/census/census_test.go`, `coa/pkg/parser/parser_test.go`)**: Added `TestInjectParentIDToLiveRoot`, `TestLineageChainRootToDerivedRemaster`, `TestParentIDTelemetry`, `TestDetectDisplayServer`, `TestAnonymousCensusPayloadStrict`, and `TestLoadCustomSettings_Anonymous`.
+
 ## Release Notes: penguins-eggs v26.10.23 - 2026-10-23
 
 This release unifies and expands desktop environment normalization and sensing across all major Linux desktops and compositors for the Census telemetry engine, while integrating an EFI boot fallback safeguard for Debian installations.
