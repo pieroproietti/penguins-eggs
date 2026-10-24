@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"coa/pkg/census"
 	"coa/pkg/utils"
 	"encoding/json"
 	"fmt"
@@ -48,6 +49,12 @@ func RunMksquashfs(payload []byte) error {
 	}
 	if destFile == "" {
 		return fmt.Errorf("mksquashfs module: missing 'dest_file' parameter")
+	}
+
+	// Ensure parent-id of the host creating the ISO is present in the Live filesystem (SquashFS).
+	// Guard against modifying the host's real root: only write if liveRoot is not "/" and is a valid directory.
+	if cleanRoot := liveRoot; cleanRoot != "" && cleanRoot != "/" && cleanRoot != "." {
+		_, _ = census.InjectParentIDToLiveRoot(cleanRoot)
 	}
 
 	if algo == "" {

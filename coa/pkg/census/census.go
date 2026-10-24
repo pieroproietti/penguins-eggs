@@ -204,6 +204,9 @@ func BuildPayload(uuid string, opts EventOptions) Payload {
 	if parentID == "" {
 		parentID = DetectParentID(opts.TargetRoot)
 	}
+	if parentID == "" {
+		parentID = DetectParentIDFromSource("")
+	}
 
 	return Payload{
 		UUID:        uuid,
@@ -310,6 +313,12 @@ func saveTargetPayload(data []byte, targetRoot, targetUser string) {
 			_ = os.WriteFile(filepath.Join(targetDirD, "parent-id"), []byte(p.ParentID+"\n"), 0644)
 		}
 	}
+
+	// Purge stale .census_id residues from target so the freshly installed machine
+	// always derives its unique identity from its newly generated /etc/machine-id,
+	// while preserving etc/penguins-eggs.d/parent-id.
+	_ = os.Remove(filepath.Join(targetRoot, "etc", "penguins-eggs", ".census_id"))
+	_ = os.Remove(filepath.Join(targetRoot, "etc", "penguins-eggs.d", ".census_id"))
 
 	seenUsers := make(map[string]bool)
 	var userDirs []string
@@ -581,6 +590,29 @@ func GetAnonymizedMachineID() string {
 	return ""
 }
 
+// InjectParentIDToLiveRoot writes the parent-id (anonymized machine-id of the current host)
+// into <liveRoot>/etc/penguins-eggs.d/parent-id so that it is included inside the SquashFS.
+// It strictly guards against writing to the real host root ("/", "", or clean == "/").
+func InjectParentIDToLiveRoot(liveRoot string) (string, error) {
+	clean := filepath.Clean(strings.TrimSpace(liveRoot))
+	if clean == "" || clean == "/" || clean == "." {
+		return "", fmt.Errorf("invalid liveRoot destination: %q", liveRoot)
+	}
+	parentID := GetAnonymizedMachineID()
+	if parentID == "" {
+		return "", fmt.Errorf("unable to determine anonymized machine-id")
+	}
+	targetDir := filepath.Join(clean, "etc", "penguins-eggs.d")
+	if err := os.MkdirAll(targetDir, 0755); err != nil {
+		return "", err
+	}
+	targetFile := filepath.Join(targetDir, "parent-id")
+	if err := os.WriteFile(targetFile, []byte(parentID+"\n"), 0644); err != nil {
+		return "", err
+	}
+	return parentID, nil
+}
+
 // DetectParentID attempts to discover the parent-id from environment variables,
 // target root filesystem, or system locations (/etc/penguins-eggs.d/parent-id, sibling.yaml).
 func DetectParentID(targetRoot string) string {
@@ -676,8 +708,6 @@ func DetectParentIDFromSource(squashfsPath string) string {
 		"/run/initramfs/live/parent_id",
 		"/run/initramfs/live/live/parent_id",
 		"/live/parent_id",
-		"/home/eggs/isodir/parent_id",
-		"/home/eggs/isodir/live/parent_id",
 	)
 
 	for _, c := range candidates {

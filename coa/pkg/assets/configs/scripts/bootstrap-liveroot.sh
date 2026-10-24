@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
 
-# Argomenti: $1 = basepath (es. /home/eggs), $2 = isGitHubAction (true/false), $3 = mode (standard/clone/crypted)
+# Argomenti: $1 = basepath (es. /home/eggs), $2 = isGitHubAction (true/false), $3 = mode (standard/clone/crypted), $4 = parent_id (opzionale)
 BASEPATH=$1
 GITHUB_ACTION=$2
 MODE=$3
+PARENT_ID=$4
 
 LIVEROOT="$BASEPATH/liveroot"
 OVERLAY="$BASEPATH/.overlay"
@@ -32,6 +33,9 @@ done
 # utenti sono già clonati da /home.
 mkdir -p "$LIVEROOT/etc/penguins-eggs.d"
 echo "mode: $MODE" > "$LIVEROOT/etc/penguins-eggs.d/sibling.yaml"
+if [ -n "$PARENT_ID" ]; then
+    echo "$PARENT_ID" > "$LIVEROOT/etc/penguins-eggs.d/parent-id"
+fi
 
 # 3. BIND MOUNTS E SYMLINK (USRMERGE)
 for e in bin sbin lib lib64 opt root srv; do

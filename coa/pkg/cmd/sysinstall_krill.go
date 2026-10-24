@@ -101,6 +101,7 @@ func runKrillInstallerWithSlot(oaVersion string, fstype string, coexist bool, ta
 					EggsVersion: oaVersion,
 					Anonymous:   sysinstallAnonymous,
 					Clone:       isClone,
+					TargetRoot:  engine.DefaultTarget,
 					ParentID:    parentID,
 				})
 			}

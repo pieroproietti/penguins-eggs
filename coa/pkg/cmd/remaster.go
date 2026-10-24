@@ -412,7 +412,7 @@ func RunRemasterFlight(opts RemasterOptions) {
 				Anonymous:   opts.Anonymous,
 				Clone:       produceMode == "clone",
 				Distro:      myDistro,
-				ParentID:    census.DetectParentID(""),
+				ParentID:    census.DetectParentIDFromSource(""),
 			})
 		}
 	}
