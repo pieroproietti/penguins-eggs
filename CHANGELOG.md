@@ -2,6 +2,23 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.25 - 2026-10-25
+
+This release refactors the `coa/pkg/census` package into dedicated, modular domain files and hardens display server detection (`wayland`, `x11`, `cli`) when `eggs` is invoked under `sudo` or non-systemd environments.
+
+### 🧩 Census Package Modularization (`coa/pkg/census/`)
+* **Functional Package Split**: Reorganized the monolithic `census.go` and `census_test.go` into focused, maintainable units:
+  - `types.go`: Telemetry data structures (`Payload`, `SystemInfo`, `OptionsInfo`, `StorageInfo`).
+  - `identity.go` & `identity_test.go`: Anonymized deterministic `machine-id` generation, multi-generation `parent_id` lineage resolution, SquashFS/ISO injection, and background telemetry dispatch.
+  - `detect.go` & `detect_test.go`: Desktop environment normalization, display server sensing, virtualization detection, init system identification, and live source mode inspection.
+  - `storage.go`: Block device, filesystem, and disk geometry inspection.
+
+### 🖥️ Sudo-Resilient Display Server Detection
+* **Active Socket & Desktop Session Fallbacks (`coa/pkg/census/detect.go`)**: Enhanced `detectDisplayServer()` to accurately identify `wayland` and `x11` sessions even when `sudo` strips `WAYLAND_DISPLAY`, `XDG_SESSION_TYPE`, and `DISPLAY` from the environment:
+  - Inspects active Wayland sockets (`/run/user/*/wayland-[0-9]*`) and X11 UNIX domain sockets (`/tmp/.X11-unix/X[0-9]*`).
+  - Falls back to desktop-aware heuristics (`hyprland`, `sway`, `cosmic` → `wayland`; `xfce`, `cinnamon`, `mate`, `i3`, `openbox`, `lxde`, `dwm`, `jwm`, `fly` → `x11`) cross-referenced with installed `/usr/share/wayland-sessions` and `/usr/share/xsessions` descriptors.
+  - Added `EGGS_WAYLAND_SOCKETS_DIR` and `EGGS_X11_SOCKETS_DIR` environment hooks for isolated unit testing in `detect_test.go`.
+
 ## Release Notes: penguins-eggs v26.10.24 - 2026-10-24
 
 This release introduces multi-generation `parent_id` lineage tracking across `remaster` and `sysinstall` flights, adds display server detection (`wayland`, `x11`, `cli`) to the Census telemetry engine, streamlines the anonymous telemetry payload, and enhances hierarchical `custom.yaml` configuration loading.
