@@ -46,7 +46,8 @@ depends="
 # Handle transition from oa-tools (former package name)
 replaces="oa-tools"
 
-options="!check"
+#options="!check"
+options="!check !tracedeps !strip"
 
 # TRUCCO 1: Disinneschiamo lo split automatico dei pacchetti.
 doc() { return 0; }
