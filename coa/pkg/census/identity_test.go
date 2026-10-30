@@ -255,6 +255,7 @@ func TestLineageChainRootToDerivedRemaster(t *testing.T) {
 	t.Setenv("EGGS_MACHINE_ID_PATH", host1MidFile)
 	t.Setenv("EGGS_CENSUS_ID_PATH", filepath.Join(host1Dir, ".census_id"))
 	t.Setenv("EGGS_CENSUS_PAYLOAD_PATH", filepath.Join(host1Dir, "census.json"))
+	t.Setenv("EGGS_PARENT_ID_PATH", filepath.Join(host1Dir, "etc", "penguins-eggs.d", "parent-id"))
 
 	uuidHost1 := DeriveUUIDFromMachineID(host1Mid)
 

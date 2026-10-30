@@ -163,9 +163,7 @@ func DetectParentID(targetRoot string) string {
 		return custom
 	}
 	if customPath := strings.TrimSpace(os.Getenv("EGGS_PARENT_ID_PATH")); customPath != "" {
-		if id := readParentIDFromFile(customPath); id != "" {
-			return id
-		}
+		return readParentIDFromFile(customPath)
 	}
 
 	var candidateFiles []string
@@ -223,10 +221,6 @@ func readParentIDFromFile(p string) string {
 // DetectParentIDFromSource inspects the running system, live media, or source squashfs/iso image
 // to determine the parent-id saved during remaster.
 func DetectParentIDFromSource(squashfsPath string) string {
-	if id := DetectParentID(""); id != "" {
-		return id
-	}
-
 	var candidates []string
 
 	if squashfsPath != "" {
@@ -303,7 +297,7 @@ func DetectParentIDFromSource(squashfsPath string) string {
 		}
 	}
 
-	return ""
+	return DetectParentID("")
 }
 
 func candidateUUIDPaths() []string {
