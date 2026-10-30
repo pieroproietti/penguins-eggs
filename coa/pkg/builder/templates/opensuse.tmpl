@@ -6,6 +6,11 @@ License:        GPL-3.0-only
 Group:          System/Management
 URL:            https://penguins-eggs.net
 
+# Esclude /usr/share/penguins-eggs dall'auto-generazione di Requires e Provides (evita che i binari dei bootloader introducano dipendenze dinamiche)
+%global __requires_exclude_from ^/usr/share/penguins-eggs/.*$
+%global __provides_exclude_from ^/usr/share/penguins-eggs/.*$
+%global __requires_exclude ^libdevmapper\\.so.*$
+
 Requires:       bash-completion
 Requires:       bsdtar
 Requires:       curl

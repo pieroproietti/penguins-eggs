@@ -5,6 +5,11 @@ Summary:        penguins-eggs universal Linux remastering
 License:        GPLv3
 URL:            https://penguins-eggs.net
 
+# Esclude /usr/share/penguins-eggs dall'auto-generazione di Requires e Provides (evita che i binari dei bootloader introducano dipendenze dinamiche)
+%global __requires_exclude_from ^/usr/share/penguins-eggs/.*$
+%global __provides_exclude_from ^/usr/share/penguins-eggs/.*$
+%global __requires_exclude ^libdevmapper\\.so.*$
+
 # Dipendenze originali + livecd-tools per la creazione delle ISO
 Requires:       bash-completion
 Requires:       curl
