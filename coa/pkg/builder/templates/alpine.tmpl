@@ -46,7 +46,9 @@ depends="
 # Handle transition from oa-tools (former package name)
 replaces="oa-tools"
 
-#options="!check"
+# !check: salta i test
+# !tracedeps: disabilita scanelf sui binari estratti (evita il blocco su libc.so.6 dei bootloader)
+# !strip: evita che lo strip di Alpine fallisca o corrompa binari EFI/precompilati eterogenei
 options="!check !tracedeps !strip"
 
 # TRUCCO 1: Disinneschiamo lo split automatico dei pacchetti.
