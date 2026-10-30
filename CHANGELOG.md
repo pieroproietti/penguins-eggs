@@ -2,6 +2,29 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.10.30 - 2026-10-30
+
+This release eliminates the need to download bootloaders on every remastering flight by introducing an FHS-compliant multi-tier lookup hierarchy, bundling bootloaders directly into native packages and AppImage, and persisting fallback caches across runs.
+
+### 🚀 Bootloader Architecture & Offline Remastering
+* **Elimination of Runtime Downloads**: Bootloaders are now packaged directly in native distribution packages (`.deb`, `.rpm`, `.apk`, Arch) and AppImage under `/usr/share/penguins-eggs/bootloaders`, enabling completely offline remastering out-of-the-box without network calls.
+* **FHS Multi-Tier Cascade Lookup (`coa/pkg/utils/ensure-bootloaders.go`)**: Implemented robust hierarchical fallback resolution:
+  1. Packaged system location (`/usr/share/penguins-eggs/bootloaders`)
+  2. Local repository assets (`coa/pkg/assets/bootloaders` or `assets/bootloaders` for development)
+  3. Persistent system cache (`/var/cache/penguins-eggs/bootloaders`)
+  4. Persistent user cache (`~/.cache/penguins-eggs/bootloaders`)
+  5. Network retrieval (only as a last resort, extracted into persistent cache to avoid future re-downloads)
+* **Replaced Volatile `/tmp` Storage**: Replaced transient `/tmp/coa/bootloaders` with persistent cache paths, preventing bootloader assets from being lost across reboots or cleared by OS temporary file cleanups.
+* **Dynamic Template & Script Resolution (`coa/brain.d/base.yaml.tmpl`, `bootloader-copy.sh`)**: The resolved bootloader directory is propagated dynamically via `ctx.BootloadersDir` into Brain workflow templates and helper copy scripts.
+
+### 📦 Multi-Distro Packaging Hardening
+* **RPM Auto-Dependency Filter (`coa/pkg/builder/templates/fedora.tmpl`, `opensuse.tmpl`)**: Filtered out `/usr/share/penguins-eggs` from automatic RPM `Requires` and `Provides` generation to prevent embedded cross-architecture bootloader binaries from injecting extraneous dynamic library dependencies (such as foreign `libc.so.6`).
+* **Alpine Packaging Safeguards (`coa/pkg/builder/templates/alpine.tmpl`)**: Added `!check !tracedeps !strip` options to bypass `abuild`/`scanelf` binary inspection and prevent corruption or stripping of heterogenous EFI binaries.
+* **AppImage & System Staging (`coa/pkg/builder/staging.go`, `packaging/appimage/`)**: Bundled bootloaders into staging workflows, native packaging recipes, and AppImage `install-system` routines.
+
+### 🧬 Census & Telemetry Refinement
+* **Lineage & Source Resolution (`coa/pkg/census/identity.go`)**: Prioritized source and live-media squashfs search paths in `DetectParentIDFromSource` before falling back to system parent IDs, ensuring proper multi-generation lineage tracking in live and derived remasters.
+
 ## Release Notes: penguins-eggs v26.10.25 - 2026-10-25
 
 This release refactors the `coa/pkg/census` package into dedicated, modular domain files and hardens display server detection (`wayland`, `x11`, `cli`) when `eggs` is invoked under `sudo` or non-systemd environments.
