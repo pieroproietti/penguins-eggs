@@ -11,6 +11,7 @@ import (
 	"text/template"
 
 	"coa/pkg/distro"
+	"coa/pkg/pathDefaults"
 	"coa/pkg/utils"
 
 	"github.com/spf13/viper"
@@ -139,6 +140,11 @@ func DetectAndLoad(isGitHubAction bool, customPaths ...string) (*Profile, error)
 		isoDir = customPaths[1]
 	}
 
+	bootloadersDir := pathDefaults.BootloadersDir
+	if bootloadersDir == "" || !utils.IsValidBootloadersDir(bootloadersDir) {
+		bootloadersDir = utils.ResolveBootloadersDir()
+	}
+
 	ctx := TemplateContext{
 		Family:         myDistro.FamilyID,
 		DistroID:       myDistro.DistroID,
@@ -149,6 +155,7 @@ func DetectAndLoad(isGitHubAction bool, customPaths ...string) (*Profile, error)
 		WorkDir:        workDir,
 		IsoDir:         isoDir,
 		LiveRoot:       filepath.Join(workDir, "liveroot"),
+		BootloadersDir: bootloadersDir,
 	}
 
 	tmpl := template.New(filepath.Base(basePath))

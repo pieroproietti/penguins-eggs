@@ -20,6 +20,12 @@ ln -s coa "$appdir/usr/bin/eggs"
 cp -a coa/brain.d coa/branding.default coa/pkg/assets/configs/scripts "$appdir/etc/penguins-eggs.d/"
 cp coa/pkg/assets/configs/custom.yaml coa/pkg/assets/configs/custom.exclude.list "$appdir/etc/penguins-eggs.d/"
 cp -a spacemit "$appdir/usr/share/penguins-eggs/"
+for bdir in /usr/share/penguins-eggs/bootloaders /var/cache/penguins-eggs/bootloaders "${XDG_CACHE_HOME:-$HOME/.cache}/penguins-eggs/bootloaders"; do
+    if [ -d "$bdir" ]; then
+        cp -a "$bdir" "$appdir/usr/share/penguins-eggs/"
+        break
+    fi
+done
 install -m 0755 packaging/appimage/AppRun packaging/appimage/install-system "$appdir/"
 cp packaging/appimage/penguins-eggs.desktop "$appdir/"
 cp coa/branding.default/artwork/penguins-eggs.svg "$appdir/"

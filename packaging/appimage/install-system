@@ -20,5 +20,8 @@ for config in custom.yaml custom.exclude.list; do
     fi
 done
 cp -a "$appdir/usr/share/penguins-eggs/spacemit" /usr/share/penguins-eggs/
+if [ -d "$appdir/usr/share/penguins-eggs/bootloaders" ]; then
+    cp -a "$appdir/usr/share/penguins-eggs/bootloaders" /usr/share/penguins-eggs/
+fi
 echo 'Installed eggs, coa and oa in /usr/local/bin, with their system resources.'
 echo 'Distribution runtime dependencies are still required for remastering.'

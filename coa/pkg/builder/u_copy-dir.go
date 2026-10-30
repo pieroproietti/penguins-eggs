@@ -36,6 +36,15 @@ func copyDir(src string, dst string) error {
 			return os.Chmod(targetPath, packageMode(info.Mode()))
 		}
 
+		if info.Mode()&os.ModeSymlink != 0 {
+			linkTarget, err := os.Readlink(path)
+			if err != nil {
+				return err
+			}
+			_ = os.Remove(targetPath)
+			return os.Symlink(linkTarget, targetPath)
+		}
+
 		return copyFile(path, targetPath)
 	})
 }

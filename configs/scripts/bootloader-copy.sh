@@ -1,11 +1,37 @@
 #!/bin/bash
 set -e
 
-BOOTLOADER_SRC="$1"
-DEST="$2"
+BOOTLOADER_SRC=""
+DEST=""
 
-if [ -z "$DEST" ] || [ -z "$BOOTLOADER_SRC" ]; then
-    echo "Error:  BOOTLOADER_SRC and DEST must be provided."
+if [ $# -ge 2 ]; then
+    BOOTLOADER_SRC="$1"
+    DEST="$2"
+elif [ $# -eq 1 ]; then
+    DEST="$1"
+    BOOTLOADER_SRC="/usr/share/penguins-eggs/bootloaders"
+else
+    echo "Error: DEST directory must be provided."
+    echo "Usage: $0 [BOOTLOADER_SRC] <DEST>"
+    exit 1
+fi
+
+# Fallback cascade if specified BOOTLOADER_SRC is missing or not a directory
+if [ ! -d "$BOOTLOADER_SRC" ]; then
+    if [ -d "/usr/share/penguins-eggs/bootloaders" ]; then
+        BOOTLOADER_SRC="/usr/share/penguins-eggs/bootloaders"
+    elif [ -d "/var/cache/penguins-eggs/bootloaders" ]; then
+        BOOTLOADER_SRC="/var/cache/penguins-eggs/bootloaders"
+    elif [ -n "${XDG_CACHE_HOME:-}" ] && [ -d "$XDG_CACHE_HOME/penguins-eggs/bootloaders" ]; then
+        BOOTLOADER_SRC="$XDG_CACHE_HOME/penguins-eggs/bootloaders"
+    elif [ -n "${HOME:-}" ] && [ -d "$HOME/.cache/penguins-eggs/bootloaders" ]; then
+        BOOTLOADER_SRC="$HOME/.cache/penguins-eggs/bootloaders"
+    fi
+fi
+
+if [ ! -d "$BOOTLOADER_SRC" ]; then
+    echo "Error: bootloader source directory not found: $BOOTLOADER_SRC" >&2
+    echo "Expected bootloaders in /usr/share/penguins-eggs/bootloaders or /var/cache/penguins-eggs/bootloaders." >&2
     exit 1
 fi
 

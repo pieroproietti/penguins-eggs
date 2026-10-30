@@ -75,6 +75,7 @@ type TemplateContext struct {
 	WorkDir        string
 	IsoDir         string
 	LiveRoot       string
+	BootloadersDir string
 }
 
 type BrainIndex struct {

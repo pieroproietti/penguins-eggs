@@ -2,6 +2,7 @@ package builder
 
 import (
 	sysctx "coa/pkg/context"
+	"coa/pkg/utils"
 	"os"
 	"path/filepath"
 )
@@ -89,6 +90,21 @@ func staging(ctx sysctx.RuntimeContext) string {
 	spacemitSrc := filepath.Join(projRoot, "spacemit")
 	if _, err := os.Stat(spacemitSrc); err == nil {
 		copyDir(spacemitSrc, filepath.Join(stageDir, "usr/share/penguins-eggs/spacemit"))
+	}
+
+	// 7. Bootloaders assets
+	// Ensure bootloaders are present in local build cache and stage them
+	// into usr/share/penguins-eggs/bootloaders.
+	bootloadersSrc, err := utils.EnsureBootloaders()
+	if err != nil {
+		utils.LogWarning("Unable to ensure bootloaders for packaging: %v", err)
+	} else if bootloadersSrc != "" {
+		destBootloaders := filepath.Join(stageDir, "usr/share/penguins-eggs/bootloaders")
+		if err := copyDir(bootloadersSrc, destBootloaders); err != nil {
+			utils.LogWarning("Failed to stage bootloaders from %s: %v", bootloadersSrc, err)
+		} else {
+			utils.LogNormal("[build] Staged bootloaders into %s", destBootloaders)
+		}
 	}
 
 	return stageDir

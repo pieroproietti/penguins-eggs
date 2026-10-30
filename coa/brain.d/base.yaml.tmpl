@@ -18,7 +18,7 @@ remaster:
     description: "Create a directory and copy the bootloader assets (BIOS/UEFI)"
     module: "shell"
     params:
-      command: "/etc/penguins-eggs.d/scripts/bootloader-copy.sh /tmp/coa/bootloaders {{ .IsoDir }}"
+      command: "/etc/penguins-eggs.d/scripts/bootloader-copy.sh {{ if .BootloadersDir }}{{ .BootloadersDir }}{{ else }}/usr/share/penguins-eggs/bootloaders{{ end }} {{ .IsoDir }}"
 
 # ----------------------------------------------------------------------------
 # 3. EFI IMAGE GENERATION
@@ -365,7 +365,7 @@ remaster:
       isolinux_bin: "isolinux/isolinux.bin"
       isolinux_cat: "isolinux/boot.cat"
       efi_img: "EFI/BOOT/efi.img"
-      isohdpfx: "/tmp/coa/bootloaders/ISOLINUX/isohdpfx.bin"
+      isohdpfx: "{{ if .BootloadersDir }}{{ .BootloadersDir }}{{ else }}/usr/share/penguins-eggs/bootloaders{{ end }}/ISOLINUX/isohdpfx.bin"
 
 # ==============================================================================
 # 🎯 INSTALLER

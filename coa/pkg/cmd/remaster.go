@@ -274,6 +274,12 @@ func RunRemasterFlight(opts RemasterOptions) {
 		}
 	}
 
+	bootloadersDir, err := utils.EnsureBootloaders()
+	if err != nil {
+		utils.Fatal("Failed to ensure bootloaders: %v", err)
+	}
+	pathDefaults.BootloadersDir = bootloadersDir
+
 	profile, err := parser.DetectAndLoad(isGitHubAction, producePath, isoDir)
 	if err != nil {
 		utils.Fatal("Unable to load Brain Profile: %v", err)
@@ -289,10 +295,6 @@ func RunRemasterFlight(opts RemasterOptions) {
 	}
 	if opts.CompressionLevel > 0 {
 		profile.Settings.Remaster.Compression.Level = opts.CompressionLevel
-	}
-
-	if err := utils.EnsureBootloaders(pathDefaults.BootloadersDir); err != nil {
-		utils.Fatal("Failed to ensure bootloaders: %v", err)
 	}
 
 	utils.LogNormal("Generating exclude list (%s mode)...", produceMode)

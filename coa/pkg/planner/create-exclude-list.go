@@ -153,6 +153,9 @@ func GenerateExcludeList(mode string, isGitHubAction bool, customWorkPath ...str
 		"var/cache/dnf5daemon-server/*",
 		"var/cache/PackageKit/*",
 
+		// Cache locale build penguins-eggs (bootloaders)
+		"var/cache/penguins-eggs/*",
+
 		// Log: teniamo solo le directory di servizi persistenti
 		"var/log/!(apache2|clamav|libvirt|journal|samba)",
 		"var/log/clamav/*",
