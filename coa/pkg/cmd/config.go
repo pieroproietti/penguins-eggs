@@ -88,12 +88,28 @@ func hasCalamares() bool {
 	return err == nil
 }
 
+// calamaresInstallCmds returns the apt-get invocations needed to install
+// calamares. The package index is refreshed first: on a fresh or stale system
+// the cached lists may no longer match the repositories, and "apt-get install"
+// alone then fails with 404s or "Unable to locate package".
+func calamaresInstallCmds() [][]string {
+	return [][]string{
+		{"apt-get", "update"},
+		{"apt-get", "install", "-y", "calamares"},
+	}
+}
+
 func installCalamares() error {
-	cmd := exec.Command("apt-get", "install", "-y", "calamares")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	return cmd.Run()
+	for _, args := range calamaresInstallCmds() {
+		cmd := exec.Command(args[0], args[1:]...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("%s: %w", strings.Join(args, " "), err)
+		}
+	}
+	return nil
 }
 
 func loadConfigState() configState {
