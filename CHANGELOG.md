@@ -2,6 +2,15 @@ See AI context: https://penguins-eggs.net/llms.txt
 
 # Changelog
 
+## Release Notes: penguins-eggs v26.11.26-1 - 2026-11-26
+
+This patch release refines live session privilege escalation, Polkit rules, and desktop installer launching for reliable execution across distributions such as Linux Mint.
+
+### 🔐 Live Session Privileges & Installer Launcher
+* **Sudoers Environment Preservation (`coa/brain.d/base.yaml.tmpl`)**: Renamed the live sudoers drop-in to `/etc/sudoers.d/99-live` and added `Defaults env_keep += "DISPLAY XAUTHORITY WAYLAND_DISPLAY XDG_RUNTIME_DIR"` so graphical installers retain display environment variables under `sudo`.
+* **Polkit Rules & YAML Structure (`coa/brain.d/base.yaml.tmpl`)**: Fixed YAML indentation for `polkit-policy` and `polkit-rules`, and updated `/usr/share/polkit-1/rules.d/49-penguins-eggs.rules` to allow `eggs` execution for `sudo`, `wheel`, and `live` users while still requiring admin authentication for `--clone` and `--crypted`.
+* **Desktop Installer Launcher (`coa/brain.d/base.yaml.tmpl`)**: Updated the desktop launcher `Exec` command to grant local root X11 access (`xhost +si:localuser:root 2>/dev/null`) and invoke `sudo -E eggs sysinstall`.
+
 ## Release Notes: penguins-eggs v26.10.30 - 2026-10-30
 
 This release eliminates the need to download bootloaders on every remastering flight by introducing an FHS-compliant multi-tier lookup hierarchy, bundling bootloaders directly into native packages and AppImage, and persisting fallback caches across runs.
