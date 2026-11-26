@@ -158,6 +158,7 @@ remaster:
       command: |
 {{ include "distro_copy_kernel_cmd" . | indent 8 }}
 
+
 # ----------------------------------------------------------------------------
 # 10. LIVE USER PRIVILEGES (sudo)
 # ----------------------------------------------------------------------------
@@ -166,71 +167,71 @@ remaster:
     module: "template"
     chroot: true
     params:
-      dest: "/etc/sudoers.d/00-live"
+      dest: "/etc/sudoers.d/99-live"
       permissions: 288 # 0440 octal
       content: |
-        {{ .LiveUser }} ALL=(ALL) NOPASSWD:ALL
+        Defaults env_keep += "DISPLAY XAUTHORITY WAYLAND_DISPLAY XDG_RUNTIME_DIR"
+        live ALL=(ALL) NOPASSWD:ALL
         %wheel ALL=(ALL) NOPASSWD:ALL
         %sudo ALL=(ALL) NOPASSWD:ALL
 
 # ----------------------------------------------------------------------------
 # 11. LIVE USER PRIVILEGES (polkit)
 # ----------------------------------------------------------------------------
-- name: "polkit-policy"
-  description: "Polkit policy for the installer launcher (pkexec eggs)"
-  module: "template"
-  chroot: true
-  params:
-    dest: "/usr/share/polkit-1/actions/net.penguins-eggs.pkexec.policy"
-    permissions: 420 # 0644 octal
-    content: |
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE policyconfig PUBLIC
-      "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
-      "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
-      <policyconfig>
-        <vendor>penguins-eggs</vendor>
-        <vendor_url>https://penguins-eggs.net</vendor_url>
-        <action id="net.penguins-eggs.pkexec.run">
-          <description>Run System Installer</description>
-          <message>Authentication is required to run the system installer</message>
-          <icon_name>penguins-eggs</icon_name>
-          <defaults>
-            <allow_any>yes</allow_any>
-            <allow_inactive>yes</allow_inactive>
-            <allow_active>yes</allow_active>
-          </defaults>
-          <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/eggs</annotate>
-          <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
-        </action>
-      </policyconfig>
+  - name: "polkit-policy"
+    description: "Polkit policy for the installer launcher (pkexec eggs)"
+    module: "template"
+    chroot: true
+    params:
+      dest: "/usr/share/polkit-1/actions/net.penguins-eggs.pkexec.policy"
+      permissions: 420 # 0644 octal
+      content: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE policyconfig PUBLIC
+        "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+        "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+        <policyconfig>
+          <vendor>penguins-eggs</vendor>
+          <vendor_url>https://penguins-eggs.net</vendor_url>
+          <action id="net.penguins-eggs.pkexec.run">
+            <description>Run System Installer</description>
+            <message>Authentication is required to run the system installer</message>
+            <icon_name>penguins-eggs</icon_name>
+            <defaults>
+              <allow_any>yes</allow_any>
+              <allow_inactive>yes</allow_inactive>
+              <allow_active>yes</allow_active>
+            </defaults>
+            <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/eggs</annotate>
+            <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+          </action>
+        </policyconfig>
 
-- name: "polkit-rules"
-  description: "Polkit rules: allow eggs in live session, enforce auth for cloning"
-  module: "template"
-  chroot: true
-  params:
-    dest: "/usr/share/polkit-1/rules.d/49-penguins-eggs.rules"
-    permissions: 420 # 0644 octal
-    content: |
-      /* Polkit rules for Penguins' Eggs
-       * Allow eggs execution in live session without password,
-       * but require admin authentication for sensitive flags.
-       */
-      polkit.addRule(function(action, subject) {
-          if (action.id === "net.penguins-eggs.pkexec.run" ||
-              (action.id === "org.freedesktop.policykit.exec" && action.lookup("program") === "/usr/bin/eggs")) {
-              
-              var cmd = action.lookup("command_line");
-              if (cmd && (cmd.indexOf("--clone") !== -1 || cmd.indexOf("--crypted") !== -1)) {
-                  return polkit.Result.AUTH_ADMIN;
-              }
-              
-              // Concede l'esecuzione diretta per l'installatore e gli altri comandi live
-              return polkit.Result.YES;
-          }
-      });
-      
+  - name: "polkit-rules"
+    description: "Polkit rules: allow eggs in live session, enforce auth for cloning"
+    module: "template"
+    chroot: true
+    params:
+      dest: "/usr/share/polkit-1/rules.d/49-penguins-eggs.rules"
+      permissions: 420 # 0644 octal
+      content: |
+        /* Polkit rules for Penguins' Eggs */
+        polkit.addRule(function(action, subject) {
+            if (action.id === "net.penguins-eggs.pkexec.run" ||
+                (action.id === "org.freedesktop.policykit.exec" && action.lookup("program") === "/usr/bin/eggs")) {
+
+                var cmd = action.lookup("command_line");
+                if (cmd && (cmd.indexOf("--clone") !== -1 || cmd.indexOf("--crypted") !== -1)) {
+                    return polkit.Result.AUTH_ADMIN;
+                }
+
+                // Consente sempre l'esecuzione a chiunque sia nel gruppo sudo/wheel o sia l'utente live
+                if (subject.isInGroup("sudo") || subject.isInGroup("wheel") || subject.user === "live") {
+                    return polkit.Result.YES;
+                }
+            }
+        });
+
 # ----------------------------------------------------------------------------
 # 12. DESKTOP LAUNCHER
 # ----------------------------------------------------------------------------
@@ -249,7 +250,7 @@ remaster:
         if [ -f "$SRC" ]; then
           sed \
             -e 's/@@TERMINAL@@/{{ if .HasCalamares }}false{{ else }}true{{ end }}/' \
-            -e 's|^Exec=.*$|Exec=pkexec eggs sysinstall|' \
+            -e 's|^Exec=.*$|Exec=sh -c "xhost +si:localuser:root 2>/dev/null; sudo -E eggs sysinstall"|' \
             "$SRC" > "$DEST"
           chmod 755 "$DEST"
         else
